@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIA-PY | Administración</title>
+    <title>SIA-PY | Configuración de Referencias</title>
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Google Fonts -->
@@ -11,6 +11,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
+            /* Colores Base (Intactos) */
             --mre-blue: #002855;
             --mre-blue-light: #0038A8;
             --mre-red: #D52B1E;
@@ -18,20 +19,84 @@
             --soft-bg: #f8fafc; 
             --border-color: #E2E8F0;
             --input-bg: #F8FAFC;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
             --card-shadow: 0 10px 15px -3px rgba(0, 40, 85, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+            /* Variables de Accesibilidad (Dinámicas) */
+            --font-scale: 1; /* Multiplicador de tamaño */
+            --base-font-size: 16px;
+        }
+
+        /* --- MODO ALTO CONTRASTE --- */
+        body.high-contrast {
+            --mre-blue: #000000;
+            --mre-blue-light: #000000;
+            --mre-red: #D50000;
+            --soft-bg: #FFFFFF;
+            --border-color: #000000;
+            --input-bg: #FFFFFF;
+            --text-main: #000000;
+            --text-muted: #000000;
+            --card-shadow: none;
+        }
+        body.high-contrast .elegant-background { display: none; }
+        body.high-contrast .btn-main { background: #000000; border: 2px solid #000000; }
+        body.high-contrast .btn-main:hover { background: #333; color: #FFF; }
+        body.high-contrast .grid-frame, body.high-contrast .master-selector-card { border: 2px solid #000; }
+
+        /* --- MODO ESCALA DE GRISES --- */
+        body.grayscale-mode {
+            filter: grayscale(100%);
         }
 
         body { 
             font-family: 'Inter', sans-serif; 
             margin: 0; 
             background-color: var(--soft-bg); 
-            color: #1E293B; 
+            color: var(--text-main); 
             overflow: hidden;
             display: flex;
             flex-direction: column;
             height: 100vh;
+            /* Aplicación del escalado de fuente base */
+            font-size: calc(var(--base-font-size) * var(--font-scale));
         }
+
+        /* --- ACCESSIBILITY BAR (Top Right) --- */
+        .a11y-bar {
+            position: fixed;
+            top: 20px;
+            right: 20px; /* Esquina superior derecha */
+            z-index: 5000;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            padding: 5px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            transition: var(--transition);
+        }
+        .a11y-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid transparent;
+            background: #F8FAFC;
+            color: var(--mre-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.8rem;
+            transition: var(--transition);
+        }
+        .a11y-btn:hover { background: var(--mre-blue); color: white; }
+        .a11y-btn.active { background: var(--mre-blue); color: white; border-color: var(--mre-blue); }
 
         /* --- FONDO --- */
         .elegant-background { 
@@ -50,13 +115,16 @@
             z-index: 2000;
         }
 
+        /* Ajuste de margen para no chocar con la barra de accesibilidad */
+        .user-dropdown { margin-right: 140px; } 
+
         .user-info-text { text-align: right; line-height: 1.2; }
-        .user-name { font-size: 0.85rem; font-weight: 800; color: var(--mre-blue); }
-        .user-id { font-size: 0.75rem; color: #64748B; font-weight: 600; }
+        .user-name { font-size: 0.9rem; font-weight: 800; color: var(--mre-blue); }
+        .user-id { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
 
         .dots-menu-trigger {
             width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
-            border-radius: 10px; cursor: pointer; transition: var(--transition); color: #64748B;
+            border-radius: 10px; cursor: pointer; transition: var(--transition); color: var(--text-muted);
             background: #F8FAFC; border: 1px solid var(--border-color);
         }
         .dots-menu-trigger:hover { background: #F1F5F9; color: var(--mre-blue-light); border-color: var(--mre-blue-light); }
@@ -70,7 +138,7 @@
         .dropdown-menu-mre.show { display: block; }
         .dropdown-item-mre {
             padding: 12px 16px; border: none; background: none; width: 100%; text-align: left;
-            font-size: 0.85rem; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 10px;
+            font-size: 0.9rem; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 10px;
         }
         .dropdown-item-mre:hover { background: #F8FAFC; color: var(--mre-red); }
 
@@ -87,9 +155,8 @@
         .nav-menu { padding: 1.5rem 1rem; flex: 1; }
         .nav-link-mre {
             display: flex; align-items: center; gap: 12px; padding: 0.85rem 1rem;
-            color: #64748B; text-decoration: none; border-radius: 12px;
-            font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; transition: var(--transition);
-            cursor: pointer;
+            color: var(--text-muted); text-decoration: none; border-radius: 12px;
+            font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; transition: var(--transition);
         }
         .nav-link-mre:hover { background: #F1F5F9; color: var(--mre-blue); }
         .nav-link-mre.active { background: #f0f7ff; color: var(--mre-blue-light); box-shadow: 0 4px 6px -1px rgba(0, 40, 85, 0.05); }
@@ -98,21 +165,6 @@
         .content-area { flex: 1; padding: 2rem 3rem; overflow-y: auto; position: relative; }
         .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* --- VISTA EN CONSTRUCCIÓN --- */
-        .view-construction {
-            height: 80%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-        .construction-icon-wrap {
-            background: white; width: 120px; height: 120px; display: flex; align-items: center; justify-content: center;
-            border-radius: 40px; box-shadow: var(--card-shadow); border: 1px solid var(--border-color); margin-bottom: 2rem;
-            color: var(--mre-blue-light);
-        }
 
         /* --- COMPONENTES DE CONFIGURACIÓN --- */
         .master-selector-card {
@@ -154,14 +206,18 @@
             top: 50%;
             transform: translateY(-50%);
             color: #94A3B8;
-            width: 16px;
+            width: 18px; /* Ligeramente más grande */
         }
         .search-input-integrated {
             padding-left: 42px !important;
             border-radius: 12px !important;
             border: 1px solid #E2E8F0 !important;
             background: #F8FAFC !important;
-            font-size: 0.8rem !important;
+            font-size: 0.9rem !important; /* Ajuste tipográfico */
+        }
+        .search-input-integrated::placeholder {
+            font-size: 0.9rem; /* Placeholder más legible */
+            color: #94A3B8;
         }
         .search-input-integrated:focus {
             background: white !important;
@@ -169,31 +225,44 @@
             box-shadow: 0 0 0 4px rgba(0, 56, 168, 0.05) !important;
         }
 
+        /* --- TABLA (Responsive & Readable) --- */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
+        }
         .mre-table { width: 100%; border-collapse: separate; border-spacing: 0; }
         .mre-table th { 
-            font-size: 0.65rem; font-weight: 800; color: #64748B; text-transform: uppercase; 
+            font-size: 0.75rem; /* Aumentado */
+            font-weight: 800; color: var(--text-muted); text-transform: uppercase; 
             padding: 1rem 1.5rem; border-bottom: 2px solid #E2E8F0; background: #fafbfc;
+            white-space: nowrap;
         }
-        .mre-table td { padding: 1rem 1.5rem; font-size: 0.8rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
+        .mre-table td { 
+            padding: 1rem 1.5rem; 
+            font-size: 0.9375rem; /* ~15px Mínimo */
+            border-bottom: 1px solid #F1F5F9; vertical-align: middle; 
+            color: var(--text-main);
+        }
 
         /* --- BOTONES Y ACCIONES --- */
         .btn-main { 
             background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); 
             color: #ffffff; border: none; border-radius: 12px; padding: 0.6rem 1.2rem; 
-            font-weight: 700; font-size: 0.8rem; transition: var(--transition);
+            font-weight: 700; font-size: 0.85rem; transition: var(--transition);
         }
         .btn-main:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,40,85,0.2); color: white; }
 
         .btn-danger-outline {
             background: #ffffff; color: var(--mre-red); border: 1.5px solid var(--mre-red); border-radius: 12px; padding: 0.6rem 1.5rem; 
-            font-weight: 700; font-size: 0.8rem; transition: var(--transition);
+            font-weight: 700; font-size: 0.85rem; transition: var(--transition);
         }
         .btn-danger-outline:hover:not(:disabled) { background: var(--mre-red); color: white; transform: translateY(-2px); }
         .btn-danger-outline:disabled { opacity: 0.4; cursor: not-allowed; border-color: #E2E8F0; color: #94A3B8; }
 
         .btn-action-icon {
-            width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;
-            border-radius: 8px; border: 1px solid var(--border-color); background: white; color: #64748B;
+            width: 36px; height: 36px; /* Área táctil mejorada */
+            display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 8px; border: 1px solid var(--border-color); background: white; color: var(--text-muted);
             transition: var(--transition); cursor: pointer;
         }
         .btn-action-icon:hover { background: #F1F5F9; color: var(--mre-blue); border-color: var(--mre-blue); }
@@ -209,7 +278,7 @@
 
         .btn-cancel-mre {
             background: white; border: 1px solid #CBD5E1; color: #475569; border-radius: 12px;
-            padding: 0.6rem 1.5rem; font-weight: 700; font-size: 0.8rem; transition: var(--transition);
+            padding: 0.6rem 1.5rem; font-weight: 700; font-size: 0.85rem; transition: var(--transition);
         }
         .btn-cancel-mre:hover:not(:disabled) { background: #F8FAFC; border-color: #94A3B8; transform: translateY(-2px); }
         .btn-cancel-mre:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -221,23 +290,42 @@
         }
         .mre-modal { 
             background: white; border-radius: 24px; max-width: 600px; width: 100%; 
-            padding: 2rem; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.2); 
+            padding: 2.5rem; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.2); 
             max-height: 90vh; overflow-y: auto;
         }
 
-        .form-label { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #64748B; margin-bottom: 0.4rem; }
-        .form-control-mre { background-color: var(--input-bg); border: 1px solid #E2E8F0; border-radius: 10px; padding: 0.65rem 1rem; font-size: 0.85rem; width: 100%; }
+        .form-label { 
+            font-size: 0.85rem; /* ~13.6px -> Aumentado */
+            font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem; 
+        }
+        .form-control-mre { 
+            background-color: var(--input-bg); border: 1px solid #E2E8F0; border-radius: 10px; 
+            padding: 0.75rem 1rem; /* Padding mejorado */
+            font-size: 0.95rem; /* Texto input más grande */
+            width: 100%; 
+        }
 
-        .section-title { font-size: 0.85rem; font-weight: 900; color: var(--mre-blue); text-transform: uppercase; display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; }
+        .section-title { font-size: 0.95rem; font-weight: 900; color: var(--mre-blue); text-transform: uppercase; display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; }
         .section-title::after { content: ''; flex: 1; height: 1px; background: #E2E8F0; }
         
         .required-star { color: var(--mre-red); margin-left: 2px; }
 
         .validation-alert {
-            background: #FFF1F2; border: 1px solid #FECDD3; color: #BE123C; padding: 12px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; margin-bottom: 1rem; display: none;
+            background: #FFF1F2; border: 1px solid #FECDD3; color: #BE123C; padding: 12px; border-radius: 10px; font-size: 0.8rem; font-weight: 700; margin-bottom: 1rem; display: none;
         }
 
-        .mre-checkbox { width: 18px; height: 18px; cursor: pointer; border: 2px solid var(--border-color); border-radius: 4px; }
+        .mre-checkbox { width: 20px; height: 20px; cursor: pointer; border: 2px solid var(--border-color); border-radius: 4px; }
+
+        /* Estilos específicos para el modal de confirmación */
+        .confirm-list {
+            background: #F8FAFC; border-radius: 12px; border: 1px solid #E2E8F0; padding: 1rem; margin: 1.5rem 0;
+            max-height: 200px; overflow-y: auto;
+        }
+        .confirm-item {
+            display: flex; align-items: center; gap: 10px; padding: 10px 0; font-size: 0.9rem; color: #475569; font-weight: 600;
+            border-bottom: 1px solid #EDF2F7;
+        }
+        .confirm-item:last-child { border-bottom: none; }
 
         /* --- ESTILOS HISTORIAL (AUDITORÍA) --- */
         .audit-history-container {
@@ -246,18 +334,49 @@
             border-top: 2px dashed #E2E8F0;
         }
         .audit-table { width: 100%; border-radius: 12px; overflow: hidden; border: 1px solid #E2E8F0; margin-top: 1rem; }
-        .audit-table th { background: #F8FAFC; padding: 0.75rem 1rem; font-size: 0.65rem; color: #64748B; font-weight: 800; text-transform: uppercase; }
-        .audit-table td { padding: 0.75rem 1rem; font-size: 0.75rem; color: #475569; border-bottom: 1px solid #F1F5F9; }
+        .audit-table th { background: #F8FAFC; padding: 0.75rem 1rem; font-size: 0.75rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; }
+        .audit-table td { padding: 0.75rem 1rem; font-size: 0.85rem; color: #475569; border-bottom: 1px solid #F1F5F9; }
         .audit-table tr:last-child td { border-bottom: none; }
-        .badge-audit { padding: 3px 8px; border-radius: 5px; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; }
+        .badge-audit { padding: 3px 8px; border-radius: 5px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
         .badge-crear { background: #DCFCE7; color: #15803D; }
         .badge-modificar { background: #E0F2FE; color: #0369A1; }
         .badge-inactivar { background: #FEE2E2; color: #B91C1C; }
+
+        /* Media Queries para Tablets/Móviles */
+        @media (max-width: 992px) {
+            .a11y-bar {
+                top: auto;
+                bottom: 20px;
+                right: 20px;
+                flex-direction: column-reverse; /* Stack vertical en móvil */
+            }
+            .user-dropdown { margin-right: 0; }
+        }
     </style>
 </head>
 <body>
 
     <div class="elegant-background"></div>
+
+    <!-- BARRA DE ACCESIBILIDAD -->
+    <div class="a11y-bar" role="toolbar" aria-label="Herramientas de Accesibilidad">
+        <button class="a11y-btn" id="btnGrayscale" onclick="toggleGrayscale()" title="Activar/Desactivar Escala de Grises" aria-label="Cambiar a escala de grises">
+            <i data-lucide="eye-off" style="width: 16px;"></i>
+        </button>
+        <button class="a11y-btn" id="btnContrast" onclick="toggleContrast()" title="Activar/Desactivar Alto Contraste" aria-label="Cambiar a modo alto contraste">
+            <i data-lucide="contrast" style="width: 16px;"></i>
+        </button>
+        <div style="width: 1px; height: 20px; background: #E2E8F0; margin: 0 4px;"></div>
+        <button class="a11y-btn" onclick="changeFontSize(-0.1)" title="Disminuir tamaño de texto" aria-label="Disminuir texto">
+            <i data-lucide="minus" style="width: 14px;"></i>
+        </button>
+        <button class="a11y-btn" onclick="resetFontSize()" title="Restablecer tamaño de texto" aria-label="Restablecer tamaño texto">
+            <span style="font-size: 10px;">100%</span>
+        </button>
+        <button class="a11y-btn" onclick="changeFontSize(0.1)" title="Aumentar tamaño de texto" aria-label="Aumentar texto">
+            <i data-lucide="plus" style="width: 14px;"></i>
+        </button>
+    </div>
 
     <!-- ENCABEZADO SUPERIOR -->
     <header class="portal-header animate-fade">
@@ -266,8 +385,8 @@
                 <i data-lucide="globe" style="color: var(--mre-blue); width: 22px;"></i>
             </div>
             <div>
-                <h6 class="fw-black mb-0" style="color: var(--mre-blue); font-size: 1rem;">SIA-PY</h6>
-                <p class="text-muted small mb-0 fw-bold uppercase" style="font-size: 0.55rem; letter-spacing: 1px;">Apostilla Electrónica</p>
+                <h6 class="fw-black mb-0" style="color: var(--mre-blue); font-size: 1.1rem;">SIA-PY</h6>
+                <p class="text-muted small mb-0 fw-bold uppercase" style="font-size: 0.65rem; letter-spacing: 1px;">Apostilla Electrónica</p>
             </div>
         </div>
         
@@ -276,11 +395,11 @@
                 <div class="user-name">Carlos González</div>
                 <div class="user-id">CI: 4.567.890</div>
             </div>
-            <div class="dots-menu-trigger" id="profileTrigger" onclick="toggleUserMenu(event)">
+            <div class="dots-menu-trigger" id="profileTrigger" onclick="toggleUserMenu(event)" title="Menú de usuario" aria-label="Menú de usuario" tabindex="0">
                 <i data-lucide="user" style="width: 20px;"></i>
             </div>
             <div class="dropdown-menu-mre" id="userMenu">
-                <button class="dropdown-item-mre text-danger" onclick="handleLogout()">
+                <button class="dropdown-item-mre text-danger" onclick="handleLogout()" title="Cerrar sesión actual">
                     <i data-lucide="log-out" style="width: 14px;"></i> Cerrar Sesión
                 </button>
             </div>
@@ -291,20 +410,20 @@
         <!-- SIDEBAR DE CONFIGURACIÓN PRINCIPAL -->
         <aside class="main-sidebar animate-fade">
             <nav class="nav-menu">
-                <p class="px-3 mb-2 text-muted fw-bold uppercase" style="font-size: 0.6rem; letter-spacing: 1.2px;">Administración</p>
-                <a class="nav-link-mre" onclick="navigateTo('construction', this)">
+                <p class="px-3 mb-2 text-muted fw-bold uppercase" style="font-size: 0.7rem; letter-spacing: 1.2px;">Administración</p>
+                <a href="#" class="nav-link-mre" title="Ir a configuración de tipos de documento">
                     <i data-lucide="file-text" style="width: 18px;"></i> Tipos de documentos
                 </a>
-                <a class="nav-link-mre" onclick="navigateTo('construction', this)">
+                <a href="#" class="nav-link-mre" title="Ir a gestión de usuarios">
                     <i data-lucide="users" style="width: 18px;"></i> Usuarios
                 </a>
-                <a class="nav-link-mre" onclick="navigateTo('construction', this)">
+                <a href="#" class="nav-link-mre" title="Ir a grupos y permisos">
                     <i data-lucide="shield-check" style="width: 18px;"></i> Grupos y Permisos
                 </a>
-                <a class="nav-link-mre active" onclick="navigateTo('references', this)">
+                <a href="#" class="nav-link-mre active" title="Configuración de referencias (Activo)" aria-current="page">
                     <i data-lucide="settings-2" style="width: 18px;"></i> Configuración de referencias
                 </a>
-                <a class="nav-link-mre" onclick="navigateTo('construction', this)">
+                <a href="#" class="nav-link-mre" onclick="showUnderConstruction(event)" title="Ir a configuración de campos">
                     <i data-lucide="layout-grid" style="width: 18px;"></i> Configuración de campos
                 </a>
             </nav>
@@ -312,129 +431,110 @@
 
         <!-- ÁREA DE TRABAJO -->
         <main class="content-area">
-            
-            <!-- VISTA DE REFERENCIAS (ACTUAL) -->
-            <div id="referencesView" class="animate-fade">
-                <header class="d-flex justify-content-between align-items-end mb-4">
+            <header class="d-flex justify-content-between align-items-end mb-4 animate-fade">
+                <div>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-1" style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">
+                            <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted">Configuración</a></li>
+                            <li class="breadcrumb-item active text-primary">Referencias</li>
+                        </ol>
+                    </nav>
+                    <h2 class="fw-black text-navy m-0">Configuración de Referencias</h2>
+                </div>
+            </header>
+
+            <!-- SELECTOR DE TIPO (CABECERA) -->
+            <div class="master-selector-card animate-fade" style="animation-delay: 0.1s">
+                <div class="row align-items-center g-3">
+                    <div class="col-md-5">
+                        <label class="form-label" for="tipoSelector">Seleccionar Tipo de Referencia (Dominio)</label>
+                        <select class="form-control-mre shadow-sm" id="tipoSelector" onchange="handleTipoChange(this.value)" title="Seleccione un dominio para filtrar la lista" aria-label="Selector de dominio">
+                            <option value="">Seleccione un dominio...</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <div id="tipoInfo" class="d-none">
+                            <label class="form-label">Estado de la Cabecera</label>
+                            <div class="fw-bold text-muted" id="tipoModuloLabel" style="font-size: 0.95rem;">---</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-end">
+                        <button class="btn-main" onclick="openModal('modalTipo')" title="Crear un nuevo tipo de referencia">
+                            <i data-lucide="plus" style="width: 14px;" class="me-1"></i> Nuevo Tipo
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABLA DE REFERENCIAS (DETALLES) -->
+            <div class="grid-frame animate-fade" style="animation-delay: 0.2s">
+                <div class="grid-header-frame">
                     <div>
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb mb-1" style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase;">
-                                <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted">Configuración</a></li>
-                                <li class="breadcrumb-item active text-primary">Referencias</li>
-                            </ol>
-                        </nav>
-                        <h2 class="fw-black text-navy m-0">Configuración de Referencias</h2>
+                        <h5 class="fw-black text-uppercase m-0" style="color: var(--mre-blue); font-size: 0.85rem;">
+                            Lista de Referencias: <span id="currentTipoLabel" class="text-primary">---</span>
+                        </h5>
                     </div>
-                </header>
+                    <button class="btn-main d-inline-flex align-items-center gap-2" id="btnAddRef" disabled onclick="openModal('modalRef', 'add')" title="Agregar nueva referencia a la lista">
+                        <i data-lucide="plus-circle" style="width: 16px;"></i> Agregar Referencia
+                    </button>
+                </div>
 
-                <!-- SELECTOR DE TIPO (CABECERA) -->
-                <div class="master-selector-card">
-                    <div class="row align-items-center g-3">
-                        <div class="col-md-5">
-                            <label class="form-label">Seleccionar Tipo de Referencia (Dominio)</label>
-                            <select class="form-control-mre shadow-sm" id="tipoSelector" onchange="handleTipoChange(this.value)">
-                                <option value="">Seleccione un dominio...</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <div id="tipoInfo" class="d-none">
-                                <label class="form-label">Estado de la Cabecera</label>
-                                <div class="fw-bold text-muted" id="tipoModuloLabel" style="font-size: 0.85rem;">---</div>
-                            </div>
-                        </div>
-                        <div class="col-md-3 text-end">
-                            <button class="btn-main" onclick="openModal('modalTipo')">
-                                <i data-lucide="plus" style="width: 14px;" class="me-1"></i> Nuevo Tipo
-                            </button>
-                        </div>
+                <div class="grid-search-container">
+                    <div class="search-box-mre">
+                        <i data-lucide="search"></i>
+                        <input type="text" id="similaritySearchInput" class="form-control-mre search-input-integrated" placeholder="Buscar similitudes por descripción o valor..." onkeyup="handleSimilaritySearch()" title="Campo de búsqueda de referencias" aria-label="Buscar referencias">
                     </div>
                 </div>
 
-                <!-- TABLA DE REFERENCIAS (DETALLES) -->
-                <div class="grid-frame">
-                    <div class="grid-header-frame">
-                        <div>
-                            <h5 class="fw-black text-uppercase m-0" style="color: var(--mre-blue); font-size: 0.75rem;">
-                                Lista de Referencias: <span id="currentTipoLabel" class="text-primary">---</span>
-                            </h5>
-                        </div>
-                        <button class="btn-main d-inline-flex align-items-center gap-2" id="btnAddRef" disabled onclick="openModal('modalRef', 'add')">
-                            <i data-lucide="plus-circle" style="width: 16px;"></i> Agregar Referencia
-                        </button>
-                    </div>
+                <div class="table-responsive">
+                    <table class="mre-table" role="grid" aria-label="Tabla de referencias">
+                        <thead>
+                            <tr>
+                                <th width="40" class="text-center">
+                                    <input type="checkbox" id="selectAll" class="mre-checkbox" onchange="toggleSelectAll(this)" title="Seleccionar todos los registros" aria-label="Seleccionar todos">
+                                </th>
+                                <th width="100" class="text-center">ID</th>
+                                <th>Descripción</th>
+                                <th>Valor Alfanumérico</th>
+                                <th width="120" class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="referenciasTableBody">
+                            <tr>
+                                <td colspan="5" class="text-center py-5 text-muted">
+                                    <i data-lucide="search-x" class="mb-3 opacity-25" style="width: 48px; height: 48px;"></i>
+                                    <p class="fw-bold">Seleccione un Tipo de Referencia para gestionar sus valores</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-                    <div class="grid-search-container">
-                        <div class="search-box-mre">
-                            <i data-lucide="search"></i>
-                            <input type="text" id="similaritySearchInput" class="form-control-mre search-input-integrated" placeholder="Buscar similitudes por descripción o valor..." onkeyup="handleSimilaritySearch()">
-                        </div>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="mre-table">
-                            <thead>
-                                <tr>
-                                    <th width="40" class="text-center">
-                                        <input type="checkbox" id="selectAll" class="mre-checkbox" onchange="toggleSelectAll(this)">
-                                    </th>
-                                    <th width="100" class="text-center">ID</th>
-                                    <th>Descripción</th>
-                                    <th>Valor Alfanumérico</th>
-                                    <th width="120" class="text-center">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody id="referenciasTableBody">
-                                <tr>
-                                    <td colspan="5" class="text-center py-5 text-muted">
-                                        <i data-lucide="search-x" class="mb-3 opacity-25" style="width: 48px; height: 48px;"></i>
-                                        <p class="fw-bold">Seleccione un Tipo de Referencia para gestionar sus valores</p>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="grid-footer">
-                        <button class="btn-danger-outline d-inline-flex align-items-center gap-2" id="btnInactivar" disabled onclick="handleInactivar()">
-                            <i data-lucide="power" style="width: 14px;"></i> Inactivar
-                        </button>
-                        <button class="btn-cancel-mre" id="btnCancelDeselect" disabled onclick="deselectAll()">
-                            Cancelar
-                        </button>
-                    </div>
+                <div class="grid-footer">
+                    <button class="btn-danger-outline d-inline-flex align-items-center gap-2" id="btnInactivar" disabled onclick="handleInactivar()" title="Inactivar registros seleccionados">
+                        <i data-lucide="power" style="width: 14px;"></i> Inactivar
+                    </button>
+                    <button class="btn-cancel-mre" id="btnCancelDeselect" disabled onclick="deselectAll()" title="Cancelar selección actual">
+                        Cancelar
+                    </button>
                 </div>
             </div>
-
-            <!-- VISTA EN CONSTRUCCIÓN (DENTRO DE LA PANTALLA) -->
-            <div id="constructionView" class="view-construction d-none animate-fade">
-                <div class="construction-icon-wrap">
-                    <i data-lucide="hammer" style="width: 48px; height: 48px;"></i>
-                </div>
-                <h3 class="fw-black text-navy mb-2">Módulo en Construcción</h3>
-                <p class="text-muted" style="max-width: 400px; margin: 0 auto 2rem;">
-                    Estamos trabajando activamente para habilitar este módulo. Estará disponible en la próxima actualización del sistema.
-                </p>
-                <button class="btn-main px-5" onclick="backToReferences()">
-                    Regresar a Referencias
-                </button>
-            </div>
-
         </main>
     </div>
 
-    <!-- MODALES (Referentes solo a Referencias) -->
-    <div class="mre-modal-overlay" id="modalTipo">
+    <!-- MODALES -->
+    <div class="mre-modal-overlay" id="modalTipo" role="dialog" aria-labelledby="modalTipoTitle" aria-modal="true">
         <div class="mre-modal animate-fade">
-            <div class="section-title">Gestionar Tipo de Referencia</div>
+            <div class="section-title" id="modalTipoTitle">Gestionar Tipo de Referencia</div>
             <form id="formTipo">
                 <div class="row g-3">
                     <div class="col-md-12">
-                        <label class="form-label">ID Dominio <span class="required-star">*</span></label>
-                        <input type="text" class="form-control-mre" placeholder="ej: TIPO_DOCUMENTO" required>
+                        <label class="form-label" for="tipoIdInput">ID Dominio <span class="required-star">*</span></label>
+                        <input type="text" id="tipoIdInput" class="form-control-mre" placeholder="ej: TIPO_DOCUMENTO" required title="Identificador único del dominio">
                     </div>
                     <div class="col-12">
-                        <label class="form-label">Descripción <span class="required-star">*</span></label>
-                        <textarea class="form-control-mre" rows="2" required placeholder="Ingrese descripción"></textarea>
+                        <label class="form-label" for="tipoDescInput">Descripción <span class="required-star">*</span></label>
+                        <textarea id="tipoDescInput" class="form-control-mre" rows="2" required placeholder="Ingrese descripción" title="Descripción detallada del dominio"></textarea>
                     </div>
                 </div>
                 <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
@@ -445,33 +545,33 @@
         </div>
     </div>
 
-    <div class="mre-modal-overlay" id="modalRef">
+    <div class="mre-modal-overlay" id="modalRef" role="dialog" aria-labelledby="refModalTitle" aria-modal="true">
         <div class="mre-modal animate-fade">
             <div class="section-title" id="refModalTitle">Referencia Detallada</div>
-            <div id="validationError" class="validation-alert">
+            <div id="validationError" class="validation-alert" role="alert">
                 <i data-lucide="alert-circle" style="width:16px; margin-right:5px"></i> Debe completar **exactamente uno** de los campos de valor (Alfanumérico, Numérico o Fecha).
             </div>
             <form id="formRef" onsubmit="return validateRefForm(event)">
                 <div class="row g-3">
                     <div class="col-md-12">
-                        <label class="form-label">Descripción <span class="required-star">*</span></label>
-                        <input type="text" id="refDesc" class="form-control-mre" required>
+                        <label class="form-label" for="refDesc">Descripción <span class="required-star">*</span></label>
+                        <input type="text" id="refDesc" class="form-control-mre" required title="Nombre descriptivo de la referencia">
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">Valor Alfanumérico</label>
-                        <input type="text" id="refAlf" class="form-control-mre" oninput="handleExclusiveInput('refAlf')">
+                        <label class="form-label" for="refAlf">Valor Alfanumérico</label>
+                        <input type="text" id="refAlf" class="form-control-mre" oninput="handleExclusiveInput('refAlf')" title="Valor de texto corto (opcional)">
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">Valor Numérico</label>
-                        <input type="number" id="refNum" class="form-control-mre" oninput="handleExclusiveInput('refNum')">
+                        <label class="form-label" for="refNum">Valor Numérico</label>
+                        <input type="number" id="refNum" class="form-control-mre" oninput="handleExclusiveInput('refNum')" title="Valor numérico (opcional)">
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">Valor Fecha</label>
-                        <input type="date" id="refFec" class="form-control-mre" oninput="handleExclusiveInput('refFec')">
+                        <label class="form-label" for="refFec">Valor Fecha</label>
+                        <input type="date" id="refFec" class="form-control-mre" oninput="handleExclusiveInput('refFec')" title="Valor de fecha (opcional)">
                     </div>
                     <div class="col-12">
-                        <label class="form-label">Descripción Larga</label>
-                        <textarea id="refDescLarga" class="form-control-mre" rows="2"></textarea>
+                        <label class="form-label" for="refDescLarga">Descripción Larga</label>
+                        <textarea id="refDescLarga" class="form-control-mre" rows="2" title="Información adicional (opcional)"></textarea>
                     </div>
                 </div>
 
@@ -493,7 +593,7 @@
                 </div>
 
                 <div class="mt-4 pt-3 border-top d-flex justify-content-between align-items-center">
-                    <div class="meta-info" id="refMeta" style="font-size: 0.65rem; color: #94A3B8; font-weight: 600;">--</div>
+                    <div class="meta-info" id="refMeta" style="font-size: 0.75rem; color: #94A3B8; font-weight: 600;">--</div>
                     <div class="d-flex gap-2">
                         <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" onclick="closeModal('modalRef')">Cerrar</button>
                         <button type="submit" class="btn-main px-4" id="btnSaveRef">Guardar Cambios</button>
@@ -503,7 +603,7 @@
         </div>
     </div>
 
-    <div class="mre-modal-overlay" id="modalConfirmInactivate">
+    <div class="mre-modal-overlay" id="modalConfirmInactivate" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
         <div class="mre-modal animate-fade">
             <div class="text-center mb-3">
                 <div class="bg-danger bg-opacity-10 text-danger d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 56px; height: 56px;">
@@ -511,7 +611,7 @@
                 </div>
             </div>
             <div class="text-center">
-                <h5 class="fw-black text-navy mb-2">Confirmar Inactivación</h5>
+                <h5 class="fw-black text-navy mb-2" id="confirmTitle">Confirmar Inactivación</h5>
                 <p class="text-muted small px-3">¿Está seguro que desea inactivar las siguientes referencias seleccionadas? Esta acción restringirá su uso en los trámites del sistema.</p>
             </div>
             <div class="confirm-list" id="selectedItemsList"></div>
@@ -522,32 +622,70 @@
         </div>
     </div>
 
+    <!-- MODAL MÓDULO EN CONSTRUCCIÓN -->
+    <div class="mre-modal-overlay" id="modalConstruction" role="dialog" aria-modal="true">
+        <div class="mre-modal animate-fade text-center" style="max-width: 400px;">
+            <div class="mb-4">
+                <div class="bg-primary bg-opacity-10 text-primary d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 64px; height: 64px;">
+                    <i data-lucide="hammer" style="width: 32px; height: 32px;"></i>
+                </div>
+            </div>
+            <h5 class="fw-black text-navy mb-2">Módulo en Construcción</h5>
+            <p class="text-muted small">Estamos trabajando en esta funcionalidad. Estará disponible próximamente.</p>
+            <div class="mt-4">
+                <button type="button" class="btn-main w-100" onclick="closeModal('modalConstruction')">Entendido</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // --- NAVEGACIÓN ---
-        function navigateTo(viewId, element) {
-            // Actualizar clases activas en sidebar
-            document.querySelectorAll('.nav-link-mre').forEach(l => l.classList.remove('active'));
-            element.classList.add('active');
+        // --- GESTIÓN DE ACCESIBILIDAD ---
+        function initAccessibility() {
+            const storedScale = localStorage.getItem('mre_font_scale');
+            if (storedScale) {
+                document.documentElement.style.setProperty('--font-scale', storedScale);
+            }
 
-            // Alternar vistas
-            const refView = document.getElementById('referencesView');
-            const constructView = document.getElementById('constructionView');
+            const storedContrast = localStorage.getItem('mre_contrast');
+            if (storedContrast === 'high') {
+                document.body.classList.add('high-contrast');
+                document.getElementById('btnContrast')?.classList.add('active');
+            }
 
-            if (viewId === 'references') {
-                refView.classList.remove('d-none');
-                constructView.classList.add('d-none');
-            } else {
-                refView.classList.add('d-none');
-                constructView.classList.remove('d-none');
-                lucide.createIcons(); // Recargar iconos lucide
+            const storedGrayscale = localStorage.getItem('mre_grayscale');
+            if (storedGrayscale === 'true') {
+                document.body.classList.add('grayscale-mode');
+                document.getElementById('btnGrayscale')?.classList.add('active');
             }
         }
 
-        function backToReferences() {
-            const refLink = document.querySelector('[onclick*="references"]');
-            navigateTo('references', refLink);
+        function changeFontSize(delta) {
+            let current = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--font-scale'));
+            let newScale = Math.min(Math.max(current + delta, 0.8), 1.5); // Limitar entre 80% y 150%
+            document.documentElement.style.setProperty('--font-scale', newScale);
+            localStorage.setItem('mre_font_scale', newScale);
         }
 
+        function resetFontSize() {
+            document.documentElement.style.setProperty('--font-scale', 1);
+            localStorage.setItem('mre_font_scale', 1);
+        }
+
+        function toggleContrast() {
+            document.body.classList.toggle('high-contrast');
+            const isActive = document.body.classList.contains('high-contrast');
+            document.getElementById('btnContrast').classList.toggle('active');
+            localStorage.setItem('mre_contrast', isActive ? 'high' : 'normal');
+        }
+
+        function toggleGrayscale() {
+            document.body.classList.toggle('grayscale-mode');
+            const isActive = document.body.classList.contains('grayscale-mode');
+            document.getElementById('btnGrayscale').classList.toggle('active');
+            localStorage.setItem('mre_grayscale', isActive ? 'true' : 'false');
+        }
+
+        // --- DATOS MOCK ---
         const mockTipos = [
             { id: 1, dominio: 'TIPO_DOCUMENTO_IDENTIDAD', modulo: 'REGISTRO DE USUARIO', estado: 'ACTI', descripcion: 'Clases de documento civil.' },
             { id: 2, dominio: 'NACIONALIDAD', modulo: 'REGISTRO DE USUARIO', estado: 'ACTI', descripcion: 'Países de origen.' }
@@ -576,6 +714,7 @@
         let selectedTipoId = null;
 
         document.addEventListener('DOMContentLoaded', () => {
+            initAccessibility();
             const selector = document.getElementById('tipoSelector');
             selector.innerHTML += mockTipos.map(t => `<option value="${t.id}">${t.dominio}</option>`).join('');
             lucide.createIcons();
@@ -636,14 +775,14 @@
             }
             body.innerHTML = data.map(r => `
                 <tr data-ref-id="${r.id}" data-ref-desc="${r.descripcion}">
-                    <td class="text-center"><input type="checkbox" class="mre-checkbox record-check" onchange="handleCheckboxChange()"></td>
+                    <td class="text-center"><input type="checkbox" class="mre-checkbox record-check" onchange="handleCheckboxChange()" title="Seleccionar registro ID ${r.id}" aria-label="Seleccionar registro"></td>
                     <td class="fw-bold text-navy text-center">${r.id}</td>
                     <td><div class="fw-bold">${r.descripcion}</div></td>
                     <td><span class="badge bg-light text-dark border px-3">${r.val_alf || '-'}</span></td>
                     <td>
                         <div class="d-flex justify-content-center gap-2">
-                            <button class="btn-action-icon" title="Visualizar" onclick="openModal('modalRef', 'view', ${r.id})"><i data-lucide="eye" style="width:14px"></i></button>
-                            <button class="btn-action-icon" title="Editar" onclick="openModal('modalRef', 'edit', ${r.id})"><i data-lucide="edit-3" style="width:14px"></i></button>
+                            <button class="btn-action-icon" title="Visualizar detalles de ${r.descripcion}" onclick="openModal('modalRef', 'view', ${r.id})" aria-label="Ver detalles"><i data-lucide="eye" style="width:16px"></i></button>
+                            <button class="btn-action-icon" title="Editar registro ${r.descripcion}" onclick="openModal('modalRef', 'edit', ${r.id})" aria-label="Editar"><i data-lucide="edit-3" style="width:16px"></i></button>
                         </div>
                     </td>
                 </tr>
@@ -755,6 +894,11 @@
             }
             document.getElementById(id).style.display = 'flex';
             lucide.createIcons();
+        }
+
+        function showUnderConstruction(e) {
+            e.preventDefault();
+            openModal('modalConstruction');
         }
 
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
