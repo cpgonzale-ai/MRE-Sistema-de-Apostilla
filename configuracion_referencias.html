@@ -419,6 +419,8 @@
                 /* Oculto por defecto en móvil */
                 transform: translateX(-100%); 
                 transition: transform 0.3s ease-in-out;
+                /* IMPORTANTE: Desactivar animación fade en móvil para evitar conflictos con transform */
+                animation: none !important;
             }
             
             /* Cuando se activa la clase show, se muestra el sidebar */
