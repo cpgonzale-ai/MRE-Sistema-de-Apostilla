@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIA-PY | Sistema de Apostilla Electrónica</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --mre-blue: #002855;
+            --mre-blue-light: #0038A8;
+            --mre-red: #D52B1E;
+            --mre-green: #10B981;
+            --soft-bg: #f8fafc; 
+            --border-color: #E2E8F0;
+            --input-bg: #F8FAFC;
+            --card-shadow: 0 10px 15px -3px rgba(0, 40, 85, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            background-color: var(--soft-bg); 
+            color: #1E293B; 
+            overflow-x: hidden;
+        }
+
+        .hidden { display: none !important; }
+
+        /* --- EFECTOS DE FONDO --- */
+        .elegant-background { 
+            position: fixed; 
+            inset: 0; 
+            z-index: -1; 
+            background-color: #f8fafc; 
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(0, 56, 168, 0.08) 0px, transparent 50%), 
+                radial-gradient(at 100% 0%, rgba(213, 43, 30, 0.05) 0px, transparent 50%), 
+                radial-gradient(at 100% 100%, rgba(0, 40, 85, 0.06) 0px, transparent 50%); 
+        }
+        
+        .bg-pattern { 
+            position: fixed; 
+            inset: 0; 
+            z-index: -1; 
+            opacity: 0.4; 
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23002855' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); 
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
+
+        /* --- CABECERA MEJORADA --- */
+        #portalSection { padding: 1rem 3%; max-width: 1400px; margin: 0 auto; }
+        .portal-header { 
+            display: flex; justify-content: space-between; align-items: center; background: white; 
+            padding: 0.75rem 1.5rem; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 1rem; 
+            border: 1px solid var(--border-color);
+        }
+
+        .header-profile-trigger {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid transparent;
+        }
+        .header-profile-trigger:hover {
+            background: #F8FAFC;
+            border-color: var(--border-color);
+        }
+
+        .user-dropdown { position: relative; }
+        .dropdown-menu-mre { 
+            position: absolute; top: 120%; right: 0; background: white; border-radius: 14px; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); 
+            border: 1px solid var(--border-color); width: 240px; 
+            display: none; z-index: 1000; overflow: hidden;
+            animation: fadeIn 0.2s ease-out;
+        }
+        .dropdown-menu-mre.show { display: block; }
+        
+        .dropdown-header-info {
+            padding: 16px;
+            background: #F8FAFC;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .dropdown-item-mre {
+            padding: 12px 16px; border: none; background: none; width: 100%; text-align: left;
+            font-size: 0.85rem; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 12px;
+            transition: var(--transition);
+        }
+        .dropdown-item-mre:hover { background: #F1F5F9; color: var(--mre-blue); }
+        .dropdown-item-mre i { width: 16px; color: #64748B; }
+        .dropdown-item-mre:hover i { color: var(--mre-blue); }
+        .dropdown-item-mre.text-danger:hover { background: #FFF1F2; color: #BE123C; }
+        .dropdown-item-mre.text-danger:hover i { color: #BE123C; }
+
+        .action-divider { border-bottom: 2px solid #E2E8F0; margin: 1.5rem 0 1rem 0; display: flex; align-items: center; }
+        .action-label { background: #E2E8F0; color: var(--mre-blue); font-size: 0.65rem; font-weight: 800; padding: 2px 10px; border-radius: 4px 4px 0 0; text-transform: uppercase; }
+
+        /* --- BOTONES DE ESTADO --- */
+        .status-container { display: flex; gap: 0.65rem; margin-bottom: 1.25rem; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
+        .status-btn { 
+            background: white; border: 1px solid #E2E8F0; border-radius: 12px; padding: 0.75rem 1rem; 
+            flex: 1; display: flex; align-items: center; justify-content: space-between; transition: var(--transition); 
+            cursor: pointer; min-width: 170px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .status-btn:hover { transform: translateY(-2px); border-color: #CBD5E1; }
+        .status-btn.active { border: 2px solid var(--mre-blue); background: #f0f7ff; }
+
+        /* --- GRILLA --- */
+        .grid-frame { background: white; border-radius: 20px; padding: 0; box-shadow: var(--card-shadow); border: 1px solid #E2E8F0; position: relative; overflow: hidden; }
+        .grid-frame::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(to right, var(--mre-red), var(--mre-blue)); }
+        .grid-header-frame { background-color: #F1F5F9; padding: 1rem 1.5rem; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; }
+
+        .mre-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .mre-table th { font-size: 0.65rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 0.85rem 1.5rem; border-bottom: 2px solid #E2E8F0; }
+        .mre-table td { padding: 0.85rem 1.5rem; font-size: 0.8rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
+
+        /* --- PAGINACIÓN --- */
+        .pagination-bar { padding: 1rem 1.5rem; background: #ffffff; border-top: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; }
+        .pagination-buttons { display: flex; gap: 0.75rem; align-items: center; }
+        .btn-page { padding: 0.5rem 1rem; font-size: 0.8rem; font-weight: 700; border-radius: 10px; border: 1px solid #E2E8F0; background: white; color: var(--mre-blue); transition: var(--transition); display: flex; align-items: center; gap: 5px; }
+        .btn-page:hover:not(:disabled) { background: #f8fafc; border-color: #CBD5E1; }
+        .current-page-indicator { font-size: 0.9rem; font-weight: 800; color: var(--mre-blue); background: #F1F5F9; padding: 0.5rem 1rem; border-radius: 8px; min-width: 50px; text-align: center; border: 1px solid #E2E8F0; }
+
+        /* --- BOTONES --- */
+        .btn-main { 
+            background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); 
+            color: #ffffff; border: none; border-radius: 10px; padding: 0.6rem 1.25rem; font-weight: 700; 
+            font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; 
+            box-shadow: 0 4px 6px -1px rgba(0, 40, 85, 0.2); transition: var(--transition); 
+        }
+
+        .btn-success-mre {
+            background: #10B981; color: white; border: none; border-radius: 8px;
+            padding: 5px 12px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
+            transition: var(--transition);
+        }
+
+        .btn-ver-pago {
+            background: var(--mre-green); color: white; border: none; 
+            padding: 6px 14px; border-radius: 8px; font-size: 0.65rem; font-weight: 800; 
+            text-transform: uppercase; transition: var(--transition);
+            box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+        }
+        .btn-ver-pago:hover { background: #059669; }
+
+        .btn-table-action {
+            background: #E0F2FE; color: var(--mre-blue); border: 1px solid #BAE6FD;
+            padding: 6px 14px; border-radius: 8px; font-size: 0.65rem; font-weight: 800;
+            text-transform: uppercase; text-decoration: none; transition: var(--transition);
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .btn-table-action:hover { background: var(--mre-blue); color: white; border-color: var(--mre-blue); transform: translateY(-1px); }
+
+        /* --- ESTADOS --- */
+        .badge-status { padding: 4px 8px; border-radius: 99px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; }
+        .bg-analisis { background: #E0F2FE; color: #0369A1; }
+        .bg-aprobado { background: transparent; color: #000000; border: 1px solid #E2E8F0; }
+        .bg-devuelto { background: #FEF3C7; color: #92400E; }
+        .bg-finalizados { background: #F1F5F9; color: #334155; }
+        .bg-rechazado { background: #FEE2E2; color: #B91C1C; }
+
+        /* --- LIQUIDACIÓN (AZUL MARINO) --- */
+        .liquidar-footer {
+            padding: 1.5rem 2rem; display: flex; justify-content: flex-end; align-items: center; background: #F8FAFC; border-top: 1px solid #E2E8F0;
+        }
+        .btn-liquidar-main {
+            min-width: 320px; padding: 1rem 2rem; font-size: 1rem; font-weight: 800; letter-spacing: 0.5px; border-radius: 12px;
+            background: var(--mre-blue); color: white; border: none; box-shadow: 0 4px 6px -1px rgba(0, 40, 85, 0.3); transition: var(--transition);
+        }
+        .btn-liquidar-main:hover:not(:disabled) { background: var(--mre-blue-light); transform: translateY(-2px); }
+
+        /* --- VISTA RESUMEN LIQUIDACIÓN --- */
+        .summary-card { max-width: 800px; margin: 2rem auto; background: white; border-radius: 24px; box-shadow: var(--card-shadow); overflow: hidden; border: 1px solid #E2E8F0; }
+        .summary-header { background: var(--mre-blue); color: white; padding: 2.5rem; text-align: center; }
+        .summary-content { padding: 2.5rem; }
+        .summary-item { display: flex; justify-content: space-between; padding: 1rem 0; border-bottom: 1px dashed #E2E8F0; }
+        .summary-details-box { background: #F8FAFC; padding: 1.25rem; border-radius: 16px; border: 1px solid #E2E8F0; margin-bottom: 2rem; }
+        .detail-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .detail-label { font-size: 0.65rem; font-weight: 800; color: #64748B; text-transform: uppercase; }
+        .detail-value { font-size: 0.8rem; font-weight: 700; color: var(--mre-blue); }
+        .summary-total-box { background: #F1F5F9; padding: 1.5rem; border-radius: 16px; margin-top: 2rem; display: flex; justify-content: space-between; align-items: center; }
+
+        .mre-popup-overlay { position: fixed; inset: 0; background: rgba(0, 40, 85, 0.4); backdrop-filter: blur(4px); z-index: 3000; display: none; align-items: center; justify-content: center; }
+        .mre-popup { background: white; border-radius: 20px; max-width: 500px; width: 100%; padding: 2rem; position: relative; }
+    </style>
+</head>
+<body>
+
+    <div class="elegant-background"></div>
+    <div class="bg-pattern"></div>
+
+    <!-- POPUP -->
+    <div class="mre-popup-overlay" id="genericPopup">
+        <div class="mre-popup animate-fade">
+            <h5 class="fw-black text-navy mb-3" id="popupTitle">Información</h5>
+            <div class="p-2 bg-light rounded-3 mb-4 border" id="popupContent"></div>
+            <div id="popupActions">
+                <button class="btn-main w-100" id="popupBtnEntendido" onclick="closePopup()">Entendido</button>
+            </div>
+        </div>
+    </div>
+
+    <section id="portalSection">
+        <header class="portal-header animate-fade">
+            <div class="d-flex align-items-center gap-3">
+                <div class="bg-white p-2 rounded-3 border" onclick="navigateTo('dashboard')" style="cursor:pointer">
+                    <i data-lucide="globe" style="color: var(--mre-blue); width: 20px;"></i>
+                </div>
+                <div><h6 class="fw-black mb-0">SIA-PY</h6><p class="text-muted small mb-0 fw-bold uppercase" style="font-size: 0.55rem;">Apostilla Electrónica</p></div>
+            </div>
+            
+            <div class="user-dropdown">
+                <div class="header-profile-trigger" id="profileTrigger" onclick="toggleUserMenu(event)">
+                    <div class="text-end d-none d-md-block">
+                        <p class="small fw-black mb-0">JUAN ROMÁN PÉREZ</p>
+                        <p class="text-muted mb-0" style="font-size: 0.6rem; font-weight: 700;">CI: 4.567.890</p>
+                    </div>
+                    <div class="bg-light border-0 shadow-sm rounded-circle p-2" style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;">
+                        <i data-lucide="user" style="width:18px; color: var(--mre-blue);"></i>
+                    </div>
+                </div>
+                <div class="dropdown-menu-mre" id="userMenu">
+                    <div class="dropdown-header-info">
+                        <p class="fw-black text-navy mb-0" style="font-size: 0.85rem;">Juan Román Pérez</p>
+                        <p class="text-muted small mb-0 fw-bold">juan.perez@email.com</p>
+                    </div>
+                    <button class="dropdown-item-mre" onclick="navigateTo('profile')">
+                        <i data-lucide="user-cog"></i> Mi Perfil
+                    </button>
+                    <button class="dropdown-item-mre" onclick="navigateTo('dashboard')">
+                        <i data-lucide="layout-dashboard"></i> Dashboard
+                    </button>
+                    <button class="dropdown-item-mre" onclick="alert('Configuración de cuenta')">
+                        <i data-lucide="settings"></i> Ajustes
+                    </button>
+                    <hr class="m-0 opacity-10">
+                    <button class="dropdown-item-mre text-danger" onclick="handleLogout()">
+                        <i data-lucide="log-out"></i> Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- DASHBOARD VIEW -->
+        <div id="dashboardView" class="animate-fade">
+            <div class="action-divider"><span class="action-label">Acciones Principales</span></div>
+            <div class="mb-3">
+                <button class="btn-main d-inline-flex align-items-center gap-2" onclick="navigateTo('newRequest')">
+                    <i data-lucide="plus" style="width: 16px;"></i> Nueva Apostilla
+                </button>
+            </div>
+
+            <div class="action-divider"><span class="action-label">Estados de Trámite</span></div>
+
+            <div class="status-container">
+                <div class="status-btn active" id="btnAnalisis" onclick="filterTable('Análisis', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-primary-subtle"><i data-lucide="clock" class="text-primary" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">En Análisis</span></div></div><span class="fs-5 fw-black text-navy">03</span></div>
+                <div class="status-btn" id="btnAprobado" onclick="filterTable('Aprobado', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-success-subtle"><i data-lucide="check-circle" class="text-success" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Aprobados</span></div></div><span class="fs-5 fw-black text-success">12</span></div>
+                <div class="status-btn" id="btnDevuelto" onclick="filterTable('Devuelto', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-warning-subtle"><i data-lucide="rotate-ccw" class="text-warning" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Devueltos</span></div></div><span class="fs-5 fw-black text-warning">01</span></div>
+                <div class="status-btn" id="btnRechazado" onclick="filterTable('Rechazado', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-danger-subtle"><i data-lucide="x-circle" class="text-danger" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Rechazados</span></div></div><span class="fs-5 fw-black text-danger">02</span></div>
+                <div class="status-btn" id="btnFinalizado" onclick="filterTable('Finalizados', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-dark-subtle"><i data-lucide="file-badge" class="text-dark" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Apostillados</span></div></div><span class="fs-5 fw-black text-dark">45</span></div>
+            </div>
+
+            <div class="grid-frame animate-fade">
+                <div class="grid-header-frame">
+                    <h4 class="fw-black text-uppercase m-0" id="tableTitle" style="color: var(--mre-blue); font-size: 0.85rem;">Solicitudes en Análisis</h4>
+                    <div class="position-relative" style="max-width: 250px; width: 100%;">
+                        <i data-lucide="search" class="position-absolute" style="left: 10px; top: 50%; transform: translateY(-50%); width: 12px; color: #94A3B8;"></i>
+                        <input type="text" class="form-control-mre w-100 ps-5" placeholder="Filtrar..." onkeyup="searchRequests(this)">
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="mre-table" id="requestsTable">
+                        <thead><tr id="tableHeader"></tr></thead>
+                        <tbody id="tableContent"></tbody>
+                    </table>
+                </div>
+
+                <div class="pagination-bar">
+                    <div class="pagination-info" id="paginationInfo">Cargando...</div>
+                    <div class="pagination-buttons">
+                        <button class="btn-page" id="btnPrev" onclick="changePage('prev')"><i data-lucide="chevron-left" style="width:14px"></i> Anterior</button>
+                        <div class="current-page-indicator" id="currentPageDisplay">1</div>
+                        <button class="btn-page" id="btnNext" onclick="changePage('next')">Siguiente <i data-lucide="chevron-right" style="width:14px"></i></button>
+                    </div>
+                </div>
+
+                <div id="liquidadorSection" class="liquidar-footer hidden">
+                    <button class="btn-liquidar-main" id="btnLiquidacion" disabled onclick="navigateTo('summary')">
+                        Generar Liquidación (Gs. 0)
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SUMMARY VIEW -->
+        <div id="summaryView" class="hidden animate-fade">
+            <div class="summary-card animate-fade">
+                <div class="summary-header">
+                    <i data-lucide="file-check" style="width: 48px; height: 48px;" class="mb-3"></i>
+                    <h2 class="fw-black mb-0">Resumen de Liquidación</h2>
+                    <p class="small fw-bold opacity-75">Información de pago y validez</p>
+                </div>
+                <div class="summary-content">
+                    <div class="summary-details-box">
+                        <div class="detail-row">
+                            <span class="detail-label">Fecha de solicitud:</span>
+                            <span class="detail-value" id="summaryRequestDate">--/--/---- --:--:--</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Vencimiento de Liquidación:</span>
+                            <span class="detail-value text-danger" id="summaryExpiryDate">--/--/---- --:--:--</span>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <h6 class="fw-black text-navy small uppercase border-bottom pb-2 mb-3">Detalle de Aranceles</h6>
+                        <div id="summaryItemsList"></div>
+                    </div>
+                    <div class="summary-total-box">
+                        <div>
+                            <p class="extra-small text-muted fw-bold uppercase mb-0">Total a abonar</p>
+                            <h3 class="fw-black text-navy mb-0" id="summaryTotalValue">Gs. 0</h3>
+                        </div>
+                        <div class="d-flex gap-2">
+                             <button class="btn btn-outline-primary fw-bold d-flex align-items-center gap-2" onclick="alert('Descargando liquidación...')">
+                                <i data-lucide="download" style="width:16px"></i> Descargar
+                             </button>
+                             <button class="btn-main rounded-3 px-4" onclick="alert('Redirigiendo a pasarela de pago...')">
+                                Proceder al Pago
+                             </button>
+                        </div>
+                    </div>
+                    <div class="text-center mt-4">
+                        <button class="btn btn-link text-muted fw-bold small text-decoration-none" onclick="navigateTo('dashboard')">
+                            <i data-lucide="arrow-left" style="width:14px"></i> Cancelar y Volver
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PERFIL -->
+        <div id="profileView" class="hidden animate-fade">
+            <div class="grid-frame p-5 mx-auto" style="max-width: 600px;">
+                <h4 class="fw-black text-navy mb-4">Mi Perfil</h4>
+                <div class="mb-3"><label class="form-label">Nombre Completo</label><input type="text" class="form-control" value="JUAN ROMÁN PÉREZ" readonly></div>
+                <div class="mb-3"><label class="form-label">Cédula de Identidad</label><input type="text" class="form-control" value="4.567.890" readonly></div>
+                <div class="mb-3"><label class="form-label">Email</label><input type="text" class="form-control" value="juan.perez@email.com" readonly></div>
+                <button class="btn-main w-100" onclick="navigateTo('dashboard')">Volver al Dashboard</button>
+            </div>
+        </div>
+
+        <div id="newRequestView" class="hidden"></div>
+        <div id="editRequestView" class="hidden"></div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => { lucide.createIcons(); renderTable('Análisis'); });
+
+        // Mock Data
+        const mockRequests = [];
+        const types = ['Certificado de Nacimiento', 'Título Universitario', 'Acta de Matrimonio', 'Poder Notarial', 'Antecedentes Penales'];
+        for(let i=1; i<=55; i++) {
+            let status = i <= 3 ? 'Análisis' : (i <= 20 ? 'Aprobado' : (i <= 22 ? 'Devuelto' : (i <= 25 ? 'Rechazado' : 'Finalizados')));
+            let importe = 0, verPago = false;
+            if (status === 'Aprobado') { if (i % 4 === 0) importe = 0; else if (i % 3 === 0) verPago = true; else importe = 80000 + (i * 100); }
+            mockRequests.push({
+                id: (202510000 + i).toString(),
+                doc: types[i % 5],
+                status: status,
+                date: `${(10 + (i % 20)).toString().padStart(2, '0')}/12/2025 ${(8 + (i % 15)).toString().padStart(2, '0')}:15:30`,
+                badge: status === 'Análisis' ? 'bg-analisis' : (status === 'Aprobado' ? 'bg-aprobado' : (status === 'Devuelto' ? 'bg-devuelto' : (status === 'Rechazado' ? 'bg-rechazado' : (status === 'Finalizados' ? 'bg-finalizados' : '')))),
+                importe: importe,
+                verPago: verPago,
+                observacion: 'Firma pendiente de validación física.',
+                motivo: 'Documento original ilegible.'
+            });
+        }
+
+        let currentFilter = 'Análisis', currentPage = 1, itemsPerPage = 10, selectedIds = new Set();
+
+        function navigateTo(view) {
+            ['dashboardView', 'profileView', 'newRequestView', 'editRequestView', 'summaryView'].forEach(v => {
+                const el = document.getElementById(v); if (el) el.classList.add('hidden');
+            });
+            const target = document.getElementById(view + 'View');
+            if (target) target.classList.remove('hidden');
+            if(view === 'dashboard') renderTable(currentFilter);
+            if(view === 'summary') buildSummary();
+            lucide.createIcons();
+            window.scrollTo(0,0);
+        }
+
+        function toggleUserMenu(e) { 
+            e.stopPropagation(); 
+            const menu = document.getElementById('userMenu');
+            menu.classList.toggle('show');
+        }
+
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('userMenu');
+            if (!menu.contains(e.target) && !document.getElementById('profileTrigger').contains(e.target)) {
+                menu.classList.remove('show');
+            }
+        });
+
+        function handleLogout() {
+            if(confirm('¿Está seguro de que desea cerrar la sesión?')) {
+                location.reload();
+            }
+        }
+
+        function renderTable(status, page = 1) {
+            currentFilter = status; currentPage = page;
+            const tableHeader = document.getElementById('tableHeader');
+            const tableContent = document.getElementById('tableContent');
+            const liquidador = document.getElementById('liquidadorSection');
+            const pageDisplay = document.getElementById('currentPageDisplay');
+
+            document.getElementById('tableTitle').innerText = `Solicitudes en ${status === 'Finalizados' ? 'Apostillados' : status}`;
+            if(pageDisplay) pageDisplay.innerText = currentPage;
+
+            let headerHTML = '';
+            if (status === 'Análisis') headerHTML = `<th>Solicitud</th><th>Documento</th><th>Estado</th><th>Fecha</th><th class="text-center">Descargar</th>`;
+            else if (status === 'Aprobado') { headerHTML = `<th style="width: 40px;"></th><th>Solicitud</th><th>Documento</th><th>Importe</th><th>Estado</th><th>Fecha</th><th class="text-center">Descargar</th>`; liquidador.classList.remove('hidden'); }
+            else if (status === 'Devuelto') headerHTML = `<th>Solicitud</th><th>Documento</th><th>Estado</th><th>Fecha</th><th class="text-center">Obs.</th><th class="text-center">Acción</th>`;
+            else if (status === 'Rechazado') headerHTML = `<th>Solicitud</th><th>Documento</th><th>Estado</th><th>Fecha</th><th class="text-center">Motivo</th><th class="text-center">Acción</th>`;
+            else if (status === 'Finalizados') headerHTML = `<th>Solicitud</th><th>Documento</th><th>Estado</th><th>Fecha</th><th class="text-center">Original</th><th class="text-center">Apostillado</th>`;
+            
+            if (status !== 'Aprobado' && liquidador) liquidador.classList.add('hidden');
+            tableHeader.innerHTML = headerHTML;
+
+            const filtered = mockRequests.filter(r => r.status === status);
+            const totalPages = Math.ceil(filtered.length / itemsPerPage);
+            const pageData = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+            document.getElementById('paginationInfo').innerText = `Mostrando ${filtered.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1} a ${Math.min(currentPage * itemsPerPage, filtered.length)} de ${filtered.length}`;
+            document.getElementById('btnPrev').disabled = currentPage === 1;
+            document.getElementById('btnNext').disabled = currentPage === totalPages || filtered.length === 0;
+
+            if (filtered.length === 0) { tableContent.innerHTML = `<tr><td colspan="10" class="text-center py-5 text-muted fw-bold">Sin registros.</td></tr>`; return; }
+
+            tableContent.innerHTML = pageData.map(r => {
+                const downloadBtn = `<a href="#" class="btn-download-mre"><i data-lucide="download" style="width: 14px;"></i></a>`;
+                const viewBtn = `<button class="btn-table-action" onclick="showObservation('${r.id}')"><i data-lucide="eye"></i> Ver</button>`;
+                const reasonBtn = `<button class="btn-table-action" onclick="showRejectionReason('${r.id}')"><i data-lucide="eye"></i> Ver</button>`;
+
+                if (status === 'Aprobado') return `<tr><td>${!r.verPago ? `<input type="checkbox" class="mre-checkbox" ${selectedIds.has(r.id) ? 'checked' : ''} onchange="toggleSelect('${r.id}', ${r.importe}, this)">` : ''}</td><td><span class="fw-black text-navy">${r.id}</span></td><td class="fw-bold">${r.doc}</td><td class="fw-black text-primary">${r.importe.toLocaleString('es-PY')}</td><td>${r.verPago ? `<button class="btn-ver-pago" onclick="showPaymentInfo('${r.id}')">Ver Pago</button>` : `<span class="badge-status ${r.badge}">${r.status}</span>`}</td><td class="text-muted small fw-bold">${r.date}</td><td class="text-center">${downloadBtn}</td></tr>`;
+                if (status === 'Devuelto') return `<tr><td><span class="fw-black text-navy">${r.id}</span></td><td>${r.doc}</td><td><span class="badge-status ${r.badge}">${r.status}</span></td><td class="text-muted small fw-bold">${r.date}</td><td class="text-center">${viewBtn}</td><td class="text-center"><button class="btn-table-action" style="background:var(--mre-blue); color:white; border:none;" onclick="alert('Formulario de edición')">Completar</button></td></tr>`;
+                if (status === 'Rechazado') return `<tr><td><span class="fw-black text-navy">${r.id}</span></td><td>${r.doc}</td><td><span class="badge-status ${r.badge}">${r.status}</span></td><td class="text-muted small fw-bold">${r.date}</td><td class="text-center">${reasonBtn}</td><td class="text-center"><button class="btn-success-mre" onclick="requestReviewPopup('${r.id}')">Revisión</button></td></tr>`;
+                if (status === 'Finalizados') return `<tr><td><span class="fw-black text-navy">${r.id}</span></td><td>${r.doc}</td><td><span class="badge-status bg-analisis text-primary">Apostillado</span></td><td class="text-muted small fw-bold">${r.date}</td><td class="text-center">${downloadBtn}</td><td class="text-center"><a href="#" class="btn-download-mre" style="background:#E0F2FE; color:#0369A1;"><i data-lucide="file-badge" style="width:14px;"></i></a></td></tr>`;
+                return `<tr><td><span class="fw-black text-navy">${r.id}</span></td><td>${r.doc}</td><td><span class="badge-status ${r.badge}">${r.status}</span></td><td class="text-muted small fw-bold">${r.date}</td><td class="text-center">${downloadBtn}</td></tr>`;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        function changePage(dir) {
+            const total = Math.ceil(mockRequests.filter(r => r.status === currentFilter).length / itemsPerPage);
+            if (dir === 'prev' && currentPage > 1) currentPage--;
+            else if (dir === 'next' && currentPage < total) currentPage++;
+            renderTable(currentFilter, currentPage);
+        }
+
+        function toggleSelect(id, importe, cb) { if (cb.checked) selectedIds.add(id); else selectedIds.delete(id); updateLiquidacion(); }
+        function updateLiquidacion() {
+            let total = 0; selectedIds.forEach(id => { total += mockRequests.find(r => r.id === id).importe; });
+            const btn = document.getElementById('btnLiquidacion');
+            btn.innerText = `Generar Liquidación (Gs. ${total.toLocaleString('es-PY')})`;
+            btn.disabled = selectedIds.size === 0;
+        }
+
+        function buildSummary() {
+            let total = 0, html = '';
+            const now = new Date();
+            const expiry = new Date();
+            expiry.setHours(expiry.getHours() + 48);
+
+            const formatDate = (date) => {
+                const d = date.getDate().toString().padStart(2, '0');
+                const m = (date.getMonth() + 1).toString().padStart(2, '0');
+                const y = date.getFullYear();
+                const h = date.getHours().toString().padStart(2, '0');
+                const min = date.getMinutes().toString().padStart(2, '0');
+                const s = date.getSeconds().toString().padStart(2, '0');
+                return `${d}/${m}/${y} ${h}:${min}:${s}`;
+            };
+
+            document.getElementById('summaryRequestDate').innerText = formatDate(now);
+            document.getElementById('summaryExpiryDate').innerText = formatDate(expiry);
+
+            selectedIds.forEach(id => {
+                const req = mockRequests.find(r => r.id === id);
+                if (req) {
+                    total += req.importe;
+                    html += `<div class="summary-item"><div><p class="fw-black text-navy mb-0 small">#${req.id} - ${req.doc}</p><p class="extra-small text-muted fw-bold mb-0">Canon de Apostilla Electrónica</p></div><span class="fw-black text-navy">Gs. ${req.importe.toLocaleString('es-PY')}</span></div>`;
+                }
+            });
+            document.getElementById('summaryItemsList').innerHTML = html || '<p class="text-center p-4 text-muted">No hay items seleccionados.</p>';
+            document.getElementById('summaryTotalValue').innerText = `Gs. ${total.toLocaleString('es-PY')}`;
+        }
+
+        function filterTable(status, el) {
+            document.querySelectorAll('.status-btn').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+            selectedIds.clear(); updateLiquidacion(); renderTable(status, 1);
+        }
+
+        function searchRequests(input) {
+            const val = input.value.toLowerCase();
+            document.querySelectorAll('#tableContent tr').forEach(row => { row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none'; });
+        }
+
+        function openPopup(title, content) {
+            document.getElementById('popupTitle').innerText = title;
+            document.getElementById('popupContent').innerHTML = content;
+            document.getElementById('popupBtnEntendido').classList.remove('hidden');
+            document.getElementById('genericPopup').style.display = 'flex';
+        }
+        function closePopup() { document.getElementById('genericPopup').style.display = 'none'; }
+        
+        function showObservation(id) { openPopup('Observación #' + id, `<p class="fw-bold p-3 text-muted">${mockRequests.find(r => r.id === id).observacion}</p>`); }
+        function showRejectionReason(id) { openPopup('Motivo Rechazo #' + id, `<p class="fw-bold p-3 text-muted">${mockRequests.find(r => r.id === id).motivo}</p>`); }
+
+        function showPaymentInfo(id) {
+            openPopup('Información de Pago', `
+                <div class="payment-info-grid">
+                    <div class="payment-info-item">
+                        <span class="payment-info-label">ID Transacción</span>
+                        <span class="payment-info-value">TRX-7890${id}</span>
+                    </div>
+                    <div class="payment-info-item">
+                        <span class="payment-info-label">Medio de Pago</span>
+                        <span class="payment-info-value">Tarjeta de Crédito</span>
+                    </div>
+                    <div class="payment-info-item">
+                        <span class="payment-info-label">Procesadora</span>
+                        <span class="payment-info-value">Bancard</span>
+                    </div>
+                    <div class="payment-info-item">
+                        <span class="payment-info-label">Fecha y Hora de Pago</span>
+                        <span class="payment-info-value">20/12/2025 14:35:12</span>
+                    </div>
+                </div>
+            `);
+        }
+        
+        function requestReviewPopup(id) {
+            const content = `<div class="p-3"><textarea id="reviewObs" class="form-control-mre mb-4" rows="4" placeholder="Motivo..."></textarea><div class="d-flex gap-3"><button class="btn btn-light border fw-bold w-100 py-2" onclick="closePopup()">Cancelar Revisión</button><button class="btn-main w-100 py-2" onclick="submitReview('${id}')">Enviar Solicitud</button></div></div>`;
+            document.getElementById('popupTitle').innerText = 'Solicitar Revisión #' + id;
+            document.getElementById('popupContent').innerHTML = content;
+            document.getElementById('popupBtnEntendido').classList.add('hidden');
+            document.getElementById('genericPopup').style.display = 'flex';
+        }
+        function submitReview(id) { document.getElementById('popupContent').innerHTML = `<div class="text-center p-4"><h6 class="fw-black text-navy">Enviado con éxito</h6></div>`; document.getElementById('popupBtnEntendido').classList.remove('hidden'); lucide.createIcons(); }
+    </script>
+</body>
+</html>
