@@ -115,6 +115,20 @@
             z-index: 2000;
         }
 
+        /* Botón toggle móvil */
+        .mobile-toggle-btn {
+            background: transparent;
+            border: none;
+            color: var(--mre-blue);
+            cursor: pointer;
+            padding: 4px;
+            display: none; /* Oculto por defecto en escritorio */
+            margin-right: 0.5rem;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+        .mobile-toggle-btn:hover { background: #F1F5F9; }
+
         /* Ajuste de margen para no chocar con la barra de accesibilidad */
         .user-dropdown { margin-right: 140px; } 
 
@@ -143,14 +157,23 @@
         .dropdown-item-mre:hover { background: #F8FAFC; color: var(--mre-red); }
 
         /* --- LAYOUT PRINCIPAL --- */
-        .app-container { display: flex; flex: 1; overflow: hidden; }
+        .app-container { display: flex; flex: 1; overflow: hidden; position: relative; }
 
         /* --- SIDEBAR PRINCIPAL --- */
         .main-sidebar {
             width: 280px; background: white; border-right: 1px solid var(--border-color);
             display: flex; flex-direction: column; z-index: 1000;
             box-shadow: 4px 0 10px rgba(0,0,0,0.02);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
+        /* Overlay para móvil */
+        .sidebar-overlay {
+            position: fixed; inset: 0; background: rgba(0, 40, 85, 0.5); 
+            z-index: 900; display: none; backdrop-filter: blur(2px);
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+        .sidebar-overlay.active { display: block; opacity: 1; }
 
         .nav-menu { padding: 1.5rem 1rem; flex: 1; }
         .nav-link-mre {
@@ -344,6 +367,23 @@
 
         /* Media Queries para Tablets/Móviles */
         @media (max-width: 992px) {
+            .mobile-toggle-btn {
+                display: block; /* Mostrar botón hamburguesa */
+            }
+            .main-sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                z-index: 2000;
+                transform: translateX(-100%); /* Oculto por defecto */
+            }
+            .main-sidebar.show {
+                transform: translateX(0); /* Mostrar al activar */
+            }
+            .content-area {
+                padding: 1.5rem 1rem; /* Menor padding en móvil */
+            }
             .a11y-bar {
                 top: auto;
                 bottom: 20px;
@@ -351,12 +391,16 @@
                 flex-direction: column-reverse; /* Stack vertical en móvil */
             }
             .user-dropdown { margin-right: 0; }
+            .user-info-text { display: none; } /* Ocultar info de usuario detallada en móvil */
         }
     </style>
 </head>
 <body>
 
     <div class="elegant-background"></div>
+
+    <!-- OVERLAY PARA MÓVIL (CIERRA SIDEBAR AL CLIC) -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
     <!-- BARRA DE ACCESIBILIDAD -->
     <div class="a11y-bar" role="toolbar" aria-label="Herramientas de Accesibilidad">
@@ -381,7 +425,12 @@
     <!-- ENCABEZADO SUPERIOR -->
     <header class="portal-header animate-fade">
         <div class="d-flex align-items-center gap-3">
-            <div class="bg-white p-2 rounded-3 border" style="box-shadow: 0 4px 6px rgba(0,0,0,0.05)">
+            <!-- BOTÓN TOGGLE MOBILE -->
+            <button class="mobile-toggle-btn" onclick="toggleSidebar()" aria-label="Abrir menú de navegación">
+                <i data-lucide="menu" style="width: 26px;"></i>
+            </button>
+
+            <div class="bg-white p-2 rounded-3 border d-none d-sm-block" style="box-shadow: 0 4px 6px rgba(0,0,0,0.05)">
                 <i data-lucide="globe" style="color: var(--mre-blue); width: 22px;"></i>
             </div>
             <div>
@@ -408,8 +457,15 @@
 
     <div class="app-container">
         <!-- SIDEBAR DE CONFIGURACIÓN PRINCIPAL -->
-        <aside class="main-sidebar animate-fade">
+        <aside class="main-sidebar animate-fade" id="mainSidebar">
             <nav class="nav-menu">
+                <div class="d-flex justify-content-between align-items-center mb-3 px-3 d-lg-none">
+                    <span class="text-muted fw-bold uppercase" style="font-size: 0.8rem;">Menú</span>
+                    <button class="btn btn-sm btn-light" onclick="toggleSidebar()" aria-label="Cerrar menú">
+                        <i data-lucide="x" style="width: 16px;"></i>
+                    </button>
+                </div>
+
                 <p class="px-3 mb-2 text-muted fw-bold uppercase" style="font-size: 0.7rem; letter-spacing: 1.2px;">Administración</p>
                 <a href="#" class="nav-link-mre" title="Ir a configuración de tipos de documento">
                     <i data-lucide="file-text" style="width: 18px;"></i> Tipos de documentos
@@ -639,6 +695,12 @@
     </div>
 
     <script>
+        // --- GESTIÓN DE SIDEBAR MOBILE ---
+        function toggleSidebar() {
+            document.getElementById('mainSidebar').classList.toggle('show');
+            document.getElementById('sidebarOverlay').classList.toggle('active');
+        }
+
         // --- GESTIÓN DE ACCESIBILIDAD ---
         function initAccessibility() {
             const storedScale = localStorage.getItem('mre_font_scale');
