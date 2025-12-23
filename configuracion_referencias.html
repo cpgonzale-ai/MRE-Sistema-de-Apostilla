@@ -27,6 +27,9 @@
             /* Variables de Accesibilidad (Dinámicas) */
             --font-scale: 1; /* Multiplicador de tamaño */
             --base-font-size: 16px;
+            
+            /* Ancho del sidebar minimizado en móvil */
+            --sidebar-mini-width: 70px; 
         }
 
         /* --- MODO ALTO CONTRASTE --- */
@@ -164,7 +167,8 @@
             width: 280px; background: white; border-right: 1px solid var(--border-color);
             display: flex; flex-direction: column; z-index: 1000;
             box-shadow: 4px 0 10px rgba(0,0,0,0.02);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-x: hidden;
         }
 
         /* Overlay para móvil */
@@ -180,12 +184,13 @@
             display: flex; align-items: center; gap: 12px; padding: 0.85rem 1rem;
             color: var(--text-muted); text-decoration: none; border-radius: 12px;
             font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; transition: var(--transition);
+            white-space: nowrap; /* Evita que el texto salte de línea */
         }
         .nav-link-mre:hover { background: #F1F5F9; color: var(--mre-blue); }
         .nav-link-mre.active { background: #f0f7ff; color: var(--mre-blue-light); box-shadow: 0 4px 6px -1px rgba(0, 40, 85, 0.05); }
 
         /* --- ÁREA DE CONTENIDO --- */
-        .content-area { flex: 1; padding: 2rem 3rem; overflow-y: auto; position: relative; }
+        .content-area { flex: 1; padding: 2rem 3rem; overflow-y: auto; position: relative; transition: margin-left 0.3s ease; }
         .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -375,15 +380,25 @@
                 left: 0;
                 top: 0;
                 bottom: 0;
+                width: var(--sidebar-mini-width); /* Ancho minimizado por defecto */
                 z-index: 2000;
-                transform: translateX(-100%); /* Oculto por defecto */
+                transform: none; /* Siempre visible */
             }
+            
+            /* Estados del sidebar en móvil */
+            .main-sidebar:not(.show) .nav-link-mre span { display: none; } /* Ocultar texto */
+            .main-sidebar:not(.show) .nav-menu p { display: none; } /* Ocultar títulos de sección */
+            .main-sidebar:not(.show) .nav-link-mre { justify-content: center; } /* Centrar íconos */
+
             .main-sidebar.show {
-                transform: translateX(0); /* Mostrar al activar */
+                width: 280px; /* Expandir al activar */
             }
+
             .content-area {
-                padding: 1.5rem 1rem; /* Menor padding en móvil */
+                padding: 1.5rem 1rem;
+                margin-left: var(--sidebar-mini-width); /* Dejar espacio para el rail */
             }
+            
             .a11y-bar {
                 top: auto;
                 bottom: 20px;
@@ -468,19 +483,19 @@
 
                 <p class="px-3 mb-2 text-muted fw-bold uppercase" style="font-size: 0.7rem; letter-spacing: 1.2px;">Administración</p>
                 <a href="#" class="nav-link-mre" title="Ir a configuración de tipos de documento">
-                    <i data-lucide="file-text" style="width: 18px;"></i> Tipos de documentos
+                    <i data-lucide="file-text" style="width: 18px;"></i> <span>Tipos de documentos</span>
                 </a>
                 <a href="#" class="nav-link-mre" title="Ir a gestión de usuarios">
-                    <i data-lucide="users" style="width: 18px;"></i> Usuarios
+                    <i data-lucide="users" style="width: 18px;"></i> <span>Usuarios</span>
                 </a>
                 <a href="#" class="nav-link-mre" title="Ir a grupos y permisos">
-                    <i data-lucide="shield-check" style="width: 18px;"></i> Grupos y Permisos
+                    <i data-lucide="shield-check" style="width: 18px;"></i> <span>Grupos y Permisos</span>
                 </a>
                 <a href="#" class="nav-link-mre active" title="Configuración de referencias (Activo)" aria-current="page">
-                    <i data-lucide="settings-2" style="width: 18px;"></i> Configuración de referencias
+                    <i data-lucide="settings-2" style="width: 18px;"></i> <span>Configuración de referencias</span>
                 </a>
                 <a href="#" class="nav-link-mre" onclick="showUnderConstruction(event)" title="Ir a configuración de campos">
-                    <i data-lucide="layout-grid" style="width: 18px;"></i> Configuración de campos
+                    <i data-lucide="layout-grid" style="width: 18px;"></i> <span>Configuración de campos</span>
                 </a>
             </nav>
         </aside>
