@@ -32,6 +32,11 @@
             --sidebar-mini-width: 70px; 
         }
 
+        /* CORRECCIÓN: Aplicar el tamaño base calculado al HTML para que REM funcione */
+        html {
+            font-size: calc(var(--base-font-size) * var(--font-scale));
+        }
+
         /* --- MODO ALTO CONTRASTE --- */
         body.high-contrast {
             --mre-blue: #000000;
@@ -48,6 +53,7 @@
         body.high-contrast .btn-main { background: #000000; border: 2px solid #000000; }
         body.high-contrast .btn-main:hover { background: #333; color: #FFF; }
         body.high-contrast .grid-frame, body.high-contrast .master-selector-card { border: 2px solid #000; }
+        body.high-contrast .btn-a11y-trigger { background: #000; color: #fff; border-color: #000; }
 
         /* --- MODO ESCALA DE GRISES --- */
         body.grayscale-mode {
@@ -63,43 +69,70 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
-            /* Aplicación del escalado de fuente base */
-            font-size: calc(var(--base-font-size) * var(--font-scale));
         }
 
-        /* --- ACCESSIBILITY BAR (Top Right) --- */
-        .a11y-bar {
-            position: fixed;
-            top: 20px;
-            right: 20px; /* Esquina superior derecha */
-            z-index: 5000;
-            background: white;
-            border: 1px solid var(--border-color);
-            border-radius: 50px;
-            padding: 5px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            display: flex;
-            gap: 5px;
-            align-items: center;
-            transition: var(--transition);
+        /* --- MENÚ DE ACCESIBILIDAD --- */
+        .a11y-container { position: relative; }
+        
+        .btn-a11y-trigger {
+            background: #F8FAFC; border: 1px solid var(--border-color); color: var(--mre-blue);
+            border-radius: 12px; padding: 0.5rem 1rem; font-weight: 700; font-size: 0.8rem;
+            display: flex; align-items: center; gap: 8px; transition: var(--transition);
         }
-        .a11y-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: 1px solid transparent;
-            background: #F8FAFC;
-            color: var(--mre-blue);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 0.8rem;
-            transition: var(--transition);
+        .btn-a11y-trigger:hover, .btn-a11y-trigger.active {
+            background: #F1F5F9; border-color: var(--mre-blue-light); color: var(--mre-blue-light);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        .a11y-btn:hover { background: var(--mre-blue); color: white; }
-        .a11y-btn.active { background: var(--mre-blue); color: white; border-color: var(--mre-blue); }
+
+        .a11y-dropdown-menu {
+            position: absolute; top: calc(100% + 10px); right: 0; 
+            background: white; border-radius: 16px; width: 280px;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.15); border: 1px solid var(--border-color);
+            display: none; z-index: 3000; overflow: hidden; animation: fadeIn 0.2s ease-out;
+            padding: 1rem;
+        }
+        .a11y-dropdown-menu.show { display: block; }
+
+        .a11y-section-title {
+            font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #94A3B8;
+            margin-bottom: 0.8rem; letter-spacing: 0.5px;
+        }
+
+        .text-resize-controls {
+            display: flex; justify-content: space-between; align-items: center;
+            background: #F8FAFC; border-radius: 10px; padding: 4px; border: 1px solid #E2E8F0;
+            margin-bottom: 1rem;
+        }
+        .btn-resize {
+            width: 32px; height: 32px; border: none; background: white; border-radius: 8px;
+            color: var(--mre-blue); display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: var(--transition);
+        }
+        .btn-resize:hover { background: var(--mre-blue); color: white; }
+        .font-size-display { font-size: 0.85rem; font-weight: 700; color: #475569; }
+
+        .switch-control {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.6rem 0; border-bottom: 1px solid #F1F5F9;
+        }
+        .switch-control:last-child { border-bottom: none; }
+        .switch-label { font-size: 0.85rem; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
+        
+        /* Custom Switch CSS */
+        .toggle-switch {
+            position: relative; display: inline-block; width: 40px; height: 22px;
+        }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #cbd5e1; transition: .4s; border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px;
+            background-color: white; transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--mre-blue); }
+        input:checked + .slider:before { transform: translateX(18px); }
 
         /* --- FONDO --- */
         .elegant-background { 
@@ -133,7 +166,7 @@
         .mobile-toggle-btn:hover { background: #F1F5F9; }
 
         /* Ajuste de margen para no chocar con la barra de accesibilidad */
-        .user-dropdown { margin-right: 140px; } 
+        .user-dropdown { margin-right: 20px; } 
 
         .user-info-text { text-align: right; line-height: 1.2; }
         .user-name { font-size: 0.9rem; font-weight: 800; color: var(--mre-blue); }
@@ -167,7 +200,7 @@
             width: 280px; background: white; border-right: 1px solid var(--border-color);
             display: flex; flex-direction: column; z-index: 1000;
             box-shadow: 4px 0 10px rgba(0,0,0,0.02);
-            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Animación de transformación */
             overflow-x: hidden;
         }
 
@@ -380,33 +413,38 @@
                 left: 0;
                 top: 0;
                 bottom: 0;
-                width: var(--sidebar-mini-width); /* Ancho minimizado por defecto */
+                /* Eliminamos el ancho fijo minimizado y usamos ancho completo al abrir */
+                width: 280px; 
                 z-index: 2000;
-                transform: none; /* Siempre visible */
+                /* Oculto por defecto en móvil */
+                transform: translateX(-100%); 
+                transition: transform 0.3s ease-in-out;
             }
             
-            /* Estados del sidebar en móvil */
-            .main-sidebar:not(.show) .nav-link-mre span { display: none; } /* Ocultar texto */
-            .main-sidebar:not(.show) .nav-menu p { display: none; } /* Ocultar títulos de sección */
-            .main-sidebar:not(.show) .nav-link-mre { justify-content: center; } /* Centrar íconos */
-
+            /* Cuando se activa la clase show, se muestra el sidebar */
             .main-sidebar.show {
-                width: 280px; /* Expandir al activar */
+                transform: translateX(0);
             }
+
+            /* Aseguramos que los textos sean visibles en móvil cuando está abierto */
+            .main-sidebar .nav-link-mre span { display: inline; }
+            .main-sidebar .nav-menu p { display: block; }
+            .main-sidebar .nav-link-mre { justify-content: flex-start; }
 
             .content-area {
                 padding: 1.5rem 1rem;
-                margin-left: var(--sidebar-mini-width); /* Dejar espacio para el rail */
+                margin-left: 0; /* Sin margen en móvil porque el sidebar es overlay */
             }
             
-            .a11y-bar {
-                top: auto;
-                bottom: 20px;
-                right: 20px;
-                flex-direction: column-reverse; /* Stack vertical en móvil */
-            }
             .user-dropdown { margin-right: 0; }
             .user-info-text { display: none; } /* Ocultar info de usuario detallada en móvil */
+        }
+        
+        /* Ocultar texto de accesibilidad en pantallas pequeñas */
+        @media (max-width: 768px) {
+            .btn-a11y-trigger span, .btn-a11y-trigger .lucide-chevron-down { display: none; }
+            .btn-a11y-trigger { padding: 0.6rem; justify-content: center; }
+            .a11y-dropdown-menu { width: 260px; right: -50px; }
         }
     </style>
 </head>
@@ -417,30 +455,10 @@
     <!-- OVERLAY PARA MÓVIL (CIERRA SIDEBAR AL CLIC) -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
-    <!-- BARRA DE ACCESIBILIDAD -->
-    <div class="a11y-bar" role="toolbar" aria-label="Herramientas de Accesibilidad">
-        <button class="a11y-btn" id="btnGrayscale" onclick="toggleGrayscale()" title="Activar/Desactivar Escala de Grises" aria-label="Cambiar a escala de grises">
-            <i data-lucide="eye-off" style="width: 16px;"></i>
-        </button>
-        <button class="a11y-btn" id="btnContrast" onclick="toggleContrast()" title="Activar/Desactivar Alto Contraste" aria-label="Cambiar a modo alto contraste">
-            <i data-lucide="contrast" style="width: 16px;"></i>
-        </button>
-        <div style="width: 1px; height: 20px; background: #E2E8F0; margin: 0 4px;"></div>
-        <button class="a11y-btn" onclick="changeFontSize(-0.1)" title="Disminuir tamaño de texto" aria-label="Disminuir texto">
-            <i data-lucide="minus" style="width: 14px;"></i>
-        </button>
-        <button class="a11y-btn" onclick="resetFontSize()" title="Restablecer tamaño de texto" aria-label="Restablecer tamaño texto">
-            <span style="font-size: 10px;">100%</span>
-        </button>
-        <button class="a11y-btn" onclick="changeFontSize(0.1)" title="Aumentar tamaño de texto" aria-label="Aumentar texto">
-            <i data-lucide="plus" style="width: 14px;"></i>
-        </button>
-    </div>
-
     <!-- ENCABEZADO SUPERIOR -->
     <header class="portal-header animate-fade">
         <div class="d-flex align-items-center gap-3">
-            <!-- BOTÓN TOGGLE MOBILE -->
+            <!-- BOTÓN TOGGLE MOBILE (HAMBURGUESA) -->
             <button class="mobile-toggle-btn" onclick="toggleSidebar()" aria-label="Abrir menú de navegación">
                 <i data-lucide="menu" style="width: 26px;"></i>
             </button>
@@ -455,6 +473,46 @@
         </div>
         
         <div class="user-dropdown d-flex align-items-center gap-3">
+            <!-- NUEVO MENÚ DE ACCESIBILIDAD (AQUÍ DENTRO) -->
+            <div class="a11y-container">
+                <button class="btn-a11y-trigger" id="a11yTrigger" onclick="toggleA11yMenu(event)" title="Opciones de Accesibilidad">
+                    <i data-lucide="accessibility" style="width: 18px;"></i>
+                    <span>Accesibilidad</span>
+                    <i data-lucide="chevron-down" class="lucide-chevron-down" style="width: 14px; margin-left: 4px;"></i>
+                </button>
+                
+                <div class="a11y-dropdown-menu" id="a11yMenu" onclick="event.stopPropagation()">
+                    <div class="a11y-section-title">Tamaño de Texto</div>
+                    <div class="text-resize-controls">
+                        <button class="btn-resize" onclick="changeFontSize(-0.1)" title="Reducir"><i data-lucide="minus" style="width: 16px;"></i></button>
+                        <span class="font-size-display" id="fontSizeDisplay">100%</span>
+                        <button class="btn-resize" onclick="changeFontSize(0.1)" title="Aumentar"><i data-lucide="plus" style="width: 16px;"></i></button>
+                    </div>
+
+                    <div class="a11y-section-title mt-3">Visualización</div>
+                    
+                    <div class="switch-control">
+                        <div class="switch-label">
+                            <i data-lucide="eye-off" style="width: 16px;"></i> Escala de Grises
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="switchGrayscale" onchange="toggleGrayscale()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="switch-control">
+                        <div class="switch-label">
+                            <i data-lucide="contrast" style="width: 16px;"></i> Alto Contraste
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="switchContrast" onchange="toggleContrast()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
             <div class="user-info-text">
                 <div class="user-name">Carlos González</div>
                 <div class="user-id">CI: 4.567.890</div>
@@ -717,22 +775,40 @@
         }
 
         // --- GESTIÓN DE ACCESIBILIDAD ---
+        function toggleA11yMenu(e) {
+            e.stopPropagation();
+            document.getElementById('a11yMenu').classList.toggle('show');
+            document.getElementById('a11yTrigger').classList.toggle('active');
+        }
+
+        document.addEventListener('click', (e) => {
+            // Cerrar menú de accesibilidad si se hace clic fuera
+            const menu = document.getElementById('a11yMenu');
+            const trigger = document.getElementById('a11yTrigger');
+            if (menu && trigger && !menu.contains(e.target) && !trigger.contains(e.target)) {
+                menu.classList.remove('show');
+                trigger.classList.remove('active');
+            }
+        });
+
         function initAccessibility() {
             const storedScale = localStorage.getItem('mre_font_scale');
             if (storedScale) {
-                document.documentElement.style.setProperty('--font-scale', storedScale);
+                const scale = parseFloat(storedScale);
+                document.documentElement.style.setProperty('--font-scale', scale);
+                updateFontSizeDisplay(scale);
             }
 
             const storedContrast = localStorage.getItem('mre_contrast');
             if (storedContrast === 'high') {
                 document.body.classList.add('high-contrast');
-                document.getElementById('btnContrast')?.classList.add('active');
+                document.getElementById('switchContrast').checked = true;
             }
 
             const storedGrayscale = localStorage.getItem('mre_grayscale');
             if (storedGrayscale === 'true') {
                 document.body.classList.add('grayscale-mode');
-                document.getElementById('btnGrayscale')?.classList.add('active');
+                document.getElementById('switchGrayscale').checked = true;
             }
         }
 
@@ -741,24 +817,24 @@
             let newScale = Math.min(Math.max(current + delta, 0.8), 1.5); // Limitar entre 80% y 150%
             document.documentElement.style.setProperty('--font-scale', newScale);
             localStorage.setItem('mre_font_scale', newScale);
+            updateFontSizeDisplay(newScale);
         }
 
-        function resetFontSize() {
-            document.documentElement.style.setProperty('--font-scale', 1);
-            localStorage.setItem('mre_font_scale', 1);
+        function updateFontSizeDisplay(scale) {
+            document.getElementById('fontSizeDisplay').innerText = Math.round(scale * 100) + '%';
         }
 
         function toggleContrast() {
             document.body.classList.toggle('high-contrast');
             const isActive = document.body.classList.contains('high-contrast');
-            document.getElementById('btnContrast').classList.toggle('active');
+            document.getElementById('switchContrast').checked = isActive;
             localStorage.setItem('mre_contrast', isActive ? 'high' : 'normal');
         }
 
         function toggleGrayscale() {
             document.body.classList.toggle('grayscale-mode');
             const isActive = document.body.classList.contains('grayscale-mode');
-            document.getElementById('btnGrayscale').classList.toggle('active');
+            document.getElementById('switchGrayscale').checked = isActive;
             localStorage.setItem('mre_grayscale', isActive ? 'true' : 'false');
         }
 
@@ -798,11 +874,9 @@
         });
 
         function toggleUserMenu(e) { e.stopPropagation(); document.getElementById('userMenu').classList.toggle('show'); }
-        document.addEventListener('click', (e) => {
-            const menu = document.getElementById('userMenu');
-            if (menu && !menu.contains(e.target)) menu.classList.remove('show');
-        });
-
+        
+        // Cerrar menú usuario al hacer clic fuera (manejado en el listener global también)
+        
         function handleLogout() { if(confirm('¿Desea cerrar su sesión actual?')) location.reload(); }
 
         function handleExclusiveInput(changedId) {
