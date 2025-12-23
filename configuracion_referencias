@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIA-PY | Administración</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --mre-blue: #002855;
+            --mre-blue-light: #0038A8;
+            --mre-red: #D52B1E;
+            --mre-green: #10B981;
+            --soft-bg: #f8fafc; 
+            --border-color: #E2E8F0;
+            --input-bg: #F8FAFC;
+            --card-shadow: 0 10px 15px -3px rgba(0, 40, 85, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            background-color: var(--soft-bg); 
+            color: #1E293B; 
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* --- FONDO --- */
+        .elegant-background { 
+            position: fixed; inset: 0; z-index: -1; background-color: #f8fafc; 
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(0, 56, 168, 0.08) 0px, transparent 50%), 
+                radial-gradient(at 100% 0%, rgba(213, 43, 30, 0.05) 0px, transparent 50%);
+        }
+
+        /* --- ENCABEZADO SUPERIOR --- */
+        .portal-header { 
+            display: flex; justify-content: space-between; align-items: center; background: white; 
+            padding: 0.75rem 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); 
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+            z-index: 2000;
+        }
+
+        .user-info-text { text-align: right; line-height: 1.2; }
+        .user-name { font-size: 0.85rem; font-weight: 800; color: var(--mre-blue); }
+        .user-id { font-size: 0.75rem; color: #64748B; font-weight: 600; }
+
+        .dots-menu-trigger {
+            width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+            border-radius: 10px; cursor: pointer; transition: var(--transition); color: #64748B;
+            background: #F8FAFC; border: 1px solid var(--border-color);
+        }
+        .dots-menu-trigger:hover { background: #F1F5F9; color: var(--mre-blue-light); border-color: var(--mre-blue-light); }
+
+        .user-dropdown { position: relative; }
+        .dropdown-menu-mre { 
+            position: absolute; top: calc(100% + 10px); right: 0; background: white; border-radius: 12px; 
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); border: 1px solid var(--border-color); width: 180px; 
+            display: none; z-index: 3000; overflow: hidden; animation: fadeIn 0.2s ease-out;
+        }
+        .dropdown-menu-mre.show { display: block; }
+        .dropdown-item-mre {
+            padding: 12px 16px; border: none; background: none; width: 100%; text-align: left;
+            font-size: 0.85rem; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 10px;
+        }
+        .dropdown-item-mre:hover { background: #F8FAFC; color: var(--mre-red); }
+
+        /* --- LAYOUT PRINCIPAL --- */
+        .app-container { display: flex; flex: 1; overflow: hidden; }
+
+        /* --- SIDEBAR PRINCIPAL --- */
+        .main-sidebar {
+            width: 280px; background: white; border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column; z-index: 1000;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.02);
+        }
+
+        .nav-menu { padding: 1.5rem 1rem; flex: 1; }
+        .nav-link-mre {
+            display: flex; align-items: center; gap: 12px; padding: 0.85rem 1rem;
+            color: #64748B; text-decoration: none; border-radius: 12px;
+            font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; transition: var(--transition);
+            cursor: pointer;
+        }
+        .nav-link-mre:hover { background: #F1F5F9; color: var(--mre-blue); }
+        .nav-link-mre.active { background: #f0f7ff; color: var(--mre-blue-light); box-shadow: 0 4px 6px -1px rgba(0, 40, 85, 0.05); }
+
+        /* --- ÁREA DE CONTENIDO --- */
+        .content-area { flex: 1; padding: 2rem 3rem; overflow-y: auto; position: relative; }
+        .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- VISTA EN CONSTRUCCIÓN --- */
+        .view-construction {
+            height: 80%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .construction-icon-wrap {
+            background: white; width: 120px; height: 120px; display: flex; align-items: center; justify-content: center;
+            border-radius: 40px; box-shadow: var(--card-shadow); border: 1px solid var(--border-color); margin-bottom: 2rem;
+            color: var(--mre-blue-light);
+        }
+
+        /* --- COMPONENTES DE CONFIGURACIÓN --- */
+        .master-selector-card {
+            background: white; border-radius: 20px; padding: 1.5rem; border: 1px solid var(--border-color);
+            box-shadow: var(--card-shadow); margin-bottom: 2rem;
+        }
+
+        .grid-frame { 
+            background: white; border-radius: 20px; box-shadow: var(--card-shadow); 
+            border: 1px solid #E2E8F0; position: relative; overflow: hidden;
+            display: flex; flex-direction: column; margin-bottom: 2rem;
+        }
+        .grid-frame::before { 
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; 
+            background: linear-gradient(to right, var(--mre-red), var(--mre-blue)); 
+        }
+        
+        .grid-header-frame { 
+            background-color: #F8FAFC; padding: 1.2rem 1.5rem; border-bottom: 1px solid #E2E8F0; 
+            display: flex; justify-content: space-between; align-items: center; 
+        }
+
+        /* --- BUSCADOR INTEGRADO --- */
+        .grid-search-container {
+            padding: 1rem 1.5rem;
+            background: white;
+            border-bottom: 1px solid #F1F5F9;
+            display: flex;
+            align-items: center;
+        }
+        .search-box-mre {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+        }
+        .search-box-mre i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94A3B8;
+            width: 16px;
+        }
+        .search-input-integrated {
+            padding-left: 42px !important;
+            border-radius: 12px !important;
+            border: 1px solid #E2E8F0 !important;
+            background: #F8FAFC !important;
+            font-size: 0.8rem !important;
+        }
+        .search-input-integrated:focus {
+            background: white !important;
+            border-color: var(--mre-blue-light) !important;
+            box-shadow: 0 0 0 4px rgba(0, 56, 168, 0.05) !important;
+        }
+
+        .mre-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .mre-table th { 
+            font-size: 0.65rem; font-weight: 800; color: #64748B; text-transform: uppercase; 
+            padding: 1rem 1.5rem; border-bottom: 2px solid #E2E8F0; background: #fafbfc;
+        }
+        .mre-table td { padding: 1rem 1.5rem; font-size: 0.8rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
+
+        /* --- BOTONES Y ACCIONES --- */
+        .btn-main { 
+            background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); 
+            color: #ffffff; border: none; border-radius: 12px; padding: 0.6rem 1.2rem; 
+            font-weight: 700; font-size: 0.8rem; transition: var(--transition);
+        }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,40,85,0.2); color: white; }
+
+        .btn-danger-outline {
+            background: #ffffff; color: var(--mre-red); border: 1.5px solid var(--mre-red); border-radius: 12px; padding: 0.6rem 1.5rem; 
+            font-weight: 700; font-size: 0.8rem; transition: var(--transition);
+        }
+        .btn-danger-outline:hover:not(:disabled) { background: var(--mre-red); color: white; transform: translateY(-2px); }
+        .btn-danger-outline:disabled { opacity: 0.4; cursor: not-allowed; border-color: #E2E8F0; color: #94A3B8; }
+
+        .btn-action-icon {
+            width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 8px; border: 1px solid var(--border-color); background: white; color: #64748B;
+            transition: var(--transition); cursor: pointer;
+        }
+        .btn-action-icon:hover { background: #F1F5F9; color: var(--mre-blue); border-color: var(--mre-blue); }
+
+        .grid-footer {
+            padding: 1rem 1.5rem;
+            background-color: #F8FAFC;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn-cancel-mre {
+            background: white; border: 1px solid #CBD5E1; color: #475569; border-radius: 12px;
+            padding: 0.6rem 1.5rem; font-weight: 700; font-size: 0.8rem; transition: var(--transition);
+        }
+        .btn-cancel-mre:hover:not(:disabled) { background: #F8FAFC; border-color: #94A3B8; transform: translateY(-2px); }
+        .btn-cancel-mre:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* Modales */
+        .mre-modal-overlay { 
+            position: fixed; inset: 0; background: rgba(0, 40, 85, 0.4); backdrop-filter: blur(4px); 
+            z-index: 4000; display: none; align-items: center; justify-content: center; padding: 20px; 
+        }
+        .mre-modal { 
+            background: white; border-radius: 24px; max-width: 600px; width: 100%; 
+            padding: 2rem; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.2); 
+            max-height: 90vh; overflow-y: auto;
+        }
+
+        .form-label { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #64748B; margin-bottom: 0.4rem; }
+        .form-control-mre { background-color: var(--input-bg); border: 1px solid #E2E8F0; border-radius: 10px; padding: 0.65rem 1rem; font-size: 0.85rem; width: 100%; }
+
+        .section-title { font-size: 0.85rem; font-weight: 900; color: var(--mre-blue); text-transform: uppercase; display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: #E2E8F0; }
+        
+        .required-star { color: var(--mre-red); margin-left: 2px; }
+
+        .validation-alert {
+            background: #FFF1F2; border: 1px solid #FECDD3; color: #BE123C; padding: 12px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; margin-bottom: 1rem; display: none;
+        }
+
+        .mre-checkbox { width: 18px; height: 18px; cursor: pointer; border: 2px solid var(--border-color); border-radius: 4px; }
+
+        /* --- ESTILOS HISTORIAL (AUDITORÍA) --- */
+        .audit-history-container {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 2px dashed #E2E8F0;
+        }
+        .audit-table { width: 100%; border-radius: 12px; overflow: hidden; border: 1px solid #E2E8F0; margin-top: 1rem; }
+        .audit-table th { background: #F8FAFC; padding: 0.75rem 1rem; font-size: 0.65rem; color: #64748B; font-weight: 800; text-transform: uppercase; }
+        .audit-table td { padding: 0.75rem 1rem; font-size: 0.75rem; color: #475569; border-bottom: 1px solid #F1F5F9; }
+        .audit-table tr:last-child td { border-bottom: none; }
+        .badge-audit { padding: 3px 8px; border-radius: 5px; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; }
+        .badge-crear { background: #DCFCE7; color: #15803D; }
+        .badge-modificar { background: #E0F2FE; color: #0369A1; }
+        .badge-inactivar { background: #FEE2E2; color: #B91C1C; }
+    </style>
+</head>
+<body>
+
+    <div class="elegant-background"></div>
+
+    <!-- ENCABEZADO SUPERIOR -->
+    <header class="portal-header animate-fade">
+        <div class="d-flex align-items-center gap-3">
+            <div class="bg-white p-2 rounded-3 border" style="box-shadow: 0 4px 6px rgba(0,0,0,0.05)">
+                <i data-lucide="globe" style="color: var(--mre-blue); width: 22px;"></i>
+            </div>
+            <div>
+                <h6 class="fw-black mb-0" style="color: var(--mre-blue); font-size: 1rem;">SIA-PY</h6>
+                <p class="text-muted small mb-0 fw-bold uppercase" style="font-size: 0.55rem; letter-spacing: 1px;">Apostilla Electrónica</p>
+            </div>
+        </div>
+        
+        <div class="user-dropdown d-flex align-items-center gap-3">
+            <div class="user-info-text">
+                <div class="user-name">Carlos González</div>
+                <div class="user-id">CI: 4.567.890</div>
+            </div>
+            <div class="dots-menu-trigger" id="profileTrigger" onclick="toggleUserMenu(event)">
+                <i data-lucide="user" style="width: 20px;"></i>
+            </div>
+            <div class="dropdown-menu-mre" id="userMenu">
+                <button class="dropdown-item-mre text-danger" onclick="handleLogout()">
+                    <i data-lucide="log-out" style="width: 14px;"></i> Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <!-- SIDEBAR DE CONFIGURACIÓN PRINCIPAL -->
+        <aside class="main-sidebar animate-fade">
+            <nav class="nav-menu">
+                <p class="px-3 mb-2 text-muted fw-bold uppercase" style="font-size: 0.6rem; letter-spacing: 1.2px;">Administración</p>
+                <a class="nav-link-mre" onclick="navigateTo('construction', this)">
+                    <i data-lucide="file-text" style="width: 18px;"></i> Tipos de documentos
+                </a>
+                <a class="nav-link-mre" onclick="navigateTo('construction', this)">
+                    <i data-lucide="users" style="width: 18px;"></i> Usuarios
+                </a>
+                <a class="nav-link-mre" onclick="navigateTo('construction', this)">
+                    <i data-lucide="shield-check" style="width: 18px;"></i> Grupos y Permisos
+                </a>
+                <a class="nav-link-mre active" onclick="navigateTo('references', this)">
+                    <i data-lucide="settings-2" style="width: 18px;"></i> Configuración de referencias
+                </a>
+                <a class="nav-link-mre" onclick="navigateTo('construction', this)">
+                    <i data-lucide="layout-grid" style="width: 18px;"></i> Configuración de campos
+                </a>
+            </nav>
+        </aside>
+
+        <!-- ÁREA DE TRABAJO -->
+        <main class="content-area">
+            
+            <!-- VISTA DE REFERENCIAS (ACTUAL) -->
+            <div id="referencesView" class="animate-fade">
+                <header class="d-flex justify-content-between align-items-end mb-4">
+                    <div>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-1" style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase;">
+                                <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted">Configuración</a></li>
+                                <li class="breadcrumb-item active text-primary">Referencias</li>
+                            </ol>
+                        </nav>
+                        <h2 class="fw-black text-navy m-0">Configuración de Referencias</h2>
+                    </div>
+                </header>
+
+                <!-- SELECTOR DE TIPO (CABECERA) -->
+                <div class="master-selector-card">
+                    <div class="row align-items-center g-3">
+                        <div class="col-md-5">
+                            <label class="form-label">Seleccionar Tipo de Referencia (Dominio)</label>
+                            <select class="form-control-mre shadow-sm" id="tipoSelector" onchange="handleTipoChange(this.value)">
+                                <option value="">Seleccione un dominio...</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <div id="tipoInfo" class="d-none">
+                                <label class="form-label">Estado de la Cabecera</label>
+                                <div class="fw-bold text-muted" id="tipoModuloLabel" style="font-size: 0.85rem;">---</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <button class="btn-main" onclick="openModal('modalTipo')">
+                                <i data-lucide="plus" style="width: 14px;" class="me-1"></i> Nuevo Tipo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TABLA DE REFERENCIAS (DETALLES) -->
+                <div class="grid-frame">
+                    <div class="grid-header-frame">
+                        <div>
+                            <h5 class="fw-black text-uppercase m-0" style="color: var(--mre-blue); font-size: 0.75rem;">
+                                Lista de Referencias: <span id="currentTipoLabel" class="text-primary">---</span>
+                            </h5>
+                        </div>
+                        <button class="btn-main d-inline-flex align-items-center gap-2" id="btnAddRef" disabled onclick="openModal('modalRef', 'add')">
+                            <i data-lucide="plus-circle" style="width: 16px;"></i> Agregar Referencia
+                        </button>
+                    </div>
+
+                    <div class="grid-search-container">
+                        <div class="search-box-mre">
+                            <i data-lucide="search"></i>
+                            <input type="text" id="similaritySearchInput" class="form-control-mre search-input-integrated" placeholder="Buscar similitudes por descripción o valor..." onkeyup="handleSimilaritySearch()">
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="mre-table">
+                            <thead>
+                                <tr>
+                                    <th width="40" class="text-center">
+                                        <input type="checkbox" id="selectAll" class="mre-checkbox" onchange="toggleSelectAll(this)">
+                                    </th>
+                                    <th width="100" class="text-center">ID</th>
+                                    <th>Descripción</th>
+                                    <th>Valor Alfanumérico</th>
+                                    <th width="120" class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="referenciasTableBody">
+                                <tr>
+                                    <td colspan="5" class="text-center py-5 text-muted">
+                                        <i data-lucide="search-x" class="mb-3 opacity-25" style="width: 48px; height: 48px;"></i>
+                                        <p class="fw-bold">Seleccione un Tipo de Referencia para gestionar sus valores</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="grid-footer">
+                        <button class="btn-danger-outline d-inline-flex align-items-center gap-2" id="btnInactivar" disabled onclick="handleInactivar()">
+                            <i data-lucide="power" style="width: 14px;"></i> Inactivar
+                        </button>
+                        <button class="btn-cancel-mre" id="btnCancelDeselect" disabled onclick="deselectAll()">
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISTA EN CONSTRUCCIÓN (DENTRO DE LA PANTALLA) -->
+            <div id="constructionView" class="view-construction d-none animate-fade">
+                <div class="construction-icon-wrap">
+                    <i data-lucide="hammer" style="width: 48px; height: 48px;"></i>
+                </div>
+                <h3 class="fw-black text-navy mb-2">Módulo en Construcción</h3>
+                <p class="text-muted" style="max-width: 400px; margin: 0 auto 2rem;">
+                    Estamos trabajando activamente para habilitar este módulo. Estará disponible en la próxima actualización del sistema.
+                </p>
+                <button class="btn-main px-5" onclick="backToReferences()">
+                    Regresar a Referencias
+                </button>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- MODALES (Referentes solo a Referencias) -->
+    <div class="mre-modal-overlay" id="modalTipo">
+        <div class="mre-modal animate-fade">
+            <div class="section-title">Gestionar Tipo de Referencia</div>
+            <form id="formTipo">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">ID Dominio <span class="required-star">*</span></label>
+                        <input type="text" class="form-control-mre" placeholder="ej: TIPO_DOCUMENTO" required>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Descripción <span class="required-star">*</span></label>
+                        <textarea class="form-control-mre" rows="2" required placeholder="Ingrese descripción"></textarea>
+                    </div>
+                </div>
+                <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" onclick="closeModal('modalTipo')">Cancelar</button>
+                    <button type="submit" class="btn-main px-4">Guardar Tipo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="mre-modal-overlay" id="modalRef">
+        <div class="mre-modal animate-fade">
+            <div class="section-title" id="refModalTitle">Referencia Detallada</div>
+            <div id="validationError" class="validation-alert">
+                <i data-lucide="alert-circle" style="width:16px; margin-right:5px"></i> Debe completar **exactamente uno** de los campos de valor (Alfanumérico, Numérico o Fecha).
+            </div>
+            <form id="formRef" onsubmit="return validateRefForm(event)">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Descripción <span class="required-star">*</span></label>
+                        <input type="text" id="refDesc" class="form-control-mre" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Valor Alfanumérico</label>
+                        <input type="text" id="refAlf" class="form-control-mre" oninput="handleExclusiveInput('refAlf')">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Valor Numérico</label>
+                        <input type="number" id="refNum" class="form-control-mre" oninput="handleExclusiveInput('refNum')">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Valor Fecha</label>
+                        <input type="date" id="refFec" class="form-control-mre" oninput="handleExclusiveInput('refFec')">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Descripción Larga</label>
+                        <textarea id="refDescLarga" class="form-control-mre" rows="2"></textarea>
+                    </div>
+                </div>
+
+                <div class="audit-history-container d-none" id="auditHistorySection">
+                    <div class="section-title">Historial de Auditoría</div>
+                    <div class="table-responsive">
+                        <table class="audit-table">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Acción</th>
+                                    <th>Usuario</th>
+                                    <th>Descripción del Cambio</th>
+                                </tr>
+                            </thead>
+                            <tbody id="auditHistoryBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-top d-flex justify-content-between align-items-center">
+                    <div class="meta-info" id="refMeta" style="font-size: 0.65rem; color: #94A3B8; font-weight: 600;">--</div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" onclick="closeModal('modalRef')">Cerrar</button>
+                        <button type="submit" class="btn-main px-4" id="btnSaveRef">Guardar Cambios</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="mre-modal-overlay" id="modalConfirmInactivate">
+        <div class="mre-modal animate-fade">
+            <div class="text-center mb-3">
+                <div class="bg-danger bg-opacity-10 text-danger d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 56px; height: 56px;">
+                    <i data-lucide="alert-triangle" style="width: 32px; height: 32px;"></i>
+                </div>
+            </div>
+            <div class="text-center">
+                <h5 class="fw-black text-navy mb-2">Confirmar Inactivación</h5>
+                <p class="text-muted small px-3">¿Está seguro que desea inactivar las siguientes referencias seleccionadas? Esta acción restringirá su uso en los trámites del sistema.</p>
+            </div>
+            <div class="confirm-list" id="selectedItemsList"></div>
+            <div class="d-flex justify-content-end gap-2 mt-4">
+                <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" onclick="closeModal('modalConfirmInactivate')">Cancelar</button>
+                <button type="button" class="btn-main bg-danger border-danger px-4" onclick="executeInactivation()">Sí, inactivar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- NAVEGACIÓN ---
+        function navigateTo(viewId, element) {
+            // Actualizar clases activas en sidebar
+            document.querySelectorAll('.nav-link-mre').forEach(l => l.classList.remove('active'));
+            element.classList.add('active');
+
+            // Alternar vistas
+            const refView = document.getElementById('referencesView');
+            const constructView = document.getElementById('constructionView');
+
+            if (viewId === 'references') {
+                refView.classList.remove('d-none');
+                constructView.classList.add('d-none');
+            } else {
+                refView.classList.add('d-none');
+                constructView.classList.remove('d-none');
+                lucide.createIcons(); // Recargar iconos lucide
+            }
+        }
+
+        function backToReferences() {
+            const refLink = document.querySelector('[onclick*="references"]');
+            navigateTo('references', refLink);
+        }
+
+        const mockTipos = [
+            { id: 1, dominio: 'TIPO_DOCUMENTO_IDENTIDAD', modulo: 'REGISTRO DE USUARIO', estado: 'ACTI', descripcion: 'Clases de documento civil.' },
+            { id: 2, dominio: 'NACIONALIDAD', modulo: 'REGISTRO DE USUARIO', estado: 'ACTI', descripcion: 'Países de origen.' }
+        ];
+
+        const mockRef = [
+            { id: 1, id_tipo: 1, descripcion: 'Cédula de Identidad', val_alf: 'CI', val_num: 1, val_fec: null, desc_larga: 'Documento nacional', usu_alta: 'CGONZALEZ', fecha_alta: '24/11/2025' },
+            { id: 2, id_tipo: 1, descripcion: 'Pasaporte', val_alf: 'PAS', val_num: 2, val_fec: null, desc_larga: 'Documento de viaje', usu_alta: 'CGONZALEZ', fecha_alta: '24/11/2025' },
+            { id: 7, id_tipo: 2, descripcion: 'PARAGUAYA', val_alf: 'PAR', val_num: null, val_fec: null, desc_larga: 'Local', usu_alta: 'CGONZALEZ', fecha_alta: '24/11/2025' }
+        ];
+
+        const mockAudit = {
+            1: [
+                { fecha: '24/11/2025 08:30', accion: 'crear', usuario: 'ADMIN_SISTEMA', descripcion: 'Creación inicial del registro de Cédula de Identidad.' },
+                { fecha: '25/11/2025 10:15', accion: 'modificar', usuario: 'CGONZALEZ', descripcion: 'Actualización de la descripción larga del documento.' }
+            ],
+            2: [
+                { fecha: '24/11/2025 09:00', accion: 'crear', usuario: 'ADMIN_SISTEMA', descripcion: 'Alta de Pasaporte en el dominio de identidad.' }
+            ],
+            7: [
+                { fecha: '24/11/2025 09:15', accion: 'crear', usuario: 'ADMIN_SISTEMA', descripcion: 'Registro de nacionalidad paraguaya.' },
+                { fecha: '01/12/2025 14:00', accion: 'inactivar', usuario: 'SUPERVISOR_MRE', descripcion: 'Inactivación temporal por mantenimiento de catálogo.' }
+            ]
+        };
+
+        let selectedTipoId = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const selector = document.getElementById('tipoSelector');
+            selector.innerHTML += mockTipos.map(t => `<option value="${t.id}">${t.dominio}</option>`).join('');
+            lucide.createIcons();
+        });
+
+        function toggleUserMenu(e) { e.stopPropagation(); document.getElementById('userMenu').classList.toggle('show'); }
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('userMenu');
+            if (menu && !menu.contains(e.target)) menu.classList.remove('show');
+        });
+
+        function handleLogout() { if(confirm('¿Desea cerrar su sesión actual?')) location.reload(); }
+
+        function handleExclusiveInput(changedId) {
+            const fields = ['refAlf', 'refNum', 'refFec'];
+            if (document.getElementById(changedId).value) {
+                fields.forEach(id => { if (id !== changedId) document.getElementById(id).value = ''; });
+            }
+        }
+
+        function handleTipoChange(id) {
+            if (!id) {
+                document.getElementById('tipoInfo').classList.add('d-none');
+                document.getElementById('currentTipoLabel').innerText = '---';
+                document.getElementById('btnAddRef').disabled = true;
+                document.getElementById('btnInactivar').disabled = true;
+                document.getElementById('btnCancelDeselect').disabled = true;
+                renderReferencias(null);
+                return;
+            }
+            selectedTipoId = parseInt(id);
+            const tipo = mockTipos.find(t => t.id === selectedTipoId);
+            document.getElementById('tipoInfo').classList.remove('d-none');
+            document.getElementById('tipoModuloLabel').innerText = tipo.estado === 'ACTI' ? 'Activo' : 'Inactivo';
+            document.getElementById('currentTipoLabel').innerText = tipo.dominio;
+            document.getElementById('btnAddRef').disabled = false;
+            document.getElementById('similaritySearchInput').value = '';
+            renderReferencias(selectedTipoId);
+        }
+
+        function renderReferencias(tipoId, query = '') {
+            const body = document.getElementById('referenciasTableBody');
+            if (!tipoId) {
+                body.innerHTML = `<tr><td colspan="5" class="text-center py-5 text-muted"><p class="fw-bold">Seleccione un Tipo de Referencia para gestionar sus valores</p></td></tr>`;
+                return;
+            }
+            let data = mockRef.filter(r => r.id_tipo === tipoId);
+            if (query) {
+                data = data.filter(r => 
+                    r.descripcion.toLowerCase().includes(query.toLowerCase()) || 
+                    (r.val_alf && r.val_alf.toLowerCase().includes(query.toLowerCase())) ||
+                    (r.val_num && r.val_num.toString().includes(query))
+                );
+            }
+            if (data.length === 0) {
+                body.innerHTML = `<tr><td colspan="5" class="text-center py-5 text-warning fw-bold">No se encontraron registros coincidentes.</td></tr>`;
+                return;
+            }
+            body.innerHTML = data.map(r => `
+                <tr data-ref-id="${r.id}" data-ref-desc="${r.descripcion}">
+                    <td class="text-center"><input type="checkbox" class="mre-checkbox record-check" onchange="handleCheckboxChange()"></td>
+                    <td class="fw-bold text-navy text-center">${r.id}</td>
+                    <td><div class="fw-bold">${r.descripcion}</div></td>
+                    <td><span class="badge bg-light text-dark border px-3">${r.val_alf || '-'}</span></td>
+                    <td>
+                        <div class="d-flex justify-content-center gap-2">
+                            <button class="btn-action-icon" title="Visualizar" onclick="openModal('modalRef', 'view', ${r.id})"><i data-lucide="eye" style="width:14px"></i></button>
+                            <button class="btn-action-icon" title="Editar" onclick="openModal('modalRef', 'edit', ${r.id})"><i data-lucide="edit-3" style="width:14px"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+            handleCheckboxChange();
+        }
+
+        function handleSimilaritySearch() { renderReferencias(selectedTipoId, document.getElementById('similaritySearchInput').value); }
+
+        function toggleSelectAll(source) {
+            document.querySelectorAll('.record-check').forEach(c => c.checked = source.checked);
+            handleCheckboxChange();
+        }
+
+        function deselectAll() {
+            document.querySelectorAll('.record-check').forEach(c => c.checked = false);
+            const selectAll = document.getElementById('selectAll');
+            if (selectAll) selectAll.checked = false;
+            handleCheckboxChange();
+        }
+
+        function handleCheckboxChange() {
+            const checks = document.querySelectorAll('.record-check:checked');
+            document.getElementById('btnInactivar').disabled = checks.length === 0;
+            document.getElementById('btnCancelDeselect').disabled = checks.length === 0;
+            
+            const selectAll = document.getElementById('selectAll');
+            const allChecks = document.querySelectorAll('.record-check');
+            if (allChecks.length > 0) selectAll.checked = checks.length === allChecks.length;
+        }
+
+        function handleInactivar() {
+            const listContainer = document.getElementById('selectedItemsList');
+            listContainer.innerHTML = '';
+            document.querySelectorAll('.record-check:checked').forEach(check => {
+                const row = check.closest('tr');
+                const item = document.createElement('div');
+                item.className = 'confirm-item';
+                item.innerHTML = `<i data-lucide="file-minus" style="width:14px; color: #64748B"></i> <span>ID ${row.getAttribute('data-ref-id')}: ${row.getAttribute('data-ref-desc')}</span>`;
+                listContainer.appendChild(item);
+            });
+            lucide.createIcons();
+            openModal('modalConfirmInactivate');
+        }
+
+        function executeInactivation() {
+            alert(`Éxito: Se han inactivado las referencias seleccionadas.`);
+            closeModal('modalConfirmInactivate');
+            deselectAll();
+            renderReferencias(selectedTipoId);
+        }
+
+        function validateRefForm(event) {
+            event.preventDefault();
+            const valAlf = document.getElementById('refAlf').value.trim();
+            const valNum = document.getElementById('refNum').value.trim();
+            const valFec = document.getElementById('refFec').value.trim();
+            if ([valAlf, valNum, valFec].filter(v => v !== '').length !== 1) {
+                document.getElementById('validationError').style.display = 'block';
+                return false;
+            }
+            alert('Referencia procesada exitosamente.');
+            closeModal('modalRef');
+            return true;
+        }
+
+        function openModal(id, mode, refId) {
+            if (id === 'modalRef') {
+                const auditSection = document.getElementById('auditHistorySection');
+                const btnSave = document.getElementById('btnSaveRef');
+                document.getElementById('validationError').style.display = 'none';
+                document.getElementById('formRef').reset();
+                if (mode === 'add') {
+                    document.getElementById('refModalTitle').innerText = 'Agregar Nueva Referencia';
+                    btnSave.style.display = 'block';
+                    enableFields(true);
+                    document.getElementById('refMeta').innerText = 'Nuevo Registro';
+                    auditSection.classList.add('d-none');
+                } else {
+                    const r = mockRef.find(i => i.id === refId);
+                    document.getElementById('refDesc').value = r.descripcion;
+                    document.getElementById('refAlf').value = r.val_alf || '';
+                    document.getElementById('refNum').value = r.val_num || '';
+                    document.getElementById('refFec').value = r.val_fec || '';
+                    document.getElementById('refDescLarga').value = r.desc_larga || '';
+                    document.getElementById('refMeta').innerText = `Alta: ${r.fecha_alta} por ${r.usu_alta}`;
+                    if (mode === 'view') {
+                        document.getElementById('refModalTitle').innerText = 'Detalle de Referencia';
+                        btnSave.style.display = 'none';
+                        enableFields(false);
+                        auditSection.classList.remove('d-none');
+                        const historyData = mockAudit[refId] || [];
+                        document.getElementById('auditHistoryBody').innerHTML = historyData.length ? historyData.map(h => `
+                            <tr>
+                                <td class="fw-bold">${h.fecha}</td>
+                                <td><span class="badge-audit badge-${h.accion}">${h.accion}</span></td>
+                                <td><div class="fw-bold">${h.usuario}</div></td>
+                                <td class="text-muted italic">${h.descripcion}</td>
+                            </tr>
+                        `).join('') : '<tr><td colspan="4" class="text-center py-3">No hay historial disponible</td></tr>';
+                    } else {
+                        document.getElementById('refModalTitle').innerText = 'Editar Referencia';
+                        btnSave.style.display = 'block';
+                        enableFields(true);
+                        auditSection.classList.add('d-none');
+                    }
+                }
+            }
+            document.getElementById(id).style.display = 'flex';
+            lucide.createIcons();
+        }
+
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function enableFields(status) {
+            document.querySelectorAll('#formRef input, #formRef textarea').forEach(i => {
+                if (status) { i.removeAttribute('readonly'); i.removeAttribute('disabled'); }
+                else { i.setAttribute('readonly', true); i.setAttribute('disabled', true); }
+            });
+        }
+        window.onclick = function(e) { if (e.target.className === 'mre-modal-overlay') e.target.style.display = 'none'; }
+    </script>
+</body>
+</html>
