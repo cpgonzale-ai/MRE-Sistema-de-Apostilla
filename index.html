@@ -53,6 +53,11 @@
         .divider:not(:empty)::after { margin-left: 1rem; }
         .policy-box { font-size: 0.6rem; color: #64748B; background: #F8FAFC; padding: 12px; border-radius: 12px; margin-top: 0.8rem; border: 1px solid #E2E8F0; text-align: left; }
 
+        /* Estilos Seguridad Login */
+        .error-critical { background: #D52B1E !important; color: white !important; border-color: #D52B1E !important; font-weight: 700; }
+        .captcha-box { background: #f1f5f9; padding: 15px; border-radius: 14px; margin-bottom: 15px; border: 1px dashed #cbd5e1; }
+        .captcha-visual { font-family: 'Courier New', Courier, monospace; font-weight: 900; letter-spacing: 5px; font-style: italic; background: white; padding: 5px 15px; border-radius: 8px; display: inline-block; color: #64748B; border: 1px solid #e2e8f0; user-select: none; }
+
         /* Modal Ayuda */
         .mre-modal-overlay { position: fixed; inset: 0; background: rgba(0, 40, 85, 0.2); backdrop-filter: blur(8px); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
         .mre-modal { background: white; border-radius: 24px; max-width: 500px; width: 100%; padding: 2.5rem; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.2); border: 1px solid rgba(0,0,0,0.1); }
@@ -92,13 +97,19 @@
                 <h1 class="system-title text-uppercase">SIA-PY</h1>
                 <p class="system-subtitle">Apostilla Electrónica</p>
             </div>
-            <div id="loginError" class="error-message-box"><i data-lucide="alert-triangle" class="size-4"></i> Por favor complete sus credenciales para ingresar.</div>
+            
+            <!-- CONTENEDOR DE ERROR DINÁMICO -->
+            <div id="loginError" class="error-message-box">
+                <i data-lucide="alert-triangle" class="size-4"></i> 
+                <span id="loginErrorText">Por favor complete sus credenciales para ingresar.</span>
+            </div>
+
             <form class="text-start" id="formLogin">
                 <div class="mb-3">
                     <label class="form-label">Correo Electrónico <span class="required-star">*</span></label>
                     <div class="input-wrapper">
                         <i data-lucide="mail" class="input-icon" style="width: 16px;"></i>
-                        <input type="email" class="form-control-mre" placeholder="ejemplo@correo.com.py" required>
+                        <input type="email" class="form-control-mre" id="loginEmail" placeholder="ejemplo@correo.com.py" required>
                     </div>
                     <a href="javascript:void(0)" onclick="showScreen('forgotEmail')" class="recovery-link">¿Has olvidado tu correo electrónico?</a>
                 </div>
@@ -113,7 +124,17 @@
                     </div>
                     <a href="javascript:void(0)" onclick="showScreen('forgotUser')" class="recovery-link">¿Has olvidado tu usuario?</a>
                 </div>
-                <button type="submit" class="btn-main">Ingresar al Sistema</button>
+
+                <!-- BLOQUE CAPTCHA (OCULTO POR DEFECTO) -->
+                <div id="captchaBox" class="captcha-box hidden">
+                    <label class="form-label">Validación de Seguridad <span class="required-star">*</span></label>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="captcha-visual">X7P2R</div>
+                        <input type="text" class="form-control-mre" style="padding-left: 1rem;" placeholder="Escriba el código">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-main" id="btnLoginSubmit">Ingresar al Sistema</button>
                 <div class="divider">O acceder mediante</div>
                 <button type="button" class="btn-idp-prominent mb-2" onclick="showScreen('idpLogin')">
                     <div class="d-flex" style="height: 14px; width: 22px; border-radius: 2px; overflow: hidden; border: 1px solid rgba(0,0,0,0.1);">
@@ -211,12 +232,68 @@
     <script>
         lucide.createIcons();
 
-        // LÓGICA AUTH 
+        // --- LÓGICA DE INTENTOS Y SEGURIDAD ---
+        let failedAttempts = 0;
+        let isBlocked = false;
+
         function hideErrorMessages() { document.querySelectorAll('.error-message-box').forEach(el => el.style.display = 'none'); }
 
+        // MANEJADOR PERSONALIZADO PARA LOGIN CON SEGURIDAD
+        const formLogin = document.getElementById('formLogin');
+        if (formLogin) {
+            formLogin.addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (isBlocked) return;
+
+                hideErrorMessages();
+                const errorBox = document.getElementById('loginError');
+                const errorText = document.getElementById('loginErrorText');
+                const captchaBox = document.getElementById('captchaBox');
+                const btnSubmit = document.getElementById('btnLoginSubmit');
+
+                // SIMULACIÓN DE FALLO PARA PROBAR LA LÓGICA
+                failedAttempts++;
+
+                if (failedAttempts === 3) {
+                    errorBox.style.display = 'flex';
+                    errorText.innerText = "Demasiados intentos fallidos. Por favor complete el Captcha.";
+                    captchaBox.classList.remove('hidden');
+                } 
+                else if (failedAttempts === 4) {
+                    errorBox.style.display = 'flex';
+                    errorBox.classList.add('error-critical');
+                    errorText.innerText = "Último intento disponible antes de bloquear la cuenta.";
+                } 
+                else if (failedAttempts >= 5) {
+                    isBlocked = true;
+                    btnSubmit.disabled = true;
+                    errorBox.style.display = 'flex';
+                    errorBox.classList.add('error-critical');
+                    errorText.innerText = "Cuenta bloqueada temporalmente por seguridad. Intente nuevamente en 15 minutos.";
+                    
+                    // Desbloqueo simulado en 10 segundos para testing del prototipo
+                    setTimeout(() => {
+                        isBlocked = false;
+                        btnSubmit.disabled = false;
+                        failedAttempts = 0;
+                        errorBox.classList.remove('error-critical');
+                        errorBox.style.display = 'none';
+                        captchaBox.classList.add('hidden');
+                    }, 10000);
+                } 
+                else {
+                    errorBox.style.display = 'flex';
+                    errorText.innerText = `Credenciales incorrectas. Intento ${failedAttempts}/5.`;
+                }
+                
+                lucide.createIcons();
+            });
+        }
+
+        // OTROS FORMULARIOS (MANTENIENDO COMPORTAMIENTO ORIGINAL)
         function setupValidation(formId, errorBoxId, successCallback) {
             const form = document.getElementById(formId);
-            if (!form) return;
+            if (!form || formId === 'formLogin') return; // Saltar login porque tiene manejo especial arriba
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
                 hideErrorMessages();
@@ -229,10 +306,8 @@
             });
         }
 
-        // Al no existir portal, redirigimos a una alerta o pantalla de éxito simulada
-        setupValidation('formLogin', 'loginError', () => alert('Acceso Correcto. Redirigiendo al sistema...'));
         setupValidation('formRegister', 'registerError', () => { alert('Cuenta creada.'); showScreen('login'); });
-        setupValidation('formCompleteData', 'completeDataError', () => alert('Datos vinculados exitosamente.'));
+        setupValidation('formCompleteData', 'completeDataError', () => alert('Datos vinculados.'));
         setupValidation('formForgotEmail', 'forgotEmailError', () => { alert('Notificación enviada.'); showScreen('login'); });
         setupValidation('formForgotUser', 'forgotUserError', () => { alert('Usuario enviado.'); showScreen('login'); });
 
