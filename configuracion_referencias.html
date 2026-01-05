@@ -584,13 +584,26 @@
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <div id="tipoInfo" class="d-none">
-                            <label class="form-label">Estado de la Cabecera</label>
-                            <div class="fw-bold text-muted" id="tipoModuloLabel" style="font-size: 0.95rem;">---</div>
+                        <div id="tipoInfo" class="d-none d-flex align-items-center justify-content-between gap-3">
+                            <div>
+                                <label class="form-label">Estado de la Cabecera</label>
+                                <div class="fw-bold text-muted" id="tipoModuloLabel" style="font-size: 0.95rem;">---</div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn-action-icon" onclick="viewSelectedTipo()" title="Visualizar Tipo de Referencia">
+                                    <i data-lucide="eye" style="width: 16px;"></i>
+                                </button>
+                                <button class="btn-action-icon" onclick="editSelectedTipo()" title="Modificar Tipo de Referencia">
+                                    <i data-lucide="edit-3" style="width: 16px;"></i>
+                                </button>
+                                <button class="btn-action-icon" style="color: var(--mre-red); border-color: #FECDD3;" onclick="inactivateSelectedTipo()" title="Inactivar Tipo de Referencia">
+                                    <i data-lucide="power" style="width: 16px;"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-3 text-end">
-                        <button class="btn-main" onclick="openModal('modalTipo')" title="Crear un nuevo tipo de referencia">
+                        <button class="btn-main" onclick="openModal('modalTipo', 'add')" title="Crear un nuevo tipo de referencia">
                             <i data-lucide="plus" style="width: 14px;" class="me-1"></i> Nuevo Tipo
                         </button>
                     </div>
@@ -668,6 +681,24 @@
                         <textarea id="tipoDescInput" class="form-control-mre" rows="2" required placeholder="Ingrese descripción" title="Descripción detallada del dominio"></textarea>
                     </div>
                 </div>
+
+                <div class="audit-history-container d-none" id="auditHistorySectionTipo">
+                    <div class="section-title">Historial de Auditoría</div>
+                    <div class="table-responsive">
+                        <table class="audit-table">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Acción</th>
+                                    <th>Usuario</th>
+                                    <th>Descripción del Cambio</th>
+                                </tr>
+                            </thead>
+                            <tbody id="auditHistoryBodyTipo"></tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
                     <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" onclick="closeModal('modalTipo')">Cancelar</button>
                     <button type="submit" class="btn-main px-4">Guardar Tipo</button>
@@ -731,6 +762,25 @@
                     </div>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRM INACTIVAR TIPO (NUEVO) -->
+    <div class="mre-modal-overlay" id="modalConfirmInactivateTipo" role="dialog" aria-modal="true" aria-labelledby="confirmTipoTitle">
+        <div class="mre-modal animate-fade">
+            <div class="text-center mb-3">
+                <div class="bg-danger bg-opacity-10 text-danger d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 56px; height: 56px;">
+                    <i data-lucide="alert-triangle" style="width: 32px; height: 32px;"></i>
+                </div>
+            </div>
+            <div class="text-center">
+                <h5 class="fw-black text-navy mb-2" id="confirmTipoTitle">Confirmar Inactivación de Tipo</h5>
+                <p class="text-muted small px-3">¿Está seguro que desea inactivar este <strong>Tipo de Referencia</strong>? Esta acción inactivará también todas las referencias asociadas y restringirá su uso en el sistema.</p>
+            </div>
+            <div class="d-flex justify-content-end gap-2 mt-4">
+                <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" onclick="closeModal('modalConfirmInactivateTipo')">Cancelar</button>
+                <button type="button" class="btn-main bg-danger border-danger px-4" onclick="executeInactivationTipo()">Sí, inactivar</button>
+            </div>
         </div>
     </div>
 
@@ -866,6 +916,16 @@
             ]
         };
 
+        const mockAuditTipo = {
+            1: [
+                { fecha: '01/01/2024 10:00', accion: 'crear', usuario: 'ADMIN_ROOT', descripcion: 'Creación del dominio de documentos.' }
+            ],
+            2: [
+                { fecha: '15/03/2024 09:30', accion: 'crear', usuario: 'ADMIN_ROOT', descripcion: 'Creación del dominio de nacionalidades.' },
+                { fecha: '20/03/2024 11:00', accion: 'modificar', usuario: 'CGONZALEZ', descripcion: 'Corrección en la descripción.' }
+            ]
+        };
+
         let selectedTipoId = null;
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -906,6 +966,32 @@
             document.getElementById('btnAddRef').disabled = false;
             document.getElementById('similaritySearchInput').value = '';
             renderReferencias(selectedTipoId);
+        }
+
+        function editSelectedTipo() {
+            if (!selectedTipoId) return;
+            openModal('modalTipo', 'edit');
+        }
+
+        function viewSelectedTipo() {
+            if (!selectedTipoId) return;
+            openModal('modalTipo', 'view');
+        }
+
+        function inactivateSelectedTipo() {
+            if (!selectedTipoId) return;
+            openModal('modalConfirmInactivateTipo');
+        }
+
+        function executeInactivationTipo() {
+            const tipo = mockTipos.find(t => t.id === selectedTipoId);
+            if (tipo) {
+                tipo.estado = 'INAC';
+                // Inactivate all children references logically if needed, for now just updating the type status
+                alert(`El Tipo de Referencia "${tipo.dominio}" ha sido inactivado.`);
+                handleTipoChange(selectedTipoId); // Refresh UI
+            }
+            closeModal('modalConfirmInactivateTipo');
         }
 
         function renderReferencias(tipoId, query = '') {
@@ -1004,6 +1090,56 @@
         }
 
         function openModal(id, mode, refId) {
+            if (id === 'modalTipo') {
+                const btnSave = document.querySelector('#modalTipo button[type="submit"]');
+                const btnCancel = document.querySelector('#modalTipo button[type="button"]');
+                const auditSection = document.getElementById('auditHistorySectionTipo');
+                const form = document.getElementById('formTipo');
+                form.reset();
+                
+                // Reset common state
+                document.getElementById('tipoDescInput').removeAttribute('readonly');
+                btnSave.style.display = 'block';
+                btnCancel.innerText = 'Cancelar';
+                auditSection.classList.add('d-none');
+
+                if (mode === 'edit' && selectedTipoId) {
+                    const tipo = mockTipos.find(t => t.id === selectedTipoId);
+                    document.getElementById('modalTipoTitle').innerText = 'Editar Tipo de Referencia';
+                    document.getElementById('tipoIdInput').value = tipo.dominio;
+                    document.getElementById('tipoIdInput').setAttribute('readonly', true);
+                    document.getElementById('tipoDescInput').value = tipo.descripcion;
+                    btnSave.innerText = 'Actualizar Tipo';
+                } else if (mode === 'view' && selectedTipoId) {
+                    const tipo = mockTipos.find(t => t.id === selectedTipoId);
+                    document.getElementById('modalTipoTitle').innerText = 'Detalle Tipo de Referencia';
+                    document.getElementById('tipoIdInput').value = tipo.dominio;
+                    document.getElementById('tipoIdInput').setAttribute('readonly', true);
+                    document.getElementById('tipoDescInput').value = tipo.descripcion;
+                    document.getElementById('tipoDescInput').setAttribute('readonly', true);
+                    btnSave.style.display = 'none';
+                    btnCancel.innerText = 'Cerrar';
+
+                    // Mostrar auditoría
+                    auditSection.classList.remove('d-none');
+                    const historyData = mockAuditTipo[selectedTipoId] || [];
+                    document.getElementById('auditHistoryBodyTipo').innerHTML = historyData.length ? historyData.map(h => `
+                        <tr>
+                            <td class="fw-bold">${h.fecha}</td>
+                            <td><span class="badge-audit badge-${h.accion}">${h.accion}</span></td>
+                            <td><div class="fw-bold">${h.usuario}</div></td>
+                            <td class="text-muted italic">${h.descripcion}</td>
+                        </tr>
+                    `).join('') : '<tr><td colspan="4" class="text-center py-3">No hay historial disponible</td></tr>';
+
+                } else {
+                    document.getElementById('modalTipoTitle').innerText = 'Crear Nuevo Tipo';
+                    document.getElementById('tipoIdInput').removeAttribute('readonly');
+                    document.getElementById('tipoIdInput').value = '';
+                    document.getElementById('tipoDescInput').value = '';
+                    btnSave.innerText = 'Guardar Tipo';
+                }
+            }
             if (id === 'modalRef') {
                 const auditSection = document.getElementById('auditHistorySection');
                 const btnSave = document.getElementById('btnSaveRef');
