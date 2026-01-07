@@ -21,7 +21,16 @@
             --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 40, 85, 0.05);
         }
 
-        body { font-family: 'Inter', sans-serif; margin: 0; background-color: var(--soft-bg); color: #1E293B; text-align: left; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            background-color: var(--soft-bg); 
+            color: #1E293B; 
+            text-align: left; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
         .hidden { display: none !important; }
 
         /* --- FONDO Y PATRONES --- */
@@ -29,7 +38,7 @@
         .bg-pattern { position: absolute; width: 100%; height: 100%; opacity: 0.5; background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23002855' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
 
         /* --- ESTILOS AUTENTICACIÓN --- */
-        #authSection { min-height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; overflow-x: hidden; }
+        #authSection { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; overflow-x: hidden; padding: 2rem 0; }
         .auth-card { background: #ffffff; border-radius: 32px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 25px 50px -12px rgba(0, 40, 85, 0.15), 0 0 0 1px rgba(0, 40, 85, 0.05); width: 100%; max-width: 440px; padding: 2.2rem 2.5rem; position: relative; z-index: 10; transition: all 0.3s ease; }
         .auth-card.wide-mode { max-width: 650px; }
         .tricolor-line { height: 5px; width: 120px; background: linear-gradient(to right, var(--mre-red) 33.3%, #ffffff 33.3%, #ffffff 66.6%, var(--mre-blue-light) 66.6%); position: absolute; top: 0; left: 50%; transform: translateX(-50%); border-bottom-left-radius: 6px; border-bottom-right-radius: 6px; }
@@ -59,6 +68,57 @@
         /* Modal Ayuda */
         .mre-modal-overlay { position: fixed; inset: 0; background: rgba(0, 40, 85, 0.2); backdrop-filter: blur(8px); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
         .mre-modal { background: white; border-radius: 24px; max-width: 500px; width: 100%; padding: 2.5rem; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.2); border: 1px solid rgba(0,0,0,0.1); }
+
+        /* --- ESTILOS FOOTER --- */
+        .mre-footer {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid #E2E8F0;
+            padding: 1.2rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+        .footer-left {
+            font-size: 0.75rem;
+            color: #64748B;
+            font-weight: 600;
+        }
+        .footer-right .btn-help {
+            background: white;
+            border: 1px solid var(--mre-blue);
+            color: var(--mre-blue);
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+        .footer-right .btn-help:hover {
+            background: var(--mre-blue);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 40, 85, 0.15);
+        }
+
+        .doc-help-thumb { width: 44px; height: 32px; border: 2px solid var(--mre-red); border-radius: 6px; cursor: pointer; transition: transform 0.2s; object-fit: cover; }
+        .doc-help-thumb:hover { transform: scale(1.1); }
+
+        @media (max-width: 768px) {
+            .mre-footer {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+                padding: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -79,7 +139,7 @@
                         <span style="border: 2px solid var(--mre-red); padding: 4px 8px; color: var(--mre-red); font-weight: 900; border-radius: 4px;">N° 12345678</span>
                     </div>
                     <div style="height: 100px; background: #EDF2F7; border-radius: 8px; display:flex; align-items:center; justify-content:center; color: #A0AEC0;">
-                        [Imagen con Recuadro Rojo]
+                        [Imagen de Ayuda Documento]
                     </div>
                 </div>
                 <button class="btn btn-primary w-100 rounded-pill fw-bold py-2" style="background: var(--mre-blue); border: none;" onclick="closeHelp()">Entendido</button>
@@ -89,8 +149,9 @@
         <div class="auth-card text-center" id="loginScreen">
             <div class="tricolor-line"></div>
             <div class="logo-section">
-                <div class="d-inline-flex align-items-center justify-content-center bg-white p-2 rounded-4 mb-3" style="box-shadow: 0 8px 16px rgba(0, 40, 85, 0.08); width: 64px; height: 64px; border: 1px solid #E2E8F0;">
-                    <i data-lucide="globe" class="text-primary" style="width: 32px; height: 32px; color: var(--mre-blue) !important;"></i>
+                <!-- Imagen en el encabezado solicitada -->
+                <div class="d-inline-flex align-items-center justify-content-center bg-white p-2 rounded-4 mb-3" style="box-shadow: 0 8px 16px rgba(0, 40, 85, 0.08); width: 84px; height: 84px; border: 1px solid #E2E8F0; overflow: hidden;">
+                    <img src="image_13df9c.png" alt="Logo Institucional MRE" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://via.placeholder.com/84?text=SIA-PY';">
                 </div>
                 <h1 class="system-title text-uppercase">SIA-PY</h1>
                 <p class="system-subtitle">SISTEMA INTEGRADO DE APOSTILLA ELECTRONICA DEL PARAGUAY</p>
@@ -184,8 +245,26 @@
             <div class="logo-section text-center"><h1 class="system-title text-uppercase" style="font-size: 1.6rem;">Crear Cuenta</h1><p class="system-subtitle">Registro Tradicional</p></div>
             <div id="registerError" class="error-message-box"><i data-lucide="alert-triangle" class="size-4"></i> Todos los campos con asterisco rojo son obligatorios.</div>
             <form class="row g-3 text-start" id="formRegister">
-                <div class="col-md-6"><label class="form-label">Tipo de documento <span class="required-star">*</span></label><select class="form-control-mre" id="regDocType" onchange="toggleDocHelp()" style="padding-left: 1rem;" required><option value="">Seleccione...</option><option value="ci">Cédula de Identidad Civil</option><option value="pas">Pasaporte</option><option value="dni">DNI Extranjero</option></select></div>
-                <div class="col-md-6"><label class="form-label">Número de documento <span class="required-star">*</span></label><input type="text" class="form-control-mre" placeholder="Ej: 1234567" style="padding-left: 1rem;" required><a href="javascript:void(0)" id="docHelpLink" onclick="openHelp()" class="help-link hidden">¿Dónde está el número?</a></div>
+                <div class="col-md-6">
+                    <label class="form-label">Tipo de documento <span class="required-star">*</span></label>
+                    <select class="form-control-mre" id="regDocType" onchange="toggleDocHelp()" style="padding-left: 1rem;" required>
+                        <option value="">Seleccione...</option>
+                        <option value="ci">Cédula de Identidad Civil</option>
+                        <option value="pas">Pasaporte</option>
+                        <option value="dni">DNI Extranjero</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Número de documento <span class="required-star">*</span></label>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="text" class="form-control-mre" placeholder="Ej: 1234567" style="padding-left: 1rem;" required>
+                        <!-- Pequeña imagen indicativa añadida -->
+                        <div id="docHelpImg" class="hidden" onclick="openHelp()">
+                            <img src="https://via.placeholder.com/60x40/D52B1E/FFFFFF?text=DOC" alt="Dato Documento" class="doc-help-thumb" title="Clic para ver dónde encontrar el dato">
+                        </div>
+                    </div>
+                    <a href="javascript:void(0)" id="docHelpLink" onclick="openHelp()" class="help-link hidden">¿Dónde está el número?</a>
+                </div>
                 <div class="col-md-6"><label class="form-label">Nombres <span class="required-star">*</span></label><input type="text" class="form-control-mre" style="padding-left: 1rem;" required></div>
                 <div class="col-md-6"><label class="form-label">Apellidos <span class="required-star">*</span></label><input type="text" class="form-control-mre" style="padding-left: 1rem;" required></div>
                 <div class="col-md-6"><label class="form-label">Nacionalidad <span class="required-star">*</span></label><select class="form-control-mre" style="padding-left: 1rem;" required><option value="">Seleccione...</option><option>Paraguaya</option><option>Argentina</option><option>Brasileña</option></select></div>
@@ -226,6 +305,19 @@
         <div class="auth-card hidden" id="facebookLoginScreen"><h5 class="fw-bold mb-4 text-center">Continuar con Facebook</h5><button class="btn-main" onclick="processExternalLogin('facebook')">ACEPTAR</button></div>
         <div class="auth-card hidden" id="googleLoginScreen"><h5 class="fw-bold mb-4 text-center">Seleccionar cuenta de Google</h5><button class="btn-main" onclick="processExternalLogin('google')">JUAN PEREZ (Gmail)</button></div>
     </section>
+
+    <!-- FOOTER INSTITUCIONAL -->
+    <footer class="mre-footer">
+        <div class="footer-left">
+            &copy; 2026 Ministerio de Relaciones Exteriores - Dirección de Informática
+        </div>
+        <div class="footer-right">
+            <a href="https://www.mre.gov.py/contactenos/" target="_blank" class="btn-help">
+                <i data-lucide="help-circle" style="width: 18px; height: 18px;"></i>
+                ¿Necesitas ayuda?
+            </a>
+        </div>
+    </footer>
 
     <script>
         lucide.createIcons();
@@ -352,8 +444,16 @@
 
         function toggleDocHelp() {
             const val = document.getElementById('regDocType').value;
-            const l = document.getElementById('docHelpLink');
-            if (val === 'pas' || val === 'dni') l.classList.remove('hidden'); else l.classList.add('hidden');
+            const link = document.getElementById('docHelpLink');
+            const thumb = document.getElementById('docHelpImg');
+            
+            if (val === 'pas' || val === 'dni') {
+                link.classList.remove('hidden');
+                thumb.classList.remove('hidden');
+            } else {
+                link.classList.add('hidden');
+                thumb.classList.add('hidden');
+            }
         }
 
         function openHelp() { document.getElementById('helpModal').style.display = 'flex'; lucide.createIcons(); }
