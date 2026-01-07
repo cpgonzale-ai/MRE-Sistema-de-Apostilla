@@ -304,6 +304,18 @@
             border-bottom: 1px solid #F1F5F9; vertical-align: middle; 
             color: var(--text-main);
         }
+        
+        /* Estilo para filas inactivas */
+        .row-inactive td {
+            color: #94A3B8;
+            background-color: #F8FAFC;
+        }
+        .row-inactive .badge {
+            opacity: 0.6;
+            background-color: #E2E8F0 !important;
+            color: #64748B !important;
+            border: 1px solid #CBD5E1 !important;
+        }
 
         /* --- BOTONES Y ACCIONES --- */
         .btn-main { 
@@ -327,14 +339,39 @@
             transition: var(--transition); cursor: pointer;
         }
         .btn-action-icon:hover { background: #F1F5F9; color: var(--mre-blue); border-color: var(--mre-blue); }
-
+        
+        .btn-action-activate {
+            color: var(--mre-green); border-color: #10B981;
+        }
+        .btn-action-activate:hover {
+            background: #ECFDF5; color: #059669; border-color: #059669;
+        }
+        
+        /* PAGINACIÓN */
         .grid-footer {
             padding: 1rem 1.5rem;
             background-color: #F8FAFC;
             border-top: 1px solid var(--border-color);
             display: flex;
-            justify-content: flex-end;
-            gap: 12px;
+            justify-content: space-between; /* Separar izq/der */
+            align-items: center;
+        }
+
+        .btn-pagination {
+            width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            background: white; border: 1px solid #E2E8F0; border-radius: 8px;
+            color: var(--text-muted); cursor: pointer; transition: var(--transition);
+        }
+        .btn-pagination:hover:not(:disabled) {
+            background: var(--mre-blue); color: white; border-color: var(--mre-blue);
+        }
+        .btn-pagination:disabled {
+            opacity: 0.5; cursor: not-allowed; background: #F1F5F9;
+        }
+        
+        .page-indicator {
+            font-size: 0.85rem; font-weight: 700; color: var(--mre-blue); padding: 0 8px;
         }
 
         .btn-cancel-mre {
@@ -402,6 +439,7 @@
         .badge-crear { background: #DCFCE7; color: #15803D; }
         .badge-modificar { background: #E0F2FE; color: #0369A1; }
         .badge-inactivar { background: #FEE2E2; color: #B91C1C; }
+        .badge-activar { background: #ecfdf5; color: #10b981; }
 
         /* Media Queries para Tablets/Móviles */
         @media (max-width: 992px) {
@@ -440,6 +478,9 @@
             
             .user-dropdown { margin-right: 0; }
             .user-info-text { display: none; } /* Ocultar info de usuario detallada en móvil */
+            
+            .grid-footer { flex-direction: column; gap: 15px; align-items: flex-start; }
+            .grid-footer > div { width: 100%; justify-content: space-between; }
         }
         
         /* Ocultar texto de accesibilidad en pantallas pequeñas */
@@ -586,7 +627,7 @@
                     <div class="col-md-4">
                         <div id="tipoInfo" class="d-none d-flex align-items-center justify-content-between gap-3">
                             <div>
-                                <label class="form-label">Estado de la Cabecera</label>
+                                <label class="form-label">Estado</label>
                                 <div class="fw-bold text-muted" id="tipoModuloLabel" style="font-size: 0.95rem;">---</div>
                             </div>
                             <div class="d-flex gap-2">
@@ -654,13 +695,47 @@
                     </table>
                 </div>
 
+                <!-- FOOTER CON PAGINACIÓN Y ACCIONES -->
                 <div class="grid-footer">
-                    <button class="btn-danger-outline d-inline-flex align-items-center gap-2" id="btnInactivar" disabled onclick="handleInactivar()" title="Inactivar registros seleccionados">
-                        <i data-lucide="power" style="width: 14px;"></i> Inactivar
-                    </button>
-                    <button class="btn-cancel-mre" id="btnCancelDeselect" disabled onclick="deselectAll()" title="Cancelar selección actual">
-                        Cancelar
-                    </button>
+                    <!-- IZQUIERDA: INFORMACIÓN -->
+                    <div class="d-flex align-items-center">
+                        <span class="text-muted small fw-bold" id="paginationInfo">Mostrando 0 a 0 de 0 registros</span>
+                    </div>
+
+                    <!-- DERECHA: ACCIONES Y PAGINACIÓN -->
+                    <div class="d-flex align-items-center gap-3">
+                        <!-- Botones de Acción (Inactivar/Cancelar) -->
+                        <div class="d-flex gap-2">
+                             <button class="btn-danger-outline d-inline-flex align-items-center gap-2" id="btnInactivar" disabled onclick="handleInactivar()" title="Inactivar registros seleccionados (solo activos)">
+                                <i data-lucide="power" style="width: 14px;"></i> Inactivar
+                            </button>
+                            <button class="btn-cancel-mre" id="btnCancelDeselect" disabled onclick="deselectAll()" title="Cancelar selección actual">
+                                Cancelar
+                            </button>
+                        </div>
+
+                        <!-- Separador vertical (opcional) -->
+                        <div style="width:1px; height:24px; background:#E2E8F0;"></div>
+
+                        <!-- Controles Paginación -->
+                        <div class="d-flex align-items-center gap-1">
+                            <button class="btn-pagination" id="btnPageFirst" onclick="changePage('first')" title="Primera Página">
+                                <i data-lucide="chevrons-left" style="width: 16px;"></i>
+                            </button>
+                            <button class="btn-pagination" id="btnPagePrev" onclick="changePage('prev')" title="Página Anterior">
+                                <i data-lucide="chevron-left" style="width: 16px;"></i>
+                            </button>
+                            
+                            <span class="page-indicator" id="pageIndicator">Pág 1</span>
+                            
+                            <button class="btn-pagination" id="btnPageNext" onclick="changePage('next')" title="Página Siguiente">
+                                <i data-lucide="chevron-right" style="width: 16px;"></i>
+                            </button>
+                            <button class="btn-pagination" id="btnPageLast" onclick="changePage('last')" title="Última Página">
+                                <i data-lucide="chevrons-right" style="width: 16px;"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>
@@ -834,7 +909,6 @@
         }
 
         document.addEventListener('click', (e) => {
-            // Cerrar menú de accesibilidad si se hace clic fuera
             const menu = document.getElementById('a11yMenu');
             const trigger = document.getElementById('a11yTrigger');
             if (menu && trigger && !menu.contains(e.target) && !trigger.contains(e.target)) {
@@ -896,49 +970,51 @@
             { id: 2, dominio: 'NACIONALIDAD', modulo: 'REGISTRO DE USUARIO', estado: 'ACTI', descripcion: 'Países de origen.' }
         ];
 
-        const mockRef = [
-            { id: 1, id_tipo: 1, descripcion: 'Cédula de Identidad', val_alf: 'CI', val_num: 1, val_fec: null, desc_larga: 'Documento nacional', usu_alta: 'CGONZALEZ', fecha_alta: '24/11/2025' },
-            { id: 2, id_tipo: 1, descripcion: 'Pasaporte', val_alf: 'PAS', val_num: 2, val_fec: null, desc_larga: 'Documento de viaje', usu_alta: 'CGONZALEZ', fecha_alta: '24/11/2025' },
-            { id: 7, id_tipo: 2, descripcion: 'PARAGUAYA', val_alf: 'PAR', val_num: null, val_fec: null, desc_larga: 'Local', usu_alta: 'CGONZALEZ', fecha_alta: '24/11/2025' }
+        // Se agregó estado: 'ACTI' | 'INAC'
+        let mockRef = [
+            { id: 1, id_tipo: 1, estado: 'ACTI', descripcion: 'Cédula de Identidad', val_alf: 'CI', val_num: 1, val_fec: null, desc_larga: 'Documento nacional', usu_alta: 'CGONZALEZ', fecha_alta: '24/11/2025' },
+            { id: 2, id_tipo: 1, estado: 'INAC', descripcion: 'Pasaporte', val_alf: 'PAS', val_num: 2, val_fec: null, desc_larga: 'Documento de viaje', usu_alta: 'CGONZALEZ', fecha_alta: '24/11/2025' },
+            { id: 7, id_tipo: 2, estado: 'ACTI', descripcion: 'PARAGUAYA', val_alf: 'PAR', val_num: null, val_fec: null, desc_larga: 'Local', usu_alta: 'CGONZALEZ', fecha_alta: '24/11/2025' }
         ];
 
-        const mockAudit = {
-            1: [
-                { fecha: '24/11/2025 08:30', accion: 'crear', usuario: 'ADMIN_SISTEMA', descripcion: 'Creación inicial del registro de Cédula de Identidad.' },
-                { fecha: '25/11/2025 10:15', accion: 'modificar', usuario: 'CGONZALEZ', descripcion: 'Actualización de la descripción larga del documento.' }
-            ],
-            2: [
-                { fecha: '24/11/2025 09:00', accion: 'crear', usuario: 'ADMIN_SISTEMA', descripcion: 'Alta de Pasaporte en el dominio de identidad.' }
-            ],
-            7: [
-                { fecha: '24/11/2025 09:15', accion: 'crear', usuario: 'ADMIN_SISTEMA', descripcion: 'Registro de nacionalidad paraguaya.' },
-                { fecha: '01/12/2025 14:00', accion: 'inactivar', usuario: 'SUPERVISOR_MRE', descripcion: 'Inactivación temporal por mantenimiento de catálogo.' }
-            ]
-        };
+        // --- GENERADOR DE DATOS DE PRUEBA (Para llenar la tabla y probar paginación) ---
+        for (let i = 3; i <= 20; i++) {
+            if (i !== 7) { // Evitar colisión de ID
+                mockRef.push({
+                    id: i, 
+                    id_tipo: 1, 
+                    estado: i % 4 === 0 ? 'INAC' : 'ACTI', // Algunos inactivos
+                    descripcion: `Documento Tipo ${i}`, 
+                    val_alf: `DOC${i}`, 
+                    val_num: i, 
+                    val_fec: null, 
+                    desc_larga: `Descripción larga para documento ${i}`, 
+                    usu_alta: 'SISTEMA', 
+                    fecha_alta: '01/01/2026'
+                });
+            }
+        }
 
+        const mockAudit = {};
         const mockAuditTipo = {
-            1: [
-                { fecha: '01/01/2024 10:00', accion: 'crear', usuario: 'ADMIN_ROOT', descripcion: 'Creación del dominio de documentos.' }
-            ],
-            2: [
-                { fecha: '15/03/2024 09:30', accion: 'crear', usuario: 'ADMIN_ROOT', descripcion: 'Creación del dominio de nacionalidades.' },
-                { fecha: '20/03/2024 11:00', accion: 'modificar', usuario: 'CGONZALEZ', descripcion: 'Corrección en la descripción.' }
-            ]
+            1: [ { fecha: '01/01/2024 10:00', accion: 'crear', usuario: 'ADMIN_ROOT', descripcion: 'Creación del dominio de documentos.' } ]
         };
 
+        // --- VARIABLES DE PAGINACIÓN ---
         let selectedTipoId = null;
+        let currentPage = 1;
+        const rowsPerPage = 5;
+        let currentFilteredData = [];
 
         document.addEventListener('DOMContentLoaded', () => {
             initAccessibility();
             const selector = document.getElementById('tipoSelector');
             selector.innerHTML += mockTipos.map(t => `<option value="${t.id}">${t.dominio}</option>`).join('');
             lucide.createIcons();
+            updatePaginationControls(); // Inicializar estado disabled
         });
 
         function toggleUserMenu(e) { e.stopPropagation(); document.getElementById('userMenu').classList.toggle('show'); }
-        
-        // Cerrar menú usuario al hacer clic fuera (manejado en el listener global también)
-        
         function handleLogout() { if(confirm('¿Desea cerrar su sesión actual?')) location.reload(); }
 
         function handleExclusiveInput(changedId) {
@@ -955,7 +1031,9 @@
                 document.getElementById('btnAddRef').disabled = true;
                 document.getElementById('btnInactivar').disabled = true;
                 document.getElementById('btnCancelDeselect').disabled = true;
-                renderReferencias(null);
+                document.getElementById('paginationInfo').innerText = "Mostrando 0 a 0 de 0 registros";
+                currentFilteredData = [];
+                renderReferenciasTable([]);
                 return;
             }
             selectedTipoId = parseInt(id);
@@ -965,7 +1043,101 @@
             document.getElementById('currentTipoLabel').innerText = tipo.dominio;
             document.getElementById('btnAddRef').disabled = false;
             document.getElementById('similaritySearchInput').value = '';
-            renderReferencias(selectedTipoId);
+            
+            // Reset pagination
+            currentPage = 1;
+            filterAndRender();
+        }
+
+        function filterAndRender() {
+            const query = document.getElementById('similaritySearchInput').value.toLowerCase();
+            currentFilteredData = mockRef.filter(r => r.id_tipo === selectedTipoId);
+            
+            if (query) {
+                currentFilteredData = currentFilteredData.filter(r => 
+                    r.descripcion.toLowerCase().includes(query) || 
+                    (r.val_alf && r.val_alf.toLowerCase().includes(query)) ||
+                    (r.val_num && r.val_num.toString().includes(query))
+                );
+            }
+            
+            // Calcular paginación
+            const totalRecords = currentFilteredData.length;
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const paginatedData = currentFilteredData.slice(start, end);
+            
+            // Actualizar texto info
+            const showStart = totalRecords > 0 ? start + 1 : 0;
+            const showEnd = Math.min(end, totalRecords);
+            document.getElementById('paginationInfo').innerText = `Mostrando ${showStart} a ${showEnd} de ${totalRecords} registros`;
+            
+            renderReferenciasTable(paginatedData);
+            updatePaginationControls();
+        }
+
+        function renderReferenciasTable(data) {
+            const body = document.getElementById('referenciasTableBody');
+            if (data.length === 0) {
+                if (selectedTipoId) {
+                     body.innerHTML = `<tr><td colspan="5" class="text-center py-5 text-warning fw-bold">No se encontraron registros coincidentes.</td></tr>`;
+                } else {
+                     body.innerHTML = `<tr><td colspan="5" class="text-center py-5 text-muted"><p class="fw-bold">Seleccione un Tipo de Referencia para gestionar sus valores</p></td></tr>`;
+                }
+                return;
+            }
+            
+            body.innerHTML = data.map(r => {
+                const isInactive = r.estado === 'INAC';
+                const rowClass = isInactive ? 'row-inactive' : '';
+                const activateBtn = isInactive 
+                    ? `<button class="btn-action-icon btn-action-activate" title="Activar registro" onclick="handleActivate(${r.id})" aria-label="Activar"><i data-lucide="check-circle" style="width:16px"></i></button>`
+                    : '';
+                
+                return `
+                <tr class="${rowClass}" data-ref-id="${r.id}" data-ref-desc="${r.descripcion}" data-ref-estado="${r.estado}">
+                    <td class="text-center"><input type="checkbox" class="mre-checkbox record-check" onchange="handleCheckboxChange()" title="Seleccionar registro ID ${r.id}" aria-label="Seleccionar registro"></td>
+                    <td class="fw-bold text-navy text-center">${r.id}</td>
+                    <td><div class="fw-bold">${r.descripcion}</div></td>
+                    <td><span class="badge bg-light text-dark border px-3">${r.val_alf || '-'}</span></td>
+                    <td>
+                        <div class="d-flex justify-content-center gap-2">
+                            ${activateBtn}
+                            <button class="btn-action-icon" title="Visualizar detalles de ${r.descripcion}" onclick="openModal('modalRef', 'view', ${r.id})" aria-label="Ver detalles"><i data-lucide="eye" style="width:16px"></i></button>
+                            <button class="btn-action-icon" title="Editar registro ${r.descripcion}" onclick="openModal('modalRef', 'edit', ${r.id})" aria-label="Editar" ${isInactive ? 'disabled style="opacity:0.5;cursor:not-allowed"' : ''}><i data-lucide="edit-3" style="width:16px"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `}).join('');
+            lucide.createIcons();
+            handleCheckboxChange(); // Reset button states
+        }
+
+        // --- FUNCIONES DE PAGINACIÓN ---
+        function changePage(action) {
+            const totalPages = Math.ceil(currentFilteredData.length / rowsPerPage);
+            if (action === 'first') currentPage = 1;
+            else if (action === 'prev' && currentPage > 1) currentPage--;
+            else if (action === 'next' && currentPage < totalPages) currentPage++;
+            else if (action === 'last') currentPage = totalPages;
+            
+            deselectAll(); // Deseleccionar al cambiar de página por seguridad
+            filterAndRender();
+        }
+
+        function updatePaginationControls() {
+            const totalPages = Math.ceil(currentFilteredData.length / rowsPerPage) || 1;
+            document.getElementById('pageIndicator').innerText = `Pág ${currentPage} de ${totalPages}`;
+            
+            document.getElementById('btnPageFirst').disabled = currentPage === 1;
+            document.getElementById('btnPagePrev').disabled = currentPage === 1;
+            document.getElementById('btnPageNext').disabled = currentPage === totalPages;
+            document.getElementById('btnPageLast').disabled = currentPage === totalPages;
+        }
+
+        function handleSimilaritySearch() { 
+            currentPage = 1; 
+            filterAndRender(); 
         }
 
         function editSelectedTipo() {
@@ -987,50 +1159,11 @@
             const tipo = mockTipos.find(t => t.id === selectedTipoId);
             if (tipo) {
                 tipo.estado = 'INAC';
-                // Inactivate all children references logically if needed, for now just updating the type status
                 alert(`El Tipo de Referencia "${tipo.dominio}" ha sido inactivado.`);
                 handleTipoChange(selectedTipoId); // Refresh UI
             }
             closeModal('modalConfirmInactivateTipo');
         }
-
-        function renderReferencias(tipoId, query = '') {
-            const body = document.getElementById('referenciasTableBody');
-            if (!tipoId) {
-                body.innerHTML = `<tr><td colspan="5" class="text-center py-5 text-muted"><p class="fw-bold">Seleccione un Tipo de Referencia para gestionar sus valores</p></td></tr>`;
-                return;
-            }
-            let data = mockRef.filter(r => r.id_tipo === tipoId);
-            if (query) {
-                data = data.filter(r => 
-                    r.descripcion.toLowerCase().includes(query.toLowerCase()) || 
-                    (r.val_alf && r.val_alf.toLowerCase().includes(query.toLowerCase())) ||
-                    (r.val_num && r.val_num.toString().includes(query))
-                );
-            }
-            if (data.length === 0) {
-                body.innerHTML = `<tr><td colspan="5" class="text-center py-5 text-warning fw-bold">No se encontraron registros coincidentes.</td></tr>`;
-                return;
-            }
-            body.innerHTML = data.map(r => `
-                <tr data-ref-id="${r.id}" data-ref-desc="${r.descripcion}">
-                    <td class="text-center"><input type="checkbox" class="mre-checkbox record-check" onchange="handleCheckboxChange()" title="Seleccionar registro ID ${r.id}" aria-label="Seleccionar registro"></td>
-                    <td class="fw-bold text-navy text-center">${r.id}</td>
-                    <td><div class="fw-bold">${r.descripcion}</div></td>
-                    <td><span class="badge bg-light text-dark border px-3">${r.val_alf || '-'}</span></td>
-                    <td>
-                        <div class="d-flex justify-content-center gap-2">
-                            <button class="btn-action-icon" title="Visualizar detalles de ${r.descripcion}" onclick="openModal('modalRef', 'view', ${r.id})" aria-label="Ver detalles"><i data-lucide="eye" style="width:16px"></i></button>
-                            <button class="btn-action-icon" title="Editar registro ${r.descripcion}" onclick="openModal('modalRef', 'edit', ${r.id})" aria-label="Editar"><i data-lucide="edit-3" style="width:16px"></i></button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
-            lucide.createIcons();
-            handleCheckboxChange();
-        }
-
-        function handleSimilaritySearch() { renderReferencias(selectedTipoId, document.getElementById('similaritySearchInput').value); }
 
         function toggleSelectAll(source) {
             document.querySelectorAll('.record-check').forEach(c => c.checked = source.checked);
@@ -1046,7 +1179,21 @@
 
         function handleCheckboxChange() {
             const checks = document.querySelectorAll('.record-check:checked');
-            document.getElementById('btnInactivar').disabled = checks.length === 0;
+            const btnInactivar = document.getElementById('btnInactivar');
+            
+            let allActive = true;
+            if (checks.length > 0) {
+                checks.forEach(check => {
+                    const row = check.closest('tr');
+                    if (row.getAttribute('data-ref-estado') !== 'ACTI') {
+                        allActive = false;
+                    }
+                });
+            } else {
+                allActive = false; 
+            }
+
+            btnInactivar.disabled = !allActive;
             document.getElementById('btnCancelDeselect').disabled = checks.length === 0;
             
             const selectAll = document.getElementById('selectAll');
@@ -1068,11 +1215,28 @@
             openModal('modalConfirmInactivate');
         }
 
+        function handleActivate(id) {
+            const r = mockRef.find(i => i.id === id);
+            if (r) {
+                if(confirm(`¿Desea activar nuevamente el registro "${r.descripcion}"?`)) {
+                    r.estado = 'ACTI';
+                    filterAndRender(); // Recargar la tabla manteniendo la página
+                }
+            }
+        }
+
         function executeInactivation() {
+            document.querySelectorAll('.record-check:checked').forEach(check => {
+                const row = check.closest('tr');
+                const id = parseInt(row.getAttribute('data-ref-id'));
+                const r = mockRef.find(i => i.id === id);
+                if (r) r.estado = 'INAC';
+            });
+            
             alert(`Éxito: Se han inactivado las referencias seleccionadas.`);
             closeModal('modalConfirmInactivate');
             deselectAll();
-            renderReferencias(selectedTipoId);
+            filterAndRender();
         }
 
         function validateRefForm(event) {
@@ -1086,6 +1250,20 @@
             }
             alert('Referencia procesada exitosamente.');
             closeModal('modalRef');
+            // Aquí iría la lógica real de guardar, agregaremos uno ficticio
+            const newDesc = document.getElementById('refDesc').value;
+            mockRef.push({
+                id: mockRef.length + 100,
+                id_tipo: selectedTipoId,
+                estado: 'ACTI',
+                descripcion: newDesc,
+                val_alf: valAlf,
+                val_num: valNum,
+                val_fec: valFec,
+                usu_alta: 'SISTEMA',
+                fecha_alta: new Date().toLocaleDateString()
+            });
+            filterAndRender();
             return true;
         }
 
@@ -1096,8 +1274,6 @@
                 const auditSection = document.getElementById('auditHistorySectionTipo');
                 const form = document.getElementById('formTipo');
                 form.reset();
-                
-                // Reset common state
                 document.getElementById('tipoDescInput').removeAttribute('readonly');
                 btnSave.style.display = 'block';
                 btnCancel.innerText = 'Cancelar';
@@ -1119,8 +1295,6 @@
                     document.getElementById('tipoDescInput').setAttribute('readonly', true);
                     btnSave.style.display = 'none';
                     btnCancel.innerText = 'Cerrar';
-
-                    // Mostrar auditoría
                     auditSection.classList.remove('d-none');
                     const historyData = mockAuditTipo[selectedTipoId] || [];
                     document.getElementById('auditHistoryBodyTipo').innerHTML = historyData.length ? historyData.map(h => `
@@ -1131,7 +1305,6 @@
                             <td class="text-muted italic">${h.descripcion}</td>
                         </tr>
                     `).join('') : '<tr><td colspan="4" class="text-center py-3">No hay historial disponible</td></tr>';
-
                 } else {
                     document.getElementById('modalTipoTitle').innerText = 'Crear Nuevo Tipo';
                     document.getElementById('tipoIdInput').removeAttribute('readonly');
@@ -1164,15 +1337,6 @@
                         btnSave.style.display = 'none';
                         enableFields(false);
                         auditSection.classList.remove('d-none');
-                        const historyData = mockAudit[refId] || [];
-                        document.getElementById('auditHistoryBody').innerHTML = historyData.length ? historyData.map(h => `
-                            <tr>
-                                <td class="fw-bold">${h.fecha}</td>
-                                <td><span class="badge-audit badge-${h.accion}">${h.accion}</span></td>
-                                <td><div class="fw-bold">${h.usuario}</div></td>
-                                <td class="text-muted italic">${h.descripcion}</td>
-                            </tr>
-                        `).join('') : '<tr><td colspan="4" class="text-center py-3">No hay historial disponible</td></tr>';
                     } else {
                         document.getElementById('refModalTitle').innerText = 'Editar Referencia';
                         btnSave.style.display = 'block';
@@ -1185,11 +1349,7 @@
             lucide.createIcons();
         }
 
-        function showUnderConstruction(e) {
-            e.preventDefault();
-            openModal('modalConstruction');
-        }
-
+        function showUnderConstruction(e) { e.preventDefault(); openModal('modalConstruction'); }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         function enableFields(status) {
             document.querySelectorAll('#formRef input, #formRef textarea').forEach(i => {
