@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIA-PY | Sistema de Apostilla Electrónica</title>
-    <!-- Bootstrap 5 -->
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap 5 JS Bundle (necesario para las pestañas) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Lucide Icons -->
@@ -478,6 +480,22 @@
             box-shadow: 0 4px 12px rgba(0, 40, 85, 0.15);
         }
 
+        /* Nav Tabs Customization */
+        .nav-tabs .nav-link {
+            color: #64748B;
+            border: 1px solid transparent;
+            border-top-left-radius: .25rem;
+            border-top-right-radius: .25rem;
+        }
+        .nav-tabs .nav-link.active {
+            color: var(--mre-blue);
+            border-color: #dee2e6 #dee2e6 #fff;
+        }
+        .nav-tabs .nav-link:hover {
+            border-color: #e9ecef #e9ecef #dee2e6;
+            color: var(--mre-blue);
+        }
+
         @media (max-width: 768px) {
             .mre-footer {
                 flex-direction: column;
@@ -562,8 +580,8 @@
         <div id="dashboardView" class="animate-fade">
             <div class="action-divider"><span class="action-label">Acciones Principales</span></div>
             <div class="mb-3">
-                <button class="btn-main d-inline-flex align-items-center gap-2">
-                    <i data-lucide="plus" style="width: 16px;"></i> Nueva Apostilla
+                <button class="btn-main d-inline-flex align-items-center gap-2" onclick="navigateTo('newRequest')">
+                    <i data-lucide="plus" style="width: 16px;"></i> Nueva Solicitud
                 </button>
             </div>
 
@@ -783,6 +801,165 @@
                 </form>
             </div>
         </div>
+
+        <!-- NEW REQUEST VIEW -->
+        <div id="newRequestView" class="hidden animate-fade">
+            <div class="grid-frame p-4 p-md-5 mx-auto" style="max-width: 900px; margin-top: 2rem;">
+                <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+                    <h4 class="fw-black text-navy m-0">Crear Solicitud</h4>
+                    <span class="badge bg-light text-dark border">Nuevo Trámite</span>
+                </div>
+
+                <form id="newRequestForm" onsubmit="event.preventDefault(); submitRequest();">
+                    <div class="row g-4">
+                        <!-- 1. PAIS -->
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">País de Destino <span class="text-danger">*</span></label>
+                            <select class="form-control-mre" id="reqCountry" required>
+                                <option value="" selected disabled>Seleccione...</option>
+                                <option value="Argentina">Argentina</option>
+                                <option value="Brasil">Brasil</option>
+                                <option value="España">España</option>
+                                <option value="Estados Unidos">Estados Unidos</option>
+                                <option value="Uruguay">Uruguay</option>
+                                <option value="Alemania">Alemania</option>
+                                <option value="Francia">Francia</option>
+                            </select>
+                        </div>
+
+                        <!-- 2. INSTITUCION -->
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Institución Emisora <span class="text-danger">*</span></label>
+                            <select class="form-control-mre" id="reqInstitution" required>
+                                <option value="" selected disabled>Seleccione...</option>
+                                <option value="REC">Registro del Estado Civil</option>
+                                <option value="MEC">Ministerio de Educación y Ciencias</option>
+                                <option value="CSJ">Corte Suprema de Justicia</option>
+                                <option value="UP">Universidad Privada</option>
+                                <option value="DNIT">Dirección Nacional de Ingresos Tributarios</option>
+                            </select>
+                        </div>
+
+                        <!-- 3. TIPO DE TRAMITE -->
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Tipo de Trámite <span class="text-danger">*</span></label>
+                            <select class="form-control-mre" id="reqType" required>
+                                <option value="" selected disabled>Seleccione...</option>
+                                <option value="Apostilla">Apostilla</option>
+                                <option value="Legalización">Legalización</option>
+                            </select>
+                        </div>
+
+                        <!-- 4. TIPO DE FIRMA -->
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Tipo de Firma <span class="text-danger">*</span></label>
+                            <select class="form-control-mre" id="reqSignature" onchange="handleSignatureChange()" required>
+                                <option value="" selected disabled>Seleccione...</option>
+                                <option value="Electrónica">Electrónica</option>
+                                <option value="Ológrafa">Ológrafa (Manuscrita)</option>
+                            </select>
+                        </div>
+
+                        <!-- CAMPO ADJUNTO (CONDICIONAL) -->
+                        <div class="col-md-12 hidden animate-fade" id="attachmentField">
+                            <div class="p-3 bg-light border rounded-3 border-dashed" style="border-style: dashed !important; border-color: #cbd5e1 !important;">
+                                <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2 text-primary">
+                                    <i data-lucide="paperclip" style="width:14px"></i> Adjuntar Documento (PDF) <span class="text-danger">*</span>
+                                </label>
+                                <input type="file" class="form-control-mre" id="reqFile" accept=".pdf">
+                                <small class="text-muted mt-1 d-block" style="font-size: 0.7rem;">El documento debe estar firmado digitalmente. Formato .pdf, Máx 5MB.</small>
+                            </div>
+                        </div>
+
+                        <!-- 5. TIPO DE DOCUMENTO (DEPENDIENTE) -->
+                        <div class="col-md-12">
+                            <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Tipo de Documento <span class="text-danger">*</span></label>
+                            <select class="form-control-mre" id="reqDocType" onchange="handleDocTypeChange()" disabled required>
+                                <option value="" selected disabled>Seleccione primero el tipo de firma...</option>
+                                <option value="Certificado de Nacimiento">Certificado de Nacimiento</option>
+                                <option value="Certificado de Matrimonio">Certificado de Matrimonio</option>
+                                <option value="Certificado de Defunción">Certificado de Defunción</option>
+                                <option value="Antecedentes Policiales">Antecedentes Policiales</option>
+                                <option value="Certificado de Estudios">Certificado de Estudios</option>
+                                <option value="Título Universitario">Título Universitario</option>
+                            </select>
+                        </div>
+
+                        <!-- PESTAÑAS DE DATOS ADICIONALES (OCULTO INICIALMENTE) -->
+                        <div class="col-12 mt-4 hidden animate-fade" id="additionalDataTabs">
+                            <ul class="nav nav-tabs mb-3" id="requestTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active fw-bold" id="titular-tab" data-bs-toggle="tab" data-bs-target="#titular" type="button" role="tab" aria-selected="true">Datos del Titular</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link fw-bold" id="especificos-tab" data-bs-toggle="tab" data-bs-target="#especificos" type="button" role="tab" aria-selected="false">Datos Específicos</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content p-3 border border-top-0 rounded-bottom bg-white shadow-sm" id="requestTabsContent">
+                                <!-- TAB 1: DATOS TITULAR -->
+                                <div class="tab-pane fade show active" id="titular" role="tabpanel" aria-labelledby="titular-tab">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label text-muted small fw-bold text-uppercase">Tipo de Documento <span class="text-danger">*</span></label>
+                                            <select class="form-control-mre" id="titularDocType" required>
+                                                <option value="CI">Cédula de Identidad</option>
+                                                <option value="PAS">Pasaporte</option>
+                                                <option value="OTRO">Otro</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label text-muted small fw-bold text-uppercase">Número de Documento <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control-mre" id="titularDocNum" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label text-muted small fw-bold text-uppercase">Nombre del Titular <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control-mre" id="titularName" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label text-muted small fw-bold text-uppercase">Nro. de Certificado de Nacimiento <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control-mre" id="titularCertNum" required>
+                                        </div>
+                                        
+                                        <!-- Botón Siguiente -->
+                                        <div class="col-12 text-end mt-4">
+                                            <button type="button" class="btn btn-outline-primary fw-bold px-4 rounded-3 btn-sm" onclick="showTab('especificos-tab')">
+                                                Siguiente <i data-lucide="arrow-right" class="ms-1" style="width:14px; margin-bottom: 2px;"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- TAB 2: DATOS ESPECIFICOS -->
+                                <div class="tab-pane fade" id="especificos" role="tabpanel" aria-labelledby="especificos-tab">
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <label class="form-label text-muted small fw-bold text-uppercase">Número de Acta <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control-mre" id="actaNum" required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label text-muted small fw-bold text-uppercase">Año <span class="text-danger">*</span></label>
+                                            <select class="form-control-mre" id="actaYear" required>
+                                                <!-- Se pobla vía JS -->
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label text-muted small fw-bold text-uppercase">Fecha de Expedición <span class="text-danger">*</span></label>
+                                            <input type="date" class="form-control-mre" id="actaDate" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- BOTONES -->
+                        <div class="col-12 mt-4 d-flex justify-content-end gap-3 border-top pt-4">
+                            <button type="button" class="btn btn-light border fw-bold px-4" onclick="navigateTo('dashboard')">Cancelar</button>
+                            <button type="submit" class="btn-main px-5 shadow-sm">Crear Solicitud</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
     </section>
 
     <!-- FOOTER INSTITUCIONAL -->
@@ -803,6 +980,7 @@
             lucide.createIcons(); 
             initAccessibility();
             renderTable('Devuelto'); 
+            populateYears();
         });
 
         // Configuración unificada de columnas para control de visibilidad
@@ -836,7 +1014,7 @@
                 tabKeys = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'download', 'reason', 'action'];
             } else if (status === 'Devuelto') {
                 tabKeys = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'download', 'obs', 'action'];
-            } else if (status === 'Finalizados') { // APOSTILLA TAB
+            } else if (status === 'Finalizados') { // APOSTILLA TAB LOGIC
                 tabKeys = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'adjunto', 'apostille_leg'];
             } else {
                 tabKeys = ['id', 'doc', 'status', 'date'];
@@ -1137,12 +1315,103 @@
         function exportToExcel() { alert("Exportando a Excel..."); }
 
         function navigateTo(view) {
-            ['dashboardView', 'profileView', 'summaryView'].forEach(v => document.getElementById(v)?.classList.add('hidden'));
+            ['dashboardView', 'profileView', 'summaryView', 'newRequestView'].forEach(v => document.getElementById(v)?.classList.add('hidden'));
             document.getElementById(view + 'View')?.classList.remove('hidden');
             if(view === 'dashboard') renderTable(currentFilter);
             if(view === 'summary') buildSummary();
+            // Reset form if navigating to newRequest
+            if(view === 'newRequest') {
+                document.getElementById('newRequestForm').reset();
+                handleSignatureChange(); // Reset conditional fields state
+                // Reset tabs visibility
+                document.getElementById('additionalDataTabs').classList.add('hidden');
+            }
             lucide.createIcons();
             window.scrollTo(0, 0);
+        }
+
+        // --- LÓGICA DE NUEVA SOLICITUD ---
+        function handleSignatureChange() {
+            const signature = document.getElementById('reqSignature').value;
+            const attachmentField = document.getElementById('attachmentField');
+            const docType = document.getElementById('reqDocType');
+            const additionalTabs = document.getElementById('additionalDataTabs');
+
+            // 1. Mostrar/Ocultar Adjunto
+            if (signature === 'Electrónica') {
+                attachmentField.classList.remove('hidden');
+                // Hacer requerido el archivo si es electrónica
+                document.getElementById('reqFile').required = true;
+            } else {
+                attachmentField.classList.add('hidden');
+                document.getElementById('reqFile').required = false;
+            }
+
+            // 2. Habilitar/Deshabilitar Tipo de Documento
+            if (signature && signature !== "") {
+                docType.disabled = false;
+                if (docType.options[0].text.includes('Seleccione primero')) {
+                     docType.options[0].text = "Seleccione...";
+                }
+            } else {
+                docType.disabled = true;
+                docType.value = ""; // Reset value
+                docType.options[0].text = "Seleccione primero el tipo de firma...";
+                additionalTabs.classList.add('hidden'); // Ocultar pestañas si se resetea la firma
+            }
+            lucide.createIcons(); // Re-render icons if appearing
+        }
+
+        function handleDocTypeChange() {
+            const docType = document.getElementById('reqDocType').value;
+            const additionalTabs = document.getElementById('additionalDataTabs');
+            if(docType) {
+                additionalTabs.classList.remove('hidden');
+                lucide.createIcons(); // Para iconos en el botón siguiente
+            } else {
+                additionalTabs.classList.add('hidden');
+            }
+        }
+
+        // Función para cambiar de pestaña programáticamente
+        function showTab(tabId) {
+            const triggerEl = document.getElementById(tabId);
+            if(triggerEl) {
+                const tab = new bootstrap.Tab(triggerEl);
+                tab.show();
+            }
+        }
+
+        function populateYears() {
+            const select = document.getElementById('actaYear');
+            if(select) {
+                const currentYear = new Date().getFullYear();
+                for(let y = currentYear; y >= 1950; y--) {
+                    const opt = document.createElement('option');
+                    opt.value = y;
+                    opt.innerText = y;
+                    select.appendChild(opt);
+                }
+            }
+        }
+
+        function submitRequest() {
+            // Simulación de envío
+            const popupTitle = document.getElementById('popupTitle');
+            const popupContent = document.getElementById('popupContent');
+            const popupActions = document.getElementById('popupActions');
+            
+            popupTitle.innerText = "Solicitud Creada";
+            popupContent.innerHTML = `
+                <div class="text-center p-3">
+                    <div class="text-success mb-2 d-flex justify-content-center"><i data-lucide="check-circle" style="width:48px; height:48px"></i></div>
+                    <p class="fw-bold mb-0">Su solicitud ha sido registrada correctamente.</p>
+                    <p class="small text-muted mt-2">Nro. de Solicitud: <strong>202699999</strong></p>
+                </div>
+            `;
+            popupActions.innerHTML = `<button class="btn-main w-100" onclick="closePopup(); navigateTo('dashboard')">Ir al Inicio</button>`;
+            document.getElementById('genericPopup').style.display = 'flex';
+            lucide.createIcons();
         }
 
         // --- RESTAURADO: GENERACIÓN DE LIQUIDACIÓN COMPLETA ---
