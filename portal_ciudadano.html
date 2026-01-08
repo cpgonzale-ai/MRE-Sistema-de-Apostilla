@@ -8,18 +8,55 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- PDF Generation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    
     <style>
         :root {
+            /* COLORES ACTUALIZADOS SEGÚN REFERENCIA */
             --mre-blue: #002855;
             --mre-blue-light: #0038A8;
             --mre-red: #D52B1E;
             --mre-green: #10B981;
-            --soft-bg: #f8fafc; 
+            --soft-bg: #f0f4f8; /* Color de fondo actualizado */
             --border-color: #E2E8F0;
             --input-bg: #F8FAFC;
-            --card-shadow: 0 10px 15px -3px rgba(0, 40, 85, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 40, 85, 0.05); /* Sombra actualizada */
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Accesibilidad */
+            --font-scale: 1;
+            --base-font-size: 16px;
+        }
+
+        /* ESCALADO DINÁMICO */
+        html {
+            font-size: calc(var(--base-font-size) * var(--font-scale));
+        }
+
+        /* --- MODO ALTO CONTRASTE --- */
+        body.high-contrast {
+            --mre-blue: #000000;
+            --mre-blue-light: #000000;
+            --mre-red: #D50000;
+            --soft-bg: #FFFFFF;
+            --border-color: #000000;
+            --input-bg: #FFFFFF;
+            --text-main: #000000;
+            --text-muted: #000000;
+            --card-shadow: none;
+        }
+        body.high-contrast .elegant-background,
+        body.high-contrast .bg-pattern { display: none; }
+        body.high-contrast .btn-main { background: #000; border: 2px solid #000; }
+        body.high-contrast .grid-frame { border: 2px solid #000; }
+
+        /* --- MODO ESCALA DE GRISES --- */
+        body.grayscale-mode {
+            filter: grayscale(100%);
         }
 
         body { 
@@ -28,11 +65,15 @@
             background-color: var(--soft-bg); 
             color: #1E293B; 
             overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            text-align: left; /* Alineación actualizada */
         }
 
         .hidden { display: none !important; }
 
-        /* --- EFECTOS DE FONDO --- */
+        /* --- EFECTOS DE FONDO ACTUALIZADOS --- */
         .elegant-background { 
             position: fixed; 
             inset: 0; 
@@ -41,14 +82,15 @@
             background-image: 
                 radial-gradient(at 0% 0%, rgba(0, 56, 168, 0.08) 0px, transparent 50%), 
                 radial-gradient(at 100% 0%, rgba(213, 43, 30, 0.05) 0px, transparent 50%), 
-                radial-gradient(at 100% 100%, rgba(0, 40, 85, 0.06) 0px, transparent 50%); 
+                radial-gradient(at 100% 100%, rgba(0, 40, 85, 0.06) 0px, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(255, 255, 255, 0.8) 0px, transparent 100%); /* Capa extra de brillo */
         }
         
         .bg-pattern { 
             position: fixed; 
             inset: 0; 
             z-index: -1; 
-            opacity: 0.4; 
+            opacity: 0.5; /* Opacidad actualizada */
             background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23002855' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); 
         }
 
@@ -59,14 +101,115 @@
 
         .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
 
-        /* --- CABECERA MEJORADA --- */
-        #portalSection { padding: 1rem 3%; max-width: 1400px; margin: 0 auto; }
+        /* --- CABECERA --- */
+        #portalSection { padding: 1rem 3%; max-width: 1400px; margin: 0 auto; flex: 1; width: 100%; }
         .portal-header { 
             display: flex; justify-content: space-between; align-items: center; background: white; 
             padding: 0.75rem 1.5rem; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 1rem; 
             border: 1px solid var(--border-color);
+            position: relative;
+            z-index: 1100;
         }
 
+        /* --- ESTILOS DE CAMPOS Y FORMULARIOS (EXTRAIDOS) --- */
+        .form-label { 
+            font-size: 0.7rem !important; 
+            font-weight: 800 !important; 
+            text-transform: uppercase !important; 
+            color: #64748B !important; 
+            margin-bottom: 0.3rem; 
+            display: block; 
+            letter-spacing: 0.8px !important; 
+        }
+        
+        .form-control-mre {
+            background-color: var(--input-bg); 
+            border: 1px solid #E2E8F0; 
+            border-radius: 14px; /* Redondeado actualizado */
+            padding: 0.8rem 1rem; /* Padding actualizado (ajustado a 1rem left para compatibilidad sin icono) */
+            font-size: 0.85rem; 
+            width: 100%; 
+            transition: all 0.25s ease; 
+            color: var(--mre-blue); 
+            font-weight: 500;
+        }
+        
+        .form-control-mre:focus { 
+            background-color: #ffffff; 
+            border-color: var(--mre-blue-light); 
+            box-shadow: 0 0 0 4px rgba(0, 56, 168, 0.08); 
+            outline: none; 
+        }
+        
+        .form-control-mre:disabled, .form-control-mre[readonly] { 
+            background-color: #f1f5f9; 
+            color: #94a3b8; 
+            cursor: not-allowed; 
+        }
+
+        /* --- ACCESIBILIDAD --- */
+        .a11y-container { position: relative; margin-right: 15px; }
+        
+        .btn-a11y-trigger {
+            background: #F8FAFC; border: 1px solid var(--border-color); color: var(--mre-blue);
+            border-radius: 12px; padding: 0.5rem 0.8rem; font-weight: 700; font-size: 0.75rem;
+            display: flex; align-items: center; gap: 6px; transition: var(--transition);
+            text-transform: none; 
+            letter-spacing: 0.5px;
+        }
+        .btn-a11y-trigger:hover, .btn-a11y-trigger.active {
+            background: #F1F5F9; border-color: var(--mre-blue-light); color: var(--mre-blue-light);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .a11y-dropdown-menu {
+            position: absolute; top: calc(100% + 10px); right: 0; 
+            background: white; border-radius: 16px; width: 280px;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.15); border: 1px solid var(--border-color);
+            display: none; z-index: 3000; overflow: hidden; animation: fadeIn 0.2s ease-out;
+            padding: 1rem;
+        }
+        .a11y-dropdown-menu.show { display: block; }
+
+        .a11y-section-title {
+            font-size: 0.65rem; font-weight: 800; text-transform: uppercase; color: #94A3B8;
+            margin-bottom: 0.8rem; letter-spacing: 0.5px;
+        }
+
+        .text-resize-controls {
+            display: flex; justify-content: space-between; align-items: center;
+            background: #F8FAFC; border-radius: 10px; padding: 4px; border: 1px solid #E2E8F0;
+            margin-bottom: 1rem;
+        }
+        .btn-resize {
+            width: 32px; height: 32px; border: none; background: white; border-radius: 8px;
+            color: var(--mre-blue); display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: var(--transition);
+        }
+        .btn-resize:hover { background: var(--mre-blue); color: white; }
+        .font-size-display { font-size: 0.85rem; font-weight: 700; color: #475569; }
+
+        .switch-control {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.6rem 0; border-bottom: 1px solid #F1F5F9;
+        }
+        .switch-control:last-child { border-bottom: none; }
+        .switch-label { font-size: 0.8rem; font-weight: 600; color: #1E293B; display: flex; align-items: center; gap: 8px; }
+        
+        .toggle-switch { position: relative; display: inline-block; width: 36px; height: 20px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #cbd5e1; transition: .4s; border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px;
+            background-color: white; transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--mre-blue); }
+        input:checked + .slider:before { transform: translateX(16px); }
+
+        /* --- PERFIL --- */
         .header-profile-trigger {
             display: flex;
             align-items: center;
@@ -82,12 +225,11 @@
             border-color: var(--border-color);
         }
 
-        .user-dropdown { position: relative; }
+        .user-dropdown { position: relative; display: flex; align-items: center; }
         .dropdown-menu-mre { 
             position: absolute; top: 120%; right: 0; background: white; border-radius: 14px; 
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); 
-            border: 1px solid var(--border-color); width: 240px; 
-            display: none; z-index: 1000; overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); border: 1px solid var(--border-color); 
+            width: 240px; display: none; z-index: 1000; overflow: hidden;
             animation: fadeIn 0.2s ease-out;
         }
         .dropdown-menu-mre.show { display: block; }
@@ -107,7 +249,6 @@
         .dropdown-item-mre i { width: 16px; color: #64748B; }
         .dropdown-item-mre:hover i { color: var(--mre-blue); }
         .dropdown-item-mre.text-danger:hover { background: #FFF1F2; color: #BE123C; }
-        .dropdown-item-mre.text-danger:hover i { color: #BE123C; }
 
         .action-divider { border-bottom: 2px solid #E2E8F0; margin: 1.5rem 0 1rem 0; display: flex; align-items: center; }
         .action-label { background: #E2E8F0; color: var(--mre-blue); font-size: 0.65rem; font-weight: 800; padding: 2px 10px; border-radius: 4px 4px 0 0; text-transform: uppercase; }
@@ -123,7 +264,11 @@
         .status-btn.active { border: 2px solid var(--mre-blue); background: #f0f7ff; }
 
         /* --- GRILLA --- */
-        .grid-frame { background: white; border-radius: 20px; padding: 0; box-shadow: var(--card-shadow); border: 1px solid #E2E8F0; position: relative; overflow: hidden; }
+        .grid-frame { 
+            background: white; 
+            border-radius: 20px; /* Podría ser 24px según estilo nuevo, pero mantenemos 20px o subimos un poco */
+            padding: 0; box-shadow: var(--card-shadow); border: 1px solid #E2E8F0; position: relative; overflow: hidden; 
+        }
         .grid-frame::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(to right, var(--mre-red), var(--mre-blue)); }
         .grid-header-frame { background-color: #F1F5F9; padding: 1rem 1.5rem; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; }
 
@@ -131,52 +276,128 @@
         .mre-table th { font-size: 0.65rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 0.85rem 1.5rem; border-bottom: 2px solid #E2E8F0; }
         .mre-table td { padding: 0.85rem 1.5rem; font-size: 0.8rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
 
-        /* --- PAGINACIÓN --- */
-        .pagination-bar { padding: 1rem 1.5rem; background: #ffffff; border-top: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; }
-        .pagination-buttons { display: flex; gap: 0.75rem; align-items: center; }
-        .btn-page { padding: 0.5rem 1rem; font-size: 0.8rem; font-weight: 700; border-radius: 10px; border: 1px solid #E2E8F0; background: white; color: var(--mre-blue); transition: var(--transition); display: flex; align-items: center; gap: 5px; }
-        .btn-page:hover:not(:disabled) { background: #f8fafc; border-color: #CBD5E1; }
-        .current-page-indicator { font-size: 0.9rem; font-weight: 800; color: var(--mre-blue); background: #F1F5F9; padding: 0.5rem 1rem; border-radius: 8px; min-width: 50px; text-align: center; border: 1px solid #E2E8F0; }
+        /* --- NUEVA PAGINACIÓN (COPIADA) --- */
+        .grid-footer {
+            padding: 1rem 1.5rem;
+            background-color: #F8FAFC;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-        /* --- BOTONES --- */
+        .btn-pagination {
+            width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            background: white; border: 1px solid #E2E8F0; border-radius: 8px;
+            color: #64748B; cursor: pointer; transition: var(--transition);
+        }
+        .btn-pagination:hover:not(:disabled) {
+            background: var(--mre-blue); color: white; border-color: var(--mre-blue);
+        }
+        .btn-pagination:disabled {
+            opacity: 0.5; cursor: not-allowed; background: #F1F5F9;
+        }
+        
+        .page-indicator {
+            font-size: 0.85rem; font-weight: 700; color: var(--mre-blue); padding: 0 8px;
+        }
+
+        /* --- BOTONES ACTUALIZADOS --- */
         .btn-main { 
             background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); 
-            color: #ffffff; border: none; border-radius: 10px; padding: 0.6rem 1.25rem; font-weight: 700; 
-            font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; 
-            box-shadow: 0 4px 6px -1px rgba(0, 40, 85, 0.2); transition: var(--transition); 
+            color: #ffffff; border: none; 
+            border-radius: 14px; /* Radio actualizado */
+            padding: 0.95rem; /* Padding actualizado */
+            font-weight: 800; 
+            font-size: 0.85rem; text-transform: uppercase; 
+            letter-spacing: 1.2px; /* Spacing actualizado */
+            box-shadow: 0 10px 15px -3px rgba(0, 40, 85, 0.15); /* Sombra actualizada */
+            transition: var(--transition); 
         }
 
-        .btn-success-mre {
-            background: #10B981; color: white; border: none; border-radius: 8px;
-            padding: 5px 12px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
+        /* --- HERRAMIENTAS --- */
+        .btn-tool-generic {
+            background: #FFFFFF;
+            color: var(--mre-blue);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             transition: var(--transition);
+            cursor: pointer;
+            margin-right: 8px;
+        }
+        .btn-tool-generic:hover {
+            background: #F1F5F9;
+            border-color: var(--mre-blue);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
+        /* --- COLUMNAS --- */
+        .cols-dropdown-container { position: relative; display: inline-block; }
+        .cols-dropdown-menu {
+            position: absolute; top: 120%; left: 0; background: white; border-radius: 14px; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); border: 1px solid var(--border-color);
+            width: 220px; display: none; z-index: 1000; overflow: hidden;
+            animation: fadeIn 0.2s ease-out; padding: 10px 0;
+        }
+        .cols-dropdown-menu.show { display: block; }
+        .col-toggle-item {
+            padding: 8px 16px; display: flex; align-items: center; gap: 12px;
+            cursor: pointer; transition: var(--transition);
+        }
+        .col-toggle-item:hover { background: #F8FAFC; }
+        .col-toggle-item input { cursor: pointer; width: 16px; height: 16px; }
+        .col-toggle-item label { cursor: pointer; font-size: 0.8rem; font-weight: 600; color: #475569; margin: 0; flex-grow: 1; }
+
+        .badge-status { padding: 4px 8px; border-radius: 99px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; }
+        .bg-analisis { background: #E0F2FE; color: #0369A1; }
+        .bg-pagado { background: #D1FAE5; color: #065F46; }
+        .bg-devuelto { background: #FEF3C7; color: #92400E; }
+
+        /* --- ACCION BOTONES --- */
         .btn-ver-pago {
             background: var(--mre-green); color: white; border: none; 
             padding: 6px 14px; border-radius: 8px; font-size: 0.65rem; font-weight: 800; 
             text-transform: uppercase; transition: var(--transition);
             box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
         }
-        .btn-ver-pago:hover { background: #059669; }
+        .btn-ver-pago:hover { background: #059669; transform: translateY(-1px); }
 
-        .btn-table-action {
-            background: #E0F2FE; color: var(--mre-blue); border: 1px solid #BAE6FD;
-            padding: 6px 14px; border-radius: 8px; font-size: 0.65rem; font-weight: 800;
-            text-transform: uppercase; text-decoration: none; transition: var(--transition);
-            display: inline-flex; align-items: center; gap: 6px;
+        .btn-ver-motivo {
+            background: #FEE2E2; color: #B91C1C; border: 1px solid #FECACA;
+            padding: 4px 10px; border-radius: 6px; font-size: 0.65rem; font-weight: 800;
+            text-transform: uppercase; transition: var(--transition);
         }
-        .btn-table-action:hover { background: var(--mre-blue); color: white; border-color: var(--mre-blue); transform: translateY(-1px); }
+        .btn-ver-motivo:hover { background: #FECACA; }
 
-        /* --- ESTADOS --- */
-        .badge-status { padding: 4px 8px; border-radius: 99px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; }
-        .bg-analisis { background: #E0F2FE; color: #0369A1; }
-        .bg-aprobado { background: transparent; color: #000000; border: 1px solid #E2E8F0; }
-        .bg-devuelto { background: #FEF3C7; color: #92400E; }
-        .bg-finalizados { background: #F1F5F9; color: #334155; }
-        .bg-rechazado { background: #FEE2E2; color: #B91C1C; }
+        .btn-ver-obs {
+            background: #FEF3C7; color: #92400E; border: 1px solid #FDE68A;
+            padding: 4px 10px; border-radius: 6px; font-size: 0.65rem; font-weight: 800;
+            text-transform: uppercase; transition: var(--transition);
+        }
+        .btn-ver-obs:hover { background: #FDE68A; }
 
-        /* --- LIQUIDACIÓN (AZUL MARINO) --- */
+        .btn-revision {
+            background: var(--mre-blue); color: white; border: none;
+            padding: 4px 10px; border-radius: 6px; font-size: 0.65rem; font-weight: 800;
+            text-transform: uppercase; transition: var(--transition);
+        }
+        .btn-revision:hover { background: var(--mre-blue-light); }
+
+        .btn-completar {
+            background: var(--mre-green); color: white; border: none;
+            padding: 4px 10px; border-radius: 6px; font-size: 0.65rem; font-weight: 800;
+            text-transform: uppercase; transition: var(--transition);
+        }
+        .btn-completar:hover { background: #059669; }
+
+        /* --- LIQUIDACIÓN --- */
         .liquidar-footer {
             padding: 1.5rem 2rem; display: flex; justify-content: flex-end; align-items: center; background: #F8FAFC; border-top: 1px solid #E2E8F0;
         }
@@ -186,19 +407,85 @@
         }
         .btn-liquidar-main:hover:not(:disabled) { background: var(--mre-blue-light); transform: translateY(-2px); }
 
-        /* --- VISTA RESUMEN LIQUIDACIÓN --- */
-        .summary-card { max-width: 800px; margin: 2rem auto; background: white; border-radius: 24px; box-shadow: var(--card-shadow); overflow: hidden; border: 1px solid #E2E8F0; }
-        .summary-header { background: var(--mre-blue); color: white; padding: 2.5rem; text-align: center; }
+        /* --- SUMMARY VIEW STYLES --- */
+        .summary-card {
+            background: white; border-radius: 24px; box-shadow: var(--card-shadow); border: 1px solid #E2E8F0;
+            overflow: hidden; max-width: 800px; margin: 2rem auto; position: relative;
+        }
+        .summary-header {
+            background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%);
+            padding: 2.5rem; text-align: center; color: white;
+        }
         .summary-content { padding: 2.5rem; }
-        .summary-item { display: flex; justify-content: space-between; padding: 1rem 0; border-bottom: 1px dashed #E2E8F0; }
-        .summary-details-box { background: #F8FAFC; padding: 1.25rem; border-radius: 16px; border: 1px solid #E2E8F0; margin-bottom: 2rem; }
-        .detail-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
-        .detail-label { font-size: 0.65rem; font-weight: 800; color: #64748B; text-transform: uppercase; }
-        .detail-value { font-size: 0.8rem; font-weight: 700; color: var(--mre-blue); }
-        .summary-total-box { background: #F1F5F9; padding: 1.5rem; border-radius: 16px; margin-top: 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .summary-details-box {
+            background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 16px; padding: 1.5rem; margin-bottom: 2rem;
+        }
+        .detail-row {
+            display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px dashed #E2E8F0;
+        }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-label { font-size: 0.8rem; font-weight: 700; color: #64748B; text-transform: uppercase; }
+        .detail-value { font-size: 0.9rem; font-weight: 800; color: var(--mre-blue); }
+        .summary-item {
+            display: flex; justify-content: space-between; align-items: center; padding: 1rem;
+            border-bottom: 1px solid #F1F5F9; transition: var(--transition);
+        }
+        .summary-item:hover { background: #F8FAFC; }
+        .summary-total-box {
+            background: white; border: 2px solid var(--mre-blue); border-radius: 16px; padding: 2rem;
+            display: flex; justify-content: space-between; align-items: center;
+        }
 
         .mre-popup-overlay { position: fixed; inset: 0; background: rgba(0, 40, 85, 0.4); backdrop-filter: blur(4px); z-index: 3000; display: none; align-items: center; justify-content: center; }
         .mre-popup { background: white; border-radius: 20px; max-width: 500px; width: 100%; padding: 2rem; position: relative; }
+
+        /* --- ESTILOS FOOTER --- */
+        .mre-footer {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid #E2E8F0;
+            padding: 1.2rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            margin-top: auto;
+        }
+        .footer-left {
+            font-size: 0.75rem;
+            color: #64748B;
+            font-weight: 600;
+        }
+        .footer-right .btn-help {
+            background: white;
+            border: 1px solid var(--mre-blue);
+            color: var(--mre-blue);
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center; gap: 8px;
+            transition: all 0.2s ease;
+        }
+        .footer-right .btn-help:hover {
+            background: var(--mre-blue);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 40, 85, 0.15);
+        }
+
+        @media (max-width: 768px) {
+            .mre-footer {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+                padding: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -206,7 +493,6 @@
     <div class="elegant-background"></div>
     <div class="bg-pattern"></div>
 
-    <!-- POPUP -->
     <div class="mre-popup-overlay" id="genericPopup">
         <div class="mre-popup animate-fade">
             <h5 class="fw-black text-navy mb-3" id="popupTitle">Información</h5>
@@ -227,7 +513,32 @@
             </div>
             
             <div class="user-dropdown">
-                <div class="header-profile-trigger" id="profileTrigger" onclick="toggleUserMenu(event)">
+                <div class="a11y-container d-inline-block">
+                    <button class="btn-a11y-trigger" id="a11yTrigger" onclick="toggleA11yMenu(event)" title="Opciones de Accesibilidad">
+                        <i data-lucide="accessibility" style="width: 18px;"></i>
+                        <span>Accesibilidad</span>
+                        <i data-lucide="chevron-down" style="width: 14px; margin-left: 4px;"></i>
+                    </button>
+                    
+                    <div class="a11y-dropdown-menu" id="a11yMenu" onclick="event.stopPropagation()">
+                        <div class="a11y-section-title">Tamaño de Texto</div>
+                        <div class="text-resize-controls">
+                            <button class="btn-resize" onclick="changeFontSize(-0.1)" title="Reducir"><i data-lucide="minus" style="width: 16px;"></i></button>
+                            <span class="font-size-display" id="fontSizeDisplay">100%</span>
+                            <button class="btn-resize" onclick="changeFontSize(0.1)" title="Aumentar"><i data-lucide="plus" style="width: 16px;"></i></button>
+                        </div>
+                        <div class="a11y-section-title mt-3">Visualización</div>
+                        <div class="switch-control">
+                            <div class="switch-label"><i data-lucide="eye-off" style="width: 16px;"></i> Escala de Grises</div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="switchGrayscale" onchange="toggleGrayscale()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="header-profile-trigger d-inline-flex" id="profileTrigger" onclick="toggleUserMenu(event)">
                     <div class="text-end d-none d-md-block">
                         <p class="small fw-black mb-0">JUAN ROMÁN PÉREZ</p>
                         <p class="text-muted mb-0" style="font-size: 0.6rem; font-weight: 700;">CI: 4.567.890</p>
@@ -241,19 +552,8 @@
                         <p class="fw-black text-navy mb-0" style="font-size: 0.85rem;">Juan Román Pérez</p>
                         <p class="text-muted small mb-0 fw-bold">juan.perez@email.com</p>
                     </div>
-                    <button class="dropdown-item-mre" onclick="navigateTo('profile')">
-                        <i data-lucide="user-cog"></i> Mi Perfil
-                    </button>
-                    <button class="dropdown-item-mre" onclick="navigateTo('dashboard')">
-                        <i data-lucide="layout-dashboard"></i> Dashboard
-                    </button>
-                    <button class="dropdown-item-mre" onclick="alert('Configuración de cuenta')">
-                        <i data-lucide="settings"></i> Ajustes
-                    </button>
-                    <hr class="m-0 opacity-10">
-                    <button class="dropdown-item-mre text-danger" onclick="handleLogout()">
-                        <i data-lucide="log-out"></i> Cerrar Sesión
-                    </button>
+                    <button class="dropdown-item-mre" onclick="navigateTo('profile')"><i data-lucide="user-cog"></i> Mi Perfil</button>
+                    <button class="dropdown-item-mre text-danger" onclick="handleLogout()"><i data-lucide="log-out"></i> Cerrar Sesión</button>
                 </div>
             </div>
         </header>
@@ -262,7 +562,7 @@
         <div id="dashboardView" class="animate-fade">
             <div class="action-divider"><span class="action-label">Acciones Principales</span></div>
             <div class="mb-3">
-                <button class="btn-main d-inline-flex align-items-center gap-2" onclick="navigateTo('newRequest')">
+                <button class="btn-main d-inline-flex align-items-center gap-2">
                     <i data-lucide="plus" style="width: 16px;"></i> Nueva Apostilla
                 </button>
             </div>
@@ -270,35 +570,70 @@
             <div class="action-divider"><span class="action-label">Estados de Trámite</span></div>
 
             <div class="status-container">
-                <div class="status-btn active" id="btnAnalisis" onclick="filterTable('Análisis', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-primary-subtle"><i data-lucide="clock" class="text-primary" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">En Análisis</span></div></div><span class="fs-5 fw-black text-navy">03</span></div>
-                <div class="status-btn" id="btnAprobado" onclick="filterTable('Aprobado', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-success-subtle"><i data-lucide="check-circle" class="text-success" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Aprobados</span></div></div><span class="fs-5 fw-black text-success">12</span></div>
-                <div class="status-btn" id="btnDevuelto" onclick="filterTable('Devuelto', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-warning-subtle"><i data-lucide="rotate-ccw" class="text-warning" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Devueltos</span></div></div><span class="fs-5 fw-black text-warning">01</span></div>
-                <div class="status-btn" id="btnRechazado" onclick="filterTable('Rechazado', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-danger-subtle"><i data-lucide="x-circle" class="text-danger" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Rechazados</span></div></div><span class="fs-5 fw-black text-danger">02</span></div>
-                <div class="status-btn" id="btnFinalizado" onclick="filterTable('Finalizados', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-dark-subtle"><i data-lucide="file-badge" class="text-dark" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Apostillados</span></div></div><span class="fs-5 fw-black text-dark">45</span></div>
+                <div class="status-btn" id="btnAnalisis" onclick="filterTable('Análisis', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-primary-subtle p-2 rounded-circle"><i data-lucide="clock" class="text-primary" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">En Análisis</span></div></div><span class="fs-5 fw-black text-navy">02</span></div>
+                <div class="status-btn" id="btnAprobado" onclick="filterTable('Aprobado', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-success-subtle p-2 rounded-circle"><i data-lucide="check-circle" class="text-success" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Aprobados</span></div></div><span class="fs-5 fw-black text-success">02</span></div>
+                <div class="status-btn" id="btnDevuelto" onclick="filterTable('Devuelto', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-warning-subtle p-2 rounded-circle"><i data-lucide="rotate-ccw" class="text-warning" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Devueltos</span></div></div><span class="fs-5 fw-black text-warning">02</span></div>
+                <div class="status-btn" id="btnRechazado" onclick="filterTable('Rechazado', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-danger-subtle p-2 rounded-circle"><i data-lucide="x-circle" class="text-danger" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Rechazados</span></div></div><span class="fs-5 fw-black text-danger">02</span></div>
+                <!-- FINALIZADOS AHORA ES APOSTILLA -->
+                <div class="status-btn" id="btnFinalizado" onclick="filterTable('Finalizados', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-dark-subtle p-2 rounded-circle"><i data-lucide="file-badge" class="text-dark" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Apostilla</span></div></div><span class="fs-5 fw-black text-dark">02</span></div>
             </div>
 
             <div class="grid-frame animate-fade">
                 <div class="grid-header-frame">
-                    <h4 class="fw-black text-uppercase m-0" id="tableTitle" style="color: var(--mre-blue); font-size: 0.85rem;">Solicitudes en Análisis</h4>
-                    <div class="position-relative" style="max-width: 250px; width: 100%;">
-                        <i data-lucide="search" class="position-absolute" style="left: 10px; top: 50%; transform: translateY(-50%); width: 12px; color: #94A3B8;"></i>
-                        <input type="text" class="form-control-mre w-100 ps-5" placeholder="Filtrar..." onkeyup="searchRequests(this)">
+                    <h4 class="fw-black text-uppercase m-0" id="tableTitle" style="color: var(--mre-blue); font-size: 0.85rem;">Listado de Solicitudes</h4>
+                    <div class="d-flex align-items-center" style="max-width: 600px; width: 100%; justify-content: flex-end;">
+                        
+                        <div class="cols-dropdown-container">
+                            <button id="btnColumnas" class="btn-tool-generic" onclick="toggleColsMenu(event)" title="Configurar columnas visibles">
+                                <i data-lucide="layout-columns" style="width: 16px;"></i> Columnas
+                            </button>
+                            <div class="cols-dropdown-menu" id="colsMenu" onclick="event.stopPropagation()"></div>
+                        </div>
+
+                        <button id="btnExportExcel" class="btn-tool-generic" onclick="exportToExcel()" title="Descargar listado en Excel (CSV)">
+                            <i data-lucide="file-spreadsheet" style="width: 16px;"></i> Excel
+                        </button>
+
+                        <button id="btnExportPdf" class="btn-tool-generic" onclick="exportToPdf()" title="Descargar listado en PDF">
+                            <i data-lucide="file-text" style="width: 16px;"></i> PDF
+                        </button>
+                        
+                        <div class="position-relative" style="max-width: 250px; width: 100%;">
+                            <i data-lucide="search" class="position-absolute" style="left: 10px; top: 50%; transform: translateY(-50%); width: 12px; color: #94A3B8;"></i>
+                            <input type="text" class="form-control-mre w-100 ps-5" placeholder="Filtrar..." onkeyup="searchRequests(this)">
+                        </div>
                     </div>
                 </div>
                 
                 <div class="table-responsive">
                     <table class="mre-table" id="requestsTable">
-                        <thead><tr id="tableHeader"></tr></thead>
+                        <thead id="tableHeader"></thead>
                         <tbody id="tableContent"></tbody>
                     </table>
                 </div>
 
-                <div class="pagination-bar">
-                    <div class="pagination-info" id="paginationInfo">Cargando...</div>
-                    <div class="pagination-buttons">
-                        <button class="btn-page" id="btnPrev" onclick="changePage('prev')"><i data-lucide="chevron-left" style="width:14px"></i> Anterior</button>
-                        <div class="current-page-indicator" id="currentPageDisplay">1</div>
-                        <button class="btn-page" id="btnNext" onclick="changePage('next')">Siguiente <i data-lucide="chevron-right" style="width:14px"></i></button>
+                <!-- NUEVA SECCIÓN DE PAGINACIÓN -->
+                <div class="grid-footer">
+                    <div class="d-flex align-items-center">
+                        <span class="text-muted small fw-bold" id="paginationInfo">Mostrando 0 a 0 de 0 registros</span>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-1">
+                        <button class="btn-pagination" id="btnPageFirst" onclick="changePage('first')" title="Primera Página">
+                            <i data-lucide="chevrons-left" style="width: 16px;"></i>
+                        </button>
+                        <button class="btn-pagination" id="btnPagePrev" onclick="changePage('prev')" title="Página Anterior">
+                            <i data-lucide="chevron-left" style="width: 16px;"></i>
+                        </button>
+                        
+                        <span class="page-indicator" id="pageIndicator">Pág 1</span>
+                        
+                        <button class="btn-pagination" id="btnPageNext" onclick="changePage('next')" title="Página Siguiente">
+                            <i data-lucide="chevron-right" style="width: 16px;"></i>
+                        </button>
+                        <button class="btn-pagination" id="btnPageLast" onclick="changePage('last')" title="Última Página">
+                            <i data-lucide="chevrons-right" style="width: 16px;"></i>
+                        </button>
                     </div>
                 </div>
 
@@ -312,11 +647,13 @@
 
         <!-- SUMMARY VIEW -->
         <div id="summaryView" class="hidden animate-fade">
-            <div class="summary-card animate-fade">
+            <div class="summary-card">
                 <div class="summary-header">
-                    <i data-lucide="file-check" style="width: 48px; height: 48px;" class="mb-3"></i>
+                    <div class="bg-white d-inline-flex p-3 rounded-circle shadow-sm mb-3">
+                        <i data-lucide="file-check" style="width: 48px; height: 48px; color: var(--mre-blue);"></i>
+                    </div>
                     <h2 class="fw-black mb-0">Resumen de Liquidación</h2>
-                    <p class="small fw-bold opacity-75">Información de pago y validez</p>
+                    <p class="small fw-bold opacity-75">Verifique los trámites antes de proceder al pago</p>
                 </div>
                 <div class="summary-content">
                     <div class="summary-details-box">
@@ -325,7 +662,7 @@
                             <span class="detail-value" id="summaryRequestDate">--/--/---- --:--:--</span>
                         </div>
                         <div class="detail-row">
-                            <span class="detail-label">Vencimiento de Liquidación:</span>
+                            <span class="detail-label">Vencimiento:</span>
                             <span class="detail-value text-danger" id="summaryExpiryDate">--/--/---- --:--:--</span>
                         </div>
                     </div>
@@ -339,236 +676,595 @@
                             <h3 class="fw-black text-navy mb-0" id="summaryTotalValue">Gs. 0</h3>
                         </div>
                         <div class="d-flex gap-2">
-                             <button class="btn btn-outline-primary fw-bold d-flex align-items-center gap-2" onclick="alert('Descargando liquidación...')">
-                                <i data-lucide="download" style="width:16px"></i> Descargar
+                             <button class="btn btn-outline-primary fw-bold px-4 py-2 rounded-3" onclick="alert('Descargando liquidación...')">
+                                <i data-lucide="download" style="width:16px; margin-right:5px"></i> Descargar
                              </button>
-                             <button class="btn-main rounded-3 px-4" onclick="alert('Redirigiendo a pasarela de pago...')">
+                             <button class="btn-main rounded-3 px-5" onclick="alert('Redirigiendo a pasarela de pago...')">
                                 Proceder al Pago
                              </button>
                         </div>
                     </div>
                     <div class="text-center mt-4">
                         <button class="btn btn-link text-muted fw-bold small text-decoration-none" onclick="navigateTo('dashboard')">
-                            <i data-lucide="arrow-left" style="width:14px"></i> Cancelar y Volver
+                            <i data-lucide="arrow-left" style="width:14px"></i> Volver para modificar
                         </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- PERFIL -->
+        <!-- PROFILE VIEW -->
         <div id="profileView" class="hidden animate-fade">
-            <div class="grid-frame p-5 mx-auto" style="max-width: 600px;">
-                <h4 class="fw-black text-navy mb-4">Mi Perfil</h4>
-                <div class="mb-3"><label class="form-label">Nombre Completo</label><input type="text" class="form-control" value="JUAN ROMÁN PÉREZ" readonly></div>
-                <div class="mb-3"><label class="form-label">Cédula de Identidad</label><input type="text" class="form-control" value="4.567.890" readonly></div>
-                <div class="mb-3"><label class="form-label">Email</label><input type="text" class="form-control" value="juan.perez@email.com" readonly></div>
-                <button class="btn-main w-100" onclick="navigateTo('dashboard')">Volver al Dashboard</button>
+            <div class="grid-frame p-4 p-md-5 mx-auto" style="max-width: 900px; margin-top: 2rem;">
+                <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+                    <h4 class="fw-black text-navy m-0">Mi Perfil</h4>
+                    <span class="badge bg-light text-dark border">Edición de Datos</span>
+                </div>
+
+                <form id="profileForm" onsubmit="event.preventDefault(); saveProfile();">
+                    <div class="row g-4">
+                        <!-- 1. TIPO DE DOCUMENTO -->
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Tipo de Documento</label>
+                            <input type="text" class="form-control-mre bg-light text-muted" value="Cédula de Identidad" readonly>
+                        </div>
+                        
+                        <!-- 2. NÚMERO DE DOCUMENTO -->
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Número de Documento</label>
+                            <input type="text" class="form-control-mre bg-light text-muted" value="4.567.890" readonly>
+                        </div>
+
+                        <!-- 3. NOMBRES -->
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Nombres</label>
+                            <input type="text" class="form-control-mre" id="profileName" value="JUAN ROMÁN">
+                        </div>
+                        
+                        <!-- 4. APELLIDOS -->
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Apellidos</label>
+                            <input type="text" class="form-control-mre" id="profileSurname" value="PÉREZ">
+                        </div>
+
+                        <!-- 5. NACIONALIDAD -->
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Nacionalidad</label>
+                            <select class="form-control-mre" id="profileNationality">
+                                <option value="PY" selected>Paraguaya</option>
+                                <option value="AR">Argentina</option>
+                                <option value="BR">Brasilera</option>
+                                <option value="ES">Española</option>
+                                <option value="US">Estadounidense</option>
+                                <option value="OT">Otra</option>
+                            </select>
+                        </div>
+
+                        <!-- 6. CELULAR -->
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Celular</label>
+                            <input type="tel" class="form-control-mre" id="profilePhone" value="+595 981 123 456">
+                        </div>
+
+                        <!-- 7. CORREO ELECTRÓNICO -->
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Correo Electrónico</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0 border"><i data-lucide="mail" style="width:16px; color:#64748B"></i></span>
+                                <input type="email" class="form-control-mre border-start-0 ps-2 bg-light text-muted" value="juan.perez@email.com" readonly style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
+                            </div>
+                        </div>
+
+                        <!-- 8. DIRECCIÓN PARTICULAR -->
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Dirección Particular</label>
+                            <input type="text" class="form-control-mre" id="profileAddress" value="Av. Mariscal López 1234, Asunción">
+                        </div>
+
+                        <!-- 9. CONTRASEÑA (Formato Campo) -->
+                        <div class="col-12">
+                            <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Contraseña</label>
+                            <div class="d-flex gap-3 align-items-center p-3 border rounded-3 bg-light">
+                                <div class="flex-grow-1 text-muted small">
+                                    <i data-lucide="lock" style="width:14px; margin-right:5px; margin-bottom:2px"></i> ************
+                                </div>
+                                <button type="button" class="btn btn-outline-primary fw-bold btn-sm bg-white" onclick="requestPasswordReset()">
+                                    Cambiar Contraseña
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- BOTONES DE ACCIÓN -->
+                        <div class="col-12 mt-4 d-flex justify-content-end gap-3 border-top pt-4">
+                            <button type="button" class="btn btn-light border fw-bold px-4" onclick="navigateTo('dashboard')">Cancelar</button>
+                            <button type="submit" class="btn-main px-5 shadow-sm">Guardar Cambios</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
-
-        <div id="newRequestView" class="hidden"></div>
-        <div id="editRequestView" class="hidden"></div>
     </section>
 
+    <!-- FOOTER INSTITUCIONAL -->
+    <footer class="mre-footer">
+        <div class="footer-left">
+            &copy; 2026 Ministerio de Relaciones Exteriores - Dirección de Informática
+        </div>
+        <div class="footer-right">
+            <a href="https://www.mre.gov.py/contactenos/" target="_blank" class="btn-help">
+                <i data-lucide="help-circle" style="width: 18px; height: 18px;"></i>
+                ¿Necesitas ayuda?
+            </a>
+        </div>
+    </footer>
+
     <script>
-        document.addEventListener('DOMContentLoaded', () => { lucide.createIcons(); renderTable('Análisis'); });
-
-        // Mock Data
-        const mockRequests = [];
-        const types = ['Certificado de Nacimiento', 'Título Universitario', 'Acta de Matrimonio', 'Poder Notarial', 'Antecedentes Penales'];
-        for(let i=1; i<=55; i++) {
-            let status = i <= 3 ? 'Análisis' : (i <= 20 ? 'Aprobado' : (i <= 22 ? 'Devuelto' : (i <= 25 ? 'Rechazado' : 'Finalizados')));
-            let importe = 0, verPago = false;
-            if (status === 'Aprobado') { if (i % 4 === 0) importe = 0; else if (i % 3 === 0) verPago = true; else importe = 80000 + (i * 100); }
-            mockRequests.push({
-                id: (202510000 + i).toString(),
-                doc: types[i % 5],
-                status: status,
-                date: `${(10 + (i % 20)).toString().padStart(2, '0')}/12/2025 ${(8 + (i % 15)).toString().padStart(2, '0')}:15:30`,
-                badge: status === 'Análisis' ? 'bg-analisis' : (status === 'Aprobado' ? 'bg-aprobado' : (status === 'Devuelto' ? 'bg-devuelto' : (status === 'Rechazado' ? 'bg-rechazado' : (status === 'Finalizados' ? 'bg-finalizados' : '')))),
-                importe: importe,
-                verPago: verPago,
-                observacion: 'Firma pendiente de validación física.',
-                motivo: 'Documento original ilegible.'
-            });
-        }
-
-        let currentFilter = 'Análisis', currentPage = 1, itemsPerPage = 10, selectedIds = new Set();
-
-        function navigateTo(view) {
-            ['dashboardView', 'profileView', 'newRequestView', 'editRequestView', 'summaryView'].forEach(v => {
-                const el = document.getElementById(v); if (el) el.classList.add('hidden');
-            });
-            const target = document.getElementById(view + 'View');
-            if (target) target.classList.remove('hidden');
-            if(view === 'dashboard') renderTable(currentFilter);
-            if(view === 'summary') buildSummary();
-            lucide.createIcons();
-            window.scrollTo(0,0);
-        }
-
-        function toggleUserMenu(e) { 
-            e.stopPropagation(); 
-            const menu = document.getElementById('userMenu');
-            menu.classList.toggle('show');
-        }
-
-        document.addEventListener('click', (e) => {
-            const menu = document.getElementById('userMenu');
-            if (!menu.contains(e.target) && !document.getElementById('profileTrigger').contains(e.target)) {
-                menu.classList.remove('show');
-            }
+        document.addEventListener('DOMContentLoaded', () => { 
+            lucide.createIcons(); 
+            initAccessibility();
+            renderTable('Devuelto'); 
         });
 
-        function handleLogout() {
-            if(confirm('¿Está seguro de que desea cerrar la sesión?')) {
-                location.reload();
+        // Configuración unificada de columnas para control de visibilidad
+        let columnsConfig = [
+            { id: 'id', label: 'Nro. de Solicitud', visible: true },
+            { id: 'date', label: 'Fecha de Solicitud', visible: true },
+            { id: 'type', label: 'Tipo', visible: true },
+            { id: 'country', label: 'País', visible: true },
+            { id: 'institution', label: 'Institución', visible: true },
+            { id: 'doc', label: 'Documento', visible: true },
+            { id: 'signatureType', label: 'Tipo de Firma', visible: true },
+            { id: 'status', label: 'Estado', visible: true },
+            { id: 'importe', label: 'Importe', visible: true }, 
+            { id: 'download', label: 'Descargar', visible: true },
+            { id: 'reason', label: 'Motivo', visible: true }, 
+            { id: 'obs', label: 'Obs', visible: true }, 
+            { id: 'action', label: 'Acción', visible: true },
+            // NUEVAS COLUMNAS PARA APOSTILLA
+            { id: 'adjunto', label: 'Adjunto', visible: true },
+            { id: 'apostille_leg', label: 'Apostilla/Legalización', visible: true }
+        ];
+
+        function initColsMenu(status) {
+            const menu = document.getElementById('colsMenu');
+            let tabKeys = [];
+            if (status === 'Análisis') {
+                tabKeys = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'status', 'download'];
+            } else if (status === 'Aprobado') {
+                tabKeys = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'status', 'importe', 'download', 'action'];
+            } else if (status === 'Rechazado') {
+                tabKeys = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'download', 'reason', 'action'];
+            } else if (status === 'Devuelto') {
+                tabKeys = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'download', 'obs', 'action'];
+            } else if (status === 'Finalizados') { // APOSTILLA TAB
+                tabKeys = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'adjunto', 'apostille_leg'];
+            } else {
+                tabKeys = ['id', 'doc', 'status', 'date'];
+            }
+
+            const filteredCols = columnsConfig.filter(c => tabKeys.includes(c.id));
+
+            menu.innerHTML = filteredCols.map(c => `
+                <div class="col-toggle-item" onclick="toggleColumn('${c.id}')">
+                    <input type="checkbox" ${c.visible ? 'checked' : ''} id="chk_${c.id}" onchange="toggleColumn('${c.id}')">
+                    <label for="chk_${c.id}">${c.label}</label>
+                </div>
+            `).join('');
+        }
+
+        function toggleColsMenu(e) {
+            e.stopPropagation();
+            document.getElementById('colsMenu').classList.toggle('show');
+        }
+
+        function toggleColumn(id) {
+            const col = columnsConfig.find(c => c.id === id);
+            if (col) {
+                col.visible = !col.visible;
+                const chk = document.getElementById(`chk_${id}`);
+                if (chk) chk.checked = col.visible;
+                renderTable(currentFilter, currentPage);
             }
         }
+
+        function toggleA11yMenu(e) {
+            e.stopPropagation();
+            document.getElementById('a11yMenu').classList.toggle('show');
+        }
+
+        function initAccessibility() {
+            const scale = localStorage.getItem('mre_font_scale') || 1;
+            document.documentElement.style.setProperty('--font-scale', scale);
+            updateFontSizeDisplay(scale);
+        }
+
+        function changeFontSize(delta) {
+            let current = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--font-scale')) || 1;
+            let newScale = Math.min(Math.max(current + delta, 0.8), 1.5); 
+            document.documentElement.style.setProperty('--font-scale', newScale);
+            localStorage.setItem('mre_font_scale', newScale);
+            updateFontSizeDisplay(newScale);
+        }
+
+        function updateFontSizeDisplay(scale) {
+            const display = document.getElementById('fontSizeDisplay');
+            if (display) display.innerText = Math.round(scale * 100) + '%';
+        }
+
+        function toggleGrayscale() { document.body.classList.toggle('grayscale-mode'); }
+
+        const mockRequests = [];
+        
+        // --- 1. REGISTROS PARA ANÁLISIS ---
+        mockRequests.push({
+            id: "202600001", date: "08/01/2026 09:15:30", type: "Apostilla", country: "España", 
+            institution: "Registro del Estado Civil", doc: "Certificado de Nacimiento", 
+            signatureType: "Electrónica", status: "Análisis", hasAttachment: true, verPago: false, importe: 0
+        });
+        mockRequests.push({
+            id: "202600002", date: "08/01/2026 10:20:45", type: "Legalización", country: "Argentina", 
+            institution: "Registro del Estado Civil", doc: "Certificado de Nacimiento", 
+            signatureType: "Ológrafa", status: "Análisis", hasAttachment: false, verPago: false, importe: 0
+        });
+
+        // --- 2. REGISTROS PARA APROBADOS ---
+        mockRequests.push({
+            id: "202510001", date: "12/12/2025 15:00:00", type: "Apostilla", country: "España", 
+            institution: "Registro del Estado Civil", doc: "Certificado de Nacimiento", 
+            signatureType: "Electrónica", status: "Aprobado", importe: 80000, hasAttachment: true, verPago: true
+        });
+        mockRequests.push({
+            id: "202510002", date: "12/12/2025 16:30:00", type: "Legalización", country: "Argentina", 
+            institution: "Registro del Estado Civil", doc: "Certificado de Nacimiento", 
+            signatureType: "Ológrafa", status: "Pagado", importe: 80000, hasAttachment: false, verPago: false
+        });
+
+        // --- 3. REGISTROS PARA RECHAZADOS ---
+        mockRequests.push({
+            id: "202600003", date: "08/01/2026 11:15:00", type: "Apostilla", country: "España", 
+            institution: "Registro del Estado Civil", doc: "Certificado de Nacimiento", 
+            signatureType: "Electrónica", status: "Rechazado", hasAttachment: true, 
+            reason: "Firma electrónica no validada."
+        });
+        mockRequests.push({
+            id: "202600004", date: "08/01/2026 11:45:00", type: "Legalización", country: "Argentina", 
+            institution: "Registro del Estado Civil", doc: "Certificado de Nacimiento", 
+            signatureType: "Ológrafa", status: "Rechazado", hasAttachment: false, 
+            reason: "Sello no legible."
+        });
+
+        // --- 4. REGISTROS PARA DEVUELTOS ---
+        mockRequests.push({
+            id: "202600005", date: "08/01/2026 12:15:22", type: "Apostilla", country: "Paraguay",
+            institution: "Registro del Estado Civil", doc: "Certificado de Nacimiento",
+            signatureType: "Electrónica", status: "Devuelto", hasAttachment: true,
+            obs_text: "El campo 'Nombre del Padre' no coincide con el documento adjunto."
+        });
+        mockRequests.push({
+            id: "202600006", date: "08/01/2026 12:45:10", type: "Legalización", country: "Uruguay",
+            institution: "Registro del Estado Civil", doc: "Certificado de Nacimiento",
+            signatureType: "Ológrafa", status: "Devuelto", hasAttachment: false,
+            obs_text: "Falta adjuntar el reverso del certificado."
+        });
+
+        // --- 5. APOSTILLA / FINALIZADOS (2 REGISTROS ESPECIFICOS) ---
+        mockRequests.push({
+            id: "202600007", date: "08/01/2026 08:30:15", type: "Apostilla", 
+            country: "Paraguay", institution: "Registro del Estado Civil", doc: "Certificado de Nacimiento", 
+            status: "Finalizados", importe: 80100, hasAttachment: false, signatureType: "Electrónica"
+        });
+        mockRequests.push({
+            id: "202600008", date: "08/01/2026 08:45:42", type: "Legalización", 
+            country: "Paraguay", institution: "Registro del Estado Civil", doc: "Certificado de Nacimiento", 
+            status: "Finalizados", importe: 80100, hasAttachment: false, signatureType: "Ológrafa"
+        });
+
+        let currentFilter = 'Devuelto', currentPage = 1, itemsPerPage = 10, selectedIds = new Set();
 
         function renderTable(status, page = 1) {
             currentFilter = status; currentPage = page;
             const tableHeader = document.getElementById('tableHeader');
             const tableContent = document.getElementById('tableContent');
-            const liquidador = document.getElementById('liquidadorSection');
-            const pageDisplay = document.getElementById('currentPageDisplay');
+            const pageDisplay = document.getElementById('pageIndicator'); // ID actualizado
 
-            document.getElementById('tableTitle').innerText = `Solicitudes en ${status === 'Finalizados' ? 'Apostillados' : status}`;
-            if(pageDisplay) pageDisplay.innerText = currentPage;
+            // Set Title based on Status
+            const title = status === 'Finalizados' ? 'Apostilla' : `Solicitudes en ${status}`;
+            document.getElementById('tableTitle').innerText = title;
 
-            let headerHTML = '';
-            if (status === 'Análisis') headerHTML = `<th>Solicitud</th><th>Documento</th><th>Estado</th><th>Fecha</th><th class="text-center">Descargar</th>`;
-            else if (status === 'Aprobado') { headerHTML = `<th style="width: 40px;"></th><th>Solicitud</th><th>Documento</th><th>Importe</th><th>Estado</th><th>Fecha</th><th class="text-center">Descargar</th>`; liquidador.classList.remove('hidden'); }
-            else if (status === 'Devuelto') headerHTML = `<th>Solicitud</th><th>Documento</th><th>Estado</th><th>Fecha</th><th class="text-center">Obs.</th><th class="text-center">Acción</th>`;
-            else if (status === 'Rechazado') headerHTML = `<th>Solicitud</th><th>Documento</th><th>Estado</th><th>Fecha</th><th class="text-center">Motivo</th><th class="text-center">Acción</th>`;
-            else if (status === 'Finalizados') headerHTML = `<th>Solicitud</th><th>Documento</th><th>Estado</th><th>Fecha</th><th class="text-center">Original</th><th class="text-center">Apostillado</th>`;
+            let tabColumns = [];
+            if (status === 'Análisis') {
+                tabColumns = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'status', 'download'];
+            } else if (status === 'Aprobado') {
+                tabColumns = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'status', 'importe', 'download', 'action'];
+            } else if (status === 'Rechazado') {
+                tabColumns = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'download', 'reason', 'action'];
+            } else if (status === 'Devuelto') {
+                tabColumns = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'download', 'obs', 'action'];
+            } else if (status === 'Finalizados') { // APOSTILLA TAB LOGIC
+                tabColumns = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'adjunto', 'apostille_leg'];
+            } else {
+                tabColumns = ['id', 'doc', 'status', 'date'];
+            }
+
+            const visibleCols = columnsConfig.filter(c => tabColumns.includes(c.id) && c.visible);
             
-            if (status !== 'Aprobado' && liquidador) liquidador.classList.add('hidden');
-            tableHeader.innerHTML = headerHTML;
+            let headerHTML = visibleCols.map(c => `<th ${['action', 'download', 'adjunto', 'apostille_leg', 'importe', 'reason', 'obs'].includes(c.id) ? 'class="text-center"' : ''}>${c.label}</th>`).join('');
+            if (status === 'Aprobado') headerHTML = `<th style="width: 40px;"></th>` + headerHTML;
+            tableHeader.innerHTML = `<tr>${headerHTML}</tr>`;
 
-            const filtered = mockRequests.filter(r => r.status === status);
-            const totalPages = Math.ceil(filtered.length / itemsPerPage);
+            const filtered = mockRequests.filter(r => {
+                if(status === 'Aprobado') return r.status === 'Aprobado' || r.status === 'Pagado';
+                return r.status === status;
+            });
+
+            const totalPages = Math.ceil(filtered.length / itemsPerPage) || 1;
             const pageData = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-            document.getElementById('paginationInfo').innerText = `Mostrando ${filtered.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1} a ${Math.min(currentPage * itemsPerPage, filtered.length)} de ${filtered.length}`;
-            document.getElementById('btnPrev').disabled = currentPage === 1;
-            document.getElementById('btnNext').disabled = currentPage === totalPages || filtered.length === 0;
-
-            if (filtered.length === 0) { tableContent.innerHTML = `<tr><td colspan="10" class="text-center py-5 text-muted fw-bold">Sin registros.</td></tr>`; return; }
+            document.getElementById('paginationInfo').innerText = `Mostrando ${filtered.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1} a ${Math.min(currentPage * itemsPerPage, filtered.length)} de ${filtered.length} registros`;
+            
+            // Actualizar botones de paginación
+            document.getElementById('btnPageFirst').disabled = currentPage === 1;
+            document.getElementById('btnPagePrev').disabled = currentPage === 1;
+            document.getElementById('btnPageNext').disabled = currentPage === totalPages || filtered.length === 0;
+            document.getElementById('btnPageLast').disabled = currentPage === totalPages || filtered.length === 0;
+            
+            // Actualizar indicador de página
+            if(pageDisplay) pageDisplay.innerText = `Pág ${currentPage} de ${totalPages}`;
 
             tableContent.innerHTML = pageData.map(r => {
-                const downloadBtn = `<a href="#" class="btn-download-mre"><i data-lucide="download" style="width: 14px;"></i></a>`;
-                const viewBtn = `<button class="btn-table-action" onclick="showObservation('${r.id}')"><i data-lucide="eye"></i> Ver</button>`;
-                const reasonBtn = `<button class="btn-table-action" onclick="showRejectionReason('${r.id}')"><i data-lucide="eye"></i> Ver</button>`;
+                let row = '';
+                if(status === 'Aprobado') {
+                    row += `<td>${r.status === 'Aprobado' ? `<input type="checkbox" onchange="toggleSelect('${r.id}', ${r.importe}, this)" ${selectedIds.has(r.id) ? 'checked' : ''}>` : ''}</td>`;
+                }
 
-                if (status === 'Aprobado') return `<tr><td>${!r.verPago ? `<input type="checkbox" class="mre-checkbox" ${selectedIds.has(r.id) ? 'checked' : ''} onchange="toggleSelect('${r.id}', ${r.importe}, this)">` : ''}</td><td><span class="fw-black text-navy">${r.id}</span></td><td class="fw-bold">${r.doc}</td><td class="fw-black text-primary">${r.importe.toLocaleString('es-PY')}</td><td>${r.verPago ? `<button class="btn-ver-pago" onclick="showPaymentInfo('${r.id}')">Ver Pago</button>` : `<span class="badge-status ${r.badge}">${r.status}</span>`}</td><td class="text-muted small fw-bold">${r.date}</td><td class="text-center">${downloadBtn}</td></tr>`;
-                if (status === 'Devuelto') return `<tr><td><span class="fw-black text-navy">${r.id}</span></td><td>${r.doc}</td><td><span class="badge-status ${r.badge}">${r.status}</span></td><td class="text-muted small fw-bold">${r.date}</td><td class="text-center">${viewBtn}</td><td class="text-center"><button class="btn-table-action" style="background:var(--mre-blue); color:white; border:none;" onclick="alert('Formulario de edición')">Completar</button></td></tr>`;
-                if (status === 'Rechazado') return `<tr><td><span class="fw-black text-navy">${r.id}</span></td><td>${r.doc}</td><td><span class="badge-status ${r.badge}">${r.status}</span></td><td class="text-muted small fw-bold">${r.date}</td><td class="text-center">${reasonBtn}</td><td class="text-center"><button class="btn-success-mre" onclick="requestReviewPopup('${r.id}')">Revisión</button></td></tr>`;
-                if (status === 'Finalizados') return `<tr><td><span class="fw-black text-navy">${r.id}</span></td><td>${r.doc}</td><td><span class="badge-status bg-analisis text-primary">Apostillado</span></td><td class="text-muted small fw-bold">${r.date}</td><td class="text-center">${downloadBtn}</td><td class="text-center"><a href="#" class="btn-download-mre" style="background:#E0F2FE; color:#0369A1;"><i data-lucide="file-badge" style="width:14px;"></i></a></td></tr>`;
-                return `<tr><td><span class="fw-black text-navy">${r.id}</span></td><td>${r.doc}</td><td><span class="badge-status ${r.badge}">${r.status}</span></td><td class="text-muted small fw-bold">${r.date}</td><td class="text-center">${downloadBtn}</td></tr>`;
+                visibleCols.forEach(c => {
+                    if(c.id === 'id') row += `<td><span class="fw-black text-navy">${r.id}</span></td>`;
+                    if(c.id === 'date') row += `<td class="text-muted small fw-bold text-center">${r.date}</td>`;
+                    if(c.id === 'type') row += `<td class="fw-bold">${r.type}</td>`;
+                    if(c.id === 'country') row += `<td>${r.country}</td>`;
+                    if(c.id === 'institution') row += `<td class="small fw-semibold">${r.institution}</td>`;
+                    if(c.id === 'doc') row += `<td class="fw-bold text-navy">${r.doc}</td>`;
+                    if(c.id === 'signatureType') row += `<td><span class="badge rounded-pill ${r.signatureType === 'Electrónica' ? 'bg-primary-subtle text-primary' : 'bg-secondary-subtle text-secondary'} p-2 px-3 fw-bold" style="font-size:0.65rem">${r.signatureType}</span></td>`;
+                    if(c.id === 'status') {
+                        let badgeClass = r.status === 'Pagado' ? 'bg-pagado' : (r.status === 'Análisis' ? 'bg-analisis' : (r.status === 'Aprobado' ? 'bg-success-subtle text-success' : (r.status === 'Devuelto' ? 'bg-devuelto' : '')));
+                        row += `<td><span class="badge-status ${badgeClass}">${r.status}</span></td>`;
+                    }
+                    if(c.id === 'importe') {
+                        row += `<td class="text-center fw-black text-primary">${r.importe > 0 ? `Gs. ${r.importe.toLocaleString('es-PY')}` : '-'}</td>`;
+                    }
+                    
+                    // Columnas de descargas para otras pestañas
+                    if(c.id === 'download') {
+                        let showDownload = (r.signatureType === 'Electrónica');
+                        row += `<td class="text-center">${showDownload ? `<i data-lucide="file-down" style="width:18px; cursor:pointer; color:var(--mre-blue)" title="Descargar documento"></i>` : `<span class="text-muted opacity-25">-</span>`}</td>`;
+                    }
+
+                    // Columnas específicas para Apostilla
+                    if(c.id === 'adjunto') {
+                        let showAdjunto = (r.signatureType === 'Electrónica');
+                        row += `<td class="text-center">${showAdjunto ? `<i data-lucide="file-down" style="width:18px; cursor:pointer; color:var(--mre-blue)" title="Descargar Adjunto"></i>` : `<span class="text-muted opacity-25">-</span>`}</td>`;
+                    }
+                    if(c.id === 'apostille_leg') {
+                        row += `<td class="text-center"><i data-lucide="file-down" style="width:18px; cursor:pointer; color:var(--mre-red)" title="Descargar PDF Apostilla/Legalización"></i></td>`;
+                    }
+
+                    if(c.id === 'reason') {
+                        row += `<td class="text-center"><button class="btn-ver-motivo" onclick="showReason('${r.id}')">Ver</button></td>`;
+                    }
+                    if(c.id === 'obs') {
+                        row += `<td class="text-center"><button class="btn-ver-obs" onclick="showDevueltoObs('${r.id}')">Ver</button></td>`;
+                    }
+                    if(c.id === 'action') {
+                        if (status === 'Aprobado') {
+                            row += `<td class="text-center">${r.status === 'Pagado' ? `<button class="btn-ver-pago" onclick="showPaymentInfo('${r.id}')">Ver Pago</button>` : `<span class="text-muted opacity-25">-</span>`}</td>`;
+                        } else if (status === 'Rechazado') {
+                            row += `<td class="text-center"><button class="btn-revision" onclick="showReview('${r.id}')">Revisión</button></td>`;
+                        } else if (status === 'Devuelto') {
+                            row += `<td class="text-center"><button class="btn-completar" onclick="completeRequest('${r.id}')">Completar</button></td>`;
+                        }
+                    }
+                });
+                return `<tr>${row}</tr>`;
             }).join('');
+            
+            document.getElementById('liquidadorSection').classList.toggle('hidden', status !== 'Aprobado');
+            initColsMenu(status);
             lucide.createIcons();
         }
 
-        function changePage(dir) {
-            const total = Math.ceil(mockRequests.filter(r => r.status === currentFilter).length / itemsPerPage);
-            if (dir === 'prev' && currentPage > 1) currentPage--;
-            else if (dir === 'next' && currentPage < total) currentPage++;
-            renderTable(currentFilter, currentPage);
+        // --- RESTAURADO: INFORMACIÓN DE PAGO DETALLADA ---
+        function showPaymentInfo(id) {
+            const popupTitle = document.getElementById('popupTitle');
+            const popupContent = document.getElementById('popupContent');
+            const popupActions = document.getElementById('popupActions');
+            popupTitle.innerText = "Información del Pago";
+            popupContent.innerHTML = `
+                <div class="p-2">
+                    <p class="mb-2"><strong>ID Transacción:</strong> TRX-7890${id}</p>
+                    <p class="mb-2"><strong>Medio de Pago:</strong> Tarjeta de Crédito (Bancard)</p>
+                    <p class="mb-2"><strong>Fecha de Pago:</strong> 08/01/2026 09:45:12</p>
+                    <p class="mb-0 text-success fw-bold">El pago se encuentra validado y conciliado.</p>
+                </div>
+            `;
+            popupActions.innerHTML = `<button class="btn-main w-100" onclick="closePopup()">Entendido</button>`;
+            document.getElementById('genericPopup').style.display = 'flex';
         }
 
-        function toggleSelect(id, importe, cb) { if (cb.checked) selectedIds.add(id); else selectedIds.delete(id); updateLiquidacion(); }
-        function updateLiquidacion() {
-            let total = 0; selectedIds.forEach(id => { total += mockRequests.find(r => r.id === id).importe; });
-            const btn = document.getElementById('btnLiquidacion');
-            btn.innerText = `Generar Liquidación (Gs. ${total.toLocaleString('es-PY')})`;
-            btn.disabled = selectedIds.size === 0;
+        function showReason(id) {
+            const req = mockRequests.find(r => r.id === id);
+            const popupTitle = document.getElementById('popupTitle');
+            const popupContent = document.getElementById('popupContent');
+            const popupActions = document.getElementById('popupActions');
+            popupTitle.innerText = "Motivo de Rechazo";
+            popupContent.innerHTML = `<div class="p-2"><div class="p-3 bg-danger-subtle rounded-3 text-danger">${req.reason}</div></div>`;
+            popupActions.innerHTML = `<button class="btn-main w-100" onclick="closePopup()">Entendido</button>`;
+            document.getElementById('genericPopup').style.display = 'flex';
         }
 
+        function showDevueltoObs(id) {
+            const req = mockRequests.find(r => r.id === id);
+            const popupTitle = document.getElementById('popupTitle');
+            const popupContent = document.getElementById('popupContent');
+            const popupActions = document.getElementById('popupActions');
+            popupTitle.innerText = "Observación de Devolución";
+            popupContent.innerHTML = `<div class="p-2"><div class="p-3 bg-warning-subtle rounded-3 text-dark">${req.obs_text}</div></div>`;
+            popupActions.innerHTML = `<button class="btn-main w-100" onclick="closePopup()">Entendido</button>`;
+            document.getElementById('genericPopup').style.display = 'flex';
+        }
+
+        function completeRequest(id) { alert(`Redirigiendo a edición de #${id}...`); }
+
+        function showReview(id) {
+            const popupTitle = document.getElementById('popupTitle');
+            const popupContent = document.getElementById('popupContent');
+            const popupActions = document.getElementById('popupActions');
+            popupTitle.innerText = "Solicitar Revisión";
+            popupContent.innerHTML = `<div class="p-2"><textarea id="reviewObservation" class="form-control" rows="4" placeholder="Observaciones..."></textarea></div>`;
+            popupActions.innerHTML = `<div class="d-flex gap-2"><button class="btn btn-light w-50 border" onclick="closePopup()">Cancelar</button><button class="btn-main w-50" id="btnConfirmReview">Confirmar</button></div>`;
+            document.getElementById('btnConfirmReview').onclick = () => { closePopup(); alert("Enviado a revisión."); };
+            document.getElementById('genericPopup').style.display = 'flex';
+        }
+
+        async function exportToPdf() {
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('p', 'pt', 'a4');
+                doc.autoTable({ html: '#requestsTable' });
+                doc.save(`SIA_PY_Reporte.pdf`);
+            } catch (e) { window.print(); }
+        }
+
+        function exportToExcel() { alert("Exportando a Excel..."); }
+
+        function navigateTo(view) {
+            ['dashboardView', 'profileView', 'summaryView'].forEach(v => document.getElementById(v)?.classList.add('hidden'));
+            document.getElementById(view + 'View')?.classList.remove('hidden');
+            if(view === 'dashboard') renderTable(currentFilter);
+            if(view === 'summary') buildSummary();
+            lucide.createIcons();
+            window.scrollTo(0, 0);
+        }
+
+        // --- RESTAURADO: GENERACIÓN DE LIQUIDACIÓN COMPLETA ---
         function buildSummary() {
+            const list = document.getElementById('summaryItemsList');
+            const totalDisplay = document.getElementById('summaryTotalValue');
+            const requestDate = document.getElementById('summaryRequestDate');
+            const expiryDate = document.getElementById('summaryExpiryDate');
+            
             let total = 0, html = '';
-            const now = new Date();
-            const expiry = new Date();
-            expiry.setHours(expiry.getHours() + 48);
-
-            const formatDate = (date) => {
-                const d = date.getDate().toString().padStart(2, '0');
-                const m = (date.getMonth() + 1).toString().padStart(2, '0');
-                const y = date.getFullYear();
-                const h = date.getHours().toString().padStart(2, '0');
-                const min = date.getMinutes().toString().padStart(2, '0');
-                const s = date.getSeconds().toString().padStart(2, '0');
-                return `${d}/${m}/${y} ${h}:${min}:${s}`;
-            };
-
-            document.getElementById('summaryRequestDate').innerText = formatDate(now);
-            document.getElementById('summaryExpiryDate').innerText = formatDate(expiry);
-
             selectedIds.forEach(id => {
                 const req = mockRequests.find(r => r.id === id);
                 if (req) {
                     total += req.importe;
-                    html += `<div class="summary-item"><div><p class="fw-black text-navy mb-0 small">#${req.id} - ${req.doc}</p><p class="extra-small text-muted fw-bold mb-0">Canon de Apostilla Electrónica</p></div><span class="fw-black text-navy">Gs. ${req.importe.toLocaleString('es-PY')}</span></div>`;
+                    html += `
+                        <div class="summary-item">
+                            <div>
+                                <p class="fw-black text-navy mb-0 small">#${req.id} - ${req.doc}</p>
+                                <p class="extra-small text-muted mb-0">Arancel Ley 6351/19</p>
+                            </div>
+                            <span class="fw-black text-navy">Gs. ${req.importe.toLocaleString('es-PY')}</span>
+                        </div>`;
                 }
             });
-            document.getElementById('summaryItemsList').innerHTML = html || '<p class="text-center p-4 text-muted">No hay items seleccionados.</p>';
-            document.getElementById('summaryTotalValue').innerText = `Gs. ${total.toLocaleString('es-PY')}`;
+            
+            list.innerHTML = html;
+            totalDisplay.innerText = `Gs. ${total.toLocaleString('es-PY')}`;
+            
+            // Lógica de fechas
+            const now = new Date();
+            const exp = new Date(now.getTime() + (48 * 60 * 60 * 1000));
+            requestDate.innerText = now.toLocaleString('es-PY');
+            expiryDate.innerText = exp.toLocaleString('es-PY');
         }
 
+        function toggleUserMenu(e) { e.stopPropagation(); document.getElementById('userMenu').classList.toggle('show'); }
+        document.addEventListener('click', () => {
+            ['userMenu', 'a11yMenu', 'colsMenu'].forEach(m => document.getElementById(m)?.classList.remove('show'));
+        });
+
+        function handleLogout() { location.reload(); }
         function filterTable(status, el) {
             document.querySelectorAll('.status-btn').forEach(b => b.classList.remove('active'));
             el.classList.add('active');
-            selectedIds.clear(); updateLiquidacion(); renderTable(status, 1);
+            renderTable(status, 1);
         }
 
         function searchRequests(input) {
             const val = input.value.toLowerCase();
             document.querySelectorAll('#tableContent tr').forEach(row => { row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none'; });
         }
+        
+        function changePage(action) {
+            const filtered = mockRequests.filter(r => {
+                if(currentFilter === 'Aprobado') return r.status === 'Aprobado' || r.status === 'Pagado';
+                return r.status === currentFilter;
+            });
+            const totalPages = Math.ceil(filtered.length / itemsPerPage) || 1;
 
-        function openPopup(title, content) {
-            document.getElementById('popupTitle').innerText = title;
-            document.getElementById('popupContent').innerHTML = content;
-            document.getElementById('popupBtnEntendido').classList.remove('hidden');
-            document.getElementById('genericPopup').style.display = 'flex';
+            if (action === 'first') currentPage = 1;
+            else if (action === 'prev' && currentPage > 1) currentPage--;
+            else if (action === 'next' && currentPage < totalPages) currentPage++;
+            else if (action === 'last') currentPage = totalPages;
+
+            renderTable(currentFilter, currentPage);
         }
+
+        function toggleSelect(id, importe, cb) {
+            if (cb.checked) selectedIds.add(id); else selectedIds.delete(id);
+            const total = [...selectedIds].reduce((acc, id) => acc + (mockRequests.find(r => r.id === id)?.importe || 0), 0);
+            document.getElementById('btnLiquidacion').innerText = `Generar Liquidación (Gs. ${total.toLocaleString('es-PY')})`;
+            document.getElementById('btnLiquidacion').disabled = selectedIds.size === 0;
+        }
+
         function closePopup() { document.getElementById('genericPopup').style.display = 'none'; }
         
-        function showObservation(id) { openPopup('Observación #' + id, `<p class="fw-bold p-3 text-muted">${mockRequests.find(r => r.id === id).observacion}</p>`); }
-        function showRejectionReason(id) { openPopup('Motivo Rechazo #' + id, `<p class="fw-bold p-3 text-muted">${mockRequests.find(r => r.id === id).motivo}</p>`); }
+        // --- FUNCIONES PERFIL ---
+        function saveProfile() {
+            // Mock saving logic
+            const name = document.getElementById('profileName').value;
+            const surname = document.getElementById('profileSurname').value;
+            
+            // Update header name mock
+            const headerName = document.querySelector('.header-profile-trigger .small.fw-black');
+            if(headerName) headerName.innerText = `${name} ${surname}`.toUpperCase();
+            
+            const dropdownName = document.querySelector('.dropdown-header-info .fw-black');
+            if(dropdownName) dropdownName.innerText = `${name} ${surname}`;
 
-        function showPaymentInfo(id) {
-            openPopup('Información de Pago', `
-                <div class="payment-info-grid">
-                    <div class="payment-info-item">
-                        <span class="payment-info-label">ID Transacción</span>
-                        <span class="payment-info-value">TRX-7890${id}</span>
-                    </div>
-                    <div class="payment-info-item">
-                        <span class="payment-info-label">Medio de Pago</span>
-                        <span class="payment-info-value">Tarjeta de Crédito</span>
-                    </div>
-                    <div class="payment-info-item">
-                        <span class="payment-info-label">Procesadora</span>
-                        <span class="payment-info-value">Bancard</span>
-                    </div>
-                    <div class="payment-info-item">
-                        <span class="payment-info-label">Fecha y Hora de Pago</span>
-                        <span class="payment-info-value">20/12/2025 14:35:12</span>
-                    </div>
+            // Show success message
+            const popupTitle = document.getElementById('popupTitle');
+            const popupContent = document.getElementById('popupContent');
+            const popupActions = document.getElementById('popupActions');
+            
+            popupTitle.innerText = "Perfil Actualizado";
+            popupContent.innerHTML = `
+                <div class="text-center p-3">
+                    <div class="text-success mb-2 d-flex justify-content-center"><i data-lucide="check-circle" style="width:48px; height:48px"></i></div>
+                    <p class="fw-bold mb-0">Sus datos han sido guardados correctamente.</p>
                 </div>
-            `);
+            `;
+            popupActions.innerHTML = `<button class="btn-main w-100" onclick="closePopup(); navigateTo('dashboard')">Aceptar</button>`;
+            document.getElementById('genericPopup').style.display = 'flex';
+            lucide.createIcons();
         }
-        
-        function requestReviewPopup(id) {
-            const content = `<div class="p-3"><textarea id="reviewObs" class="form-control-mre mb-4" rows="4" placeholder="Motivo..."></textarea><div class="d-flex gap-3"><button class="btn btn-light border fw-bold w-100 py-2" onclick="closePopup()">Cancelar Revisión</button><button class="btn-main w-100 py-2" onclick="submitReview('${id}')">Enviar Solicitud</button></div></div>`;
-            document.getElementById('popupTitle').innerText = 'Solicitar Revisión #' + id;
-            document.getElementById('popupContent').innerHTML = content;
-            document.getElementById('popupBtnEntendido').classList.add('hidden');
+
+        function requestPasswordReset() {
+            const email = "juan.perez@email.com";
+            const popupTitle = document.getElementById('popupTitle');
+            const popupContent = document.getElementById('popupContent');
+            const popupActions = document.getElementById('popupActions');
+            
+            popupTitle.innerText = "Cambio de Contraseña";
+            popupContent.innerHTML = `
+                <div class="p-3">
+                    <p>Se ha enviado un enlace de confirmación a <strong>${email}</strong>.</p>
+                    <p class="small text-muted mb-0">Por favor, verifique su bandeja de entrada para continuar con el proceso de cambio de contraseña.</p>
+                </div>
+            `;
+            popupActions.innerHTML = `<button class="btn-main w-100" onclick="closePopup()">Entendido</button>`;
             document.getElementById('genericPopup').style.display = 'flex';
         }
-        function submitReview(id) { document.getElementById('popupContent').innerHTML = `<div class="text-center p-4"><h6 class="fw-black text-navy">Enviado con éxito</h6></div>`; document.getElementById('popupBtnEntendido').classList.remove('hidden'); lucide.createIcons(); }
     </script>
 </body>
 </html>
