@@ -275,7 +275,7 @@
         .grid-header-frame { background-color: #F1F5F9; padding: 1rem 1.5rem; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; }
 
         .mre-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-        .mre-table th { font-size: 0.65rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 0.85rem 1.5rem; border-bottom: 2px solid #E2E8F0; }
+        .mre-table th { font-size: 0.65rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 0.85rem 1.5rem; border-bottom: 2px solid #E2E8F0; white-space: nowrap; }
         .mre-table td { padding: 0.85rem 1.5rem; font-size: 0.8rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
 
         /* --- NUEVA PAGINACIÓN (COPIADA) --- */
@@ -496,13 +496,142 @@
             color: var(--mre-blue);
         }
 
+        /* --- RESPONSIVIDAD MEJORADA --- */
         @media (max-width: 768px) {
+            .portal-header {
+                padding: 0.75rem 1rem;
+                flex-wrap: wrap; /* Permitir que los elementos bajen si es necesario */
+                gap: 10px;
+            }
+            
+            /* Ajustes en Grilla Principal */
+            .grid-frame {
+                padding: 1rem !important; /* Reducir padding en móvil */
+                border-radius: 16px;
+            }
+            .grid-header-frame {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            .grid-header-frame > div {
+                width: 100%;
+                justify-content: flex-start !important;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            /* Herramientas de tabla en móvil */
+            .cols-dropdown-container, 
+            .btn-tool-generic, 
+            .position-relative {
+                flex: 1 1 auto; /* Crecer para llenar espacio */
+            }
+            .btn-tool-generic {
+                justify-content: center;
+                margin-right: 0;
+            }
+            .position-relative {
+                max-width: 100% !important; /* Barra de búsqueda full width */
+            }
+
+            /* Botones Principales en Móvil */
+            .btn-main {
+                width: 100%;
+                justify-content: center;
+                padding: 1rem;
+            }
+
+            /* Popups */
+            .mre-popup {
+                width: 90%;
+                padding: 1.5rem;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+
+            /* Footer */
             .mre-footer {
                 flex-direction: column;
                 gap: 1rem;
                 text-align: center;
                 padding: 1.5rem;
             }
+
+            /* Ajustes de Tablas para Móvil */
+            .mre-table th, .mre-table td {
+                padding: 0.75rem 1rem;
+            }
+            
+            /* Pestañas */
+            .nav-tabs .nav-link {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.85rem;
+            }
+
+            /* Formularios */
+            .grid-frame form .row > div {
+                margin-bottom: 0.5rem; /* Menos espacio vertical entre campos */
+            }
+            
+            /* Botones de acción en formularios */
+            .d-flex.justify-content-end.gap-3 {
+                flex-direction: column-reverse;
+                gap: 0.75rem !important;
+            }
+            .d-flex.justify-content-end.gap-3 button {
+                width: 100%;
+            }
+        }
+
+        /* --- NUEVO: CONTROLES DE SCROLL PARA BOTONES DE ESTADO --- */
+        .status-scroll-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.25rem;
+        }
+        
+        .status-container { 
+            /* Sobrescribir margin-bottom original ya que el wrapper lo maneja */
+            margin-bottom: 0; 
+            scroll-behavior: smooth;
+            /* Ocultar barra de scroll nativa para limpieza visual */
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        .status-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scroll-btn {
+            background: white;
+            border: 1px solid #E2E8F0;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            color: var(--mre-blue);
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+        .scroll-btn:hover {
+            background: #F8FAFC;
+            color: var(--mre-blue-light);
+            border-color: var(--mre-blue-light);
+            transform: scale(1.05);
+        }
+        .scroll-btn.left { margin-right: 8px; }
+        .scroll-btn.right { margin-left: 8px; }
+
+        /* Ocultar botones de scroll en pantallas muy grandes donde no son necesarios */
+        @media (min-width: 1400px) {
+            .scroll-btn { display: none; }
         }
     </style>
 </head>
@@ -534,7 +663,7 @@
                 <div class="a11y-container d-inline-block">
                     <button class="btn-a11y-trigger" id="a11yTrigger" onclick="toggleA11yMenu(event)" title="Opciones de Accesibilidad">
                         <i data-lucide="accessibility" style="width: 18px;"></i>
-                        <span>Accesibilidad</span>
+                        <span class="d-none d-md-inline">Accesibilidad</span>
                         <i data-lucide="chevron-down" style="width: 14px; margin-left: 4px;"></i>
                     </button>
                     
@@ -587,13 +716,24 @@
 
             <div class="action-divider"><span class="action-label">Estados de Trámite</span></div>
 
-            <div class="status-container">
-                <div class="status-btn" id="btnAnalisis" onclick="filterTable('Análisis', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-primary-subtle p-2 rounded-circle"><i data-lucide="clock" class="text-primary" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">En Análisis</span></div></div><span class="fs-5 fw-black text-navy">02</span></div>
-                <div class="status-btn" id="btnAprobado" onclick="filterTable('Aprobado', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-success-subtle p-2 rounded-circle"><i data-lucide="check-circle" class="text-success" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Aprobados</span></div></div><span class="fs-5 fw-black text-success">02</span></div>
-                <div class="status-btn" id="btnDevuelto" onclick="filterTable('Devuelto', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-warning-subtle p-2 rounded-circle"><i data-lucide="rotate-ccw" class="text-warning" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Devueltos</span></div></div><span class="fs-5 fw-black text-warning">02</span></div>
-                <div class="status-btn" id="btnRechazado" onclick="filterTable('Rechazado', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-danger-subtle p-2 rounded-circle"><i data-lucide="x-circle" class="text-danger" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Rechazados</span></div></div><span class="fs-5 fw-black text-danger">02</span></div>
-                <!-- FINALIZADOS AHORA ES APOSTILLA -->
-                <div class="status-btn" id="btnFinalizado" onclick="filterTable('Finalizados', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-dark-subtle p-2 rounded-circle"><i data-lucide="file-badge" class="text-dark" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Apostilla</span></div></div><span class="fs-5 fw-black text-dark">02</span></div>
+            <!-- Wrapper con controles de navegación -->
+            <div class="status-scroll-wrapper">
+                <button class="scroll-btn left" onclick="scrollStatus('left')" aria-label="Anterior">
+                    <i data-lucide="chevron-left" style="width:20px"></i>
+                </button>
+                
+                <div class="status-container" id="statusScrollContainer">
+                    <div class="status-btn" id="btnAnalisis" onclick="filterTable('Análisis', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-primary-subtle p-2 rounded-circle"><i data-lucide="clock" class="text-primary" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">En Análisis</span></div></div><span class="fs-5 fw-black text-navy">02</span></div>
+                    <div class="status-btn" id="btnAprobado" onclick="filterTable('Aprobado', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-success-subtle p-2 rounded-circle"><i data-lucide="check-circle" class="text-success" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Aprobados</span></div></div><span class="fs-5 fw-black text-success">02</span></div>
+                    <div class="status-btn" id="btnDevuelto" onclick="filterTable('Devuelto', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-warning-subtle p-2 rounded-circle"><i data-lucide="rotate-ccw" class="text-warning" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Devueltos</span></div></div><span class="fs-5 fw-black text-warning">02</span></div>
+                    <div class="status-btn" id="btnRechazado" onclick="filterTable('Rechazado', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-danger-subtle p-2 rounded-circle"><i data-lucide="x-circle" class="text-danger" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Rechazados</span></div></div><span class="fs-5 fw-black text-danger">02</span></div>
+                    <!-- FINALIZADOS AHORA ES APOSTILLA -->
+                    <div class="status-btn" id="btnFinalizado" onclick="filterTable('Finalizados', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-dark-subtle p-2 rounded-circle"><i data-lucide="file-badge" class="text-dark" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Apostilla</span></div></div><span class="fs-5 fw-black text-dark">02</span></div>
+                </div>
+
+                <button class="scroll-btn right" onclick="scrollStatus('right')" aria-label="Siguiente">
+                    <i data-lucide="chevron-right" style="width:20px"></i>
+                </button>
             </div>
 
             <div class="grid-frame animate-fade">
@@ -805,165 +945,172 @@
         <!-- NEW REQUEST VIEW -->
         <div id="newRequestView" class="hidden animate-fade">
             <div class="grid-frame p-4 p-md-5 mx-auto" style="max-width: 900px; margin-top: 2rem;">
-                <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
-                    <h4 class="fw-black text-navy m-0">Crear Solicitud</h4>
-                    <span class="badge bg-light text-dark border">Nuevo Trámite</span>
+                
+                <!-- CONTENEDOR DEL FORMULARIO (SE OCULTA AL AÑADIR) -->
+                <div id="requestFormContainer">
+                    <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+                        <h4 class="fw-black text-navy m-0">Crear Solicitud</h4>
+                        <span class="badge bg-light text-dark border">Nuevo Trámite</span>
+                    </div>
+
+                    <!-- Cambiado addToGrid() por confirmAdd() para el paso de verificación -->
+                    <form id="newRequestForm" onsubmit="event.preventDefault(); confirmAdd();">
+                        <div class="row g-4">
+                            <!-- 1. PAIS -->
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">País de Destino <span class="text-danger">*</span></label>
+                                <select class="form-control-mre" id="reqCountry" required>
+                                    <option value="" selected disabled>Seleccione...</option>
+                                    <option value="Argentina">Argentina</option>
+                                    <option value="Brasil">Brasil</option>
+                                    <option value="España">España</option>
+                                    <option value="Estados Unidos">Estados Unidos</option>
+                                    <option value="Uruguay">Uruguay</option>
+                                    <option value="Alemania">Alemania</option>
+                                    <option value="Francia">Francia</option>
+                                </select>
+                            </div>
+
+                            <!-- 2. INSTITUCION -->
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Institución Emisora <span class="text-danger">*</span></label>
+                                <select class="form-control-mre" id="reqInstitution" required>
+                                    <option value="" selected disabled>Seleccione...</option>
+                                    <option value="REC">Registro del Estado Civil</option>
+                                    <option value="MEC">Ministerio de Educación y Ciencias</option>
+                                    <option value="CSJ">Corte Suprema de Justicia</option>
+                                    <option value="UP">Universidad Privada</option>
+                                    <option value="DNIT">Dirección Nacional de Ingresos Tributarios</option>
+                                </select>
+                            </div>
+
+                            <!-- 3. TIPO DE TRAMITE -->
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Tipo de Trámite <span class="text-danger">*</span></label>
+                                <select class="form-control-mre" id="reqType" required>
+                                    <option value="" selected disabled>Seleccione...</option>
+                                    <option value="Apostilla">Apostilla</option>
+                                    <option value="Legalización">Legalización</option>
+                                </select>
+                            </div>
+
+                            <!-- 4. TIPO DE FIRMA -->
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Tipo de Firma <span class="text-danger">*</span></label>
+                                <select class="form-control-mre" id="reqSignature" onchange="handleSignatureChange()" required>
+                                    <option value="" selected disabled>Seleccione...</option>
+                                    <option value="Electrónica">Electrónica</option>
+                                    <option value="Ológrafa">Ológrafa (Manuscrita)</option>
+                                </select>
+                            </div>
+
+                            <!-- CAMPO ADJUNTO (CONDICIONAL) -->
+                            <div class="col-md-12 hidden animate-fade" id="attachmentField">
+                                <div class="p-3 bg-light border rounded-3 border-dashed" style="border-style: dashed !important; border-color: #cbd5e1 !important;">
+                                    <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2 text-primary">
+                                        <i data-lucide="paperclip" style="width:14px"></i> Adjuntar Documento (PDF) <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="file" class="form-control-mre" id="reqFile" accept=".pdf">
+                                    <small class="text-muted mt-1 d-block" style="font-size: 0.7rem;">El documento debe estar firmado digitalmente. Formato .pdf, Máx 5MB.</small>
+                                </div>
+                            </div>
+
+                            <!-- 5. TIPO DE DOCUMENTO (DEPENDIENTE) -->
+                            <div class="col-md-12">
+                                <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Tipo de Documento <span class="text-danger">*</span></label>
+                                <select class="form-control-mre" id="reqDocType" onchange="handleDocTypeChange()" disabled required>
+                                    <option value="" selected disabled>Seleccione primero el tipo de firma...</option>
+                                    <option value="Certificado de Nacimiento">Certificado de Nacimiento</option>
+                                    <option value="Certificado de Matrimonio">Certificado de Matrimonio</option>
+                                    <option value="Certificado de Defunción">Certificado de Defunción</option>
+                                    <option value="Antecedentes Policiales">Antecedentes Policiales</option>
+                                    <option value="Certificado de Estudios">Certificado de Estudios</option>
+                                    <option value="Título Universitario">Título Universitario</option>
+                                </select>
+                            </div>
+
+                            <!-- PESTAÑAS DE DATOS ADICIONALES (OCULTO INICIALMENTE) -->
+                            <div class="col-12 mt-4 hidden animate-fade" id="additionalDataTabs">
+                                <ul class="nav nav-tabs mb-3" id="requestTabs" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active fw-bold" id="titular-tab" data-bs-toggle="tab" data-bs-target="#titular" type="button" role="tab" aria-selected="true">Datos del Titular</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link fw-bold" id="especificos-tab" data-bs-toggle="tab" data-bs-target="#especificos" type="button" role="tab" aria-selected="false">Datos Específicos</button>
+                                    </li>
+                                </ul>
+                                <div class="tab-content p-3 border border-top-0 rounded-bottom bg-white shadow-sm" id="requestTabsContent">
+                                    <!-- TAB 1: DATOS TITULAR -->
+                                    <div class="tab-pane fade show active" id="titular" role="tabpanel" aria-labelledby="titular-tab">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label text-muted small fw-bold text-uppercase">Tipo de Documento <span class="text-danger">*</span></label>
+                                                <select class="form-control-mre" id="titularDocType" required>
+                                                    <option value="CI">Cédula de Identidad</option>
+                                                    <option value="PAS">Pasaporte</option>
+                                                    <option value="OTRO">Otro</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label text-muted small fw-bold text-uppercase">Número de Documento <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control-mre" id="titularDocNum" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label text-muted small fw-bold text-uppercase">Nombre del Titular <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control-mre" id="titularName" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label text-muted small fw-bold text-uppercase">Nro. de Certificado de Nacimiento <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control-mre" id="titularCertNum" required>
+                                            </div>
+                                            
+                                            <!-- Botón Siguiente -->
+                                            <div class="col-12 text-end mt-4">
+                                                <button type="button" class="btn btn-outline-primary fw-bold px-4 rounded-3 btn-sm" onclick="showTab('especificos-tab')">
+                                                    Siguiente <i data-lucide="arrow-right" class="ms-1" style="width:14px; margin-bottom: 2px;"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- TAB 2: DATOS ESPECIFICOS -->
+                                    <div class="tab-pane fade" id="especificos" role="tabpanel" aria-labelledby="especificos-tab">
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <label class="form-label text-muted small fw-bold text-uppercase">Número de Acta <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control-mre" id="actaNum" required>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label text-muted small fw-bold text-uppercase">Año <span class="text-danger">*</span></label>
+                                                <select class="form-control-mre" id="actaYear" required>
+                                                    <!-- Se pobla vía JS -->
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label text-muted small fw-bold text-uppercase">Fecha de Expedición <span class="text-danger">*</span></label>
+                                                <input type="date" class="form-control-mre" id="actaDate" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- BOTONES -->
+                            <div class="col-12 mt-4 d-flex justify-content-end gap-3 border-top pt-4">
+                                <button type="button" class="btn btn-light border fw-bold px-4" onclick="navigateTo('dashboard')">Cancelar</button>
+                                <button type="submit" class="btn-main px-5 shadow-sm d-flex align-items-center gap-2">
+                                    <i data-lucide="plus-circle" style="width:16px;"></i> Añadir
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
 
-                <!-- Cambiado addToGrid() por confirmAdd() para el paso de verificación -->
-                <form id="newRequestForm" onsubmit="event.preventDefault(); confirmAdd();">
-                    <div class="row g-4">
-                        <!-- 1. PAIS -->
-                        <div class="col-md-6">
-                            <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">País de Destino <span class="text-danger">*</span></label>
-                            <select class="form-control-mre" id="reqCountry" required>
-                                <option value="" selected disabled>Seleccione...</option>
-                                <option value="Argentina">Argentina</option>
-                                <option value="Brasil">Brasil</option>
-                                <option value="España">España</option>
-                                <option value="Estados Unidos">Estados Unidos</option>
-                                <option value="Uruguay">Uruguay</option>
-                                <option value="Alemania">Alemania</option>
-                                <option value="Francia">Francia</option>
-                            </select>
-                        </div>
-
-                        <!-- 2. INSTITUCION -->
-                        <div class="col-md-6">
-                            <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Institución Emisora <span class="text-danger">*</span></label>
-                            <select class="form-control-mre" id="reqInstitution" required>
-                                <option value="" selected disabled>Seleccione...</option>
-                                <option value="REC">Registro del Estado Civil</option>
-                                <option value="MEC">Ministerio de Educación y Ciencias</option>
-                                <option value="CSJ">Corte Suprema de Justicia</option>
-                                <option value="UP">Universidad Privada</option>
-                                <option value="DNIT">Dirección Nacional de Ingresos Tributarios</option>
-                            </select>
-                        </div>
-
-                        <!-- 3. TIPO DE TRAMITE -->
-                        <div class="col-md-6">
-                            <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Tipo de Trámite <span class="text-danger">*</span></label>
-                            <select class="form-control-mre" id="reqType" required>
-                                <option value="" selected disabled>Seleccione...</option>
-                                <option value="Apostilla">Apostilla</option>
-                                <option value="Legalización">Legalización</option>
-                            </select>
-                        </div>
-
-                        <!-- 4. TIPO DE FIRMA -->
-                        <div class="col-md-6">
-                            <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Tipo de Firma <span class="text-danger">*</span></label>
-                            <select class="form-control-mre" id="reqSignature" onchange="handleSignatureChange()" required>
-                                <option value="" selected disabled>Seleccione...</option>
-                                <option value="Electrónica">Electrónica</option>
-                                <option value="Ológrafa">Ológrafa (Manuscrita)</option>
-                            </select>
-                        </div>
-
-                        <!-- CAMPO ADJUNTO (CONDICIONAL) -->
-                        <div class="col-md-12 hidden animate-fade" id="attachmentField">
-                            <div class="p-3 bg-light border rounded-3 border-dashed" style="border-style: dashed !important; border-color: #cbd5e1 !important;">
-                                <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2 text-primary">
-                                    <i data-lucide="paperclip" style="width:14px"></i> Adjuntar Documento (PDF) <span class="text-danger">*</span>
-                                </label>
-                                <input type="file" class="form-control-mre" id="reqFile" accept=".pdf">
-                                <small class="text-muted mt-1 d-block" style="font-size: 0.7rem;">El documento debe estar firmado digitalmente. Formato .pdf, Máx 5MB.</small>
-                            </div>
-                        </div>
-
-                        <!-- 5. TIPO DE DOCUMENTO (DEPENDIENTE) -->
-                        <div class="col-md-12">
-                            <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Tipo de Documento <span class="text-danger">*</span></label>
-                            <select class="form-control-mre" id="reqDocType" onchange="handleDocTypeChange()" disabled required>
-                                <option value="" selected disabled>Seleccione primero el tipo de firma...</option>
-                                <option value="Certificado de Nacimiento">Certificado de Nacimiento</option>
-                                <option value="Certificado de Matrimonio">Certificado de Matrimonio</option>
-                                <option value="Certificado de Defunción">Certificado de Defunción</option>
-                                <option value="Antecedentes Policiales">Antecedentes Policiales</option>
-                                <option value="Certificado de Estudios">Certificado de Estudios</option>
-                                <option value="Título Universitario">Título Universitario</option>
-                            </select>
-                        </div>
-
-                        <!-- PESTAÑAS DE DATOS ADICIONALES (OCULTO INICIALMENTE) -->
-                        <div class="col-12 mt-4 hidden animate-fade" id="additionalDataTabs">
-                            <ul class="nav nav-tabs mb-3" id="requestTabs" role="tablist">
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link active fw-bold" id="titular-tab" data-bs-toggle="tab" data-bs-target="#titular" type="button" role="tab" aria-selected="true">Datos del Titular</button>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link fw-bold" id="especificos-tab" data-bs-toggle="tab" data-bs-target="#especificos" type="button" role="tab" aria-selected="false">Datos Específicos</button>
-                                </li>
-                            </ul>
-                            <div class="tab-content p-3 border border-top-0 rounded-bottom bg-white shadow-sm" id="requestTabsContent">
-                                <!-- TAB 1: DATOS TITULAR -->
-                                <div class="tab-pane fade show active" id="titular" role="tabpanel" aria-labelledby="titular-tab">
-                                    <div class="row g-3">
-                                        <div class="col-md-6">
-                                            <label class="form-label text-muted small fw-bold text-uppercase">Tipo de Documento <span class="text-danger">*</span></label>
-                                            <select class="form-control-mre" id="titularDocType" required>
-                                                <option value="CI">Cédula de Identidad</option>
-                                                <option value="PAS">Pasaporte</option>
-                                                <option value="OTRO">Otro</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label text-muted small fw-bold text-uppercase">Número de Documento <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control-mre" id="titularDocNum" required>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label text-muted small fw-bold text-uppercase">Nombre del Titular <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control-mre" id="titularName" required>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label text-muted small fw-bold text-uppercase">Nro. de Certificado de Nacimiento <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control-mre" id="titularCertNum" required>
-                                        </div>
-                                        
-                                        <!-- Botón Siguiente -->
-                                        <div class="col-12 text-end mt-4">
-                                            <button type="button" class="btn btn-outline-primary fw-bold px-4 rounded-3 btn-sm" onclick="showTab('especificos-tab')">
-                                                Siguiente <i data-lucide="arrow-right" class="ms-1" style="width:14px; margin-bottom: 2px;"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- TAB 2: DATOS ESPECIFICOS -->
-                                <div class="tab-pane fade" id="especificos" role="tabpanel" aria-labelledby="especificos-tab">
-                                    <div class="row g-3">
-                                        <div class="col-md-4">
-                                            <label class="form-label text-muted small fw-bold text-uppercase">Número de Acta <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control-mre" id="actaNum" required>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label class="form-label text-muted small fw-bold text-uppercase">Año <span class="text-danger">*</span></label>
-                                            <select class="form-control-mre" id="actaYear" required>
-                                                <!-- Se pobla vía JS -->
-                                            </select>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label class="form-label text-muted small fw-bold text-uppercase">Fecha de Expedición <span class="text-danger">*</span></label>
-                                            <input type="date" class="form-control-mre" id="actaDate" required>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- BOTONES -->
-                        <div class="col-12 mt-4 d-flex justify-content-end gap-3 border-top pt-4">
-                            <button type="button" class="btn btn-light border fw-bold px-4" onclick="navigateTo('dashboard')">Cancelar</button>
-                            <button type="submit" class="btn-main px-5 shadow-sm d-flex align-items-center gap-2">
-                                <i data-lucide="plus-circle" style="width:16px;"></i> Añadir
-                            </button>
-                        </div>
+                <!-- NUEVA GRILLA DE DOCUMENTOS CARGADOS (SE MUESTRA SOLO AL AÑADIR) -->
+                <div id="loadedDocsSection" class="mt-0 hidden animate-fade">
+                    <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+                        <h5 class="fw-black text-navy m-0">Documentos Cargados</h5>
                     </div>
-                </form>
-
-                <!-- NUEVA GRILLA DE DOCUMENTOS CARGADOS -->
-                <div id="loadedDocsSection" class="mt-5 hidden animate-fade">
-                    <h5 class="fw-black text-navy mb-3 border-bottom pb-2">Documentos Cargados</h5>
+                    
                     <div class="table-responsive">
                         <table class="mre-table" id="loadedDocsTable">
                             <thead>
@@ -983,34 +1130,40 @@
                         </table>
                     </div>
                     
-                    <div class="d-flex justify-content-end mt-4">
-                        <button class="btn-main px-5 py-3 shadow" onclick="submitFinalRequest()">
-                            Finalizar Carga <i data-lucide="check" style="width:16px; margin-left: 5px;"></i>
+                    <div class="d-flex justify-content-end gap-3 mt-4 pt-3 border-top">
+                        <button class="btn btn-outline-primary fw-bold px-4 rounded-3" onclick="showRequestForm()">
+                            <i data-lucide="plus" style="width:16px; margin-right: 5px;"></i> Agregar Nuevo Trámite
+                        </button>
+                        <button class="btn-main px-5 shadow" onclick="submitFinalRequest()">
+                            Generar Solicitud <i data-lucide="check" style="width:16px; margin-left: 5px;"></i>
                         </button>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- NEW: VALIDATION VIEW -->
+        <!-- NEW: VALIDATION VIEW (RENAMED TO SOLICITUDES GENERADAS) -->
         <div id="validationView" class="hidden animate-fade">
-            <div class="grid-frame p-4 p-md-5 mx-auto" style="max-width: 1000px; margin-top: 2rem;">
+            <div class="grid-frame p-4 p-md-5 mx-auto" style="max-width: 1100px; margin-top: 2rem;">
                 <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
-                    <h4 class="fw-black text-navy m-0">Validación de Solicitudes</h4>
-                    <span class="badge bg-warning text-dark border border-warning">Revisión Requerida</span>
+                    <h4 class="fw-black text-navy m-0">Solicitudes Generadas</h4>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle">Proceso Finalizado</span>
                 </div>
 
-                <div class="alert alert-info border-info d-flex align-items-center gap-3" role="alert">
-                    <i data-lucide="info" class="text-info"></i>
+                <div class="alert alert-light border d-flex align-items-center gap-3 mb-4 shadow-sm" role="alert">
+                    <div class="bg-primary-subtle text-primary p-2 rounded-circle">
+                        <i data-lucide="check-circle-2" style="width:24px; height:24px"></i>
+                    </div>
                     <div class="small">
-                        Por favor, verifique cuidadosamente los datos. Las solicitudes se han agrupado según su tipo de validación.
+                        <strong>¡Solicitudes generadas correctamente!</strong><br>
+                        A continuación se detallan los números de solicitud asignados. Proceda al pago de las solicitudes verificadas automáticamente.
                     </div>
                 </div>
 
                 <!-- CONTENEDOR DINÁMICO PARA LAS TABLAS DIVIDIDAS -->
                 <div id="validationTablesContainer"></div>
 
-                <div class="d-flex justify-content-between align-items-center bg-light p-3 rounded-3 border mt-4">
+                <!-- Resumen oculto ya que la info está en las tablas -->
+                <div class="d-flex justify-content-between align-items-center bg-light p-3 rounded-3 border mt-4 hidden">
                     <div>
                         <small class="text-muted fw-bold uppercase d-block">Cantidad Total</small>
                         <span class="fw-black text-navy fs-5" id="validationCount">0</span>
@@ -1021,12 +1174,9 @@
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-end gap-3 mt-4 pt-4 border-top">
-                    <button type="button" class="btn btn-light border fw-bold px-4" onclick="navigateTo('newRequest')">
-                        <i data-lucide="arrow-left" style="width:16px; margin-right: 5px;"></i> Volver / Editar
-                    </button>
-                    <button type="button" class="btn-main px-5 shadow-sm" onclick="confirmGeneration()">
-                        Generar Solicitud <i data-lucide="check-circle" style="width:16px; margin-left: 5px;"></i>
+                <div class="d-flex justify-content-center mt-5 pt-4 border-top">
+                    <button type="button" class="btn btn-light border fw-bold px-5" onclick="resetAndGoHome()">
+                        <i data-lucide="home" style="width:16px; margin-right: 5px;"></i> Volver al Inicio
                     </button>
                 </div>
             </div>
@@ -1393,13 +1543,25 @@
             if(view === 'summary') buildSummary();
             // Reset form if navigating to newRequest
             if(view === 'newRequest') {
-                document.getElementById('newRequestForm').reset();
-                handleSignatureChange(); // Reset conditional fields state
-                // Reset tabs visibility
-                document.getElementById('additionalDataTabs').classList.add('hidden');
+                tempRequestsList = []; // Limpiar lista al entrar de cero
+                electronicSigCount = 0;
+                renderLoadedDocuments();
+                showRequestForm(); // Asegurar que se ve el formulario
             }
             lucide.createIcons();
             window.scrollTo(0, 0);
+        }
+
+        // Función para mostrar el formulario y ocultar la lista (Paso 1)
+        function showRequestForm() {
+            document.getElementById('newRequestForm').reset();
+            handleSignatureChange();
+            document.getElementById('additionalDataTabs').classList.add('hidden');
+            showTab('titular-tab');
+            
+            document.getElementById('requestFormContainer').classList.remove('hidden');
+            document.getElementById('loadedDocsSection').classList.add('hidden');
+            lucide.createIcons();
         }
 
         // --- LÓGICA DE NUEVA SOLICITUD ---
@@ -1577,15 +1739,8 @@
             tempRequestsList.push(newItem);
             renderLoadedDocuments();
             
-            // Resetear Formulario
-            document.getElementById('newRequestForm').reset();
-            handleSignatureChange(); // Restablecer estados de visibilidad
-            document.getElementById('additionalDataTabs').classList.add('hidden'); // Ocultar pestañas
-            
-            // Volver a la primera pestaña
-            showTab('titular-tab');
-            
-            // Mostrar sección de grilla
+            // OCULTAR FORMULARIO Y MOSTRAR LISTA
+            document.getElementById('requestFormContainer').classList.add('hidden');
             document.getElementById('loadedDocsSection').classList.remove('hidden');
         }
 
@@ -1638,81 +1793,105 @@
             }
         }
 
-        // Función llamada al presionar "Finalizar Carga"
+        // Función llamada al presionar "Generar Solicitud" en la grilla de carga
         function submitFinalRequest() {
             if(tempRequestsList.length === 0) {
                 alert("No hay documentos cargados.");
                 return;
             }
             
-            // Separar listas basado en el tipo de validación RESULTANTE
-            const autoList = tempRequestsList.filter(i => i.validationType === 'Automática');
-            const manualList = tempRequestsList.filter(i => i.validationType === 'Previa');
-            
-            let totalAmount = 0;
-            const fixedRate = 80100; // Arancel simulado
-            let htmlContent = '';
+            // 1. GENERAR IDS Y FECHAS (SIMULACIÓN DE GUARDADO EN BD)
+            const now = new Date();
+            const dateStr = now.toLocaleString('es-PY');
+            const generatedBatch = tempRequestsList.map((item, index) => {
+                const newId = `2026-${String(Math.floor(Math.random() * 100000)).padStart(5, '0')}`;
+                return {
+                    ...item,
+                    id: newId,
+                    date: dateStr,
+                    status: item.validationType === 'Automática' ? 'Aprobado' : 'Análisis',
+                    importe: 80100 // Arancel fijo
+                };
+            });
 
-            // 1. SECCIÓN VALIDACIÓN AUTOMÁTICA
+            // Guardar en la "base de datos" mock
+            generatedBatch.forEach(req => {
+                mockRequests.push({
+                    id: req.id,
+                    date: req.date,
+                    type: req.type,
+                    country: req.country,
+                    institution: req.institution,
+                    doc: req.docType,
+                    signatureType: req.signature,
+                    status: req.status,
+                    importe: req.importe,
+                    hasAttachment: req.hasFile,
+                    titularName: req.titularName
+                });
+            });
+
+            // Separar listas
+            const autoList = generatedBatch.filter(i => i.validationType === 'Automática');
+            const manualList = generatedBatch.filter(i => i.validationType === 'Previa');
+            
+            let htmlContent = '';
+            let initialTotal = 0;
+
+            // 1. SECCIÓN VALIDACIÓN AUTOMÁTICA (CON CHECKBOXES Y TOTAL EN BOTÓN)
             if (autoList.length > 0) {
                 const autoRows = autoList.map(item => {
-                    totalAmount += fixedRate; // Solo sumamos al total lo automático
+                    initialTotal += item.importe;
                     return `
                     <tr>
-                        <td class="p-3">
-                            <div class="fw-bold text-navy">${item.type}</div>
-                            <div class="small text-muted">${item.country} / ${item.institution}</div>
+                        <td class="p-3 text-center">
+                            <input type="checkbox" class="form-check-input auto-check" value="${item.id}" data-amount="${item.importe}" checked onchange="updateLiquidationButton()">
                         </td>
-                        <td class="p-3">
-                            <span class="badge bg-light text-dark border">${item.signature}</span>
-                        </td>
-                        <td class="p-3">
-                            <div class="fw-bold">${item.docType}</div>
-                            ${item.hasFile ? '<span class="badge bg-success-subtle text-success border border-success-subtle small"><i data-lucide="file-check" style="width:10px; margin-right:2px"></i> Adjunto</span>' : ''}
-                        </td>
-                        <td class="p-3">
-                            <div class="fw-bold text-uppercase">${item.titularName}</div>
-                            <div class="small text-muted">Doc: ${item.titularDocNum}</div>
-                        </td>
-                        <td class="p-3">
-                            <div class="small">Acta #: <strong>${item.actaNum}</strong></div>
-                            <div class="small">Año: <strong>${item.actaYear}</strong></div>
-                        </td>
-                        <td class="p-3 text-end">
-                            <span class="fw-black text-primary">Gs. ${fixedRate.toLocaleString('es-PY')}</span>
-                        </td>
+                        <td class="p-3 fw-black text-navy">${item.id}</td>
+                        <td class="p-3 small text-muted">${item.date}</td>
+                        <td class="p-3"><span class="badge bg-light text-dark border">${item.signature}</span></td>
+                        <td class="p-3 fw-bold">${item.docType}</td>
+                        <td class="p-3 text-uppercase small fw-bold">${item.titularName}</td>
+                        <td class="p-3 text-end fw-black text-primary">Gs. ${item.importe.toLocaleString('es-PY')}</td>
                     </tr>
                     `;
                 }).join('');
 
+                // DISEÑO ACTUALIZADO: Estructura idéntica al bloque manual
                 htmlContent += `
-                    <div class="mb-4 animate-fade">
-                        <div class="d-flex align-items-center justify-content-between mb-2">
-                            <h6 class="fw-black text-primary d-flex align-items-center gap-2 m-0">
-                                <i data-lucide="zap" style="width:18px"></i> Solicitudes con Validación Automática 
-                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle small" style="font-size: 0.65rem;">Listo para Aprobar</span>
+                    <div class="mb-5 animate-fade bg-white border rounded-3 shadow-sm overflow-hidden">
+                        <div class="p-3 bg-primary-subtle border-bottom border-primary-subtle d-flex justify-content-between align-items-center">
+                            <h6 class="fw-black text-primary m-0 d-flex align-items-center gap-2">
+                                <i data-lucide="zap" style="width:18px"></i> Verificación Automática
                             </h6>
+                            <span class="badge bg-white text-primary border">Listo para Pago</span>
                         </div>
-                        
-                        <div class="alert alert-success border-success-subtle d-flex align-items-start gap-2 p-2 mb-2 bg-success-subtle text-success-emphasis" style="font-size: 0.8rem;">
-                            <i data-lucide="check-circle-2" style="width:16px; margin-top:2px"></i>
-                            <div><strong>Documentos validados correctamente.</strong> Al generar la solicitud, podrá proceder inmediatamente a la pasarela de pago.</div>
+                        <div class="p-3 bg-light border-bottom small text-muted">
+                            <i data-lucide="info" style="width:14px; margin-bottom:2px" class="me-1"></i>
+                            Puede proceder al pago de las solicitudes verificadas automaticamente o puede pagar desde la bandeja de solicitudes aprobadas
                         </div>
-
-                        <div class="table-responsive border rounded-3 overflow-hidden shadow-sm bg-white">
+                        <div class="table-responsive">
                             <table class="table table-hover mb-0" style="font-size: 0.85rem;">
                                 <thead class="bg-light">
                                     <tr>
-                                        <th class="text-uppercase text-muted small fw-bold p-3">Trámite</th>
-                                        <th class="text-uppercase text-muted small fw-bold p-3">Tipo Firma</th>
-                                        <th class="text-uppercase text-muted small fw-bold p-3">Documento</th>
-                                        <th class="text-uppercase text-muted small fw-bold p-3">Titular</th>
-                                        <th class="text-uppercase text-muted small fw-bold p-3">Detalle Acta</th>
-                                        <th class="text-uppercase text-muted small fw-bold p-3 text-end">Importe</th>
+                                        <th class="p-3 text-center" style="width: 40px;">
+                                            <input type="checkbox" class="form-check-input" id="checkAllAuto" checked onchange="toggleAllAuto(this)">
+                                        </th>
+                                        <th class="p-3 text-muted small fw-bold text-uppercase">Nro. Solicitud</th>
+                                        <th class="p-3 text-muted small fw-bold text-uppercase">Fecha Generación</th>
+                                        <th class="p-3 text-muted small fw-bold text-uppercase">Tipo Firma</th>
+                                        <th class="p-3 text-muted small fw-bold text-uppercase">Documento</th>
+                                        <th class="p-3 text-muted small fw-bold text-uppercase">Titular</th>
+                                        <th class="p-3 text-muted small fw-bold text-uppercase text-end">Importe</th>
                                     </tr>
                                 </thead>
                                 <tbody>${autoRows}</tbody>
                             </table>
+                        </div>
+                        <div class="p-3 bg-light border-top d-flex justify-content-end">
+                            <button id="btnGenLiq" class="btn-main px-4 py-2 d-flex align-items-center gap-2" onclick="goToLiquidationSelected()">
+                                <i data-lucide="receipt" style="width:18px"></i> Generar Liquidación (Gs. ${initialTotal.toLocaleString('es-PY')})
+                            </button>
                         </div>
                     </div>
                 `;
@@ -1721,63 +1900,57 @@
             // 2. SECCIÓN VALIDACIÓN MANUAL / PREVIA
             if (manualList.length > 0) {
                 const manualRows = manualList.map(item => {
-                    // Lógica para la leyenda específica según firma
                     let legend = '';
-                    let statusIcon = '';
-                    
+                    let legendStyle = '';
+                    let icon = '';
+
                     if (item.signature === 'Electrónica') {
-                        statusIcon = '<i data-lucide="file-clock" class="text-warning" style="width:14px"></i>';
-                        legend = `<div class="mt-1 text-warning-emphasis small bg-warning-subtle p-1 rounded border border-warning-subtle d-inline-block">
-                                    <strong>Análisis requerido:</strong> Un funcionario del MRE analizará el documento y se le notificará cuando cambie de estado.
-                                  </div>`;
-                    } else if (item.signature === 'Ológrafa') {
-                        statusIcon = '<i data-lucide="map-pin" class="text-danger" style="width:14px"></i>';
-                        legend = `<div class="mt-1 text-danger-emphasis small bg-danger-subtle p-1 rounded border border-danger-subtle d-inline-block">
-                                    <strong>Trámite Presencial:</strong> Debe necesariamente pasar por las oficinas del MRE para completar la solicitud.
-                                  </div>`;
+                        // Lógica: Electrónica pero cayó en manual (no validada)
+                        icon = 'file-clock';
+                        legendStyle = 'background-color: #fff8c5; color: #664d03; border: 1px solid #ffecb5;'; // Estilo warning suave
+                        legend = 'La solicitud requiere análisis manual. Se le notificará cuando cambien de estado o puede consultar el estado desde su sistema de gestión.';
+                    } else {
+                        // Lógica: Ológrafa
+                        icon = 'map-pin';
+                        legendStyle = 'background-color: #f8d7da; color: #842029; border: 1px solid #f5c2c7;'; // Estilo danger suave
+                        legend = 'La solicitud requiere presentación física en el local MRE para validación del documento.';
                     }
 
                     return `
                     <tr>
+                        <td class="p-3 fw-black text-dark">${item.id}</td>
+                        <td class="p-3 small text-muted">${item.date}</td>
+                        <td class="p-3"><span class="badge bg-light text-dark border">${item.signature}</span></td>
                         <td class="p-3">
-                            <div class="fw-bold text-navy">${item.type}</div>
-                            <div class="small text-muted">${item.country} / ${item.institution}</div>
+                            <div class="fw-bold mb-2">${item.docType}</div>
+                            <div class="small p-2 rounded d-flex gap-2 align-items-start" style="${legendStyle}">
+                                <i data-lucide="${icon}" style="width:16px; min-width:16px; margin-top:2px;"></i>
+                                <span>${legend}</span>
+                            </div>
                         </td>
-                        <td class="p-3">
-                            <span class="badge bg-light text-dark border">${item.signature}</span>
-                        </td>
-                        <td class="p-3" style="min-width: 250px;">
-                            <div class="fw-bold">${item.docType}</div>
-                            ${item.hasFile ? '<span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle small"><i data-lucide="file" style="width:10px; margin-right:2px"></i> Adjunto</span>' : ''}
-                            ${legend}
-                        </td>
-                        <td class="p-3">
-                            <div class="fw-bold text-uppercase">${item.titularName}</div>
-                            <div class="small text-muted">Doc: ${item.titularDocNum}</div>
-                        </td>
-                        <td class="p-3">
-                            <div class="small">Acta #: <strong>${item.actaNum}</strong></div>
-                            <div class="small">Año: <strong>${item.actaYear}</strong></div>
-                        </td>
+                        <td class="p-3 text-uppercase small fw-bold">${item.titularName}</td>
                     </tr>
                     `;
                 }).join('');
 
                 htmlContent += `
-                    <div class="mb-4 animate-fade" style="animation-delay: 0.1s">
-                        <h6 class="fw-black text-dark d-flex align-items-center gap-2 mb-2">
-                            <i data-lucide="user-check" style="width:18px"></i> Solicitudes con Validación Previa 
-                            <span class="badge bg-warning-subtle text-dark border border-warning-subtle small ms-auto" style="font-size: 0.65rem;">Requiere Análisis MRE</span>
-                        </h6>
-                        <div class="table-responsive border rounded-3 overflow-hidden shadow-sm bg-white">
+                    <div class="mb-4 animate-fade bg-white border rounded-3 shadow-sm overflow-hidden" style="animation-delay: 0.1s">
+                        <div class="p-3 bg-warning-subtle border-bottom border-warning-subtle d-flex justify-content-between align-items-center">
+                            <h6 class="fw-black text-dark m-0 d-flex align-items-center gap-2">
+                                <i data-lucide="clock" style="width:18px"></i> Verificación Previa Requerida
+                            </h6>
+                            <span class="badge bg-white text-dark border">En Análisis / Pendiente</span>
+                        </div>
+                        <!-- Mensaje genérico eliminado, ahora es específico por fila -->
+                        <div class="table-responsive">
                             <table class="table table-hover mb-0" style="font-size: 0.85rem;">
                                 <thead class="bg-light">
                                     <tr>
-                                        <th class="text-uppercase text-muted small fw-bold p-3">Trámite</th>
-                                        <th class="text-uppercase text-muted small fw-bold p-3">Tipo Firma</th>
-                                        <th class="text-uppercase text-muted small fw-bold p-3">Documento / Estado</th>
-                                        <th class="text-uppercase text-muted small fw-bold p-3">Titular</th>
-                                        <th class="text-uppercase text-muted small fw-bold p-3">Detalle Acta</th>
+                                        <th class="p-3 text-muted small fw-bold text-uppercase">Nro. Solicitud</th>
+                                        <th class="p-3 text-muted small fw-bold text-uppercase">Fecha Generación</th>
+                                        <th class="p-3 text-muted small fw-bold text-uppercase">Tipo Firma</th>
+                                        <th class="p-3 text-muted small fw-bold text-uppercase" style="min-width: 300px;">Documento / Instrucciones</th>
+                                        <th class="p-3 text-muted small fw-bold text-uppercase">Titular</th>
                                     </tr>
                                 </thead>
                                 <tbody>${manualRows}</tbody>
@@ -1788,94 +1961,43 @@
             }
 
             document.getElementById('validationTablesContainer').innerHTML = htmlContent;
-            
-            // Actualizar resumen de totales
-            document.getElementById('validationCount').innerText = tempRequestsList.length;
-            document.getElementById('validationTotal').innerText = 'Gs. ' + totalAmount.toLocaleString('es-PY');
-
-            navigateTo('validation'); // Cambiar a la vista de validación
-            lucide.createIcons(); // Renderizar iconos recién inyectados
+            navigateTo('validation'); // Ir a pantalla "Solicitudes Generadas"
+            lucide.createIcons();
         }
 
-        // Función para confirmar la generación final
-        function confirmGeneration() {
-            const popupTitle = document.getElementById('popupTitle');
-            const popupContent = document.getElementById('popupContent');
-            const popupActions = document.getElementById('popupActions');
-            
-            // 1. Simular Generación de IDs
-            const generatedRequests = tempRequestsList.map((req, index) => ({
-                ...req,
-                generatedId: `2026-${String(Math.floor(Math.random() * 10000)).padStart(4, '0')}`
-            }));
+        // --- FUNCIONES PARA LA SELECCIÓN DE PAGOS ---
+        function toggleAllAuto(source) {
+            const checkboxes = document.querySelectorAll('.auto-check');
+            checkboxes.forEach(cb => cb.checked = source.checked);
+            updateLiquidationButton();
+        }
 
-            // 2. Calcular Monto Pagable (Solo Automáticas)
-            const payableItems = generatedRequests.filter(r => r.validationType === 'Automática');
-            const totalPayable = payableItems.length * 80100;
-
-            // 3. Construir Lista HTML de IDs
-            let idsHtml = '<ul class="list-group list-group-flush mb-3 text-start small border rounded-3 overflow-hidden">';
-            generatedRequests.forEach(r => {
-                const statusBadge = r.validationType === 'Automática' 
-                    ? '<span class="badge bg-success-subtle text-success border border-success-subtle ms-auto">Listo para Pago</span>'
-                    : '<span class="badge bg-warning-subtle text-dark border border-warning-subtle ms-auto">En Análisis</span>';
-                
-                idsHtml += `
-                    <li class="list-group-item d-flex justify-content-between align-items-center bg-light px-3 py-2">
-                        <div>
-                            <span class="fw-black text-navy">#${r.generatedId}</span>
-                            <span class="text-muted ms-2">| ${r.docType}</span>
-                        </div>
-                        ${statusBadge}
-                    </li>`;
+        function updateLiquidationButton() {
+            const checkboxes = document.querySelectorAll('.auto-check:checked');
+            let total = 0;
+            checkboxes.forEach(cb => {
+                total += parseInt(cb.dataset.amount || 0);
             });
-            idsHtml += '</ul>';
-
-            // 4. Construir Mensaje de Pago y Botones
-            let paymentSection = '';
-            let buttonsHtml = '';
-
-            if (totalPayable > 0) {
-                paymentSection = `
-                    <div class="alert alert-success border-success-subtle bg-success-subtle text-success-emphasis p-3 text-center mb-0">
-                        <i data-lucide="credit-card" class="mb-2" style="width:24px; height:24px"></i>
-                        <p class="mb-1 fw-bold">Solicitudes verificadas listas para pago</p>
-                        <h4 class="fw-black mb-2">Total: Gs. ${totalPayable.toLocaleString('es-PY')}</h4>
-                        <p class="small mb-0">Proceda a la pasarela de pago para completar estos trámites.</p>
-                    </div>
-                `;
-                
-                buttonsHtml = `
-                    <div class="d-flex flex-column gap-2 w-100">
-                        <button class="btn-main w-100 py-3 shadow-sm" onclick="alert('Redirigiendo a Pasarela BANCARD...'); resetAndGoHome();">
-                            Pagar Gs. ${totalPayable.toLocaleString('es-PY')} <i data-lucide="arrow-right" style="width:16px; margin-left:5px"></i>
-                        </button>
-                        <button class="btn btn-light border w-100 fw-bold text-muted" onclick="resetAndGoHome();">Volver al Inicio (Pagar Luego)</button>
-                    </div>
-                `;
-            } else {
-                paymentSection = `
-                    <div class="alert alert-warning border-warning-subtle bg-warning-subtle text-dark p-3 text-center mb-0 small">
-                        <i data-lucide="clock" class="mb-2 text-warning-emphasis" style="width:24px; height:24px"></i><br>
-                        <strong>Todas las solicitudes requieren verificación manual previa.</strong><br>
-                        Se le notificará por correo electrónico cuando los documentos hayan sido analizados para proceder al pago.
-                    </div>
-                `;
-                buttonsHtml = `<button class="btn-main w-100" onclick="resetAndGoHome();">Entendido, Volver al Inicio</button>`;
-            }
-
-            popupTitle.innerText = "Solicitudes Generadas Exitosamente";
-            popupContent.innerHTML = `
-                <div class="p-2">
-                    <p class="text-muted small mb-3">Se han generado los siguientes códigos de solicitud para sus documentos:</p>
-                    ${idsHtml}
-                    ${paymentSection}
-                </div>
-            `;
-            popupActions.innerHTML = buttonsHtml;
             
-            document.getElementById('genericPopup').style.display = 'flex';
-            lucide.createIcons();
+            const btn = document.getElementById('btnGenLiq');
+            if(btn) {
+                btn.innerHTML = `<i data-lucide="receipt" style="width:18px"></i> Generar Liquidación (Gs. ${total.toLocaleString('es-PY')})`;
+                btn.disabled = total === 0;
+                lucide.createIcons();
+            }
+        }
+
+        function goToLiquidationSelected() {
+            const checkboxes = document.querySelectorAll('.auto-check:checked');
+            const idsArray = Array.from(checkboxes).map(cb => cb.value);
+            
+            if(idsArray.length === 0) {
+                alert("Seleccione al menos una solicitud para pagar.");
+                return;
+            }
+            
+            selectedIds = new Set(idsArray); 
+            navigateTo('summary');
         }
 
         function resetAndGoHome() {
@@ -2006,6 +2128,17 @@
             `;
             popupActions.innerHTML = `<button class="btn-main w-100" onclick="closePopup()">Entendido</button>`;
             document.getElementById('genericPopup').style.display = 'flex';
+        }
+
+        // --- FUNCION DE SCROLL HORIZONTAL ---
+        function scrollStatus(direction) {
+            const container = document.getElementById('statusScrollContainer');
+            const scrollAmount = 200; // Cantidad de px a desplazar
+            if (direction === 'left') {
+                container.scrollLeft -= scrollAmount;
+            } else {
+                container.scrollLeft += scrollAmount;
+            }
         }
     </script>
 </body>
