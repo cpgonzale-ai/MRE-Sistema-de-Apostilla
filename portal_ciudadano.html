@@ -6,7 +6,7 @@
     <title>SIA-PY | Sistema de Apostilla Electrónica</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap 5 JS Bundle (necesario para las pestañas) -->
+    <!-- Bootstrap 5 JS Bundle (necesario para las pestañas y dropdowns) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -149,6 +149,33 @@
             cursor: not-allowed; 
         }
 
+        /* --- Custom Select con Buscador --- */
+        .custom-select-trigger {
+            background-color: var(--input-bg);
+            border: 1px solid #E2E8F0;
+            border-radius: 14px;
+            padding: 0.8rem 1rem;
+            font-size: 0.85rem;
+            width: 100%;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--mre-blue);
+            font-weight: 500;
+        }
+        .custom-select-trigger:focus, .custom-select.show .custom-select-trigger {
+            background-color: #ffffff;
+            border-color: var(--mre-blue-light);
+            box-shadow: 0 0 0 4px rgba(0, 56, 168, 0.08);
+            outline: none;
+        }
+        .custom-select-trigger:disabled {
+            background-color: #f1f5f9;
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+        
         /* --- ACCESIBILIDAD --- */
         .a11y-container { position: relative; margin-right: 15px; }
         
@@ -834,8 +861,8 @@
                             <h3 class="fw-black text-navy mb-0" id="summaryTotalValue">Gs. 0</h3>
                         </div>
                         <div class="d-flex gap-2">
-                             <button class="btn btn-outline-primary fw-bold px-4 py-2 rounded-3" onclick="alert('Descargando liquidación...')">
-                                <i data-lucide="download" style="width:16px; margin-right:5px"></i> Descargar
+                             <button class="btn btn-outline-primary fw-bold px-4 py-2 rounded-3" onclick="navigateTo('dashboard')">
+                                <i data-lucide="arrow-left" style="width:16px; margin-right:5px"></i> Volver para Modificar
                              </button>
                              <button class="btn-main rounded-3 px-5" onclick="alert('Redirigiendo a pasarela de pago...')">
                                 Proceder al Pago
@@ -949,59 +976,96 @@
                 <!-- CONTENEDOR DEL FORMULARIO (SE OCULTA AL AÑADIR) -->
                 <div id="requestFormContainer">
                     <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
-                        <h4 class="fw-black text-navy m-0">Crear Solicitud</h4>
+                        <h4 class="fw-black text-navy m-0">Crear Solicitud de Apostilla o Legalización</h4>
                         <span class="badge bg-light text-dark border">Nuevo Trámite</span>
                     </div>
 
                     <!-- Cambiado addToGrid() por confirmAdd() para el paso de verificación -->
                     <form id="newRequestForm" onsubmit="event.preventDefault(); confirmAdd();">
                         <div class="row g-4">
-                            <!-- 1. PAIS -->
+                            <!-- 1. PAIS (CUSTOM SELECT) -->
                             <div class="col-md-6">
                                 <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">País de Destino <span class="text-danger">*</span></label>
-                                <select class="form-control-mre" id="reqCountry" required>
-                                    <option value="" selected disabled>Seleccione...</option>
-                                    <option value="Argentina">Argentina</option>
-                                    <option value="Brasil">Brasil</option>
-                                    <option value="España">España</option>
-                                    <option value="Estados Unidos">Estados Unidos</option>
-                                    <option value="Uruguay">Uruguay</option>
-                                    <option value="Alemania">Alemania</option>
-                                    <option value="Francia">Francia</option>
-                                </select>
+                                <div class="dropdown custom-select" id="div_reqCountry">
+                                    <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <span class="selected-value text-muted">Seleccione...</span>
+                                        <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
+                                    </button>
+                                    <div class="dropdown-menu w-100 p-2 border-0 shadow-sm" style="border:1px solid var(--border-color)!important">
+                                        <input type="text" class="form-control form-control-sm mb-2" placeholder="Buscar..." onkeyup="filterOptions(this)">
+                                        <div class="options-container" style="max-height: 200px; overflow-y: auto;">
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqCountry', 'Argentina', this)">Argentina</a>
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqCountry', 'Brasil', this)">Brasil</a>
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqCountry', 'España', this)">España</a>
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqCountry', 'Estados Unidos', this)">Estados Unidos</a>
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqCountry', 'Uruguay', this)">Uruguay</a>
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqCountry', 'Alemania', this)">Alemania</a>
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqCountry', 'Francia', this)">Francia</a>
+                                        </div>
+                                    </div>
+                                    <!-- Hidden Input for Logic -->
+                                    <input type="hidden" id="reqCountry" required style="opacity:0; position:absolute; pointer-events:none; top:0; left:0; height:100%; width:100%; z-index:-1">
+                                </div>
                             </div>
 
-                            <!-- 2. INSTITUCION -->
+                            <!-- 2. INSTITUCION (CUSTOM SELECT) -->
                             <div class="col-md-6">
                                 <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Institución Emisora <span class="text-danger">*</span></label>
-                                <select class="form-control-mre" id="reqInstitution" required>
-                                    <option value="" selected disabled>Seleccione...</option>
-                                    <option value="REC">Registro del Estado Civil</option>
-                                    <option value="MEC">Ministerio de Educación y Ciencias</option>
-                                    <option value="CSJ">Corte Suprema de Justicia</option>
-                                    <option value="UP">Universidad Privada</option>
-                                    <option value="DNIT">Dirección Nacional de Ingresos Tributarios</option>
-                                </select>
+                                <div class="dropdown custom-select" id="div_reqInstitution">
+                                    <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <span class="selected-value text-muted">Seleccione...</span>
+                                        <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
+                                    </button>
+                                    <div class="dropdown-menu w-100 p-2 border-0 shadow-sm" style="border:1px solid var(--border-color)!important">
+                                        <input type="text" class="form-control form-control-sm mb-2" placeholder="Buscar..." onkeyup="filterOptions(this)">
+                                        <div class="options-container" style="max-height: 200px; overflow-y: auto;">
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqInstitution', 'REC - Registro del Estado Civil', this)">REC - Registro del Estado Civil</a>
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqInstitution', 'MEC - Ministerio de Educación y Ciencias', this)">MEC - Ministerio de Educación y Ciencias</a>
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqInstitution', 'CSJ - Corte Suprema de Justicia', this)">CSJ - Corte Suprema de Justicia</a>
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqInstitution', 'UP - Universidad Privada', this)">UP - Universidad Privada</a>
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqInstitution', 'DNIT - Dirección Nacional de Ingresos Tributarios', this)">DNIT - Dirección Nacional de Ingresos Tributarios</a>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="reqInstitution" required style="opacity:0; position:absolute; pointer-events:none; top:0; left:0; height:100%; width:100%; z-index:-1">
+                                </div>
                             </div>
 
-                            <!-- 3. TIPO DE TRAMITE -->
+                            <!-- 3. TIPO DE TRAMITE (CUSTOM SELECT) -->
                             <div class="col-md-6">
                                 <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Tipo de Trámite <span class="text-danger">*</span></label>
-                                <select class="form-control-mre" id="reqType" required>
-                                    <option value="" selected disabled>Seleccione...</option>
-                                    <option value="Apostilla">Apostilla</option>
-                                    <option value="Legalización">Legalización</option>
-                                </select>
+                                <div class="dropdown custom-select" id="div_reqType">
+                                    <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <span class="selected-value text-muted">Seleccione...</span>
+                                        <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
+                                    </button>
+                                    <div class="dropdown-menu w-100 p-2 border-0 shadow-sm" style="border:1px solid var(--border-color)!important">
+                                        <input type="text" class="form-control form-control-sm mb-2" placeholder="Buscar..." onkeyup="filterOptions(this)">
+                                        <div class="options-container" style="max-height: 200px; overflow-y: auto;">
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqType', 'Apostilla', this)">Apostilla</a>
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqType', 'Legalización', this)">Legalización</a>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="reqType" required style="opacity:0; position:absolute; pointer-events:none; top:0; left:0; height:100%; width:100%; z-index:-1">
+                                </div>
                             </div>
 
-                            <!-- 4. TIPO DE FIRMA -->
+                            <!-- 4. TIPO DE FIRMA (RENOMBRADO + CUSTOM SELECT) -->
                             <div class="col-md-6">
-                                <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Tipo de Firma <span class="text-danger">*</span></label>
-                                <select class="form-control-mre" id="reqSignature" onchange="handleSignatureChange()" required>
-                                    <option value="" selected disabled>Seleccione...</option>
-                                    <option value="Electrónica">Electrónica</option>
-                                    <option value="Ológrafa">Ológrafa (Manuscrita)</option>
-                                </select>
+                                <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Tipo de firma del documento <span class="text-danger">*</span></label>
+                                <div class="dropdown custom-select" id="div_reqSignature">
+                                    <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <span class="selected-value text-muted">Seleccione...</span>
+                                        <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
+                                    </button>
+                                    <div class="dropdown-menu w-100 p-2 border-0 shadow-sm" style="border:1px solid var(--border-color)!important">
+                                        <input type="text" class="form-control form-control-sm mb-2" placeholder="Buscar..." onkeyup="filterOptions(this)">
+                                        <div class="options-container" style="max-height: 200px; overflow-y: auto;">
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqSignature', 'Electrónica o verificable en línea', this); handleSignatureChange()">Electrónica o verificable en línea</a>
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqSignature', 'Ológrafa (Manuscrita)', this); handleSignatureChange()">Ológrafa (Manuscrita)</a>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="reqSignature" required style="opacity:0; position:absolute; pointer-events:none; top:0; left:0; height:100%; width:100%; z-index:-1">
+                                </div>
                             </div>
 
                             <!-- CAMPO ADJUNTO (CONDICIONAL) -->
@@ -1011,83 +1075,72 @@
                                         <i data-lucide="paperclip" style="width:14px"></i> Adjuntar Documento (PDF) <span class="text-danger">*</span>
                                     </label>
                                     <input type="file" class="form-control-mre" id="reqFile" accept=".pdf">
-                                    <small class="text-muted mt-1 d-block" style="font-size: 0.7rem;">El documento debe estar firmado digitalmente. Formato .pdf, Máx 5MB.</small>
+                                    <small class="text-muted mt-1 d-block" style="font-size: 0.7rem;">El documento debe tener firma electrónica o verificable. Formato .pdf, Máx 5MB.</small>
                                 </div>
                             </div>
 
-                            <!-- 5. TIPO DE DOCUMENTO (DEPENDIENTE) -->
+                            <!-- 5. TIPO DE DOCUMENTO (DEPENDIENTE + CUSTOM SELECT) -->
                             <div class="col-md-12">
                                 <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Tipo de Documento <span class="text-danger">*</span></label>
-                                <select class="form-control-mre" id="reqDocType" onchange="handleDocTypeChange()" disabled required>
-                                    <option value="" selected disabled>Seleccione primero el tipo de firma...</option>
-                                    <option value="Certificado de Nacimiento">Certificado de Nacimiento</option>
-                                    <option value="Certificado de Matrimonio">Certificado de Matrimonio</option>
-                                    <option value="Certificado de Defunción">Certificado de Defunción</option>
-                                    <option value="Antecedentes Policiales">Antecedentes Policiales</option>
-                                    <option value="Certificado de Estudios">Certificado de Estudios</option>
-                                    <option value="Título Universitario">Título Universitario</option>
-                                </select>
-                            </div>
-
-                            <!-- PESTAÑAS DE DATOS ADICIONALES (OCULTO INICIALMENTE) -->
-                            <div class="col-12 mt-4 hidden animate-fade" id="additionalDataTabs">
-                                <ul class="nav nav-tabs mb-3" id="requestTabs" role="tablist">
-                                    <li class="nav-item" role="presentation">
-                                        <button class="nav-link active fw-bold" id="titular-tab" data-bs-toggle="tab" data-bs-target="#titular" type="button" role="tab" aria-selected="true">Datos del Titular</button>
-                                    </li>
-                                    <li class="nav-item" role="presentation">
-                                        <button class="nav-link fw-bold" id="especificos-tab" data-bs-toggle="tab" data-bs-target="#especificos" type="button" role="tab" aria-selected="false">Datos Específicos</button>
-                                    </li>
-                                </ul>
-                                <div class="tab-content p-3 border border-top-0 rounded-bottom bg-white shadow-sm" id="requestTabsContent">
-                                    <!-- TAB 1: DATOS TITULAR -->
-                                    <div class="tab-pane fade show active" id="titular" role="tabpanel" aria-labelledby="titular-tab">
-                                        <div class="row g-3">
-                                            <div class="col-md-6">
-                                                <label class="form-label text-muted small fw-bold text-uppercase">Tipo de Documento <span class="text-danger">*</span></label>
-                                                <select class="form-control-mre" id="titularDocType" required>
-                                                    <option value="CI">Cédula de Identidad</option>
-                                                    <option value="PAS">Pasaporte</option>
-                                                    <option value="OTRO">Otro</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label class="form-label text-muted small fw-bold text-uppercase">Número de Documento <span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control-mre" id="titularDocNum" required>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label class="form-label text-muted small fw-bold text-uppercase">Nombre del Titular <span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control-mre" id="titularName" required>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label class="form-label text-muted small fw-bold text-uppercase">Nro. de Certificado de Nacimiento <span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control-mre" id="titularCertNum" required>
-                                            </div>
-                                            
-                                            <!-- Botón Siguiente -->
-                                            <div class="col-12 text-end mt-4">
-                                                <button type="button" class="btn btn-outline-primary fw-bold px-4 rounded-3 btn-sm" onclick="showTab('especificos-tab')">
-                                                    Siguiente <i data-lucide="arrow-right" class="ms-1" style="width:14px; margin-bottom: 2px;"></i>
-                                                </button>
-                                            </div>
+                                <div class="dropdown custom-select" id="div_reqDocType">
+                                    <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false" disabled id="btn_reqDocType">
+                                        <span class="selected-value text-muted">Seleccione primero el tipo de firma...</span>
+                                        <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
+                                    </button>
+                                    <div class="dropdown-menu w-100 p-2 border-0 shadow-sm" style="border:1px solid var(--border-color)!important">
+                                        <input type="text" class="form-control form-control-sm mb-2" placeholder="Buscar..." onkeyup="filterOptions(this)">
+                                        <div class="options-container" style="max-height: 200px; overflow-y: auto;">
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqDocType', 'Certificado de Nacimiento', this); handleDocTypeChange()">Certificado de Nacimiento</a>
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqDocType', 'Certificado de Matrimonio', this); handleDocTypeChange()">Certificado de Matrimonio</a>
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqDocType', 'Certificado de Defunción', this); handleDocTypeChange()">Certificado de Defunción</a>
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqDocType', 'Antecedentes Policiales', this); handleDocTypeChange()">Antecedentes Policiales</a>
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqDocType', 'Certificado de Estudios', this); handleDocTypeChange()">Certificado de Estudios</a>
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqDocType', 'Título Universitario', this); handleDocTypeChange()">Título Universitario</a>
                                         </div>
                                     </div>
-                                    <!-- TAB 2: DATOS ESPECIFICOS -->
-                                    <div class="tab-pane fade" id="especificos" role="tabpanel" aria-labelledby="especificos-tab">
-                                        <div class="row g-3">
-                                            <div class="col-md-4">
-                                                <label class="form-label text-muted small fw-bold text-uppercase">Número de Acta <span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control-mre" id="actaNum" required>
+                                    <input type="hidden" id="reqDocType" required style="opacity:0; position:absolute; pointer-events:none; top:0; left:0; height:100%; width:100%; z-index:-1">
+                                </div>
+                            </div>
+
+                            <!-- CAMPOS DE DETALLE (SIMPLIFICADO) -->
+                            <div class="col-12 mt-4 hidden animate-fade" id="additionalDataTabs">
+                                <div class="p-4 bg-light border rounded-3">
+                                    <h6 class="fw-black text-navy small mb-3 border-bottom pb-2">Datos del Documento</h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label text-muted small fw-bold text-uppercase">Nombre del Titular <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control-mre" id="titularName" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <!-- Label con enlace de ayuda -->
+                                            <div class="d-flex justify-content-between align-items-end mb-1">
+                                                <label class="form-label text-muted small fw-bold text-uppercase m-0">Número de certificado de nacimiento <span class="text-danger">*</span></label>
+                                                <a href="#" class="text-primary text-decoration-none fw-bold d-flex align-items-center gap-1" style="font-size: 0.6rem;" onclick="showCertHelp(event)">
+                                                    <i data-lucide="help-circle" style="width:12px;"></i> Ayuda
+                                                </a>
                                             </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label text-muted small fw-bold text-uppercase">Año <span class="text-danger">*</span></label>
-                                                <select class="form-control-mre" id="actaYear" required>
-                                                    <!-- Se pobla vía JS -->
-                                                </select>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label text-muted small fw-bold text-uppercase">Fecha de Expedición <span class="text-danger">*</span></label>
-                                                <input type="date" class="form-control-mre" id="actaDate" required>
+                                            <input type="text" class="form-control-mre" id="titularCertNum" required>
+                                        </div>
+
+                                        <!-- CAMPO FUNCIONARIO FIRMANTE (MOVIDO AQUI - CONDICIONAL) -->
+                                        <div class="col-md-12 hidden animate-fade" id="officialField">
+                                            <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Funcionario Firmante <span class="text-danger">*</span></label>
+                                            <div class="dropdown custom-select" id="div_reqOfficial">
+                                                <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <span class="selected-value text-muted">Seleccione...</span>
+                                                    <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
+                                                </button>
+                                                <div class="dropdown-menu w-100 p-2 border-0 shadow-sm" style="border:1px solid var(--border-color)!important">
+                                                    <input type="text" class="form-control form-control-sm mb-2" placeholder="Buscar..." onkeyup="filterOptions(this)">
+                                                    <div class="options-container" style="max-height: 200px; overflow-y: auto;">
+                                                        <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqOfficial', 'Juan Pérez (REC)', this)">Juan Pérez (REC)</a>
+                                                        <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqOfficial', 'María González (MEC)', this)">María González (MEC)</a>
+                                                        <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqOfficial', 'Carlos López (CSJ)', this)">Carlos López (CSJ)</a>
+                                                        <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqOfficial', 'Ana Benítez (UNA)', this)">Ana Benítez (UNA)</a>
+                                                        <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqOfficial', 'Roberto Fernández (DNIT)', this)">Roberto Fernández (DNIT)</a>
+                                                    </div>
+                                                </div>
+                                                <input type="hidden" id="reqOfficial" style="opacity:0; position:absolute; pointer-events:none; top:0; left:0; height:100%; width:100%; z-index:-1">
                                             </div>
                                         </div>
                                     </div>
@@ -1115,11 +1168,12 @@
                         <table class="mre-table" id="loadedDocsTable">
                             <thead>
                                 <tr>
-                                    <th>País</th>
+                                    <th>Tipo de Firma</th> <!-- Reemplaza a País -->
                                     <th>Institución</th>
                                     <th>Tipo de Documento</th>
                                     <th>Validación</th>
                                     <th class="text-center">Validado</th>
+                                    <th class="text-end">Importe</th> <!-- Nueva Columna -->
                                     <th class="text-center">Archivo</th>
                                     <th class="text-center">Acciones</th>
                                 </tr>
@@ -1555,6 +1609,10 @@
         // Función para mostrar el formulario y ocultar la lista (Paso 1)
         function showRequestForm() {
             document.getElementById('newRequestForm').reset();
+            // Reset Custom Selects Text
+            document.querySelectorAll('.custom-select .selected-value').forEach(el => el.innerText = "Seleccione...");
+            document.querySelectorAll('.custom-select input[type=hidden]').forEach(el => el.value = "");
+            
             handleSignatureChange();
             document.getElementById('additionalDataTabs').classList.add('hidden');
             showTab('titular-tab');
@@ -1564,36 +1622,122 @@
             lucide.createIcons();
         }
 
+        // --- Custom Dropdown Select Functions ---
+        function setOption(inputId, value, element) {
+            const hiddenInput = document.getElementById(inputId);
+            const container = document.getElementById('div_' + inputId);
+            const displaySpan = container.querySelector('.selected-value');
+            
+            hiddenInput.value = value;
+            displaySpan.innerText = value;
+            displaySpan.classList.remove('text-muted');
+            displaySpan.classList.add('text-dark');
+            
+            // Trigger change logic manually if needed
+            // (Used by handleSignatureChange etc)
+        }
+
+        function filterOptions(input) {
+            const filter = input.value.toUpperCase();
+            const container = input.nextElementSibling;
+            const items = container.getElementsByClassName('dropdown-item');
+            
+            for (let i = 0; i < items.length; i++) {
+                const txtValue = items[i].textContent || items[i].innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    items[i].style.display = "";
+                } else {
+                    items[i].style.display = "none";
+                }
+            }
+        }
+
+        // --- FUNCIÓN DE AYUDA (NUEVA) ---
+        function showCertHelp(e) {
+            e.preventDefault();
+            const popupTitle = document.getElementById('popupTitle');
+            const popupContent = document.getElementById('popupContent');
+            const popupActions = document.getElementById('popupActions');
+
+            // SVG Inline simulando un certificado con un recuadro rojo
+            const svgImage = `
+            <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px;">
+                <!-- Fondo Papel -->
+                <rect x="20" y="20" width="360" height="210" fill="#fff" stroke="#cbd5e1" stroke-width="1" rx="2" />
+                <!-- Encabezado -->
+                <rect x="40" y="40" width="320" height="30" fill="#e2e8f0" rx="2" />
+                <text x="200" y="60" font-family="sans-serif" font-size="10" text-anchor="middle" fill="#64748b" font-weight="bold">REPÚBLICA DEL PARAGUAY - CERTIFICADO DE NACIMIENTO</text>
+                <!-- Lineas de texto simuladas -->
+                <rect x="40" y="90" width="150" height="8" fill="#e2e8f0" rx="1" />
+                <rect x="40" y="110" width="200" height="8" fill="#e2e8f0" rx="1" />
+                <rect x="40" y="130" width="180" height="8" fill="#e2e8f0" rx="1" />
+                
+                <!-- ÁREA RESALTADA -->
+                <text x="280" y="95" font-family="sans-serif" font-size="10" fill="#64748b">Nro: 1234567</text>
+                <rect x="270" y="80" width="80" height="25" fill="none" stroke="#dc2626" stroke-width="3" rx="2" />
+                <path d="M260 100 L230 130" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow)" />
+                <text x="230" y="145" font-family="sans-serif" font-size="12" fill="#dc2626" font-weight="bold">Dato Requerido</text>
+            </svg>`;
+
+            popupTitle.innerText = "Ayuda: Ubicación del Dato";
+            popupContent.innerHTML = `
+                <div class="p-2 text-center">
+                    <p class="small text-muted mb-3">Por favor, ingrese el número que figura en la parte superior derecha de su documento, tal como se muestra en la imagen:</p>
+                    ${svgImage}
+                </div>
+            `;
+            popupActions.innerHTML = `<button class="btn-main w-100" onclick="closePopup()">Entendido</button>`;
+            
+            document.getElementById('genericPopup').style.display = 'flex';
+        }
+
         // --- LÓGICA DE NUEVA SOLICITUD ---
         function handleSignatureChange() {
             const signature = document.getElementById('reqSignature').value;
             const attachmentField = document.getElementById('attachmentField');
-            const docType = document.getElementById('reqDocType');
+            const officialField = document.getElementById('officialField');
+            const docTypeBtn = document.getElementById('btn_reqDocType');
+            const docTypeDisplay = document.querySelector('#div_reqDocType .selected-value');
             const additionalTabs = document.getElementById('additionalDataTabs');
 
-            // 1. Mostrar/Ocultar Adjunto
-            if (signature === 'Electrónica') {
+            // 1. Mostrar/Ocultar Adjunto y Funcionario
+            if (signature === 'Electrónica o verificable en línea') {
                 attachmentField.classList.remove('hidden');
-                // Hacer requerido el archivo si es electrónica
                 document.getElementById('reqFile').required = true;
-            } else {
+                
+                officialField.classList.add('hidden');
+                document.getElementById('reqOfficial').required = false;
+                document.getElementById('reqOfficial').value = '';
+                // Reset visual text for official if needed
+                document.querySelector('#div_reqOfficial .selected-value').innerText = "Seleccione...";
+                document.querySelector('#div_reqOfficial .selected-value').classList.add('text-muted');
+
+            } else if (signature === 'Ológrafa (Manuscrita)') {
                 attachmentField.classList.add('hidden');
                 document.getElementById('reqFile').required = false;
+                document.getElementById('reqFile').value = '';
+
+                officialField.classList.remove('hidden');
+                document.getElementById('reqOfficial').required = true;
+            } else {
+                // Ninguno seleccionado
+                attachmentField.classList.add('hidden');
+                officialField.classList.add('hidden');
             }
 
             // 2. Habilitar/Deshabilitar Tipo de Documento
             if (signature && signature !== "") {
-                docType.disabled = false;
-                if (docType.options[0].text.includes('Seleccione primero')) {
-                     docType.options[0].text = "Seleccione...";
+                docTypeBtn.disabled = false;
+                if(docTypeDisplay.innerText.includes("Seleccione primero")) {
+                    docTypeDisplay.innerText = "Seleccione...";
                 }
             } else {
-                docType.disabled = true;
-                docType.value = ""; // Reset value
-                docType.options[0].text = "Seleccione primero el tipo de firma...";
-                additionalTabs.classList.add('hidden'); // Ocultar pestañas si se resetea la firma
+                docTypeBtn.disabled = true;
+                docTypeDisplay.innerText = "Seleccione primero el tipo de firma...";
+                docTypeDisplay.classList.add('text-muted');
+                additionalTabs.classList.add('hidden'); 
             }
-            lucide.createIcons(); // Re-render icons if appearing
+            lucide.createIcons(); 
         }
 
         function handleDocTypeChange() {
@@ -1601,7 +1745,7 @@
             const additionalTabs = document.getElementById('additionalDataTabs');
             if(docType) {
                 additionalTabs.classList.remove('hidden');
-                lucide.createIcons(); // Para iconos en el botón siguiente
+                lucide.createIcons();
             } else {
                 additionalTabs.classList.add('hidden');
             }
@@ -1617,15 +1761,14 @@
         }
 
         function populateYears() {
-            const select = document.getElementById('actaYear');
-            if(select) {
+            const container = document.getElementById('actaYearContainer');
+            if(container) {
                 const currentYear = new Date().getFullYear();
+                let html = '';
                 for(let y = currentYear; y >= 1950; y--) {
-                    const opt = document.createElement('option');
-                    opt.value = y;
-                    opt.innerText = y;
-                    select.appendChild(opt);
+                    html += `<a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('actaYear', '${y}', this)">${y}</a>`;
                 }
+                container.innerHTML = html;
             }
         }
 
@@ -1634,38 +1777,137 @@
         let electronicSigCount = 0; // Contador para controlar la demo de validación
 
         function confirmAdd() {
+            // Check HTML5 validity of hidden inputs via the form constraint API logic check
+            const form = document.getElementById('newRequestForm');
+            if(!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            // Recopilar datos del formulario
+            const country = document.getElementById('reqCountry').value;
+            const institution = document.getElementById('reqInstitution').value;
+            const type = document.getElementById('reqType').value;
             const signature = document.getElementById('reqSignature').value;
+            const docType = document.getElementById('reqDocType').value;
+            const titularName = document.getElementById('titularName').value;
+            const certNum = document.getElementById('titularCertNum').value;
+            const official = document.getElementById('reqOfficial').value;
+
             const popupTitle = document.getElementById('popupTitle');
             const popupContent = document.getElementById('popupContent');
             const popupActions = document.getElementById('popupActions');
 
-            let electronicMsg = '';
-            if (signature === 'Electrónica') {
-                electronicMsg = `
-                    <div class="alert alert-primary mt-3 mb-0 small text-start border-primary-subtle">
-                        <div class="d-flex gap-2">
+            // 1. Leyenda de Atención por Tipo de Firma (NUEVO)
+            let signatureLegend = '';
+            if (signature.includes('Electrónica')) {
+                signatureLegend = `
+                    <div class="alert alert-primary mt-2 mb-0 small text-start border-primary-subtle p-2">
+                        <div class="d-flex gap-2 align-items-start">
                             <i data-lucide="scan-eye" style="width:16px; min-width:16px; margin-top:2px"></i>
-                            <div><strong>Atención:</strong> Una vez confirmado, el sistema procederá a validar automáticamente la firma digital del documento adjunto.</div>
+                            <div style="font-size:0.75rem"><strong>Atención:</strong> Una vez confirmado, el sistema procederá a validar automáticamente la firma electrónica o verificable del documento adjunto.</div>
+                        </div>
+                    </div>`;
+            } else {
+                // Firma Ológrafa
+                signatureLegend = `
+                    <div class="alert alert-danger mt-2 mb-0 small text-start border-danger-subtle p-2">
+                        <div class="d-flex gap-2 align-items-start">
+                            <i data-lucide="map-pin" style="width:16px; min-width:16px; margin-top:2px"></i>
+                            <div style="font-size:0.75rem"><strong>Atención:</strong> Debe necesariamente pasar de forma presencial por las oficinas del MRE para validar el documento.</div>
                         </div>
                     </div>`;
             }
 
+            // 2. Leyenda Dinámica por País (Info País)
+            let adviceText = '';
+            // Lógica de ejemplo simple basada en País + Firma
+            if (country === 'Alemania') {
+                adviceText = "Alemania requiere frecuentemente traducción jurada. Asegúrese de que el documento base cumpla con este requisito si aplica.";
+            } else if (country === 'España' && signature.includes('Electrónica')) {
+                adviceText = "España admite la Apostilla Electrónica directamente. No se requiere gestión presencial adicional.";
+            } else if (country === 'Brasil' && signature.includes('Ológrafa')) {
+                adviceText = "Para trámites físicos con Brasil, verifique si el documento requiere legalización consular específica por el tipo de acuerdo.";
+            } else if (type === 'Legalización') {
+                adviceText = `Para ${country}, el trámite de Legalización puede requerir pasos adicionales en el consulado de destino.`;
+            } else {
+                adviceText = `Verifique los requisitos de aceptación de documentos Apostillados en las oficinas de ${country}.`;
+            }
+
+            const adviceHtml = `
+                <div class="mt-2 p-2 bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded text-start small">
+                    <div class="d-flex gap-2 align-items-start">
+                        <i data-lucide="lightbulb" style="width:16px; min-width:16px; margin-top:2px"></i>
+                        <div style="font-size:0.75rem"><strong>Info País:</strong> ${adviceText}</div>
+                    </div>
+                </div>
+            `;
+
+            // HTML para Funcionario (Condicional)
+            let officialHtml = '';
+            if (signature.includes('Ológrafa') && official) {
+                officialHtml = `
+                    <div class="col-12">
+                        <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">Funcionario Firmante</span>
+                        <strong class="text-dark" style="font-size:0.8rem">${official}</strong>
+                    </div>`;
+            }
+
+            // Construcción del Resumen Visual Compacto
+            const summaryHtml = `
+                <div class="bg-white border rounded-3 p-3 text-start shadow-sm mb-0">
+                    <div class="row g-2">
+                        <!-- Orden idéntico al formulario -->
+                        <div class="col-6">
+                            <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">País</span>
+                            <strong class="text-dark" style="font-size:0.8rem">${country}</strong>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">Institución</span>
+                            <strong class="text-dark" style="font-size:0.8rem">${institution}</strong>
+                        </div>
+                        
+                        <div class="col-6">
+                            <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">Trámite</span>
+                            <strong class="text-dark" style="font-size:0.8rem">${type}</strong>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">Firma</span>
+                            <strong class="text-dark" style="font-size:0.8rem">${signature.includes('Electrónica') ? 'Electrónica' : 'Ológrafa'}</strong>
+                        </div>
+
+                        <div class="col-12 border-top pt-1 mt-1">
+                            <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">Documento</span>
+                            <strong class="text-primary" style="font-size:0.85rem">${docType}</strong>
+                        </div>
+
+                        <div class="col-6">
+                            <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">Titular</span>
+                            <strong class="text-dark" style="font-size:0.8rem">${titularName}</strong>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">Nro. Certificado</span>
+                            <strong class="text-dark" style="font-size:0.8rem">${certNum}</strong>
+                        </div>
+                        ${officialHtml}
+                    </div>
+                </div>
+            `;
+
             popupTitle.innerText = "Verificación de Datos";
             popupContent.innerHTML = `
-                <div class="p-3 text-center">
-                    <div class="mb-3 text-warning d-flex justify-content-center">
-                        <i data-lucide="alert-circle" style="width:48px; height:48px"></i>
-                    </div>
-                    <p class="fw-bold mb-2">¿Son correctos los datos cargados?</p>
-                    <p class="small text-muted">Confirmo que la información ha sido verificada uno por uno.</p>
-                    ${electronicMsg}
+                <div class="px-2 pt-2 text-center">
+                    <p class="fw-bold mb-3 text-navy">¿Son correctos los datos cargados?</p>
+                    ${summaryHtml}
+                    ${adviceHtml}
+                    ${signatureLegend}
                 </div>
             `;
             
             popupActions.innerHTML = `
                 <div class="d-flex gap-2">
-                    <button class="btn btn-light w-50 border" onclick="closePopup()">Cancelar</button>
-                    <button class="btn-main w-50" onclick="addToGrid()">Correcto</button>
+                    <button class="btn btn-light w-50 border fw-bold" onclick="closePopup()">Cancelar</button>
+                    <button class="btn-main w-50" onclick="initiateAddProcess()">Correcto</button>
                 </div>
             `;
             
@@ -1673,8 +1915,115 @@
             lucide.createIcons();
         }
 
-        function addToGrid() {
-            closePopup(); // Cerrar el modal de confirmación
+        // --- GESTIÓN DE FLUJO ---
+        function initiateAddProcess() {
+            const signature = document.getElementById('reqSignature').value;
+            // Si es electrónica, vamos al modal de validación
+            if (signature.includes('Electrónica')) {
+                startValidationProcess();
+            } else {
+                // Si es ológrafa, vamos directo a la grilla (validación previa)
+                addToGrid('Previa', null);
+            }
+        }
+
+        // --- LÓGICA DE VALIDACIÓN ---
+        function startValidationProcess() {
+            const popupTitle = document.getElementById('popupTitle');
+            const popupContent = document.getElementById('popupContent');
+            const popupActions = document.getElementById('popupActions');
+
+            popupTitle.innerText = "Validando Documento...";
+            popupContent.innerHTML = `
+                <div class="text-center p-4">
+                    <div class="spinner-border text-primary mb-3" role="status"></div>
+                    <p class="text-muted small fw-bold">Conectando con servicio de firma electrónica o verificable...</p>
+                </div>
+            `;
+            popupActions.innerHTML = ''; // Hide buttons
+
+            setTimeout(() => {
+                showValidationResult();
+            }, 1500); 
+        }
+
+        function showValidationResult() {
+            electronicSigCount++;
+            let scenario = ''; 
+            
+            // Rotación de escenarios para demo: 1=OK, 2=ConnError, 3=Invalid
+            const demoIndex = (electronicSigCount % 3);
+            if (demoIndex === 1) scenario = 'SUCCESS';
+            else if (demoIndex === 2) scenario = 'CONN_ERROR';
+            else scenario = 'INVALID'; 
+
+            currentValidationState = scenario;
+
+            const popupTitle = document.getElementById('popupTitle');
+            const popupContent = document.getElementById('popupContent');
+            const popupActions = document.getElementById('popupActions');
+
+            let icon = '';
+            let title = '';
+            let message = '';
+
+            if (scenario === 'SUCCESS') {
+                icon = '<div class="bg-success-subtle text-success p-3 rounded-circle d-inline-flex mb-3"><i data-lucide="check-circle-2" style="width:40px; height:40px"></i></div>';
+                title = 'Validación Exitosa';
+                message = '<p class="fw-bold text-success">El documento ha sido validado correctamente.</p><p class="small text-muted">La firma electrónica o verificable es válida y corresponde a la autoridad emisora.</p>';
+            } else if (scenario === 'CONN_ERROR') {
+                icon = '<div class="bg-warning-subtle text-warning-emphasis p-3 rounded-circle d-inline-flex mb-3"><i data-lucide="wifi-off" style="width:40px; height:40px"></i></div>';
+                title = 'Error de Conexión';
+                message = `
+                    <p class="fw-bold text-warning-emphasis">No se pudo conectar con el servicio de validación.</p>
+                    <div class="alert alert-warning border-warning-subtle small text-start">
+                        <i data-lucide="info" style="width:14px; margin-right:4px; vertical-align:text-bottom"></i>
+                        El documento es válido en formato, pero falla la conexión con el servicio externo. Si presiona <strong>Aceptar</strong>, la solicitud pasará a estado "Validación Previa".
+                    </div>`;
+            } else if (scenario === 'INVALID') {
+                icon = '<div class="bg-danger-subtle text-danger p-3 rounded-circle d-inline-flex mb-3"><i data-lucide="x-circle" style="width:40px; height:40px"></i></div>';
+                title = 'Documento No Válido';
+                message = `
+                    <p class="fw-bold text-danger">No se pudo validar el documento.</p>
+                    <div class="alert alert-danger border-danger-subtle small text-start">
+                        <i data-lucide="alert-triangle" style="width:14px; margin-right:4px; vertical-align:text-bottom"></i>
+                        La firma electrónica no es reconocida o el archivo está dañado. Puede <strong>Volver a la Solicitud</strong> para corregir, o presionar <strong>Aceptar</strong> para enviarlo a revisión manual (Validación Previa).
+                    </div>`;
+            }
+
+            popupTitle.innerText = title;
+            popupContent.innerHTML = `
+                <div class="text-center p-2">
+                    ${icon}
+                    ${message}
+                </div>
+            `;
+
+            // Botones: Se agrega "Volver a Solicitud" y "Aceptar" siempre lleva a la grilla
+            popupActions.innerHTML = `
+                <div class="d-flex flex-column gap-2 w-100">
+                    <div class="d-flex gap-2 w-100">
+                        <button class="btn btn-light w-50 border fw-bold" onclick="closePopup()">Volver a Solicitud</button>
+                        <button class="btn btn-light w-50 border fw-bold" onclick="startValidationProcess()">Reintentar</button>
+                    </div>
+                    <button class="btn-main w-100" onclick="handleValidationDecision('${scenario}')">Aceptar</button>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        function handleValidationDecision(scenario) {
+            closePopup();
+            if (scenario === 'SUCCESS') {
+                addToGrid('Automática', true);
+            } else {
+                // CONN_ERROR o INVALID -> Se agrega como Previa / No Validado
+                addToGrid('Previa', false); 
+            }
+        }
+
+        function addToGrid(forceValidationType = null, forceValidatedStatus = null) {
+            closePopup(); // Asegura cerrar cualquier modal abierto
 
             // Generic fields
             const country = document.getElementById('reqCountry').value;
@@ -1683,42 +2032,29 @@
             const docType = document.getElementById('reqDocType').value;
             const signature = document.getElementById('reqSignature').value;
             const fileInput = document.getElementById('reqFile');
-            const hasFile = signature === 'Electrónica' && fileInput.files.length > 0;
+            const hasFile = signature.includes('Electrónica') && fileInput.files.length > 0;
 
             // Titular fields
             const titularName = document.getElementById('titularName').value;
-            const titularDocNum = document.getElementById('titularDocNum').value;
+            const titularCertNum = document.getElementById('titularCertNum').value; 
             
-            // Specifics
-            const actaNum = document.getElementById('actaNum').value;
-            const actaYear = document.getElementById('actaYear').value;
+            // Determinar estado final
+            let validationType = 'Previa'; 
+            let isValidated = null;
 
-            // Lógica de Validación Simulada (Determinista para Demo)
-            let validationType = 'Previa'; // Default for Olograph
-            let isValidated = null; // Null means N/A (for Olograph)
-
-            if (signature === 'Electrónica') {
-                electronicSigCount++; // Incrementar contador de firmas electrónicas
-                let isSuccess;
-
-                // Lógica específica solicitada:
-                if (electronicSigCount === 1) {
-                    isSuccess = true; // 1er registro: SI
-                } else if (electronicSigCount === 2) {
-                    isSuccess = false; // 2do registro: NO
+            if (signature.includes('Electrónica')) {
+                if (forceValidationType) {
+                    validationType = forceValidationType;
+                    isValidated = forceValidatedStatus;
                 } else {
-                    isSuccess = Math.random() > 0.3; // 3ro en adelante: Aleatorio
-                }
-
-                if (isSuccess) {
-                    alert("✅ Documento validado correctamente.");
-                    validationType = 'Automática';
-                    isValidated = true;
-                } else {
-                    alert("⚠️ No se pudo validar automáticamente.\n\nLa solicitud cambiará a estado 'Validación Previa' para que sea analizada manualmente por un funcionario del MRE.");
-                    validationType = 'Previa'; // Fallback a manual
+                    // Fallback (solo si algo falla en el flujo)
+                    validationType = 'Previa';
                     isValidated = false;
                 }
+            } else {
+                // Firma Ológrafa siempre es previa
+                validationType = 'Previa';
+                isValidated = null;
             }
 
             const newItem = {
@@ -1726,12 +2062,12 @@
                 institution,
                 type,
                 docType,
-                signature,
+                signature: signature.includes('Electrónica') ? 'Electrónica' : 'Ológrafa',
                 hasFile,
                 titularName,
-                titularDocNum,
-                actaNum,
-                actaYear,
+                titularDocNum: titularCertNum, 
+                actaNum: "N/A", 
+                actaYear: "N/A", 
                 validationType, 
                 isValidated
             };
@@ -1746,6 +2082,8 @@
 
         function renderLoadedDocuments() {
             const tbody = document.getElementById('loadedDocsBody');
+            const fixedRate = 80100; // Arancel fijo
+
             tbody.innerHTML = tempRequestsList.map((item, index) => {
                 // Badge Tipo Validación
                 let validationBadge = '';
@@ -1756,8 +2094,8 @@
                 }
 
                 // Columna Validado (Si/No)
-                let validatedStatus = '<span class="text-muted opacity-25">-</span>';
-                if (item.signature === 'Electrónica') {
+                let validatedStatus = ''; 
+                if (item.signature.includes('Electrónica')) {
                     if (item.isValidated === true) {
                         validatedStatus = `<span class="badge bg-success text-white" style="font-size: 0.65rem;">SÍ</span>`;
                     } else if (item.isValidated === false) {
@@ -1765,13 +2103,20 @@
                     }
                 }
 
+                // Columna Importe (Solo si es Automática/Validada)
+                let amountDisplay = '<span class="text-muted opacity-25">-</span>';
+                if (item.validationType === 'Automática') {
+                    amountDisplay = `<span class="fw-black text-primary">Gs. ${fixedRate.toLocaleString('es-PY')}</span>`;
+                }
+
                 return `
                 <tr>
-                    <td>${item.country}</td>
+                    <td><span class="badge bg-light text-dark border">${item.signature}</span></td> <!-- Tipo de Firma -->
                     <td class="small fw-semibold">${item.institution}</td>
                     <td class="fw-bold text-navy">${item.docType}</td>
                     <td>${validationBadge}</td>
                     <td class="text-center">${validatedStatus}</td>
+                    <td class="text-end">${amountDisplay}</td> <!-- Importe -->
                     <td class="text-center">
                         ${item.hasFile ? `<i data-lucide="file-check" class="text-success" style="width:18px; cursor:pointer;" title="Descargar Adjunto"></i>` : `<span class="text-muted opacity-25">-</span>`}
                     </td>
@@ -1790,6 +2135,7 @@
             renderLoadedDocuments();
             if (tempRequestsList.length === 0) {
                 document.getElementById('loadedDocsSection').classList.add('hidden');
+                document.getElementById('requestFormContainer').classList.remove('hidden'); // Show form if list is empty
             }
         }
 
@@ -1800,7 +2146,7 @@
                 return;
             }
             
-            // 1. GENERAR IDS Y FECHAS (SIMULACIÓN DE GUARDADO EN BD)
+            // 1. GENERAR IDS Y FECHAS
             const now = new Date();
             const dateStr = now.toLocaleString('es-PY');
             const generatedBatch = tempRequestsList.map((item, index) => {
@@ -1838,7 +2184,7 @@
             let htmlContent = '';
             let initialTotal = 0;
 
-            // 1. SECCIÓN VALIDACIÓN AUTOMÁTICA (CON CHECKBOXES Y TOTAL EN BOTÓN)
+            // 1. SECCIÓN VALIDACIÓN AUTOMÁTICA
             if (autoList.length > 0) {
                 const autoRows = autoList.map(item => {
                     initialTotal += item.importe;
@@ -1857,7 +2203,6 @@
                     `;
                 }).join('');
 
-                // DISEÑO ACTUALIZADO: Estructura idéntica al bloque manual
                 htmlContent += `
                     <div class="mb-5 animate-fade bg-white border rounded-3 shadow-sm overflow-hidden">
                         <div class="p-3 bg-primary-subtle border-bottom border-primary-subtle d-flex justify-content-between align-items-center">
@@ -1904,15 +2249,16 @@
                     let legendStyle = '';
                     let icon = '';
 
+                    // CORRECCIÓN: Validar contra el valor guardado 'Electrónica'
                     if (item.signature === 'Electrónica') {
                         // Lógica: Electrónica pero cayó en manual (no validada)
                         icon = 'file-clock';
-                        legendStyle = 'background-color: #fff8c5; color: #664d03; border: 1px solid #ffecb5;'; // Estilo warning suave
+                        legendStyle = 'background-color: #fff8c5; color: #664d03; border: 1px solid #ffecb5;'; 
                         legend = 'La solicitud requiere análisis manual. Se le notificará cuando cambien de estado o puede consultar el estado desde su sistema de gestión.';
                     } else {
                         // Lógica: Ológrafa
                         icon = 'map-pin';
-                        legendStyle = 'background-color: #f8d7da; color: #842029; border: 1px solid #f5c2c7;'; // Estilo danger suave
+                        legendStyle = 'background-color: #f8d7da; color: #842029; border: 1px solid #f5c2c7;'; 
                         legend = 'La solicitud requiere presentación física en el local MRE para validación del documento.';
                     }
 
@@ -1941,7 +2287,6 @@
                             </h6>
                             <span class="badge bg-white text-dark border">En Análisis / Pendiente</span>
                         </div>
-                        <!-- Mensaje genérico eliminado, ahora es específico por fila -->
                         <div class="table-responsive">
                             <table class="table table-hover mb-0" style="font-size: 0.85rem;">
                                 <thead class="bg-light">
