@@ -426,6 +426,14 @@
         }
         .btn-completar:hover { background: #059669; }
 
+        /* NUEVO BOTÓN VER DETALLE */
+        .btn-ver-detalle {
+            background: #E0F2FE; color: #0284C7; border: 1px solid #BAE6FD;
+            padding: 4px 10px; border-radius: 6px; font-size: 0.65rem; font-weight: 800;
+            text-transform: uppercase; transition: var(--transition);
+        }
+        .btn-ver-detalle:hover { background: #BAE6FD; }
+
         /* --- LIQUIDACIÓN --- */
         .liquidar-footer {
             padding: 1.5rem 2rem; display: flex; justify-content: flex-end; align-items: center; background: #F8FAFC; border-top: 1px solid #E2E8F0;
@@ -683,7 +691,10 @@
                 <div class="bg-white p-2 rounded-3 border" onclick="navigateTo('dashboard')" style="cursor:pointer">
                     <i data-lucide="globe" style="color: var(--mre-blue); width: 20px;"></i>
                 </div>
-                <div><h6 class="fw-black mb-0">SIA-PY</h6><p class="text-muted small mb-0 fw-bold uppercase" style="font-size: 0.55rem;">Apostilla Electrónica</p></div>
+                <div>
+                    <h6 class="fw-black mb-0">SIA-PY</h6>
+                    <p class="text-muted small mb-0 fw-bold uppercase" style="font-size: 0.55rem;">Sistema Integrado de Apostilla electrónica del Paraguay</p>
+                </div>
             </div>
             
             <div class="user-dropdown">
@@ -755,7 +766,7 @@
                     <div class="status-btn" id="btnDevuelto" onclick="filterTable('Devuelto', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-warning-subtle p-2 rounded-circle"><i data-lucide="rotate-ccw" class="text-warning" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Devueltos</span></div></div><span class="fs-5 fw-black text-warning">02</span></div>
                     <div class="status-btn" id="btnRechazado" onclick="filterTable('Rechazado', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-danger-subtle p-2 rounded-circle"><i data-lucide="x-circle" class="text-danger" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Rechazados</span></div></div><span class="fs-5 fw-black text-danger">02</span></div>
                     <!-- FINALIZADOS AHORA ES APOSTILLA -->
-                    <div class="status-btn" id="btnFinalizado" onclick="filterTable('Finalizados', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-dark-subtle p-2 rounded-circle"><i data-lucide="file-badge" class="text-dark" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Apostilla</span></div></div><span class="fs-5 fw-black text-dark">02</span></div>
+                    <div class="status-btn" id="btnFinalizado" onclick="filterTable('Finalizados', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-dark-subtle p-2 rounded-circle"><i data-lucide="file-badge" class="text-dark" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Apostillas y Legalizaciones</span></div></div><span class="fs-5 fw-black text-dark">02</span></div>
                 </div>
 
                 <button class="scroll-btn right" onclick="scrollStatus('right')" aria-label="Siguiente">
@@ -768,18 +779,18 @@
                     <h4 class="fw-black text-uppercase m-0" id="tableTitle" style="color: var(--mre-blue); font-size: 0.85rem;">Listado de Solicitudes</h4>
                     <div class="d-flex align-items-center" style="max-width: 600px; width: 100%; justify-content: flex-end;">
                         
-                        <div class="cols-dropdown-container">
+                        <div class="cols-dropdown-container hidden">
                             <button id="btnColumnas" class="btn-tool-generic" onclick="toggleColsMenu(event)" title="Configurar columnas visibles">
                                 <i data-lucide="layout-columns" style="width: 16px;"></i> Columnas
                             </button>
                             <div class="cols-dropdown-menu" id="colsMenu" onclick="event.stopPropagation()"></div>
                         </div>
 
-                        <button id="btnExportExcel" class="btn-tool-generic" onclick="exportToExcel()" title="Descargar listado en Excel (CSV)">
+                        <button id="btnExportExcel" class="btn-tool-generic hidden" onclick="exportToExcel()" title="Descargar listado en Excel (CSV)">
                             <i data-lucide="file-spreadsheet" style="width: 16px;"></i> Excel
                         </button>
 
-                        <button id="btnExportPdf" class="btn-tool-generic" onclick="exportToPdf()" title="Descargar listado en PDF">
+                        <button id="btnExportPdf" class="btn-tool-generic hidden" onclick="exportToPdf()" title="Descargar listado en PDF">
                             <i data-lucide="file-text" style="width: 16px;"></i> PDF
                         </button>
                         
@@ -869,11 +880,7 @@
                              </button>
                         </div>
                     </div>
-                    <div class="text-center mt-4">
-                        <button class="btn btn-link text-muted fw-bold small text-decoration-none" onclick="navigateTo('dashboard')">
-                            <i data-lucide="arrow-left" style="width:14px"></i> Volver para modificar
-                        </button>
-                    </div>
+                    <!-- Se eliminó el botón redundante de volver que estaba aquí -->
                 </div>
             </div>
         </div>
@@ -1276,6 +1283,7 @@
             { id: 'action', label: 'Acción', visible: true },
             // NUEVAS COLUMNAS PARA APOSTILLA
             { id: 'adjunto', label: 'Adjunto', visible: true },
+            { id: 'payment_proof', label: 'Comprobante de Ingreso Electrónico', visible: true }, // Nueva Columna
             { id: 'apostille_leg', label: 'Apostilla/Legalización', visible: true }
         ];
 
@@ -1283,7 +1291,8 @@
             const menu = document.getElementById('colsMenu');
             let tabKeys = [];
             if (status === 'Análisis') {
-                tabKeys = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'status', 'download'];
+                // CAMBIO: Se agregó 'action' a las columnas de Análisis
+                tabKeys = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'status', 'download', 'action'];
             } else if (status === 'Aprobado') {
                 tabKeys = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'status', 'importe', 'download', 'action'];
             } else if (status === 'Rechazado') {
@@ -1291,7 +1300,8 @@
             } else if (status === 'Devuelto') {
                 tabKeys = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'download', 'obs', 'action'];
             } else if (status === 'Finalizados') { // APOSTILLA TAB LOGIC
-                tabKeys = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'adjunto', 'apostille_leg'];
+                // CAMBIO: Se agrega 'payment_proof'
+                tabKeys = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'adjunto', 'payment_proof', 'apostille_leg'];
             } else {
                 tabKeys = ['id', 'doc', 'status', 'date'];
             }
@@ -1372,6 +1382,12 @@
             institution: "Registro del Estado Civil", doc: "Certificado de Nacimiento", 
             signatureType: "Ológrafa", status: "Pagado", importe: 80000, hasAttachment: false, verPago: false
         });
+        // NUEVO REGISTRO SOLICITADO
+        mockRequests.push({
+            id: "202600099", date: "13/01/2026 09:30:00", type: "Apostilla", country: "Uruguay", 
+            institution: "Ministerio de Educación y Ciencias", doc: "Certificado de Estudios", 
+            signatureType: "Electrónica", status: "Pendiente de confirmación de Pago", importe: 80100, hasAttachment: true, verPago: false
+        });
 
         // --- 3. REGISTROS PARA RECHAZADOS ---
         mockRequests.push({
@@ -1422,12 +1438,13 @@
             const pageDisplay = document.getElementById('pageIndicator'); // ID actualizado
 
             // Set Title based on Status
-            const title = status === 'Finalizados' ? 'Apostilla' : `Solicitudes en ${status}`;
+            const title = status === 'Finalizados' ? 'Apostillas y Legalizaciones' : `Solicitudes en ${status}`;
             document.getElementById('tableTitle').innerText = title;
 
             let tabColumns = [];
             if (status === 'Análisis') {
-                tabColumns = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'status', 'download'];
+                // CAMBIO: Se agregó 'action' a las columnas de Análisis para mostrar en la tabla
+                tabColumns = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'status', 'download', 'action'];
             } else if (status === 'Aprobado') {
                 tabColumns = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'status', 'importe', 'download', 'action'];
             } else if (status === 'Rechazado') {
@@ -1435,19 +1452,21 @@
             } else if (status === 'Devuelto') {
                 tabColumns = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'download', 'obs', 'action'];
             } else if (status === 'Finalizados') { // APOSTILLA TAB LOGIC
-                tabColumns = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'adjunto', 'apostille_leg'];
+                // CAMBIO: Se agrega 'payment_proof'
+                tabColumns = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'adjunto', 'payment_proof', 'apostille_leg'];
             } else {
                 tabColumns = ['id', 'doc', 'status', 'date'];
             }
 
             const visibleCols = columnsConfig.filter(c => tabColumns.includes(c.id) && c.visible);
             
-            let headerHTML = visibleCols.map(c => `<th ${['action', 'download', 'adjunto', 'apostille_leg', 'importe', 'reason', 'obs'].includes(c.id) ? 'class="text-center"' : ''}>${c.label}</th>`).join('');
+            let headerHTML = visibleCols.map(c => `<th ${['action', 'download', 'adjunto', 'payment_proof', 'apostille_leg', 'importe', 'reason', 'obs'].includes(c.id) ? 'class="text-center"' : ''}>${c.label}</th>`).join('');
             if (status === 'Aprobado') headerHTML = `<th style="width: 40px;"></th>` + headerHTML;
             tableHeader.innerHTML = `<tr>${headerHTML}</tr>`;
 
             const filtered = mockRequests.filter(r => {
-                if(status === 'Aprobado') return r.status === 'Aprobado' || r.status === 'Pagado';
+                // CAMBIO: Mostrar 'Aprobado' y 'Pendiente de confirmación de Pago', ocultando 'Pagado'
+                if(status === 'Aprobado') return r.status === 'Aprobado' || r.status === 'Pendiente de confirmación de Pago';
                 return r.status === status;
             });
 
@@ -1468,7 +1487,9 @@
             tableContent.innerHTML = pageData.map(r => {
                 let row = '';
                 if(status === 'Aprobado') {
-                    row += `<td>${r.status === 'Aprobado' ? `<input type="checkbox" onchange="toggleSelect('${r.id}', ${r.importe}, this)" ${selectedIds.has(r.id) ? 'checked' : ''}>` : ''}</td>`;
+                    // Checkbox para selección (deshabilitado si no está en estado Aprobado puro para pago masivo)
+                    const chkDisabled = r.status !== 'Aprobado' ? 'disabled' : '';
+                    row += `<td><input type="checkbox" onchange="toggleSelect('${r.id}', ${r.importe}, this)" ${selectedIds.has(r.id) ? 'checked' : ''} ${chkDisabled}></td>`;
                 }
 
                 visibleCols.forEach(c => {
@@ -1480,7 +1501,14 @@
                     if(c.id === 'doc') row += `<td class="fw-bold text-navy">${r.doc}</td>`;
                     if(c.id === 'signatureType') row += `<td><span class="badge rounded-pill ${r.signatureType === 'Electrónica' ? 'bg-primary-subtle text-primary' : 'bg-secondary-subtle text-secondary'} p-2 px-3 fw-bold" style="font-size:0.65rem">${r.signatureType}</span></td>`;
                     if(c.id === 'status') {
-                        let badgeClass = r.status === 'Pagado' ? 'bg-pagado' : (r.status === 'Análisis' ? 'bg-analisis' : (r.status === 'Aprobado' ? 'bg-success-subtle text-success' : (r.status === 'Devuelto' ? 'bg-devuelto' : '')));
+                        let badgeClass = '';
+                        if (r.status === 'Pagado') badgeClass = 'bg-pagado';
+                        else if (r.status === 'Análisis') badgeClass = 'bg-analisis';
+                        else if (r.status === 'Aprobado') badgeClass = 'bg-success-subtle text-success';
+                        else if (r.status === 'Devuelto') badgeClass = 'bg-devuelto';
+                        // Estilo amarillo para pendiente
+                        else if (r.status === 'Pendiente de confirmación de Pago') badgeClass = 'bg-warning-subtle text-dark border border-warning-subtle';
+                        
                         row += `<td><span class="badge-status ${badgeClass}">${r.status}</span></td>`;
                     }
                     if(c.id === 'importe') {
@@ -1498,6 +1526,10 @@
                         let showAdjunto = (r.signatureType === 'Electrónica');
                         row += `<td class="text-center">${showAdjunto ? `<i data-lucide="file-down" style="width:18px; cursor:pointer; color:var(--mre-blue)" title="Descargar Adjunto"></i>` : `<span class="text-muted opacity-25">-</span>`}</td>`;
                     }
+                    // CAMBIO: Nueva columna Comprobante de Ingreso Electrónico
+                    if(c.id === 'payment_proof') {
+                        row += `<td class="text-center"><button class="btn-ver-pago" onclick="showPaymentInfo('${r.id}')">Ver Pago</button></td>`;
+                    }
                     if(c.id === 'apostille_leg') {
                         row += `<td class="text-center"><i data-lucide="file-down" style="width:18px; cursor:pointer; color:var(--mre-red)" title="Descargar PDF Apostilla/Legalización"></i></td>`;
                     }
@@ -1510,11 +1542,23 @@
                     }
                     if(c.id === 'action') {
                         if (status === 'Aprobado') {
-                            row += `<td class="text-center">${r.status === 'Pagado' ? `<button class="btn-ver-pago" onclick="showPaymentInfo('${r.id}')">Ver Pago</button>` : `<span class="text-muted opacity-25">-</span>`}</td>`;
+                            if (r.status === 'Pagado') {
+                                row += `<td class="text-center"><button class="btn-ver-pago" onclick="showPaymentInfo('${r.id}')">Ver Pago</button></td>`;
+                            } else if (r.status === 'Pendiente de confirmación de Pago') {
+                                // Botón Ver Detalle (visual) para estado pendiente
+                                row += `<td class="text-center"><button class="btn-ver-detalle" onclick="showRequestDetails('${r.id}')">Ver Detalle</button></td>`;
+                            } else {
+                                row += `<td class="text-center"><button class="btn-ver-detalle" onclick="showRequestDetails('${r.id}')">Ver Detalle</button></td>`;
+                            }
+                        } else if (status === 'Análisis') {
+                            // CAMBIO: Botón "Ver Detalle" agregado para la bandeja En Análisis
+                            row += `<td class="text-center"><button class="btn-ver-detalle" onclick="showRequestDetails('${r.id}')">Ver Detalle</button></td>`;
                         } else if (status === 'Rechazado') {
-                            row += `<td class="text-center"><button class="btn-revision" onclick="showReview('${r.id}')">Revisión</button></td>`;
+                            // CAMBIO: Renombrado a "Reconsideración"
+                            row += `<td class="text-center"><button class="btn-revision" onclick="showReview('${r.id}')">Reconsideración</button></td>`;
                         } else if (status === 'Devuelto') {
-                            row += `<td class="text-center"><button class="btn-completar" onclick="completeRequest('${r.id}')">Completar</button></td>`;
+                            // CAMBIO: Renombrado a "Corregir"
+                            row += `<td class="text-center"><button class="btn-completar" onclick="completeRequest('${r.id}')">Corregir</button></td>`;
                         }
                     }
                 });
@@ -1524,6 +1568,83 @@
             document.getElementById('liquidadorSection').classList.toggle('hidden', status !== 'Aprobado');
             initColsMenu(status);
             lucide.createIcons();
+        }
+
+        // --- NUEVA FUNCIÓN: MOSTRAR DETALLES DE SOLICITUD ---
+        function showRequestDetails(id) {
+            const req = mockRequests.find(r => r.id === id);
+            if (!req) return;
+
+            const popupTitle = document.getElementById('popupTitle');
+            const popupContent = document.getElementById('popupContent');
+            const popupActions = document.getElementById('popupActions');
+
+            popupTitle.innerText = `Detalle de Solicitud #${req.id}`;
+            
+            // Construcción del contenido del modal
+            const detailsHtml = `
+                <div class="bg-white border rounded-3 p-3 text-start shadow-sm mb-0">
+                    <div class="row g-3">
+                        <div class="col-12 border-bottom pb-2 mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted small fw-bold text-uppercase">Estado Actual</span>
+                                <span class="badge ${req.status === 'Aprobado' ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-dark border border-warning-subtle'}">${req.status}</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">Fecha Solicitud</span>
+                            <strong class="text-dark" style="font-size:0.8rem">${req.date}</strong>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">Trámite</span>
+                            <strong class="text-dark" style="font-size:0.8rem">${req.type}</strong>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">País Destino</span>
+                            <strong class="text-dark" style="font-size:0.8rem">${req.country}</strong>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">Institución</span>
+                            <strong class="text-dark" style="font-size:0.8rem">${req.institution}</strong>
+                        </div>
+                        <div class="col-12 border-top pt-2 mt-2">
+                            <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">Documento</span>
+                            <strong class="text-primary" style="font-size:0.85rem">${req.doc}</strong>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">Tipo de Firma</span>
+                            <strong class="text-dark" style="font-size:0.8rem">${req.signatureType}</strong>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">Titular</span>
+                            <strong class="text-dark" style="font-size:0.8rem">${req.titularName || 'Juan Román Pérez'}</strong>
+                        </div>
+                        <div class="col-12 border-top pt-2 mt-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted small fw-bold text-uppercase">Importe Arancel</span>
+                                <span class="fw-black text-primary fs-5">Gs. ${req.importe.toLocaleString('es-PY')}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            popupContent.innerHTML = detailsHtml;
+            popupActions.innerHTML = `<button class="btn-main w-100" onclick="closePopup()">Cerrar</button>`;
+            
+            document.getElementById('genericPopup').style.display = 'flex';
+            lucide.createIcons();
+        }
+
+        // --- NUEVA FUNCIÓN DE NAVEGACIÓN ---
+        function goToApostillaTab() {
+            const btn = document.getElementById('btnFinalizado');
+            if (btn) {
+                // Navegar a la pestaña Finalizados (Apostilla)
+                filterTable('Finalizados', btn);
+                // Scroll para asegurar visibilidad en móviles
+                btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
         }
 
         // --- RESTAURADO: INFORMACIÓN DE PAGO DETALLADA ---
@@ -1610,7 +1731,11 @@
         function showRequestForm() {
             document.getElementById('newRequestForm').reset();
             // Reset Custom Selects Text
-            document.querySelectorAll('.custom-select .selected-value').forEach(el => el.innerText = "Seleccione...");
+            document.querySelectorAll('.custom-select .selected-value').forEach(el => {
+                el.innerText = "Seleccione...";
+                el.classList.add('text-muted');
+                el.classList.remove('text-dark');
+            });
             document.querySelectorAll('.custom-select input[type=hidden]').forEach(el => el.value = "");
             
             handleSignatureChange();
@@ -1700,29 +1825,19 @@
             const docTypeDisplay = document.querySelector('#div_reqDocType .selected-value');
             const additionalTabs = document.getElementById('additionalDataTabs');
 
-            // 1. Mostrar/Ocultar Adjunto y Funcionario
+            // Resetear visibilidad condicional
+            attachmentField.classList.add('hidden');
+            document.getElementById('reqFile').required = false;
+            officialField.classList.add('hidden');
+            document.getElementById('reqOfficial').required = false;
+
+            // 1. Lógica condicional según firma
             if (signature === 'Electrónica o verificable en línea') {
                 attachmentField.classList.remove('hidden');
                 document.getElementById('reqFile').required = true;
-                
-                officialField.classList.add('hidden');
-                document.getElementById('reqOfficial').required = false;
-                document.getElementById('reqOfficial').value = '';
-                // Reset visual text for official if needed
-                document.querySelector('#div_reqOfficial .selected-value').innerText = "Seleccione...";
-                document.querySelector('#div_reqOfficial .selected-value').classList.add('text-muted');
-
             } else if (signature === 'Ológrafa (Manuscrita)') {
-                attachmentField.classList.add('hidden');
-                document.getElementById('reqFile').required = false;
-                document.getElementById('reqFile').value = '';
-
                 officialField.classList.remove('hidden');
                 document.getElementById('reqOfficial').required = true;
-            } else {
-                // Ninguno seleccionado
-                attachmentField.classList.add('hidden');
-                officialField.classList.add('hidden');
             }
 
             // 2. Habilitar/Deshabilitar Tipo de Documento
@@ -1733,6 +1848,8 @@
                 }
             } else {
                 docTypeBtn.disabled = true;
+                // Reset value handled by reset form mainly, but visual update needed if manual change
+                // (Simplified for this prototype flow)
                 docTypeDisplay.innerText = "Seleccione primero el tipo de firma...";
                 docTypeDisplay.classList.add('text-muted');
                 additionalTabs.classList.add('hidden'); 
@@ -1853,7 +1970,7 @@
                     </div>`;
             }
 
-            // Construcción del Resumen Visual Compacto
+            // Construcción del Resumen Visual Compacto (REORDENADO)
             const summaryHtml = `
                 <div class="bg-white border rounded-3 p-3 text-start shadow-sm mb-0">
                     <div class="row g-2">
@@ -2406,7 +2523,7 @@
         
         function changePage(action) {
             const filtered = mockRequests.filter(r => {
-                if(currentFilter === 'Aprobado') return r.status === 'Aprobado' || r.status === 'Pagado';
+                if(currentFilter === 'Aprobado') return r.status === 'Aprobado' || r.status === 'Pagado' || r.status === 'Pendiente de confirmación de Pago';
                 return r.status === currentFilter;
             });
             const totalPages = Math.ceil(filtered.length / itemsPerPage) || 1;
