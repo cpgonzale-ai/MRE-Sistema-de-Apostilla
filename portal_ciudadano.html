@@ -303,10 +303,27 @@
         .grid-header-frame { background-color: #F1F5F9; padding: 1rem 1.5rem; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; }
 
         .mre-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-        /* CAMBIO: Aumento de tamaño de fuente en headers de 0.65rem a 0.75rem */
-        .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 0.85rem 1.5rem; border-bottom: 2px solid #E2E8F0; white-space: nowrap; }
+        /* CAMBIO: Aumento de tamaño de fuente en headers de 0.65rem a 0.75rem. Quitamos nowrap para permitir wrap. */
+        .mre-table th { 
+            font-size: 0.75rem; 
+            font-weight: 800; 
+            color: #64748B; 
+            text-transform: uppercase; 
+            padding: 0.85rem 0.75rem; /* Padding horizontal reducido */
+            border-bottom: 2px solid #E2E8F0; 
+            white-space: normal; /* Permitir wrap */
+            vertical-align: bottom;
+        }
         /* CAMBIO: Aumento de tamaño de fuente en celdas de 0.8rem a 0.9rem */
-        .mre-table td { padding: 0.85rem 1.5rem; font-size: 0.9rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
+        .mre-table td { 
+            padding: 0.85rem 0.75rem; /* Padding horizontal reducido */
+            font-size: 0.85rem; /* Fuente ajustada ligeramente para espacio */
+            border-bottom: 1px solid #F1F5F9; 
+            vertical-align: middle; 
+        }
+
+        /* Utilidad para limitar ancho de columnas de texto */
+        .text-cell-limit { max-width: 250px; }
 
         /* --- NUEVA PAGINACIÓN (COPIADA) --- */
         .grid-footer {
@@ -395,9 +412,11 @@
         /* --- ACCION BOTONES --- */
         .btn-ver-pago {
             background: var(--mre-green); color: white; border: none; 
-            padding: 6px 14px; border-radius: 8px; font-size: 0.65rem; font-weight: 800; 
+            padding: 4px 10px; /* Reducido para compactar */
+            border-radius: 8px; font-size: 0.65rem; font-weight: 800; 
             text-transform: uppercase; transition: var(--transition);
             box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+            white-space: nowrap; /* Evitar que el texto del botón se rompa feo */
         }
         .btn-ver-pago:hover { background: #059669; transform: translateY(-1px); }
 
@@ -1483,8 +1502,8 @@
             } else if (status === 'Devuelto') {
                 tabColumns = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'download', 'obs', 'action'];
             } else if (status === 'Finalizados') { // APOSTILLA TAB LOGIC
-                // CAMBIO: Se eliminó 'adjunto' de la lista de columnas visibles para Finalizados
-                tabColumns = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'action', 'payment_proof', 'apostille_leg'];
+                // CAMBIO: Se agrega 'action' a la lista de columnas visibles
+                tabColumns = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'adjunto', 'action', 'payment_proof', 'apostille_leg'];
             } else {
                 tabColumns = ['id', 'doc', 'status', 'date'];
             }
@@ -2056,6 +2075,7 @@
             const summaryHtml = `
                 <div class="bg-white border rounded-3 p-3 text-start shadow-sm mb-0">
                     <div class="row g-2">
+                        <!-- Orden idéntico al formulario -->
                         <div class="col-6">
                             <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">País</span>
                             <strong class="text-dark" style="font-size:0.8rem">${country}</strong>
@@ -2095,7 +2115,9 @@
             popupTitle.innerText = "Verificación de Datos";
             popupContent.innerHTML = `
                 <div class="px-2 pt-2 text-center">
-                    <p class="fw-bold mb-3 text-navy">¿Son correctos los datos cargados?</p>
+                    <p class="fw-bold mb-3 text-danger small">
+                        Verifique que los datos del ${docType} que va a apostillar/legalizar están correctos, si los datos no están correctos y selecciona Sí, el documento expedido no podrá ser corregido y no habrá devolución.
+                    </p>
                     ${summaryHtml}
                     ${adviceHtml}
                     ${signatureLegend}
@@ -2105,7 +2127,7 @@
             popupActions.innerHTML = `
                 <div class="d-flex gap-2">
                     <button class="btn btn-light w-50 border fw-bold" onclick="closePopup()">Cancelar</button>
-                    <button class="btn-main w-50" onclick="initiateAddProcess()">Correcto</button>
+                    <button class="btn-main w-50" onclick="initiateAddProcess()">Sí, Correcto</button>
                 </div>
             `;
             
@@ -2235,7 +2257,7 @@
                     <p class="fw-bold text-danger">No se pudo validar el documento.</p>
                     <div class="alert alert-danger border-danger-subtle small text-start">
                         <i data-lucide="alert-triangle" style="width:14px; margin-right:4px; vertical-align:text-bottom"></i>
-                        La firma electrónica o verificable no es reconocida o el archivo está dañado. Puede <strong>Volver a la Solicitud</strong> para corregir, o presionar <strong>Aceptar</strong> para enviarlo a revisión manual (Validación Previa).
+                        La firma electrónica no es reconocida o el archivo está dañado. Puede <strong>Volver a la Solicitud</strong> para corregir, o presionar <strong>Aceptar</strong> para enviarlo a revisión manual (Validación Previa).
                     </div>`;
             }
 
