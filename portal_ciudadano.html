@@ -302,8 +302,10 @@
         .grid-header-frame { background-color: #F1F5F9; padding: 1rem 1.5rem; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; }
 
         .mre-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-        .mre-table th { font-size: 0.65rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 0.85rem 1.5rem; border-bottom: 2px solid #E2E8F0; white-space: nowrap; }
-        .mre-table td { padding: 0.85rem 1.5rem; font-size: 0.8rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
+        /* CAMBIO: Aumento de tamaño de fuente en headers de 0.65rem a 0.75rem */
+        .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 0.85rem 1.5rem; border-bottom: 2px solid #E2E8F0; white-space: nowrap; }
+        /* CAMBIO: Aumento de tamaño de fuente en celdas de 0.8rem a 0.9rem */
+        .mre-table td { padding: 0.85rem 1.5rem; font-size: 0.9rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
 
         /* --- NUEVA PAGINACIÓN (COPIADA) --- */
         .grid-footer {
@@ -397,6 +399,16 @@
             box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
         }
         .btn-ver-pago:hover { background: #059669; transform: translateY(-1px); }
+
+        /* NUEVA CLASE PARA BOTONES CUADRADOS */
+        .btn-square {
+            width: 32px;
+            height: 32px;
+            padding: 0 !important;
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+        }
 
         .btn-ver-motivo {
             background: #FEE2E2; color: #B91C1C; border: 1px solid #FECACA;
@@ -688,18 +700,19 @@
     <section id="portalSection">
         <header class="portal-header animate-fade">
             <div class="d-flex align-items-center gap-3">
-                <div class="bg-white p-2 rounded-3 border" onclick="navigateTo('dashboard')" style="cursor:pointer">
+                <div class="bg-white p-2 rounded-3 border" onclick="navigateTo('dashboard')" style="cursor:pointer" title="Ir a la página de inicio">
                     <i data-lucide="globe" style="color: var(--mre-blue); width: 20px;"></i>
                 </div>
                 <div>
                     <h6 class="fw-black mb-0">SIA-PY</h6>
-                    <p class="text-muted small mb-0 fw-bold uppercase" style="font-size: 0.55rem;">Sistema Integrado de Apostilla electrónica del Paraguay</p>
+                    <!-- Ajuste de tamaño de fuente a 0.75rem y corrección de clase uppercase -->
+                    <p class="text-muted mb-0 fw-bold text-uppercase" style="font-size: 0.75rem;">Sistema Integrado de Apostilla electrónica del Paraguay</p>
                 </div>
             </div>
             
             <div class="user-dropdown">
                 <div class="a11y-container d-inline-block">
-                    <button class="btn-a11y-trigger" id="a11yTrigger" onclick="toggleA11yMenu(event)" title="Opciones de Accesibilidad">
+                    <button class="btn-a11y-trigger" id="a11yTrigger" onclick="toggleA11yMenu(event)" title="Opciones de Accesibilidad y Visualización">
                         <i data-lucide="accessibility" style="width: 18px;"></i>
                         <span class="d-none d-md-inline">Accesibilidad</span>
                         <i data-lucide="chevron-down" style="width: 14px; margin-left: 4px;"></i>
@@ -708,14 +721,14 @@
                     <div class="a11y-dropdown-menu" id="a11yMenu" onclick="event.stopPropagation()">
                         <div class="a11y-section-title">Tamaño de Texto</div>
                         <div class="text-resize-controls">
-                            <button class="btn-resize" onclick="changeFontSize(-0.1)" title="Reducir"><i data-lucide="minus" style="width: 16px;"></i></button>
+                            <button class="btn-resize" onclick="changeFontSize(-0.1)" title="Reducir tamaño de texto"><i data-lucide="minus" style="width: 16px;"></i></button>
                             <span class="font-size-display" id="fontSizeDisplay">100%</span>
-                            <button class="btn-resize" onclick="changeFontSize(0.1)" title="Aumentar"><i data-lucide="plus" style="width: 16px;"></i></button>
+                            <button class="btn-resize" onclick="changeFontSize(0.1)" title="Aumentar tamaño de texto"><i data-lucide="plus" style="width: 16px;"></i></button>
                         </div>
                         <div class="a11y-section-title mt-3">Visualización</div>
                         <div class="switch-control">
                             <div class="switch-label"><i data-lucide="eye-off" style="width: 16px;"></i> Escala de Grises</div>
-                            <label class="toggle-switch">
+                            <label class="toggle-switch" title="Activar/Desactivar modo escala de grises">
                                 <input type="checkbox" id="switchGrayscale" onchange="toggleGrayscale()">
                                 <span class="slider"></span>
                             </label>
@@ -723,7 +736,7 @@
                     </div>
                 </div>
 
-                <div class="header-profile-trigger d-inline-flex" id="profileTrigger" onclick="toggleUserMenu(event)">
+                <div class="header-profile-trigger d-inline-flex" id="profileTrigger" onclick="toggleUserMenu(event)" title="Gestión de cuenta de usuario">
                     <div class="text-end d-none d-md-block">
                         <p class="small fw-black mb-0">JUAN ROMÁN PÉREZ</p>
                         <p class="text-muted mb-0" style="font-size: 0.6rem; font-weight: 700;">CI: 4.567.890</p>
@@ -737,8 +750,8 @@
                         <p class="fw-black text-navy mb-0" style="font-size: 0.85rem;">Juan Román Pérez</p>
                         <p class="text-muted small mb-0 fw-bold">juan.perez@email.com</p>
                     </div>
-                    <button class="dropdown-item-mre" onclick="navigateTo('profile')"><i data-lucide="user-cog"></i> Mi Perfil</button>
-                    <button class="dropdown-item-mre text-danger" onclick="handleLogout()"><i data-lucide="log-out"></i> Cerrar Sesión</button>
+                    <button class="dropdown-item-mre" onclick="navigateTo('profile')" title="Ver y editar mi perfil"><i data-lucide="user-cog"></i> Mi Perfil</button>
+                    <button class="dropdown-item-mre text-danger" onclick="handleLogout()" title="Cerrar sesión actual"><i data-lucide="log-out"></i> Cerrar Sesión</button>
                 </div>
             </div>
         </header>
@@ -747,7 +760,7 @@
         <div id="dashboardView" class="animate-fade">
             <div class="action-divider"><span class="action-label">Acciones Principales</span></div>
             <div class="mb-3">
-                <button class="btn-main d-inline-flex align-items-center gap-2" onclick="navigateTo('newRequest')">
+                <button class="btn-main d-inline-flex align-items-center gap-2" onclick="navigateTo('newRequest')" title="Iniciar una nueva solicitud de Apostilla o Legalización">
                     <i data-lucide="plus" style="width: 16px;"></i> Nueva Solicitud
                 </button>
             </div>
@@ -756,20 +769,20 @@
 
             <!-- Wrapper con controles de navegación -->
             <div class="status-scroll-wrapper">
-                <button class="scroll-btn left" onclick="scrollStatus('left')" aria-label="Anterior">
+                <button class="scroll-btn left" onclick="scrollStatus('left')" aria-label="Anterior" title="Ver estados anteriores">
                     <i data-lucide="chevron-left" style="width:20px"></i>
                 </button>
                 
                 <div class="status-container" id="statusScrollContainer">
-                    <div class="status-btn" id="btnAnalisis" onclick="filterTable('Análisis', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-primary-subtle p-2 rounded-circle"><i data-lucide="clock" class="text-primary" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">En Análisis</span></div></div><span class="fs-5 fw-black text-navy">02</span></div>
-                    <div class="status-btn" id="btnAprobado" onclick="filterTable('Aprobado', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-success-subtle p-2 rounded-circle"><i data-lucide="check-circle" class="text-success" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Aprobados</span></div></div><span class="fs-5 fw-black text-success">02</span></div>
-                    <div class="status-btn" id="btnDevuelto" onclick="filterTable('Devuelto', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-warning-subtle p-2 rounded-circle"><i data-lucide="rotate-ccw" class="text-warning" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Devueltos</span></div></div><span class="fs-5 fw-black text-warning">02</span></div>
-                    <div class="status-btn" id="btnRechazado" onclick="filterTable('Rechazado', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-danger-subtle p-2 rounded-circle"><i data-lucide="x-circle" class="text-danger" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Rechazados</span></div></div><span class="fs-5 fw-black text-danger">02</span></div>
+                    <div class="status-btn" id="btnAnalisis" onclick="filterTable('Análisis', this)" title="Filtrar por estado: En Análisis"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-primary-subtle p-2 rounded-circle"><i data-lucide="clock" class="text-primary" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">En Análisis</span></div></div><span class="fs-5 fw-black text-navy">02</span></div>
+                    <div class="status-btn" id="btnAprobado" onclick="filterTable('Aprobado', this)" title="Filtrar por estado: Aprobados"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-success-subtle p-2 rounded-circle"><i data-lucide="check-circle" class="text-success" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Aprobados</span></div></div><span class="fs-5 fw-black text-success">02</span></div>
+                    <div class="status-btn" id="btnDevuelto" onclick="filterTable('Devuelto', this)" title="Filtrar por estado: Devueltos"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-warning-subtle p-2 rounded-circle"><i data-lucide="rotate-ccw" class="text-warning" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Devueltos</span></div></div><span class="fs-5 fw-black text-warning">02</span></div>
+                    <div class="status-btn" id="btnRechazado" onclick="filterTable('Rechazado', this)" title="Filtrar por estado: Rechazados"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-danger-subtle p-2 rounded-circle"><i data-lucide="x-circle" class="text-danger" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Rechazados</span></div></div><span class="fs-5 fw-black text-danger">02</span></div>
                     <!-- FINALIZADOS AHORA ES APOSTILLA -->
-                    <div class="status-btn" id="btnFinalizado" onclick="filterTable('Finalizados', this)"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-dark-subtle p-2 rounded-circle"><i data-lucide="file-badge" class="text-dark" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Apostillas y Legalizaciones</span></div></div><span class="fs-5 fw-black text-dark">02</span></div>
+                    <div class="status-btn" id="btnFinalizado" onclick="filterTable('Finalizados', this)" title="Filtrar por estado: Apostillas y Legalizaciones"><div class="d-flex align-items-center gap-2"><div class="status-icon-box bg-dark-subtle p-2 rounded-circle"><i data-lucide="file-badge" class="text-dark" style="width: 14px;"></i></div><div><span class="fw-bold text-navy">Apostillas y Legalizaciones</span></div></div><span class="fs-5 fw-black text-dark">02</span></div>
                 </div>
 
-                <button class="scroll-btn right" onclick="scrollStatus('right')" aria-label="Siguiente">
+                <button class="scroll-btn right" onclick="scrollStatus('right')" aria-label="Siguiente" title="Ver estados siguientes">
                     <i data-lucide="chevron-right" style="width:20px"></i>
                 </button>
             </div>
@@ -796,7 +809,7 @@
                         
                         <div class="position-relative" style="max-width: 250px; width: 100%;">
                             <i data-lucide="search" class="position-absolute" style="left: 10px; top: 50%; transform: translateY(-50%); width: 12px; color: #94A3B8;"></i>
-                            <input type="text" class="form-control-mre w-100 ps-5" placeholder="Filtrar..." onkeyup="searchRequests(this)">
+                            <input type="text" class="form-control-mre w-100 ps-5" placeholder="Filtrar..." onkeyup="searchRequests(this)" title="Buscar por número, documento o institución">
                         </div>
                     </div>
                 </div>
@@ -815,26 +828,26 @@
                     </div>
 
                     <div class="d-flex align-items-center gap-1">
-                        <button class="btn-pagination" id="btnPageFirst" onclick="changePage('first')" title="Primera Página">
+                        <button class="btn-pagination" id="btnPageFirst" onclick="changePage('first')" title="Ir a la primera página">
                             <i data-lucide="chevrons-left" style="width: 16px;"></i>
                         </button>
-                        <button class="btn-pagination" id="btnPagePrev" onclick="changePage('prev')" title="Página Anterior">
+                        <button class="btn-pagination" id="btnPagePrev" onclick="changePage('prev')" title="Ir a la página anterior">
                             <i data-lucide="chevron-left" style="width: 16px;"></i>
                         </button>
                         
                         <span class="page-indicator" id="pageIndicator">Pág 1</span>
                         
-                        <button class="btn-pagination" id="btnPageNext" onclick="changePage('next')" title="Página Siguiente">
+                        <button class="btn-pagination" id="btnPageNext" onclick="changePage('next')" title="Ir a la página siguiente">
                             <i data-lucide="chevron-right" style="width: 16px;"></i>
                         </button>
-                        <button class="btn-pagination" id="btnPageLast" onclick="changePage('last')" title="Última Página">
+                        <button class="btn-pagination" id="btnPageLast" onclick="changePage('last')" title="Ir a la última página">
                             <i data-lucide="chevrons-right" style="width: 16px;"></i>
                         </button>
                     </div>
                 </div>
 
                 <div id="liquidadorSection" class="liquidar-footer hidden">
-                    <button class="btn-liquidar-main" id="btnLiquidacion" disabled onclick="navigateTo('summary')">
+                    <button class="btn-liquidar-main" id="btnLiquidacion" disabled onclick="navigateTo('summary')" title="Generar extracto para pago">
                         Generar Liquidación (Gs. 0)
                     </button>
                 </div>
@@ -872,10 +885,10 @@
                             <h3 class="fw-black text-navy mb-0" id="summaryTotalValue">Gs. 0</h3>
                         </div>
                         <div class="d-flex gap-2">
-                             <button class="btn btn-outline-primary fw-bold px-4 py-2 rounded-3" onclick="navigateTo('dashboard')">
+                             <button class="btn btn-outline-primary fw-bold px-4 py-2 rounded-3" onclick="navigateTo('dashboard')" title="Volver al listado para modificar selección">
                                 <i data-lucide="arrow-left" style="width:16px; margin-right:5px"></i> Volver para Modificar
                              </button>
-                             <button class="btn-main rounded-3 px-5" onclick="alert('Redirigiendo a pasarela de pago...')">
+                             <button class="btn-main rounded-3 px-5" onclick="alert('Redirigiendo a pasarela de pago...')" title="Ir a la pasarela de pagos">
                                 Proceder al Pago
                              </button>
                         </div>
@@ -898,31 +911,31 @@
                         <!-- 1. TIPO DE DOCUMENTO -->
                         <div class="col-md-6">
                             <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Tipo de Documento</label>
-                            <input type="text" class="form-control-mre bg-light text-muted" value="Cédula de Identidad" readonly>
+                            <input type="text" class="form-control-mre bg-light text-muted" value="Cédula de Identidad" readonly title="Tipo de documento (no editable)">
                         </div>
                         
                         <!-- 2. NÚMERO DE DOCUMENTO -->
                         <div class="col-md-6">
                             <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Número de Documento</label>
-                            <input type="text" class="form-control-mre bg-light text-muted" value="4.567.890" readonly>
+                            <input type="text" class="form-control-mre bg-light text-muted" value="4.567.890" readonly title="Número de documento (no editable)">
                         </div>
 
                         <!-- 3. NOMBRES -->
                         <div class="col-md-6">
                             <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Nombres</label>
-                            <input type="text" class="form-control-mre" id="profileName" value="JUAN ROMÁN">
+                            <input type="text" class="form-control-mre" id="profileName" value="JUAN ROMÁN" title="Ingrese sus nombres">
                         </div>
                         
                         <!-- 4. APELLIDOS -->
                         <div class="col-md-6">
                             <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Apellidos</label>
-                            <input type="text" class="form-control-mre" id="profileSurname" value="PÉREZ">
+                            <input type="text" class="form-control-mre" id="profileSurname" value="PÉREZ" title="Ingrese sus apellidos">
                         </div>
 
                         <!-- 5. NACIONALIDAD -->
                         <div class="col-md-6">
                             <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Nacionalidad</label>
-                            <select class="form-control-mre" id="profileNationality">
+                            <select class="form-control-mre" id="profileNationality" title="Seleccione su nacionalidad">
                                 <option value="PY" selected>Paraguaya</option>
                                 <option value="AR">Argentina</option>
                                 <option value="BR">Brasilera</option>
@@ -935,7 +948,7 @@
                         <!-- 6. CELULAR -->
                         <div class="col-md-6">
                             <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Celular</label>
-                            <input type="tel" class="form-control-mre" id="profilePhone" value="+595 981 123 456">
+                            <input type="tel" class="form-control-mre" id="profilePhone" value="+595 981 123 456" title="Ingrese su número de celular">
                         </div>
 
                         <!-- 7. CORREO ELECTRÓNICO -->
@@ -943,14 +956,14 @@
                             <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Correo Electrónico</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-end-0 border"><i data-lucide="mail" style="width:16px; color:#64748B"></i></span>
-                                <input type="email" class="form-control-mre border-start-0 ps-2 bg-light text-muted" value="juan.perez@email.com" readonly style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
+                                <input type="email" class="form-control-mre border-start-0 ps-2 bg-light text-muted" value="juan.perez@email.com" readonly style="border-top-left-radius: 0; border-bottom-left-radius: 0;" title="Correo electrónico (no editable)">
                             </div>
                         </div>
 
                         <!-- 8. DIRECCIÓN PARTICULAR -->
                         <div class="col-md-6">
                             <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Dirección Particular</label>
-                            <input type="text" class="form-control-mre" id="profileAddress" value="Av. Mariscal López 1234, Asunción">
+                            <input type="text" class="form-control-mre" id="profileAddress" value="Av. Mariscal López 1234, Asunción" title="Ingrese su dirección particular">
                         </div>
 
                         <!-- 9. CONTRASEÑA (Formato Campo) -->
@@ -960,7 +973,7 @@
                                 <div class="flex-grow-1 text-muted small">
                                     <i data-lucide="lock" style="width:14px; margin-right:5px; margin-bottom:2px"></i> ************
                                 </div>
-                                <button type="button" class="btn btn-outline-primary fw-bold btn-sm bg-white" onclick="requestPasswordReset()">
+                                <button type="button" class="btn btn-outline-primary fw-bold btn-sm bg-white" onclick="requestPasswordReset()" title="Solicitar cambio de contraseña">
                                     Cambiar Contraseña
                                 </button>
                             </div>
@@ -968,8 +981,8 @@
 
                         <!-- BOTONES DE ACCIÓN -->
                         <div class="col-12 mt-4 d-flex justify-content-end gap-3 border-top pt-4">
-                            <button type="button" class="btn btn-light border fw-bold px-4" onclick="navigateTo('dashboard')">Cancelar</button>
-                            <button type="submit" class="btn-main px-5 shadow-sm">Guardar Cambios</button>
+                            <button type="button" class="btn btn-light border fw-bold px-4" onclick="navigateTo('dashboard')" title="Cancelar y volver al inicio">Cancelar</button>
+                            <button type="submit" class="btn-main px-5 shadow-sm" title="Guardar los cambios realizados">Guardar Cambios</button>
                         </div>
                     </div>
                 </form>
@@ -983,8 +996,9 @@
                 <!-- CONTENEDOR DEL FORMULARIO (SE OCULTA AL AÑADIR) -->
                 <div id="requestFormContainer">
                     <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
-                        <h4 class="fw-black text-navy m-0">Crear Solicitud de Apostilla o Legalización</h4>
-                        <span class="badge bg-light text-dark border">Nuevo Trámite</span>
+                        <!-- IDs agregados para manipulación -->
+                        <h4 class="fw-black text-navy m-0" id="formTitle">Crear Solicitud de Apostilla o Legalización</h4>
+                        <span class="badge bg-light text-dark border" id="formBadge">Nuevo Trámite</span>
                     </div>
 
                     <!-- Cambiado addToGrid() por confirmAdd() para el paso de verificación -->
@@ -993,7 +1007,7 @@
                             <!-- 1. PAIS (CUSTOM SELECT) -->
                             <div class="col-md-6">
                                 <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">País de Destino <span class="text-danger">*</span></label>
-                                <div class="dropdown custom-select" id="div_reqCountry">
+                                <div class="dropdown custom-select" id="div_reqCountry" title="Seleccione el país donde presentará el documento">
                                     <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                         <span class="selected-value text-muted">Seleccione...</span>
                                         <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
@@ -1018,7 +1032,7 @@
                             <!-- 2. INSTITUCION (CUSTOM SELECT) -->
                             <div class="col-md-6">
                                 <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Institución Emisora <span class="text-danger">*</span></label>
-                                <div class="dropdown custom-select" id="div_reqInstitution">
+                                <div class="dropdown custom-select" id="div_reqInstitution" title="Seleccione la institución que emitió el documento">
                                     <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                         <span class="selected-value text-muted">Seleccione...</span>
                                         <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
@@ -1040,7 +1054,7 @@
                             <!-- 3. TIPO DE TRAMITE (CUSTOM SELECT) -->
                             <div class="col-md-6">
                                 <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Tipo de Trámite <span class="text-danger">*</span></label>
-                                <div class="dropdown custom-select" id="div_reqType">
+                                <div class="dropdown custom-select" id="div_reqType" title="Seleccione si es Apostilla o Legalización">
                                     <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                         <span class="selected-value text-muted">Seleccione...</span>
                                         <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
@@ -1059,7 +1073,7 @@
                             <!-- 4. TIPO DE FIRMA (RENOMBRADO + CUSTOM SELECT) -->
                             <div class="col-md-6">
                                 <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Tipo de firma del documento <span class="text-danger">*</span></label>
-                                <div class="dropdown custom-select" id="div_reqSignature">
+                                <div class="dropdown custom-select" id="div_reqSignature" title="Seleccione el tipo de firma del documento">
                                     <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                         <span class="selected-value text-muted">Seleccione...</span>
                                         <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
@@ -1081,7 +1095,7 @@
                                     <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2 text-primary">
                                         <i data-lucide="paperclip" style="width:14px"></i> Adjuntar Documento (PDF) <span class="text-danger">*</span>
                                     </label>
-                                    <input type="file" class="form-control-mre" id="reqFile" accept=".pdf">
+                                    <input type="file" class="form-control-mre" id="reqFile" accept=".pdf" title="Seleccione el archivo PDF firmado electrónicamente">
                                     <small class="text-muted mt-1 d-block" style="font-size: 0.7rem;">El documento debe tener firma electrónica o verificable. Formato .pdf, Máx 5MB.</small>
                                 </div>
                             </div>
@@ -1089,7 +1103,7 @@
                             <!-- 5. TIPO DE DOCUMENTO (DEPENDIENTE + CUSTOM SELECT) -->
                             <div class="col-md-12">
                                 <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Tipo de Documento <span class="text-danger">*</span></label>
-                                <div class="dropdown custom-select" id="div_reqDocType">
+                                <div class="dropdown custom-select" id="div_reqDocType" title="Seleccione el tipo de documento a tramitar">
                                     <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false" disabled id="btn_reqDocType">
                                         <span class="selected-value text-muted">Seleccione primero el tipo de firma...</span>
                                         <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
@@ -1116,23 +1130,23 @@
                                     <div class="row g-3">
                                         <div class="col-md-6">
                                             <label class="form-label text-muted small fw-bold text-uppercase">Nombre del Titular <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control-mre" id="titularName" required>
+                                            <input type="text" class="form-control-mre" id="titularName" required title="Nombre completo del titular del documento">
                                         </div>
                                         <div class="col-md-6">
                                             <!-- Label con enlace de ayuda -->
                                             <div class="d-flex justify-content-between align-items-end mb-1">
                                                 <label class="form-label text-muted small fw-bold text-uppercase m-0">Número de certificado de nacimiento <span class="text-danger">*</span></label>
-                                                <a href="#" class="text-primary text-decoration-none fw-bold d-flex align-items-center gap-1" style="font-size: 0.6rem;" onclick="showCertHelp(event)">
+                                                <a href="#" class="text-primary text-decoration-none fw-bold d-flex align-items-center gap-1" style="font-size: 0.6rem;" onclick="showCertHelp(event)" title="Ver ayuda sobre dónde encontrar este dato">
                                                     <i data-lucide="help-circle" style="width:12px;"></i> Ayuda
                                                 </a>
                                             </div>
-                                            <input type="text" class="form-control-mre" id="titularCertNum" required>
+                                            <input type="text" class="form-control-mre" id="titularCertNum" required title="Ingrese el número del certificado">
                                         </div>
 
                                         <!-- CAMPO FUNCIONARIO FIRMANTE (MOVIDO AQUI - CONDICIONAL) -->
                                         <div class="col-md-12 hidden animate-fade" id="officialField">
                                             <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Funcionario Firmante <span class="text-danger">*</span></label>
-                                            <div class="dropdown custom-select" id="div_reqOfficial">
+                                            <div class="dropdown custom-select" id="div_reqOfficial" title="Seleccione el funcionario que firmó el documento">
                                                 <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                     <span class="selected-value text-muted">Seleccione...</span>
                                                     <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
@@ -1156,8 +1170,9 @@
 
                             <!-- BOTONES -->
                             <div class="col-12 mt-4 d-flex justify-content-end gap-3 border-top pt-4">
-                                <button type="button" class="btn btn-light border fw-bold px-4" onclick="navigateTo('dashboard')">Cancelar</button>
-                                <button type="submit" class="btn-main px-5 shadow-sm d-flex align-items-center gap-2">
+                                <button type="button" class="btn btn-light border fw-bold px-4" onclick="navigateTo('dashboard')" title="Cancelar y volver al listado">Cancelar</button>
+                                <!-- ID agregado al botón -->
+                                <button type="submit" class="btn-main px-5 shadow-sm d-flex align-items-center gap-2" id="btnSubmitForm" title="Agregar este trámite a la lista de carga">
                                     <i data-lucide="plus-circle" style="width:16px;"></i> Añadir
                                 </button>
                             </div>
@@ -1192,10 +1207,10 @@
                     </div>
                     
                     <div class="d-flex justify-content-end gap-3 mt-4 pt-3 border-top">
-                        <button class="btn btn-outline-primary fw-bold px-4 rounded-3" onclick="showRequestForm()">
+                        <button class="btn btn-outline-primary fw-bold px-4 rounded-3" onclick="showRequestForm()" title="Agregar otro documento al lote">
                             <i data-lucide="plus" style="width:16px; margin-right: 5px;"></i> Agregar Nuevo Trámite
                         </button>
-                        <button class="btn-main px-5 shadow" onclick="submitFinalRequest()">
+                        <button class="btn-main px-5 shadow" onclick="submitFinalRequest()" title="Finalizar carga y generar solicitudes">
                             Generar Solicitud <i data-lucide="check" style="width:16px; margin-left: 5px;"></i>
                         </button>
                     </div>
@@ -1236,7 +1251,7 @@
                 </div>
 
                 <div class="d-flex justify-content-center mt-5 pt-4 border-top">
-                    <button type="button" class="btn btn-light border fw-bold px-5" onclick="resetAndGoHome()">
+                    <button type="button" class="btn btn-light border fw-bold px-5" onclick="resetAndGoHome()" title="Volver a la pantalla principal">
                         <i data-lucide="home" style="width:16px; margin-right: 5px;"></i> Volver al Inicio
                     </button>
                 </div>
@@ -1251,7 +1266,7 @@
             &copy; 2026 Ministerio de Relaciones Exteriores - Dirección de Informática
         </div>
         <div class="footer-right">
-            <a href="https://www.mre.gov.py/contactenos/" target="_blank" class="btn-help">
+            <a href="https://www.mre.gov.py/contactenos/" target="_blank" class="btn-help" title="Contactar soporte técnico">
                 <i data-lucide="help-circle" style="width: 18px; height: 18px;"></i>
                 ¿Necesitas ayuda?
             </a>
@@ -1262,13 +1277,22 @@
         document.addEventListener('DOMContentLoaded', () => { 
             lucide.createIcons(); 
             initAccessibility();
-            renderTable('Devuelto'); 
+            
+            // Configuración inicial: Mostrar bandeja 'En Análisis'
+            const defaultBtn = document.getElementById('btnAnalisis');
+            if (defaultBtn) defaultBtn.classList.add('active');
+            renderTable('Análisis'); 
+            
             populateYears();
         });
 
         // Configuración unificada de columnas para control de visibilidad
         let columnsConfig = [
             { id: 'id', label: 'Nro. de Solicitud', visible: true },
+            // CAMBIO: Columna movida aquí para mostrarse al lado del ID
+            { id: 'apostille_leg', label: 'Apostilla/Legalización', visible: true },
+            // CAMBIO: Columna movida aquí para mostrarse al lado de Apostilla/Legalización
+            { id: 'payment_proof', label: 'Comprobante de Pago', visible: true },
             { id: 'date', label: 'Fecha de Solicitud', visible: true },
             { id: 'type', label: 'Tipo', visible: true },
             { id: 'country', label: 'País', visible: true },
@@ -1280,11 +1304,9 @@
             { id: 'download', label: 'Descargar', visible: true },
             { id: 'reason', label: 'Motivo', visible: true }, 
             { id: 'obs', label: 'Obs', visible: true }, 
-            { id: 'action', label: 'Acción', visible: true },
-            // NUEVAS COLUMNAS PARA APOSTILLA
+            // CAMBIO: Orden ajustado, Adjunto antes de Acción
             { id: 'adjunto', label: 'Adjunto', visible: true },
-            { id: 'payment_proof', label: 'Comprobante de Ingreso Electrónico', visible: true }, // Nueva Columna
-            { id: 'apostille_leg', label: 'Apostilla/Legalización', visible: true }
+            { id: 'action', label: 'Acción', visible: true }
         ];
 
         function initColsMenu(status) {
@@ -1300,8 +1322,8 @@
             } else if (status === 'Devuelto') {
                 tabKeys = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'download', 'obs', 'action'];
             } else if (status === 'Finalizados') { // APOSTILLA TAB LOGIC
-                // CAMBIO: Se agrega 'payment_proof'
-                tabKeys = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'adjunto', 'payment_proof', 'apostille_leg'];
+                // CAMBIO: Se eliminó 'adjunto' de esta lista
+                tabKeys = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'action', 'payment_proof', 'apostille_leg'];
             } else {
                 tabKeys = ['id', 'doc', 'status', 'date'];
             }
@@ -1421,7 +1443,7 @@
         mockRequests.push({
             id: "202600007", date: "08/01/2026 08:30:15", type: "Apostilla", 
             country: "Paraguay", institution: "Registro del Estado Civil", doc: "Certificado de Nacimiento", 
-            status: "Finalizados", importe: 80100, hasAttachment: false, signatureType: "Electrónica"
+            status: "Finalizados", importe: 80100, hasAttachment: true, signatureType: "Electrónica" // CAMBIO: hasAttachment true para mostrar botón
         });
         mockRequests.push({
             id: "202600008", date: "08/01/2026 08:45:42", type: "Legalización", 
@@ -1438,12 +1460,20 @@
             const pageDisplay = document.getElementById('pageIndicator'); // ID actualizado
 
             // Set Title based on Status
-            const title = status === 'Finalizados' ? 'Apostillas y Legalizaciones' : `Solicitudes en ${status}`;
+            let title = `Solicitudes en ${status}`;
+            if (status === 'Finalizados') {
+                title = 'Apostillas o Legalizaciones Generadas';
+            } else if (status === 'Devuelto') {
+                title = 'Solicitudes devueltas';
+            } else if (status === 'Aprobado') {
+                title = 'Solicitudes aprobadas';
+            } else if (status === 'Rechazado') {
+                title = 'Solicitudes Rechazadas';
+            }
             document.getElementById('tableTitle').innerText = title;
 
             let tabColumns = [];
             if (status === 'Análisis') {
-                // CAMBIO: Se agregó 'action' a las columnas de Análisis para mostrar en la tabla
                 tabColumns = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'status', 'download', 'action'];
             } else if (status === 'Aprobado') {
                 tabColumns = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'status', 'importe', 'download', 'action'];
@@ -1452,8 +1482,8 @@
             } else if (status === 'Devuelto') {
                 tabColumns = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'download', 'obs', 'action'];
             } else if (status === 'Finalizados') { // APOSTILLA TAB LOGIC
-                // CAMBIO: Se agrega 'payment_proof'
-                tabColumns = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'adjunto', 'payment_proof', 'apostille_leg'];
+                // CAMBIO: Se eliminó 'adjunto' de la lista de columnas visibles para Finalizados
+                tabColumns = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'action', 'payment_proof', 'apostille_leg'];
             } else {
                 tabColumns = ['id', 'doc', 'status', 'date'];
             }
@@ -1526,39 +1556,40 @@
                         let showAdjunto = (r.signatureType === 'Electrónica');
                         row += `<td class="text-center">${showAdjunto ? `<i data-lucide="file-down" style="width:18px; cursor:pointer; color:var(--mre-blue)" title="Descargar Adjunto"></i>` : `<span class="text-muted opacity-25">-</span>`}</td>`;
                     }
-                    // CAMBIO: Nueva columna Comprobante de Ingreso Electrónico
+                    // CAMBIO: Renombrado a "Comprobante de Pago" y cambio a icono de descarga directa
                     if(c.id === 'payment_proof') {
-                        row += `<td class="text-center"><button class="btn-ver-pago" onclick="showPaymentInfo('${r.id}')">Ver Pago</button></td>`;
+                        row += `<td class="text-center"><i data-lucide="file-down" style="width:18px; cursor:pointer; color:var(--mre-blue)" title="Descargar Comprobante de Pago" onclick="alert('Descargando comprobante...')"></i></td>`;
                     }
+                    // CAMBIO: Botón con texto descriptivo visible
                     if(c.id === 'apostille_leg') {
-                        row += `<td class="text-center"><i data-lucide="file-down" style="width:18px; cursor:pointer; color:var(--mre-red)" title="Descargar PDF Apostilla/Legalización"></i></td>`;
+                        const label = r.type === 'Apostilla' ? 'Descargar Apostilla' : 'Descargar Legalización';
+                        row += `<td class="text-center"><button class="btn-ver-pago d-inline-flex align-items-center gap-2" onclick="alert('Descargando documento final...')"><i data-lucide="download" style="width:14px;"></i> ${label}</button></td>`;
                     }
 
                     if(c.id === 'reason') {
-                        row += `<td class="text-center"><button class="btn-ver-motivo" onclick="showReason('${r.id}')">Ver</button></td>`;
+                        row += `<td class="text-center"><button class="btn-ver-motivo" onclick="showReason('${r.id}')" title="Ver motivo de rechazo">Ver</button></td>`;
                     }
                     if(c.id === 'obs') {
-                        row += `<td class="text-center"><button class="btn-ver-obs" onclick="showDevueltoObs('${r.id}')">Ver</button></td>`;
+                        row += `<td class="text-center"><button class="btn-ver-obs" onclick="showDevueltoObs('${r.id}')" title="Ver observaciones">Ver</button></td>`;
                     }
                     if(c.id === 'action') {
                         if (status === 'Aprobado') {
                             if (r.status === 'Pagado') {
-                                row += `<td class="text-center"><button class="btn-ver-pago" onclick="showPaymentInfo('${r.id}')">Ver Pago</button></td>`;
+                                row += `<td class="text-center"><button class="btn-ver-pago" onclick="showPaymentInfo('${r.id}')" title="Ver detalle del pago">Ver Pago</button></td>`;
                             } else if (r.status === 'Pendiente de confirmación de Pago') {
-                                // Botón Ver Detalle (visual) para estado pendiente
-                                row += `<td class="text-center"><button class="btn-ver-detalle" onclick="showRequestDetails('${r.id}')">Ver Detalle</button></td>`;
+                                row += `<td class="text-center"><button class="btn-ver-detalle" onclick="showRequestDetails('${r.id}')" title="Ver detalles completos">Ver Detalle</button></td>`;
                             } else {
-                                row += `<td class="text-center"><button class="btn-ver-detalle" onclick="showRequestDetails('${r.id}')">Ver Detalle</button></td>`;
+                                row += `<td class="text-center"><button class="btn-ver-detalle" onclick="showRequestDetails('${r.id}')" title="Ver detalles completos">Ver Detalle</button></td>`;
                             }
                         } else if (status === 'Análisis') {
-                            // CAMBIO: Botón "Ver Detalle" agregado para la bandeja En Análisis
-                            row += `<td class="text-center"><button class="btn-ver-detalle" onclick="showRequestDetails('${r.id}')">Ver Detalle</button></td>`;
+                            row += `<td class="text-center"><button class="btn-ver-detalle" onclick="showRequestDetails('${r.id}')" title="Ver detalles completos">Ver Detalle</button></td>`;
                         } else if (status === 'Rechazado') {
-                            // CAMBIO: Renombrado a "Reconsideración"
-                            row += `<td class="text-center"><button class="btn-revision" onclick="showReview('${r.id}')">Reconsideración</button></td>`;
+                            row += `<td class="text-center"><button class="btn-revision" onclick="showReview('${r.id}')" title="Solicitar reconsideración del caso">Reconsideración</button></td>`;
                         } else if (status === 'Devuelto') {
-                            // CAMBIO: Renombrado a "Corregir"
-                            row += `<td class="text-center"><button class="btn-completar" onclick="completeRequest('${r.id}')">Corregir</button></td>`;
+                            row += `<td class="text-center"><button class="btn-completar" onclick="completeRequest('${r.id}')" title="Corregir datos de la solicitud">Corregir</button></td>`;
+                        } else if (status === 'Finalizados') {
+                            // CAMBIO: Botón "Ver Detalle" para la bandeja de Finalizados (Apostillas y Legalizaciones)
+                            row += `<td class="text-center"><button class="btn-ver-detalle" onclick="showRequestDetails('${r.id}')" title="Ver detalles completos">Ver Detalle</button></td>`;
                         }
                     }
                 });
@@ -1581,6 +1612,17 @@
 
             popupTitle.innerText = `Detalle de Solicitud #${req.id}`;
             
+            // Botón de descarga condicional
+            let attachmentBtn = '';
+            if (req.hasAttachment) {
+                attachmentBtn = `
+                    <div class="mt-2 pt-2 border-top border-light-subtle">
+                        <button class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-2 w-100 justify-content-center" onclick="alert('Descargando documento adjunto...')">
+                            <i data-lucide="file-down" style="width:14px"></i> Descargar Documento Adjunto
+                        </button>
+                    </div>`;
+            }
+
             // Construcción del contenido del modal
             const detailsHtml = `
                 <div class="bg-white border rounded-3 p-3 text-start shadow-sm mb-0">
@@ -1610,6 +1652,7 @@
                         <div class="col-12 border-top pt-2 mt-2">
                             <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">Documento</span>
                             <strong class="text-primary" style="font-size:0.85rem">${req.doc}</strong>
+                            ${attachmentBtn}
                         </div>
                         <div class="col-6">
                             <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">Tipo de Firma</span>
@@ -1687,14 +1730,61 @@
             document.getElementById('genericPopup').style.display = 'flex';
         }
 
-        function completeRequest(id) { alert(`Redirigiendo a edición de #${id}...`); }
+        // --- LÓGICA DE CORRECCIÓN (MODIFICADO) ---
+        let isEditing = false;
+        let editingId = null;
+
+        function completeRequest(id) { 
+            const req = mockRequests.find(r => r.id === id);
+            if (!req) return;
+
+            // 1. Ir a la pantalla de formulario
+            navigateTo('newRequest'); // Esto limpia el form por defecto en navigateTo, pero lo sobreescribiremos abajo
+            
+            // Forzar visualización del formulario (por si estaba en la grilla de carga)
+            document.getElementById('requestFormContainer').classList.remove('hidden');
+            document.getElementById('loadedDocsSection').classList.add('hidden');
+
+            // 2. Configurar modo edición
+            isEditing = true;
+            editingId = id;
+            
+            document.getElementById('formTitle').innerText = `Corregir Solicitud #${id}`;
+            document.getElementById('formBadge').innerText = "Corrección";
+            document.getElementById('btnSubmitForm').innerHTML = `<i data-lucide="corner-up-left" style="width:16px;"></i> Devolver`;
+            
+            // 3. Precargar Datos (Usando datos del mock o defaults)
+            setOption('reqCountry', req.country, document.getElementById('div_reqCountry'));
+            setOption('reqInstitution', req.institution, document.getElementById('div_reqInstitution'));
+            setOption('reqType', req.type, document.getElementById('div_reqType'));
+            
+            // Mapeo de Firma
+            const sigVal = req.signatureType.includes('Electrónica') ? 'Electrónica o verificable en línea' : 'Ológrafa (Manuscrita)';
+            setOption('reqSignature', sigVal, document.getElementById('div_reqSignature'));
+            handleSignatureChange(); // Disparar lógica visual
+
+            // Mapeo de Documento
+            setOption('reqDocType', req.doc, document.getElementById('div_reqDocType'));
+            handleDocTypeChange(); // Disparar lógica visual
+
+            // Campos de texto
+            document.getElementById('titularName').value = req.titularName || 'JUAN PÉREZ'; // Usar valor mock o default
+            document.getElementById('titularCertNum').value = '123456'; // Valor simulado ya que no está en la tabla principal
+
+            // Funcionario (si es ológrafa)
+            if (sigVal.includes('Ológrafa')) {
+                setOption('reqOfficial', 'Juan Pérez (REC)', document.getElementById('div_reqOfficial'));
+            }
+
+            lucide.createIcons();
+        }
 
         function showReview(id) {
             const popupTitle = document.getElementById('popupTitle');
             const popupContent = document.getElementById('popupContent');
             const popupActions = document.getElementById('popupActions');
             popupTitle.innerText = "Solicitar Revisión";
-            popupContent.innerHTML = `<div class="p-2"><textarea id="reviewObservation" class="form-control" rows="4" placeholder="Observaciones..."></textarea></div>`;
+            popupContent.innerHTML = `<div class="p-2"><textarea id="reviewObservation" class="form-control" rows="4" placeholder="Observaciones..." title="Ingrese el motivo de su solicitud de reconsideración"></textarea></div>`;
             popupActions.innerHTML = `<div class="d-flex gap-2"><button class="btn btn-light w-50 border" onclick="closePopup()">Cancelar</button><button class="btn-main w-50" id="btnConfirmReview">Confirmar</button></div>`;
             document.getElementById('btnConfirmReview').onclick = () => { closePopup(); alert("Enviado a revisión."); };
             document.getElementById('genericPopup').style.display = 'flex';
@@ -1718,10 +1808,10 @@
             if(view === 'summary') buildSummary();
             // Reset form if navigating to newRequest
             if(view === 'newRequest') {
-                tempRequestsList = []; // Limpiar lista al entrar de cero
+                tempRequestsList = []; 
                 electronicSigCount = 0;
                 renderLoadedDocuments();
-                showRequestForm(); // Asegurar que se ve el formulario
+                showRequestForm(); // Asegurar que se ve el formulario y resetea estado
             }
             lucide.createIcons();
             window.scrollTo(0, 0);
@@ -1729,6 +1819,13 @@
 
         // Función para mostrar el formulario y ocultar la lista (Paso 1)
         function showRequestForm() {
+            // Resetear Modo Edición
+            isEditing = false;
+            editingId = null;
+            document.getElementById('formTitle').innerText = "Crear Solicitud de Apostilla o Legalización";
+            document.getElementById('formBadge').innerText = "Nuevo Trámite";
+            document.getElementById('btnSubmitForm').innerHTML = `<i data-lucide="plus-circle" style="width:16px;"></i> Añadir`;
+
             document.getElementById('newRequestForm').reset();
             // Reset Custom Selects Text
             document.querySelectorAll('.custom-select .selected-value').forEach(el => {
@@ -1740,7 +1837,6 @@
             
             handleSignatureChange();
             document.getElementById('additionalDataTabs').classList.add('hidden');
-            showTab('titular-tab');
             
             document.getElementById('requestFormContainer').classList.remove('hidden');
             document.getElementById('loadedDocsSection').classList.add('hidden');
@@ -1757,9 +1853,6 @@
             displaySpan.innerText = value;
             displaySpan.classList.remove('text-muted');
             displaySpan.classList.add('text-dark');
-            
-            // Trigger change logic manually if needed
-            // (Used by handleSignatureChange etc)
         }
 
         function filterOptions(input) {
@@ -1868,36 +1961,25 @@
             }
         }
 
-        // Función para cambiar de pestaña programáticamente
-        function showTab(tabId) {
-            const triggerEl = document.getElementById(tabId);
-            if(triggerEl) {
-                const tab = new bootstrap.Tab(triggerEl);
-                tab.show();
-            }
-        }
-
         function populateYears() {
-            const container = document.getElementById('actaYearContainer');
-            if(container) {
-                const currentYear = new Date().getFullYear();
-                let html = '';
-                for(let y = currentYear; y >= 1950; y--) {
-                    html += `<a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('actaYear', '${y}', this)">${y}</a>`;
-                }
-                container.innerHTML = html;
-            }
+            // Ya no se usa
         }
 
         // --- LÓGICA DE GRILLA DE CARGA (BATCH) ---
         let tempRequestsList = [];
-        let electronicSigCount = 0; // Contador para controlar la demo de validación
+        let electronicSigCount = 0; 
 
         function confirmAdd() {
             // Check HTML5 validity of hidden inputs via the form constraint API logic check
             const form = document.getElementById('newRequestForm');
             if(!form.checkValidity()) {
                 form.reportValidity();
+                return;
+            }
+
+            // SI ESTAMOS EN MODO EDICIÓN, CONFIRMACIÓN DIFERENTE
+            if (isEditing) {
+                confirmCorrection();
                 return;
             }
 
@@ -1915,7 +1997,7 @@
             const popupContent = document.getElementById('popupContent');
             const popupActions = document.getElementById('popupActions');
 
-            // 1. Leyenda de Atención por Tipo de Firma (NUEVO)
+            // 1. Leyenda de Atención por Tipo de Firma 
             let signatureLegend = '';
             if (signature.includes('Electrónica')) {
                 signatureLegend = `
@@ -1936,9 +2018,8 @@
                     </div>`;
             }
 
-            // 2. Leyenda Dinámica por País (Info País)
+            // 2. Leyenda Dinámica por País
             let adviceText = '';
-            // Lógica de ejemplo simple basada en País + Firma
             if (country === 'Alemania') {
                 adviceText = "Alemania requiere frecuentemente traducción jurada. Asegúrese de que el documento base cumpla con este requisito si aplica.";
             } else if (country === 'España' && signature.includes('Electrónica')) {
@@ -1970,11 +2051,10 @@
                     </div>`;
             }
 
-            // Construcción del Resumen Visual Compacto (REORDENADO)
+            // Construcción del Resumen Visual Compacto
             const summaryHtml = `
                 <div class="bg-white border rounded-3 p-3 text-start shadow-sm mb-0">
                     <div class="row g-2">
-                        <!-- Orden idéntico al formulario -->
                         <div class="col-6">
                             <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">País</span>
                             <strong class="text-dark" style="font-size:0.8rem">${country}</strong>
@@ -2029,6 +2109,56 @@
             `;
             
             document.getElementById('genericPopup').style.display = 'flex';
+            lucide.createIcons();
+        }
+
+        // CONFIRMACIÓN PARA CORRECCIÓN
+        function confirmCorrection() {
+            const popupTitle = document.getElementById('popupTitle');
+            const popupContent = document.getElementById('popupContent');
+            const popupActions = document.getElementById('popupActions');
+
+            popupTitle.innerText = "Confirmar Devolución";
+            popupContent.innerHTML = `
+                <div class="p-3 text-center">
+                    <div class="mb-3 text-primary d-flex justify-content-center">
+                        <i data-lucide="corner-up-left" style="width:48px; height:48px"></i>
+                    </div>
+                    <p class="fw-bold mb-2">¿Desea enviar la corrección de esta solicitud?</p>
+                    <p class="small text-muted">La solicitud volverá a ingresar al flujo de análisis.</p>
+                </div>
+            `;
+            popupActions.innerHTML = `
+                <div class="d-flex gap-2">
+                    <button class="btn btn-light w-50 border fw-bold" onclick="closePopup()">Cancelar</button>
+                    <button class="btn-main w-50" onclick="submitCorrection()">Enviar</button>
+                </div>
+            `;
+            document.getElementById('genericPopup').style.display = 'flex';
+            lucide.createIcons();
+        }
+
+        function submitCorrection() {
+            // Simular envío de corrección
+            const req = mockRequests.find(r => r.id === editingId);
+            if(req) {
+                req.status = "Análisis"; // Cambiar estado a análisis
+                // Aquí se actualizarían los datos reales del objeto req con los del formulario
+            }
+
+            const popupTitle = document.getElementById('popupTitle');
+            const popupContent = document.getElementById('popupContent');
+            const popupActions = document.getElementById('popupActions');
+
+            popupTitle.innerText = "Corrección Enviada";
+            popupContent.innerHTML = `
+                <div class="text-center p-3">
+                    <div class="text-success mb-2 d-flex justify-content-center"><i data-lucide="check-circle" style="width:48px; height:48px"></i></div>
+                    <p class="fw-bold mb-0">La solicitud #${editingId} ha sido corregida correctamente.</p>
+                </div>
+            `;
+            popupActions.innerHTML = `<button class="btn-main w-100" onclick="closePopup(); navigateTo('dashboard')">Aceptar</button>`;
+            
             lucide.createIcons();
         }
 
@@ -2104,7 +2234,7 @@
                     <p class="fw-bold text-danger">No se pudo validar el documento.</p>
                     <div class="alert alert-danger border-danger-subtle small text-start">
                         <i data-lucide="alert-triangle" style="width:14px; margin-right:4px; vertical-align:text-bottom"></i>
-                        La firma electrónica no es reconocida o el archivo está dañado. Puede <strong>Volver a la Solicitud</strong> para corregir, o presionar <strong>Aceptar</strong> para enviarlo a revisión manual (Validación Previa).
+                        La firma electrónica o verificable no es reconocida o el archivo está dañado. Puede <strong>Volver a la Solicitud</strong> para corregir, o presionar <strong>Aceptar</strong> para enviarlo a revisión manual (Validación Previa).
                     </div>`;
             }
 
