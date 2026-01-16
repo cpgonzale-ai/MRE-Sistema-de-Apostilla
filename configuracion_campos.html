@@ -172,6 +172,17 @@
         .mre-table { width: 100%; border-collapse: separate; border-spacing: 0; }
         .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 0.85rem 1.5rem; border-bottom: 2px solid #E2E8F0; }
         .mre-table td { padding: 0.85rem 1.5rem; font-size: 0.8rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
+        
+        .row-inactive td { color: #94A3B8; background-color: #F8FAFC; }
+
+        /* ESTILO BOTONES ACCIÓN ICONO */
+        .btn-action-icon {
+            width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 10px; border: 1px solid var(--border-color); background: white; color: var(--text-muted);
+            transition: var(--transition); cursor: pointer;
+        }
+        .btn-action-icon:hover { background: #F1F5F9; color: var(--mre-blue); border-color: var(--mre-blue); }
+        .btn-action-activate { color: var(--mre-green) !important; border-color: var(--mre-green) !important; }
 
         /* BOTONES HERRAMIENTAS */
         .btn-tool-generic {
@@ -196,7 +207,8 @@
         .btn-pagination:disabled { opacity: 0.5; cursor: not-allowed; background: #F1F5F9; }
         .page-indicator { font-size: 0.85rem; font-weight: 700; color: var(--mre-blue); padding: 0 8px; }
 
-        .btn-main { background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); color: #ffffff; border: none; border-radius: 12px; padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.85rem; }
+        .btn-main { background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); color: #ffffff; border: none; border-radius: 12px; padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.85rem; transition: var(--transition); }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 40, 85, 0.2); }
 
         /* MODALES */
         .mre-modal-overlay { position: fixed; inset: 0; background: rgba(0, 40, 85, 0.4); backdrop-filter: blur(4px); z-index: 4000; display: none; align-items: center; justify-content: center; padding: 20px; }
@@ -334,8 +346,8 @@
                     <h2 class="fw-black text-navy m-0">Campos Maestros</h2>
                     <p class="text-muted small mb-0">Gestione los elementos dinámicos para los formularios del portal</p>
                 </div>
-                <button class="btn-main shadow-sm" onclick="openFieldModal('add')">
-                    <i data-lucide="plus" style="width: 16px;" class="me-2"></i> Nuevo Campo Maestro
+                <button class="btn-main d-inline-flex align-items-center gap-2 shadow-sm" onclick="openFieldModal('add')">
+                    <i data-lucide="plus-circle" style="width: 18px;"></i> Agregar Campo
                 </button>
             </header>
 
@@ -369,7 +381,7 @@
                                 <th>Etiqueta</th>
                                 <th>Nombre Técnico</th>
                                 <th>Tipo</th>
-                                <th width="120" class="text-center">Acciones</th>
+                                <th width="160" class="text-end">Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="masterFieldsTableBody"></tbody>
@@ -393,7 +405,7 @@
                     <div class="d-flex align-items-center gap-1">
                         <button class="btn-pagination" title="Primera Página"><i data-lucide="chevrons-left" style="width: 16px;"></i></button>
                         <button class="btn-pagination" title="Página Anterior"><i data-lucide="chevron-left" style="width: 16px;"></i></button>
-                        <span class="page-indicator">Pág 1 de 1</span>
+                        <span class="page-indicator" id="pageIndicatorDisplay">Pág 1 de 1</span>
                         <button class="btn-pagination" title="Página Siguiente"><i data-lucide="chevron-right" style="width: 16px;"></i></button>
                         <button class="btn-pagination" title="Última Página"><i data-lucide="chevrons-right" style="width: 16px;"></i></button>
                     </div>
@@ -424,10 +436,28 @@
                 <h5 class="fw-800 text-navy mb-2">Confirmar Inactivación</h5>
                 <p class="text-muted small px-3">¿Está seguro que desea inactivar los siguientes registros seleccionados? Esta acción restringirá su uso inmediato.</p>
             </div>
-            <div class="selected-items-confirm-list p-3 bg-light border rounded mb-3" id="selectedItemsList" style="max-height: 150px; overflow-y: auto;"></div>
+            <div class="p-3 bg-light border rounded mb-3" id="selectedItemsList" style="max-height: 150px; overflow-y: auto;"></div>
             <div class="d-flex justify-content-end gap-3 mt-4 pt-3 border-top">
                 <button type="button" class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalConfirmInactivate')">Cancelar</button>
                 <button type="button" class="btn-main bg-danger border-danger px-4" onclick="executeInactivation()">Sí, inactivar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRM ACTIVAR -->
+    <div class="mre-modal-overlay" id="modalConfirmActivate" role="dialog" aria-modal="true">
+        <div class="mre-modal animate-fade" style="max-width: 450px;">
+            <div class="text-center mb-4">
+                <div class="bg-success bg-opacity-10 text-success d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 64px; height: 64px;">
+                    <i data-lucide="check-circle" style="width: 32px; height: 32px;"></i>
+                </div>
+                <h5 class="fw-800 text-navy mb-2">Confirmar Activación</h5>
+                <p class="text-muted small px-3">¿Desea habilitar este campo maestro para su uso inmediato en el portal?</p>
+            </div>
+            <div class="p-3 bg-light border rounded mb-3 text-center fw-bold text-navy" id="activeItemInfo"></div>
+            <div class="d-flex justify-content-end gap-3 mt-4 pt-3 border-top">
+                <button type="button" class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalConfirmActivate')">Cancelar</button>
+                <button type="button" class="btn-main bg-success border-success px-4" onclick="executeActivation()">Sí, activar</button>
             </div>
         </div>
     </div>
@@ -567,44 +597,76 @@
             { id: 1, label: 'Fecha de Expedición', tech: 'fec_expedicion', type: 'DATE', status: 'ACTI', required: true, order: 10, placeholder: 'dd/mm/aaaa', maxLength: 10, history: [
                 { action: 'CREATE', user: 'cgonzalez', date: '10/01/2024 08:30:15', desc: 'Registro inicial.' }
             ]},
-            { id: 2, label: 'Tipo de Documento', tech: 'tip_documento', type: 'FIXED_LIST', status: 'ACTI', required: true, order: 20, possibleValues: 'Cédula, Pasaporte, Licencia', images_by_value: { 'Pasaporte': '/img/pasaporte.jpg' }, history: [] },
+            { id: 2, label: 'Tipo de Documento', tech: 'tip_documento', type: 'FIXED_LIST', status: 'INAC', required: true, order: 20, possibleValues: 'Cédula, Pasaporte, Licencia', images_by_value: { 'Pasaporte': '/img/pasaporte.jpg' }, history: [] },
             { id: 3, label: 'Departamento de Residencia', tech: 'id_departamento', type: 'SELECT', status: 'ACTI', required: true, order: 30, desc: 'SELECT id_dep, nom_dep FROM par_departamentos ORDER BY nom_dep', history: [
                 { action: 'CREATE', user: 'admin', date: '05/01/2026 14:20:00', desc: 'Campo de selección dinámica agregado.' }
             ]}
         ];
 
+        let pendingActivationId = null;
+
         // Grid Logic
         function renderMasterFields() {
             const body = document.getElementById('masterFieldsTableBody');
             body.innerHTML = mockMasterFields.map(f => `
-                <tr>
-                    <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()"></td>
+                <tr class="${f.status === 'INAC' ? 'row-inactive' : ''}" data-id="${f.id}">
+                    <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()" ${f.status === 'INAC' ? 'disabled' : ''}></td>
                     <td class="text-center fw-bold text-navy">${f.id}</td>
                     <td><div class="fw-bold text-navy">${f.label}</div></td>
                     <td><code>${f.tech}</code></td>
-                    <td><span class="badge bg-light text-dark border px-2">${f.type === 'FIXED_LIST' ? 'Lista fija' : f.type === 'SELECT' ? 'Selección' : f.type}</span></td>
-                    <td class="text-center">
-                        <div class="d-flex justify-content-center gap-2">
-                            <button class="btn btn-sm btn-light border" onclick="openFieldModal('view', ${f.id})"><i data-lucide="eye" style="width:14px"></i></button>
-                            <button class="btn btn-sm btn-light border" onclick="openFieldModal('edit', ${f.id})"><i data-lucide="edit-3" style="width:14px"></i></button>
+                    <td><span class="badge bg-light text-dark border px-2">${formatType(f.type)}</span></td>
+                    <td class="text-end">
+                        <div class="d-flex justify-content-end gap-2 align-items-center">
+                            ${f.status === 'INAC' ? `<button class="btn-action-icon btn-action-activate" onclick="handleActivate(${f.id})" title="Activar"><i data-lucide="check-circle" style="width:18px"></i></button>` : ''}
+                            <button class="btn-action-icon" onclick="openFieldModal('view', ${f.id})" title="Visualizar"><i data-lucide="eye" style="width:18px"></i></button>
+                            <button class="btn-action-icon" onclick="openFieldModal('edit', ${f.id})" title="Editar" ${f.status === 'INAC' ? 'disabled' : ''}><i data-lucide="edit-3" style="width:18px"></i></button>
                         </div>
                     </td>
                 </tr>
             `).join('');
             lucide.createIcons();
+            updatePaginationInfo();
+        }
+
+        function formatType(type) {
+            const map = { 'FIXED_LIST': 'Lista fija', 'SELECT': 'Selección', 'DATE': 'Fecha', 'TEXT': 'Texto', 'NUMBER': 'Numérico' };
+            return map[type] || type;
+        }
+
+        // FUNCIONALIDAD ACTIVAR (MODAL)
+        function handleActivate(id) {
+            pendingActivationId = id;
+            const field = mockMasterFields.find(f => f.id === id);
+            if(field) {
+                document.getElementById('activeItemInfo').innerText = `ID ${field.id}: ${field.label}`;
+                document.getElementById('modalConfirmActivate').style.display = 'flex';
+                lucide.createIcons();
+            }
+        }
+
+        function executeActivation() {
+            if(pendingActivationId) {
+                const field = mockMasterFields.find(f => f.id === pendingActivationId);
+                if(field) {
+                    field.status = 'ACTI';
+                    renderMasterFields();
+                    closeModal('modalConfirmActivate');
+                    pendingActivationId = null;
+                }
+            }
         }
 
         function updateSelectionUI() {
             const checkboxes = document.querySelectorAll('.record-check:checked');
             document.getElementById('btnInactivateFields').disabled = checkboxes.length === 0;
             const selectAll = document.getElementById('selectAllFields');
-            const allChecks = document.querySelectorAll('.record-check');
+            const allChecks = document.querySelectorAll('.record-check:not(:disabled)');
             if (allChecks.length > 0) selectAll.checked = checkboxes.length === allChecks.length;
         }
 
         function toggleSelectAllItems() {
             const check = document.getElementById('selectAllFields').checked;
-            document.querySelectorAll('.record-check').forEach(c => c.checked = check);
+            document.querySelectorAll('.record-check:not(:disabled)').forEach(c => c.checked = check);
             updateSelectionUI();
         }
 
@@ -622,7 +684,7 @@
             checkboxes.forEach(cb => {
                 const row = cb.closest('tr');
                 const id = row.cells[1].innerText;
-                const label = row.cells[2].innerText;
+                const label = row.querySelector('.fw-bold').innerText;
                 listContainer.innerHTML += `<div class="p-2 border-bottom small fw-bold text-navy">ID ${id}: ${label}</div>`;
             });
             lucide.createIcons();
@@ -630,14 +692,29 @@
         }
 
         function executeInactivation() {
-            alert('Registros inactivados correctamente.');
+            const checkboxes = document.querySelectorAll('.record-check:checked');
+            checkboxes.forEach(cb => {
+                const id = parseInt(cb.closest('tr').dataset.id);
+                const field = mockMasterFields.find(f => f.id === id);
+                if(field) field.status = 'INAC';
+            });
             closeModal('modalConfirmInactivate');
             handleCancelSelection();
             renderMasterFields();
+            alert('Registros inactivados correctamente.');
+        }
+
+        function updatePaginationInfo() {
+            document.getElementById('paginationInfo').innerText = `Mostrando 1 a ${mockMasterFields.length} de ${mockMasterFields.length} registros`;
         }
 
         function handleMasterFieldSearch() {
-            renderMasterFields(); 
+            const query = document.getElementById('masterFieldSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#masterFieldsTableBody tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
         }
 
         // Form Logic
