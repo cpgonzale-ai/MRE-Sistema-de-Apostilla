@@ -28,7 +28,6 @@
 
         html { font-size: calc(var(--base-font-size) * var(--font-scale)); }
 
-        /* --- MODOS DE ACCESIBILIDAD --- */
         body.high-contrast {
             --mre-blue: #000000;
             --mre-blue-light: #000000;
@@ -186,6 +185,14 @@
         .btn-outline-mre-danger:hover:not(:disabled) { background: var(--mre-red); color: white; }
         .btn-outline-mre-danger:disabled { opacity: 0.4; cursor: not-allowed; }
 
+        .btn-outline-mre-primary { 
+            border: 2px solid var(--mre-blue); color: var(--mre-blue); font-weight: 800; border-radius: 12px;
+            padding: 0.5rem 1.2rem; font-size: 0.75rem; background: transparent; transition: var(--transition);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .btn-outline-mre-primary:hover:not(:disabled) { background: var(--mre-blue); color: white; }
+        .btn-outline-mre-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
         .btn-outline-mre-secondary {
             border: 2px solid #94A3B8; color: #475569; font-weight: 800; border-radius: 12px;
             padding: 0.5rem 1.2rem; font-size: 0.75rem; background: transparent; transition: var(--transition);
@@ -193,11 +200,32 @@
         }
         .btn-outline-mre-secondary:hover { background: #94A3B8; color: white; }
 
-        /* BOTONES PRINCIPALES */
         .btn-main { background: var(--mre-blue); color: #ffffff; border: none; border-radius: 12px; padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.85rem; transition: var(--transition); text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
         .btn-main:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 40, 85, 0.2); color: #fff; }
         
-        .btn-tool-generic { background: white; color: var(--mre-blue); border: 1px solid var(--border-color); padding: 0.5rem 1rem; border-radius: 10px; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 8px; transition: var(--transition); cursor: pointer; }
+        /* BOTONES HERRAMIENTAS (Restaurados) */
+        .btn-tool-generic { 
+            background: white; 
+            color: var(--mre-blue); 
+            border: 1px solid var(--border-color); 
+            padding: 0.5rem 1rem; 
+            border-radius: 10px; 
+            font-size: 0.75rem; 
+            font-weight: 700; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            transition: var(--transition); 
+            cursor: pointer;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+        .btn-tool-generic:hover { 
+            background-color: #F8FAFC; 
+            border-color: var(--mre-blue-light); 
+            color: var(--mre-blue-light); 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transform: translateY(-1px);
+        }
 
         /* FORMULARIOS */
         #viewForm { display: none; }
@@ -331,9 +359,10 @@
                     <div class="grid-header-frame">
                         <h4 class="fw-black text-uppercase m-0" style="color: var(--mre-blue); font-size: 0.85rem;" title="Listado de Usuarios registrados">Listado de Usuarios</h4>
                         <div class="d-flex align-items-center gap-2">
-                            <button class="btn-tool-generic" onclick="alert('Columnas')" title="Columnas"><i data-lucide="layout-columns" style="width: 16px;"></i> Columnas</button>
-                            <button class="btn-tool-generic" onclick="alert('Excel')" title="Excel"><i data-lucide="file-spreadsheet" style="width: 16px;"></i> Excel</button>
-                            <button class="btn-tool-generic" onclick="alert('PDF')" title="PDF"><i data-lucide="file-text" style="width: 16px;"></i> PDF</button>
+                            <!-- BOTONES HERRAMIENTAS RESTAURADOS -->
+                            <button class="btn-tool-generic" onclick="alert('Configurando columnas...')" title="Configurar Columnas"><i data-lucide="layout-columns" style="width: 16px;"></i> Columnas</button>
+                            <button class="btn-tool-generic" onclick="alert('Exportando a Excel...')" title="Exportar a Excel"><i data-lucide="file-spreadsheet" style="width: 16px;"></i> Excel</button>
+                            <button class="btn-tool-generic" onclick="alert('Exportando a PDF...')" title="Exportar a PDF"><i data-lucide="file-text" style="width: 16px;"></i> PDF</button>
                             <div class="position-relative" style="width: 250px;">
                                 <i data-lucide="search" class="position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:#94A3B8; width:16px;"></i>
                                 <input type="text" class="form-control-mre ps-5" placeholder="Filtrar usuario...">
@@ -357,8 +386,7 @@
                                 </tr>
                             </thead>
                             <tbody id="userTableBody">
-                                <!-- CARLOS GONZALEZ (ASOCIADO -> SIN ELIMINAR) -->
-                                <tr data-associated="true">
+                                <tr data-associated="true" data-group="Administrador de sistema" data-status="Activo">
                                     <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()"></td>
                                     <td class="text-center fw-bold text-navy">1001</td>
                                     <td><code class="fw-bold">cgonzalez</code></td>
@@ -375,8 +403,7 @@
                                         </div>
                                     </td>
                                 </tr>
-                                <!-- MARTA RIQUELME (SIN ASOCIAR -> CON ELIMINAR) -->
-                                <tr data-associated="false">
+                                <tr data-associated="false" data-group="Operador ológrafo" data-status="Activo">
                                     <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()"></td>
                                     <td class="text-center fw-bold text-navy">1002</td>
                                     <td><code class="fw-bold">mriquelme</code></td>
@@ -393,8 +420,7 @@
                                         </div>
                                     </td>
                                 </tr>
-                                <!-- JORGE SALINAS (ASOCIADO) -->
-                                <tr data-associated="true">
+                                <tr data-associated="true" data-group="Operador Verificación previa" data-status="Inactivo">
                                     <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()"></td>
                                     <td class="text-center fw-bold text-navy">1003</td>
                                     <td><code class="fw-bold">jsalinas</code></td>
@@ -411,26 +437,7 @@
                                         </div>
                                     </td>
                                 </tr>
-                                <!-- LUCIA LOPEZ (SIN ASOCIAR) -->
-                                <tr data-associated="false">
-                                    <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()"></td>
-                                    <td class="text-center fw-bold text-navy">1004</td>
-                                    <td><code class="fw-bold">llopez</code></td>
-                                    <td class="fw-bold text-navy">Lucía López</td>
-                                    <td>llopez@mre.gov.py</td>
-                                    <td><span class="badge bg-light text-dark border px-2">Administrador de Operadores</span></td>
-                                    <td><span class="badge-status status-active">Activo</span></td>
-                                    <td>10/05/2026</td>
-                                    <td class="text-end">
-                                        <div class="actions-cell-container">
-                                            <button class="btn-action-icon" title="Visualizar" onclick="showFormView('view', 1004)"><i data-lucide="eye" style="width:18px"></i></button>
-                                            <button class="btn-action-icon" title="Editar" onclick="showFormView('edit', 1004)"><i data-lucide="edit-3" style="width:18px"></i></button>
-                                            <button class="btn-action-icon btn-action-delete" title="Eliminar" onclick="requestDeletion(1004, 'Lucía López')"><i data-lucide="trash-2" style="width:18px"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <!-- ALBERTO MARTINEZ (ASOCIADO) -->
-                                <tr data-associated="true">
+                                <tr data-associated="true" data-group="Ciudadano" data-status="Activo">
                                     <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()"></td>
                                     <td class="text-center fw-bold text-navy">1005</td>
                                     <td><code class="fw-bold">amartinez</code></td>
@@ -447,6 +454,23 @@
                                         </div>
                                     </td>
                                 </tr>
+                                <tr data-associated="false" data-group="Ciudadano" data-status="Activo">
+                                    <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()"></td>
+                                    <td class="text-center fw-bold text-navy">1006</td>
+                                    <td><code class="fw-bold">lperon</code></td>
+                                    <td class="fw-bold text-navy">Lucía Perón</td>
+                                    <td>lperon@mre.gov.py</td>
+                                    <td><span class="badge bg-light text-dark border px-2">Ciudadano</span></td>
+                                    <td><span class="badge-status status-active">Activo</span></td>
+                                    <td>15/12/2026</td>
+                                    <td class="text-end">
+                                        <div class="actions-cell-container">
+                                            <button class="btn-action-icon" title="Visualizar" onclick="showFormView('view', 1006)"><i data-lucide="eye" style="width:18px"></i></button>
+                                            <button class="btn-action-icon" title="Editar" onclick="showFormView('edit', 1006)"><i data-lucide="edit-3" style="width:18px"></i></button>
+                                            <button class="btn-action-icon btn-action-delete" title="Eliminar" onclick="requestDeletion(1006, 'Lucía Perón')"><i data-lucide="trash-2" style="width:18px"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -454,8 +478,13 @@
                     <div class="grid-footer">
                         <div><span class="text-muted small fw-bold" id="paginationInfo">Mostrando 1 a 5 de 5 registros</span></div>
                         <div class="d-flex gap-2">
-                            <button class="btn-outline-mre-danger" id="btnMassAction" disabled onclick="showModalInactivateMass()" title="Inactivar masivamente">
+                            <!-- BOTÓN INACTIVAR -->
+                            <button class="btn-outline-mre-danger" id="btnMassAction" disabled onclick="showModalInactivateMass()" title="Inactivar masivamente (Solo activos)">
                                 <i data-lucide="power" style="width: 14px;"></i> Inactivar
+                            </button>
+                            <!-- BOTÓN FORZAR CAMBIO DE CONTRASEÑA (CIUDADANOS) -->
+                            <button class="btn-outline-mre-primary" id="btnForcePass" disabled onclick="showModalForcePass()" title="Forzar cambio de contraseña (Ciudadanos)">
+                                <i data-lucide="key" style="width: 14px;"></i> Forzar cambio de contraseña
                             </button>
                             <button class="btn-outline-mre-secondary" onclick="cancelSelection()" title="Cancelar selección">
                                 <i data-lucide="x" style="width: 14px;"></i> Cancelar
@@ -506,6 +535,14 @@
                         <div class="row g-4 mb-5">
                             <div class="col-md-4"><label class="form-label">Teléfono</label><input type="text" id="f_phone_detail" class="form-control-mre" readonly></div>
                             <div class="col-md-4"><label class="form-label">Fecha de Expiración</label><input type="date" id="f_exp_detail" class="form-control-mre"></div>
+                            
+                            <div class="col-md-4">
+                                <label class="form-label">Estado <span class="text-danger">*</span></label>
+                                <select id="f_status_detail" class="form-control-mre">
+                                    <option value="Activo">Activo</option>
+                                    <option value="Inactivo">Inactivo</option>
+                                </select>
+                            </div>
                         </div>
 
                         <div class="section-title">Asignación de Grupos</div>
@@ -522,7 +559,7 @@
                             <div class="w-100"><div class="list-title">Grupos Asociados</div><div class="dual-list-box" id="assignedGroupsDetail"></div></div>
                         </div>
 
-                        <div id="credentialsSectionDetail" class="d-none animate-fade">
+                        <div id="credentialsSectionDetail" class="d-none">
                             <div class="section-title">Credenciales</div>
                             <div class="p-3 rounded-3 border bg-light mb-5 d-flex align-items-center gap-3">
                                 <input type="checkbox" id="f_force_pass" style="width: 20px; height: 20px;">
@@ -554,10 +591,6 @@
         </main>
     </div>
 
-    <footer class="mre-footer">
-        <div class="footer-left">&copy; 2026 Ministerio de Relaciones Exteriores - Dirección de Informática</div>
-    </footer>
-
     <!-- MODALES -->
     <div class="mre-modal-overlay" id="modalDelete">
         <div class="mre-modal animate-fade text-center" style="max-width: 450px;">
@@ -565,10 +598,10 @@
                 <i data-lucide="trash-2" style="width: 32px; height: 32px;"></i>
             </div>
             <h5 class="fw-800 text-navy mb-2">Confirmar Eliminación</h5>
-            <p class="text-muted small px-4">¿Desea eliminar definitivamente al usuario <strong id="deleteUserName"></strong>? Esta acción es irreversible.</p>
+            <p class="text-muted small px-4">¿Desea eliminar definitivamente al usuario <strong id="deleteUserName"></strong>?</p>
             <div class="d-flex justify-content-center gap-3 mt-4 pt-3 border-top">
                 <button class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalDelete')">Cancelar</button>
-                <button class="btn btn-danger rounded-pill px-4 fw-800" onclick="alert('Eliminado satisfactoriamente.'); closeModal('modalDelete');">Sí, eliminar</button>
+                <button class="btn btn-danger rounded-pill px-4 fw-800" onclick="alert('Satisfactoriamente eliminado.'); closeModal('modalDelete');">Sí, eliminar</button>
             </div>
         </div>
     </div>
@@ -579,10 +612,37 @@
                 <i data-lucide="power" style="width: 32px; height: 32px;"></i>
             </div>
             <h5 class="fw-800 text-navy mb-2">Confirmar Inactivación</h5>
-            <p class="text-muted small px-4">¿Desea inactivar de forma masiva los usuarios seleccionados de forma simultánea?</p>
+            <p class="text-muted small px-4">¿Desea inactivar de forma masiva los usuarios seleccionados?</p>
             <div class="d-flex justify-content-center gap-3 mt-4 pt-3 border-top">
                 <button class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalInactivateMass')">Cancelar</button>
                 <button class="btn-main px-5 py-2" onclick="alert('Registros inactivados correctamente.'); closeModal('modalInactivateMass'); cancelSelection();">Sí, inactivar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mre-modal-overlay" id="modalForcePassConfirm">
+        <div class="mre-modal animate-fade text-center" style="max-width: 450px;">
+            <div class="bg-primary bg-opacity-10 text-primary d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 64px; height: 64px;">
+                <i data-lucide="key" style="width: 32px; height: 32px;"></i>
+            </div>
+            <h5 class="fw-800 text-navy mb-2">Forzar Cambio de Contraseña</h5>
+            <p class="text-muted small px-4">Se ha solicitado forzar el cambio de contraseña para <strong id="forcePassCount"></strong> ciudadanos.</p>
+            <div class="d-flex justify-content-center gap-3 mt-4 pt-3 border-top">
+                <button class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalForcePassConfirm')">Cancelar</button>
+                <button class="btn-main rounded-pill px-4 fw-800" onclick="alert('Solicitud enviada con éxito.'); closeModal('modalForcePassConfirm'); cancelSelection();">Confirmar Acción</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mre-modal-overlay" id="modalDeleteError">
+        <div class="mre-modal animate-fade text-center" style="max-width: 450px;">
+            <div class="bg-warning bg-opacity-10 text-warning d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 64px; height: 64px;">
+                <i data-lucide="alert-circle" style="width: 32px; height: 32px;"></i>
+            </div>
+            <h5 class="fw-800 text-navy mb-2">No es posible eliminar</h5>
+            <p class="text-muted small px-4">El usuario posee gestiones asociadas en el sistema.</p>
+            <div class="d-flex justify-content-center mt-4 pt-3 border-top">
+                <button class="btn-main px-5 py-2" onclick="closeModal('modalDeleteError')">Entendido</button>
             </div>
         </div>
     </div>
@@ -593,7 +653,6 @@
             initSidebarPopups();
         });
 
-        // NAVEGACIÓN
         function showListView() {
             document.getElementById('viewForm').style.display = 'none';
             document.getElementById('viewList').style.display = 'block';
@@ -607,6 +666,7 @@
             const form = document.getElementById('userFormDetail');
             const searchBtn = document.getElementById('btnSearchDetail');
             const userSearch = document.getElementById('u_search_detail');
+            const statusField = document.getElementById('f_status_detail');
 
             document.getElementById('viewList').style.display = 'none';
             viewForm.style.display = 'block';
@@ -618,7 +678,7 @@
             btnSubmit.classList.remove('d-none');
             searchBtn.classList.remove('d-none');
             userSearch.readOnly = false;
-            document.getElementById('assignedGroupsDetail').innerHTML = "";
+            statusField.disabled = false;
 
             const allInputs = form.querySelectorAll('input, select');
             allInputs.forEach(i => {
@@ -629,6 +689,7 @@
 
             if (mode === 'add') {
                 headerTitle.innerText = "Agregar Usuario";
+                statusField.value = "Activo";
             } 
             else if (mode === 'view' || mode === 'edit') {
                 headerTitle.innerText = mode === 'view' ? "Visualizar Usuario" : "Editar Usuario";
@@ -647,6 +708,8 @@
                         if(el && el.tagName === 'SELECT') el.disabled = true; else el.readOnly = true;
                         if(el) el.style.backgroundColor = "#F1F5F9";
                     });
+                    statusField.disabled = false;
+                    statusField.style.backgroundColor = "var(--input-bg)";
                 }
                 checkCitizen();
             }
@@ -655,20 +718,33 @@
 
         function loadMockData(id) {
             const data = {
-                1001: { u: 'cgonzalez', n: 'Carlos', l: 'González', g: 'Administrador de sistema' },
-                1002: { u: 'mriquelme', n: 'Marta', l: 'Riquelme', g: 'Operador ológrafo' },
-                1005: { u: 'amartinez', n: 'Alberto', l: 'Martínez', g: 'Ciudadano' }
+                1001: { u: 'cgonzalez', n: 'Carlos', l: 'González', g: 'Administrador de sistema', s: 'Activo' },
+                1002: { u: 'mriquelme', n: 'Marta', l: 'Riquelme', g: 'Operador ológrafo', s: 'Activo' },
+                1003: { u: 'jsalinas', n: 'Jorge', l: 'Salinas', g: 'Operador Verificación previa', s: 'Inactivo' },
+                1005: { u: 'amartinez', n: 'Alberto', l: 'Martínez', g: 'Ciudadano', s: 'Activo' },
+                1006: { u: 'lperon', n: 'Lucía', l: 'Perón', g: 'Ciudadano', s: 'Activo' }
             };
             const user = data[id] || data[1001];
             document.getElementById('u_search_detail').value = user.u;
             document.getElementById('f_name_detail').value = user.n;
             document.getElementById('f_last_detail').value = user.l;
+            document.getElementById('f_status_detail').value = user.s;
             document.getElementById('assignedGroupsDetail').innerHTML = `<div class="list-item" onclick="moveGroup(this, 'availGroupsBox')">${user.g}</div>`;
         }
 
+        function showModalForcePass() {
+            const count = document.querySelectorAll('.record-check:checked').length;
+            document.getElementById('forcePassCount').innerText = count;
+            document.getElementById('modalForcePassConfirm').style.display = 'flex';
+        }
+
         function requestDeletion(id, name) {
-            document.getElementById('deleteUserName').innerText = name;
-            document.getElementById('modalDelete').style.display = 'flex';
+            if (id === 1001 || id === 1003 || id === 1005) {
+                document.getElementById('modalDeleteError').style.display = 'flex';
+            } else {
+                document.getElementById('deleteUserName').innerText = name;
+                document.getElementById('modalDelete').style.display = 'flex';
+            }
         }
 
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
@@ -692,12 +768,35 @@
             document.querySelectorAll('.record-check').forEach(c => c.checked = check);
             updateSelectionUI();
         }
+
         function updateSelectionUI() {
-            const checkedCount = document.querySelectorAll('.record-check:checked').length;
-            document.getElementById('btnMassAction').disabled = checkedCount === 0;
+            const selectedRows = document.querySelectorAll('.record-check:checked');
+            const checkedCount = selectedRows.length;
+            
+            const btnMassAction = document.getElementById('btnMassAction');
+            if (checkedCount > 0) {
+                const allActive = Array.from(selectedRows).every(cb => {
+                    return cb.closest('tr').getAttribute('data-status') === 'Activo';
+                });
+                btnMassAction.disabled = !allActive;
+            } else {
+                btnMassAction.disabled = true;
+            }
+            
+            const btnForcePass = document.getElementById('btnForcePass');
+            if (checkedCount > 0) {
+                const allCitizens = Array.from(selectedRows).every(cb => {
+                    return cb.closest('tr').getAttribute('data-group') === 'Ciudadano';
+                });
+                btnForcePass.disabled = !allCitizens;
+            } else {
+                btnForcePass.disabled = true;
+            }
+
             const sa = document.getElementById('selectAll');
             if(sa) sa.checked = (checkedCount === document.querySelectorAll('.record-check').length && checkedCount > 0);
         }
+
         function cancelSelection() {
             document.querySelectorAll('.record-check').forEach(c => c.checked = false);
             if(document.getElementById('selectAll')) document.getElementById('selectAll').checked = false;
@@ -709,8 +808,8 @@
             const user = document.getElementById('u_search_detail').value;
             if(!user) return;
             hideSearchError();
-            document.getElementById('f_name_detail').value = "Juan";
-            document.getElementById('f_last_detail').value = "Pérez";
+            document.getElementById('f_name_detail').value = "Funcionario MRE";
+            document.getElementById('f_last_detail').value = "Ejemplo";
             ['f_name_detail', 'f_last_detail', 'f_type_detail', 'f_doc_detail', 'f_email_detail', 'f_phone_detail'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el && el.tagName === 'SELECT') el.disabled = true; else el.readOnly = true;
