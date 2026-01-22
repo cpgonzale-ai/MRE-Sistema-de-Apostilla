@@ -15,6 +15,7 @@
             --mre-blue-light: #0038A8;
             --mre-red: #D52B1E;
             --mre-green: #10B981;
+            --mre-amber: #F59E0B;
             --soft-bg: #f0f4f8; 
             --border-color: #E2E8F0;
             --input-bg: #F8FAFC;
@@ -28,24 +29,34 @@
 
         html { font-size: calc(var(--base-font-size) * var(--font-scale)); }
 
+        /* --- ESTILO TOOLTIP PERSONALIZADO --- */
+        .tooltip {
+            --bs-tooltip-bg: #ffffff;
+            --bs-tooltip-color: #000000;
+            --bs-tooltip-opacity: 1;
+            --bs-tooltip-padding-y: 0.5rem;
+            --bs-tooltip-padding-x: 1rem;
+            --bs-tooltip-border-radius: 8px;
+            --bs-tooltip-font-size: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .tooltip-inner {
+            border: 1px solid var(--border-color);
+            font-weight: 600;
+            text-align: center;
+        }
+
         /* --- MODOS DE ACCESIBILIDAD --- */
         body.high-contrast {
-            --mre-blue: #000000;
-            --mre-blue-light: #000000;
-            --mre-red: #D50000;
-            --soft-bg: #FFFFFF;
-            --border-color: #000000;
-            --input-bg: #FFFFFF;
-            --text-main: #000000;
-            --text-muted: #000000;
-            --card-shadow: none;
+            --mre-blue: #000000; --mre-blue-light: #000000; --mre-red: #D50000;
+            --soft-bg: #FFFFFF; --border-color: #000000; --input-bg: #FFFFFF;
+            --text-main: #000000; --text-muted: #000000; --card-shadow: none;
         }
         body.grayscale-mode { filter: grayscale(100%); }
 
         body { 
-            font-family: 'Inter', sans-serif; 
-            margin: 0; background-color: var(--soft-bg); color: var(--text-main); 
-            overflow: hidden; display: flex; flex-direction: column; height: 100vh;
+            font-family: 'Inter', sans-serif; margin: 0; background-color: var(--soft-bg); 
+            color: var(--text-main); overflow: hidden; display: flex; flex-direction: column; height: 100vh;
         }
 
         .elegant-background { 
@@ -55,20 +66,15 @@
                 radial-gradient(at 100% 0%, rgba(213, 43, 30, 0.05) 0px, transparent 50%);
         }
 
-        /* --- CABECERA (ESTILO AGRANDADO) --- */
+        /* --- CABECERA --- */
         .portal-header { 
             display: flex; justify-content: space-between; align-items: center; background: white; 
             padding: 1.25rem 2.5rem; box-shadow: 0 4px 10px -1px rgba(0,0,0,0.05); 
             border-bottom: 1px solid var(--border-color); position: relative; z-index: 2000;
         }
 
-        .mobile-toggle-btn {
-            background: transparent; border: none; color: var(--mre-blue); cursor: pointer;
-            padding: 4px; display: none; border-radius: 8px; transition: var(--transition);
-        }
-        .mobile-toggle-btn:hover { background: #F1F5F9; }
-
-        /* ACCESIBILIDAD */
+        .mobile-toggle-btn { background: transparent; border: none; color: var(--mre-blue); cursor: pointer; padding: 4px; display: none; border-radius: 8px; transition: var(--transition); }
+        
         .a11y-container { position: relative; }
         .btn-a11y-trigger {
             background: #F8FAFC; border: 1px solid var(--border-color); color: var(--mre-blue);
@@ -82,57 +88,30 @@
             display: none; z-index: 3000; padding: 1rem; animation: fadeIn 0.2s ease-out;
         }
         .a11y-dropdown-menu.show { display: block; }
-        .a11y-section-title { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #94A3B8; margin-bottom: 0.8rem; letter-spacing: 0.5px; }
-        .text-resize-controls { display: flex; justify-content: space-between; align-items: center; background: #F8FAFC; border-radius: 10px; padding: 4px; border: 1px solid #E2E8F0; margin-bottom: 1rem; }
-        .btn-resize { width: 32px; height: 32px; border: none; background: white; border-radius: 8px; color: var(--mre-blue); display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: var(--transition); }
-        .btn-resize:hover { background: var(--mre-blue); color: white; }
-        .font-size-display { font-size: 0.85rem; font-weight: 700; color: #475569; }
-        .switch-control { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid #F1F5F9; }
-        .switch-label { font-size: 0.85rem; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
-        .toggle-switch { position: relative; display: inline-block; width: 40px; height: 22px; }
-        .toggle-switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; inset: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--mre-blue); }
-        input:checked + .slider:before { transform: translateX(18px); }
 
-        /* PERFIL */
         .dots-menu-trigger {
             width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
             border-radius: 12px; cursor: pointer; transition: var(--transition); color: var(--text-muted);
             background: #F8FAFC; border: 1px solid var(--border-color);
         }
-        .dots-menu-trigger:hover { background: #F1F5F9; color: var(--mre-blue-light); border-color: var(--mre-blue-light); }
         .dropdown-menu-mre { 
             position: absolute; top: calc(100% + 10px); right: 0; background: white; border-radius: 12px; 
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); border: 1px solid var(--border-color); 
             width: 180px; display: none; z-index: 3000; overflow: hidden; animation: fadeIn 0.2s ease-out;
         }
         .dropdown-menu-mre.show { display: block; }
-        .dropdown-item-mre {
-            padding: 12px 16px; border: none; background: none; width: 100%; text-align: left;
-            font-size: 0.9rem; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 10px;
-        }
+        .dropdown-item-mre { padding: 12px 16px; border: none; background: none; width: 100%; text-align: left; font-size: 0.9rem; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 10px; }
         .dropdown-item-mre:hover { background: #F8FAFC; color: var(--mre-red); }
 
         /* --- LAYOUT PRINCIPAL --- */
         .app-container { display: flex; flex: 1; overflow: hidden; position: relative; }
 
-        /* --- SIDEBAR PRINCIPAL --- */
         .main-sidebar {
             width: 280px; background: white; border-right: 1px solid var(--border-color);
             display: flex; flex-direction: column; z-index: 1000;
-            box-shadow: 4px 0 10px rgba(0,0,0,0.02);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 4px 0 10px rgba(0,0,0,0.02); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             overflow-x: hidden;
         }
-
-        .sidebar-overlay {
-            position: fixed; inset: 0; background: rgba(0, 40, 85, 0.5); 
-            z-index: 900; display: none; backdrop-filter: blur(2px);
-            opacity: 0; transition: opacity 0.3s ease;
-        }
-        .sidebar-overlay.active { display: block; opacity: 1; }
 
         .nav-menu { padding: 1.5rem 1rem; flex: 1; }
         .nav-link-mre {
@@ -144,19 +123,9 @@
         .nav-link-mre:hover { background: #F1F5F9; color: var(--mre-blue); }
         .nav-link-mre.active { background: #f0f7ff; color: var(--mre-blue-light); box-shadow: 0 4px 6px -1px rgba(0, 40, 85, 0.05); }
 
-        /* POPUP DEL SIDEBAR */
-        .mre-sidebar-popup {
-            position: fixed; background: #1e293b; color: #f1f5f9; padding: 12px 16px;
-            border-radius: 12px; font-size: 0.75rem; font-weight: 600;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); z-index: 6000;
-            display: none; opacity: 0; transition: opacity 0.2s ease-out; max-width: 240px;
-        }
-        .mre-sidebar-popup.show { display: block; opacity: 1; }
-
-        /* --- ÁREA DE CONTENIDO --- */
         .content-area { flex: 1; padding: 2rem 3rem; overflow-y: auto; position: relative; }
         
-        /* GRILLA */
+        /* --- GRILLA --- */
         .grid-frame { 
             background: white; border-radius: 20px; box-shadow: var(--card-shadow); 
             border: 1px solid #E2E8F0; position: relative; overflow: hidden;
@@ -164,53 +133,40 @@
         }
         .grid-frame::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(to right, var(--mre-red), var(--mre-blue)); }
         
-        .grid-header-frame { 
-            background-color: #F1F5F9; padding: 1rem 1.5rem; border-bottom: 1px solid #E2E8F0; 
-            display: flex; justify-content: space-between; align-items: center; 
-        }
+        .grid-header-frame { background-color: #F1F5F9; padding: 1rem 1.5rem; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; }
 
         .mre-table { width: 100%; border-collapse: separate; border-spacing: 0; }
         .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 0.85rem 1.5rem; border-bottom: 2px solid #E2E8F0; }
         .mre-table td { padding: 0.85rem 1.5rem; font-size: 0.8rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
-        
-        .row-inactive td { color: #94A3B8; background-color: #F8FAFC; }
 
-        /* ESTILO BOTONES ACCIÓN ICONO */
+        /* --- BOTONES DE ACCIÓN --- */
+        .action-wrapper { display: flex; justify-content: center; gap: 6px; width: 100%; }
         .btn-action-icon {
-            width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center;
-            border-radius: 10px; border: 1px solid var(--border-color); background: white; color: var(--text-muted);
-            transition: var(--transition); cursor: pointer;
+            width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 8px; border: 1px solid var(--border-color); background: white; color: var(--text-muted);
+            transition: var(--transition); cursor: pointer; flex-shrink: 0;
         }
         .btn-action-icon:hover { background: #F1F5F9; color: var(--mre-blue); border-color: var(--mre-blue); }
-        .btn-action-activate { color: var(--mre-green) !important; border-color: var(--mre-green) !important; }
+        .btn-action-view:hover { color: var(--mre-blue-light); border-color: var(--mre-blue-light); }
+        .btn-action-edit:hover { color: var(--mre-green); border-color: var(--mre-green); }
+        .btn-action-delete:hover { color: var(--mre-red); border-color: var(--mre-red); }
 
-        /* BOTONES HERRAMIENTAS */
+        .btn-main { background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); color: #ffffff; border: none; border-radius: 12px; padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.85rem; transition: var(--transition); }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 40, 85, 0.2); color: white; }
+
         .btn-tool-generic {
             background: #FFFFFF; color: var(--mre-blue); border: 1px solid var(--border-color);
             padding: 0.5rem 1rem; border-radius: 10px; font-size: 0.75rem; font-weight: 700;
-            display: flex; align-items: center; gap: 8px; transition: var(--transition);
-            cursor: pointer; margin-right: 8px;
+            display: flex; align-items: center; gap: 8px; transition: var(--transition); cursor: pointer; margin-right: 8px;
         }
         .btn-tool-generic:hover { background: #F1F5F9; border-color: var(--mre-blue); }
 
-        /* PAGINACIÓN */
-        .grid-footer {
-            padding: 1rem 1.5rem; background-color: #F8FAFC; border-top: 1px solid var(--border-color);
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .btn-pagination {
-            width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
-            background: white; border: 1px solid #E2E8F0; border-radius: 8px;
-            color: #64748B; cursor: pointer; transition: var(--transition);
-        }
+        .grid-footer { padding: 1rem 1.5rem; background-color: #F8FAFC; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .btn-pagination { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #E2E8F0; border-radius: 8px; color: #64748B; cursor: pointer; transition: var(--transition); }
         .btn-pagination:hover:not(:disabled) { background: var(--mre-blue); color: white; border-color: var(--mre-blue); }
-        .btn-pagination:disabled { opacity: 0.5; cursor: not-allowed; background: #F1F5F9; }
         .page-indicator { font-size: 0.85rem; font-weight: 700; color: var(--mre-blue); padding: 0 8px; }
 
-        .btn-main { background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); color: #ffffff; border: none; border-radius: 12px; padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.85rem; transition: var(--transition); }
-        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 40, 85, 0.2); }
-
-        /* MODALES */
+        /* --- MODALES --- */
         .mre-modal-overlay { position: fixed; inset: 0; background: rgba(0, 40, 85, 0.4); backdrop-filter: blur(4px); z-index: 4000; display: none; align-items: center; justify-content: center; padding: 20px; }
         .mre-modal { background: white; border-radius: 24px; max-width: 950px; width: 100%; padding: 2.5rem; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.2); max-height: 95vh; overflow-y: auto; }
         
@@ -219,49 +175,27 @@
 
         .form-label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem; display: block; }
         .form-control-mre { background-color: var(--input-bg); border: 1px solid #E2E8F0; border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.9rem; width: 100%; transition: var(--transition); }
+        .form-control-readonly { background-color: #F1F5F9; color: #64748B; font-family: monospace; font-weight: 700; cursor: not-allowed; }
 
         .values-images-card { background-color: #F1F5F9; border-radius: 16px; padding: 1.5rem; margin-top: 1rem; border: 1px solid var(--border-color); }
         .value-image-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; background: white; padding: 0.5rem 1rem; border-radius: 10px; border: 1px solid #E2E8F0; }
         .value-name-label { min-width: 120px; font-weight: 700; font-size: 0.85rem; color: var(--text-main); }
 
-        .audit-grid-table { width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; }
-        .audit-grid-table th { background: #F8FAFC; color: #64748B; font-size: 0.65rem; font-weight: 800; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-color); }
-        .audit-grid-table td { padding: 0.75rem 1rem; border-bottom: 1px solid #F1F5F9; font-size: 0.8rem; }
-        
+        .audit-table { width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; margin-top: 1rem; }
+        .audit-table th { background: #F8FAFC; color: #64748B; font-size: 0.65rem; font-weight: 800; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-color); text-transform: uppercase; }
+        .audit-table td { padding: 0.75rem 1rem; border-bottom: 1px solid #F1F5F9; font-size: 0.75rem; }
         .badge-audit { padding: 3px 8px; border-radius: 5px; font-size: 0.65rem; font-weight: 800; }
         .tag-create { background: #DCFCE7; color: #15803D; }
         .tag-update { background: #E0F2FE; color: #0369A1; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .selection-list { max-height: 150px; overflow-y: auto; border: 1px solid #E2E8F0; border-radius: 12px; padding: 0.5rem; background: #F8FAFC; }
+        .selection-item { padding: 0.5rem 0.75rem; border-bottom: 1px solid #E2E8F0; font-size: 0.8rem; font-weight: 600; display: flex; justify-content: space-between; }
+        .selection-item:last-child { border-bottom: none; }
+
+        .mre-footer { background: white; padding: 1rem 2.5rem; border-top: 1px solid var(--border-color); font-size: 0.75rem; color: #64748B; display: flex; justify-content: space-between; margin-top: auto; }
+
         .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
-
-        /* FOOTER */
-        .mre-footer {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid #E2E8F0;
-            padding: 1.2rem 2.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 100;
-            margin-top: auto;
-        }
-        .footer-left { font-size: 0.75rem; color: #64748B; font-weight: 600; }
-        .footer-right .btn-help {
-            background: white; border: 1px solid var(--mre-blue); color: var(--mre-blue);
-            padding: 0.6rem 1.2rem; border-radius: 50px; font-size: 0.75rem; font-weight: 800;
-            text-decoration: none; text-transform: uppercase; letter-spacing: 0.5px;
-            display: flex; align-items: center; gap: 8px; transition: var(--transition);
-        }
-        .footer-right .btn-help:hover { background: var(--mre-blue); color: white; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 40, 85, 0.15); }
-
-        @media (max-width: 992px) {
-            .mobile-toggle-btn { display: block; }
-            .main-sidebar { position: fixed; left: 0; top: 0; bottom: 0; transform: translateX(-100%); width: 280px; z-index: 2000; }
-            .main-sidebar.show { transform: translateX(0); }
-            .content-area { padding: 1.5rem; }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -272,7 +206,7 @@
 
     <header class="portal-header animate-fade">
         <div class="d-flex align-items-center gap-3">
-            <button class="mobile-toggle-btn" onclick="toggleSidebar()" aria-label="Abrir menú de navegación">
+            <button class="mobile-toggle-btn" onclick="toggleSidebar()" aria-label="Abrir menú de navegación" data-bs-toggle="tooltip" title="Abrir Menú Lateral">
                 <i data-lucide="menu" style="width: 26px;"></i>
             </button>
             <div class="bg-white p-2 rounded-3 border d-none d-sm-block" style="box-shadow: 0 4px 8px rgba(0,0,0,0.08)">
@@ -286,7 +220,7 @@
         
         <div class="user-dropdown d-flex align-items-center gap-3">
             <div class="a11y-container">
-                <button class="btn-a11y-trigger" id="a11yTrigger" onclick="toggleA11yMenu(event)" title="Opciones de Accesibilidad">
+                <button class="btn-a11y-trigger" id="a11yTrigger" onclick="toggleA11yMenu(event)" data-bs-toggle="tooltip" title="Opciones de Accesibilidad">
                     <i data-lucide="accessibility" style="width: 20px;"></i>
                     <span>Accesibilidad</span>
                     <i data-lucide="chevron-down" class="lucide-chevron-down" style="width: 14px; margin-left: 4px;"></i>
@@ -294,9 +228,9 @@
                 <div class="a11y-dropdown-menu" id="a11yMenu" onclick="event.stopPropagation()">
                     <div class="a11y-section-title">Tamaño de Texto</div>
                     <div class="text-resize-controls">
-                        <button class="btn-resize" onclick="changeFontSize(-0.1)" title="Reducir"><i data-lucide="minus" style="width: 16px;"></i></button>
+                        <button class="btn-resize" onclick="changeFontSize(-0.1)" data-bs-toggle="tooltip" title="Reducir Fuente"><i data-lucide="minus" style="width: 16px;"></i></button>
                         <span class="font-size-display" id="fontSizeDisplay">100%</span>
-                        <button class="btn-resize" onclick="changeFontSize(0.1)" title="Aumentar"><i data-lucide="plus" style="width: 16px;"></i></button>
+                        <button class="btn-resize" onclick="changeFontSize(0.1)" data-bs-toggle="tooltip" title="Aumentar Fuente"><i data-lucide="plus" style="width: 16px;"></i></button>
                     </div>
                     <div class="a11y-section-title mt-3">Visualización</div>
                     <div class="switch-control">
@@ -313,11 +247,11 @@
                 <div class="user-name fw-bold" style="font-size: 0.85rem;">Carlos González</div>
                 <div class="user-id text-muted" style="font-size: 0.7rem;">CI: 4.567.890</div>
             </div>
-            <div class="dots-menu-trigger" id="profileTrigger" onclick="toggleUserMenu(event)" title="Menú de usuario">
+            <div class="dots-menu-trigger" id="profileTrigger" onclick="toggleUserMenu(event)" data-bs-toggle="tooltip" title="Perfil de Usuario">
                 <i data-lucide="user" style="width: 24px;"></i>
             </div>
             <div class="dropdown-menu-mre" id="userMenu">
-                <button class="dropdown-item-mre text-danger" onclick="handleLogout()" title="Cerrar sesión actual">
+                <button class="dropdown-item-mre text-danger" onclick="handleLogout()" data-bs-toggle="tooltip" title="Finalizar sesión actual" data-bs-placement="left">
                     <i data-lucide="log-out" style="width: 14px;"></i> Cerrar Sesión
                 </button>
             </div>
@@ -346,7 +280,7 @@
                     <h2 class="fw-black text-navy m-0">Campos Maestros</h2>
                     <p class="text-muted small mb-0">Gestione los elementos dinámicos para los formularios del portal</p>
                 </div>
-                <button class="btn-main d-inline-flex align-items-center gap-2 shadow-sm" onclick="openFieldModal('add')">
+                <button class="btn-main d-inline-flex align-items-center gap-2 shadow-sm" onclick="openFieldModal('add')" data-bs-toggle="tooltip" title="Agregar Campo Maestro">
                     <i data-lucide="plus-circle" style="width: 18px;"></i> Agregar Campo
                 </button>
             </header>
@@ -355,19 +289,18 @@
                 <div class="grid-header-frame">
                     <h4 class="fw-black text-uppercase m-0" style="color: var(--mre-blue); font-size: 0.85rem;">Listado de Campos</h4>
                     <div class="d-flex align-items-center gap-2">
-                        <button class="btn-tool-generic" onclick="alert('Configurar Columnas')">
+                        <button class="btn-tool-generic" data-bs-toggle="tooltip" title="Configurar Columnas">
                             <i data-lucide="layout-columns" style="width: 16px;"></i> Columnas
                         </button>
-                        <button class="btn-tool-generic" onclick="alert('Exportando a Excel...')">
+                        <button class="btn-tool-generic" data-bs-toggle="tooltip" title="Exportar a Excel">
                             <i data-lucide="file-spreadsheet" style="width: 16px;"></i> Excel
                         </button>
-                        <button class="btn-tool-generic" onclick="alert('Exportando a PDF...')">
+                        <button class="btn-tool-generic" data-bs-toggle="tooltip" title="Generar PDF">
                             <i data-lucide="file-text" style="width: 16px;"></i> PDF
                         </button>
-                        
                         <div class="position-relative" style="max-width: 250px;">
                             <i data-lucide="search" class="position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:#94A3B8; width:16px;"></i>
-                            <input type="text" id="masterFieldSearch" class="form-control-mre ps-5" placeholder="Filtrar..." onkeyup="handleMasterFieldSearch()">
+                            <input type="text" id="masterFieldSearch" class="form-control-mre ps-5" placeholder="Filtrar..." onkeyup="handleMasterFieldSearch()" data-bs-toggle="tooltip" title="Buscar por nombre o etiqueta">
                         </div>
                     </div>
                 </div>
@@ -376,12 +309,13 @@
                     <table class="mre-table">
                         <thead>
                             <tr>
-                                <th width="40" class="text-center"><input type="checkbox" id="selectAllFields" onchange="toggleSelectAllItems()"></th>
+                                <th width="40" class="text-center"><input type="checkbox" id="selectAllFields" onchange="toggleSelectAllItems()" data-bs-toggle="tooltip" title="Marcar todos"></th>
                                 <th width="80" class="text-center">ID</th>
                                 <th>Etiqueta</th>
                                 <th>Nombre Técnico</th>
                                 <th>Tipo</th>
-                                <th width="160" class="text-end">Acciones</th>
+                                <th>Estado</th>
+                                <th width="160" class="text-center action-cell">Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="masterFieldsTableBody"></tbody>
@@ -389,92 +323,77 @@
                 </div>
 
                 <div class="grid-footer">
-                    <div>
-                        <span class="text-muted small fw-bold" id="paginationInfo">Mostrando 1 a 3 de 3 registros</span>
-                    </div>
-
+                    <div><span class="text-muted small fw-bold" id="paginationInfo">Mostrando registros</span></div>
                     <div class="d-flex gap-2">
-                        <button class="btn btn-outline-danger fw-bold d-flex align-items-center gap-2" id="btnInactivateFields" disabled onclick="confirmInactivateItems()" style="border-radius: 12px; border-width: 2px;">
+                        <button class="btn btn-outline-danger fw-bold d-flex align-items-center gap-2" id="btnInactivateFields" disabled onclick="handleInactivateSelection()" style="border-radius: 12px; border-width: 2px;" data-bs-toggle="tooltip" title="Inactivar registros seleccionados">
                             <i data-lucide="power" style="width: 14px;"></i> Inactivar
                         </button>
-                        <button class="btn btn-outline-secondary fw-bold d-flex align-items-center gap-2" onclick="handleCancelSelection()" style="border-radius: 12px; border-width: 2px;">
+                        <button class="btn btn-outline-secondary fw-bold d-flex align-items-center gap-2" id="btnCancelSelection" onclick="handleCancelSelection()" style="border-radius: 12px; border-width: 2px; display: none;" data-bs-toggle="tooltip" title="Limpiar selección">
                             <i data-lucide="x" style="width: 14px;"></i> Cancelar
                         </button>
                     </div>
-
                     <div class="d-flex align-items-center gap-1">
-                        <button class="btn-pagination" title="Primera Página"><i data-lucide="chevrons-left" style="width: 16px;"></i></button>
-                        <button class="btn-pagination" title="Página Anterior"><i data-lucide="chevron-left" style="width: 16px;"></i></button>
-                        <span class="page-indicator" id="pageIndicatorDisplay">Pág 1 de 1</span>
-                        <button class="btn-pagination" title="Página Siguiente"><i data-lucide="chevron-right" style="width: 16px;"></i></button>
-                        <button class="btn-pagination" title="Última Página"><i data-lucide="chevrons-right" style="width: 16px;"></i></button>
+                        <button class="btn-pagination" title="Anterior"><i data-lucide="chevron-left" style="width: 16px;"></i></button>
+                        <span class="page-indicator">Pág 1</span>
+                        <button class="btn-pagination" title="Siguiente"><i data-lucide="chevron-right" style="width: 16px;"></i></button>
                     </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <footer class="mre-footer animate-fade">
-        <div class="footer-left">
-            &copy; 2026 Ministerio de Relaciones Exteriores - Dirección de Informática
-        </div>
-        <div class="footer-right">
-            <a href="https://www.mre.gov.py/contactenos/" target="_blank" class="btn-help">
-                <i data-lucide="help-circle" style="width: 18px; height: 18px;"></i>
-                ¿Necesitas ayuda?
-            </a>
-        </div>
+    <footer class="mre-footer">
+        <div>&copy; 2026 Ministerio de Relaciones Exteriores - Dirección de Informática</div>
     </footer>
 
-    <!-- MODAL CONFIRM INACTIVAR -->
-    <div class="mre-modal-overlay" id="modalConfirmInactivate" role="dialog" aria-modal="true">
-        <div class="mre-modal animate-fade" style="max-width: 500px;">
+    <!-- MODALES DE CONFIRMACIÓN -->
+    <div class="mre-modal-overlay" id="modalDeleteConfirm">
+        <div class="mre-modal shadow-lg" style="max-width: 480px;">
             <div class="text-center mb-4">
                 <div class="bg-danger bg-opacity-10 text-danger d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 64px; height: 64px;">
                     <i data-lucide="alert-triangle" style="width: 32px; height: 32px;"></i>
                 </div>
-                <h5 class="fw-800 text-navy mb-2">Confirmar Inactivación</h5>
-                <p class="text-muted small px-3">¿Está seguro que desea inactivar los siguientes registros seleccionados? Esta acción restringirá su uso inmediato.</p>
+                <h5 class="fw-800 text-navy mb-2">Confirmar Eliminación Lógica</h5>
+                <p class="text-muted small px-3">¿Está seguro que desea eliminar este campo maestro? Esta acción marcará el registro como eliminado y ya no estará disponible.</p>
             </div>
-            <div class="p-3 bg-light border rounded mb-3" id="selectedItemsList" style="max-height: 150px; overflow-y: auto;"></div>
-            <div class="d-flex justify-content-end gap-3 mt-4 pt-3 border-top">
-                <button type="button" class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalConfirmInactivate')">Cancelar</button>
-                <button type="button" class="btn-main bg-danger border-danger px-4" onclick="executeInactivation()">Sí, inactivar</button>
+            <div id="deleteItemInfo" class="bg-light p-3 rounded-4 border mb-4 text-center fw-bold text-navy small"></div>
+            <div class="d-flex justify-content-center gap-3 mt-4 pt-3 border-top">
+                <button type="button" class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalDeleteConfirm')">No, mantener</button>
+                <button type="button" class="btn-main bg-danger border-danger px-4" onclick="confirmLogicalDelete()">Sí, eliminar registro</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL CONFIRM ACTIVAR -->
-    <div class="mre-modal-overlay" id="modalConfirmActivate" role="dialog" aria-modal="true">
-        <div class="mre-modal animate-fade" style="max-width: 450px;">
+    <div class="mre-modal-overlay" id="modalInactivateConfirm">
+        <div class="mre-modal shadow-lg" style="max-width: 550px;">
             <div class="text-center mb-4">
-                <div class="bg-success bg-opacity-10 text-success d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 64px; height: 64px;">
-                    <i data-lucide="check-circle" style="width: 32px; height: 32px;"></i>
+                <div class="bg-warning bg-opacity-10 text-warning d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 64px; height: 64px;">
+                    <i data-lucide="power" style="width: 32px; height: 32px; color: var(--mre-amber);"></i>
                 </div>
-                <h5 class="fw-800 text-navy mb-2">Confirmar Activación</h5>
-                <p class="text-muted small px-3">¿Desea habilitar este campo maestro para su uso inmediato en el portal?</p>
+                <h5 class="fw-800 text-navy mb-2">Confirmar Inactivación Masiva</h5>
+                <p class="text-muted small px-3">Usted ha seleccionado los siguientes campos maestros para ser inactivados.</p>
             </div>
-            <div class="p-3 bg-light border rounded mb-3 text-center fw-bold text-navy" id="activeItemInfo"></div>
-            <div class="d-flex justify-content-end gap-3 mt-4 pt-3 border-top">
-                <button type="button" class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalConfirmActivate')">Cancelar</button>
-                <button type="button" class="btn-main bg-success border-success px-4" onclick="executeActivation()">Sí, activar</button>
+            <div id="inactivateItemsList" class="selection-list mb-4"></div>
+            <div class="d-flex justify-content-center gap-3 mt-4 pt-3 border-top">
+                <button type="button" class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalInactivateConfirm')">Cancelar</button>
+                <button type="button" class="btn-main px-4 shadow-sm" style="background: var(--mre-amber);" onclick="confirmLogicalInactivation()">Confirmar Inactivación</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL CAMPO MAESTRO -->
+    <!-- MODAL DE CAMPO MAESTRO -->
     <div class="mre-modal-overlay" id="modalFieldMaster">
         <div class="mre-modal animate-fade">
             <div class="section-title" id="masterFieldModalTitle">Configuración de Campo Maestro</div>
-            <form id="formMasterField">
+            <form id="formMasterField" onsubmit="handleSaveMasterField(event)">
                 <div class="row g-4 mb-4">
                     <div class="col-md-4">
                         <label class="form-label">Etiqueta <span class="text-danger">*</span></label>
-                        <input type="text" id="fieldLabel" class="form-control-mre" placeholder="ej: Fecha de Emisión" required>
+                        <input type="text" id="fieldLabel" class="form-control-mre" placeholder="ej: Fecha de Emisión" required data-bs-toggle="tooltip" title="Nombre visible para el ciudadano">
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Nombre Técnico <span class="text-danger">*</span></label>
-                        <input type="text" id="fieldName" class="form-control-mre" placeholder="ej: fec_emision" required>
+                        <input type="text" id="fieldName" class="form-control-mre" placeholder="ej: fec_emision" required data-bs-toggle="tooltip" title="Identificador interno de base de datos">
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Tipo de Componente <span class="text-danger">*</span></label>
@@ -489,26 +408,33 @@
                     </div>
                 </div>
                 <div class="row g-4 mb-4">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="form-label">Orden Base</label>
                         <input type="number" id="fieldBaseOrder" class="form-control-mre" value="1" min="1">
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="form-label">Longitud Máxima</label>
                         <input type="number" id="fieldMaxLength" class="form-control-mre" placeholder="ej: 255">
                     </div>
-                    <div class="col-md-4 d-flex align-items-end">
-                        <div class="d-flex align-items-center gap-3 p-2 rounded-3 bg-light border w-100" style="height: 44px;">
+                    <div class="col-md-3">
+                        <div class="d-flex align-items-center gap-3 p-2 rounded-3 bg-light border w-100" style="height: 44px; margin-top: 25px;">
                             <input type="checkbox" id="fieldRequiredBase" class="ms-2">
-                            <span class="fw-bold text-muted uppercase" style="font-size: 0.7rem;">¿Requerido por Base?</span>
+                            <span class="fw-bold text-muted uppercase" style="font-size: 0.7rem;">¿Requerido?</span>
                         </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Estado <span class="text-danger">*</span></label>
+                        <select id="docStatus" class="form-control-mre" required data-bs-toggle="tooltip" title="Estado de visibilidad del campo">
+                            <option value="ACTI">Activo</option>
+                            <option value="INAC">Inactivo</option>
+                        </select>
                     </div>
                 </div>
                 <div class="row g-4 mb-4 d-none" id="containerPossibleValues">
                     <div class="col-md-12">
                         <label class="form-label">Valores Posibles (separados por coma)</label>
                         <div class="d-flex align-items-center gap-2">
-                            <input type="text" id="fieldPossibleValues" class="form-control-mre" placeholder="ej: Cédula, Pasaporte, Otros" oninput="renderValueImageInputs()">
+                            <input type="text" id="fieldPossibleValues" class="form-control-mre" placeholder="ej: Cédula, Pasaporte, Otros" oninput="renderValueImageInputs()" data-bs-toggle="tooltip" title="Valores para la lista fija">
                             <div class="d-flex align-items-center gap-2 p-2 rounded-3 bg-light border whitespace-nowrap" style="height: 44px;">
                                 <input type="checkbox" id="checkUseValueImages" onchange="toggleValueImagesSection()">
                                 <span class="fw-bold text-muted uppercase" style="font-size: 0.6rem;">¿Imágenes?</span>
@@ -525,199 +451,248 @@
                 <div class="row g-4 mb-4">
                     <div class="col-md-6">
                         <label class="form-label">Ruta Imagen Referencial</label>
-                        <input type="text" id="fieldImagePath" class="form-control-mre" placeholder="/assets/img/ayuda.png">
+                        <input type="text" id="fieldImagePath" class="form-control-mre" placeholder="/assets/img/ayuda.png" data-bs-toggle="tooltip" title="Imagen de ejemplo que verá el ciudadano">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Texto de Ayuda (Placeholder)</label>
-                        <input type="text" id="fieldPlaceholder" class="form-control-mre" placeholder="ej: Ingrese su número de identificación">
+                        <input type="text" id="fieldPlaceholder" class="form-control-mre" placeholder="ej: Ingrese su número de identificación" data-bs-toggle="tooltip" title="Texto guía dentro del campo">
                     </div>
                 </div>
                 <div class="row g-4 mb-4 d-none" id="containerSQL">
                     <div class="col-12">
                         <label class="form-label">Sentencia SQL de Origen</label>
-                        <textarea id="fieldDesc" class="form-control-mre" rows="2" style="font-family: monospace;"></textarea>
+                        <textarea id="fieldSql" class="form-control-mre" rows="2" style="font-family: monospace;" data-bs-toggle="tooltip" title="Consulta para carga dinámica"></textarea>
                     </div>
                 </div>
                 <div class="row g-4 mb-4">
                     <div class="col-12">
                         <label class="form-label">Descripción Administrativa</label>
-                        <textarea id="fieldGeneralDesc" class="form-control-mre" rows="2" placeholder="Notas internas..."></textarea>
+                        <textarea id="fieldGeneralDesc" class="form-control-mre" rows="2" placeholder="Notas internas o detalles técnicos..." data-bs-toggle="tooltip" title="Comentarios para uso interno"></textarea>
                     </div>
                 </div>
                 <div id="auditSection" class="mt-4 pt-4 border-top d-none">
                     <div class="section-title">Historial de Auditoría</div>
-                    <div id="auditTimeline"></div>
+                    <div class="table-responsive mt-3">
+                        <table class="audit-table" id="auditTimeline"></table>
+                    </div>
                 </div>
                 <div class="mt-4 pt-4 border-top d-flex justify-content-end gap-2">
                     <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" onclick="closeModal('modalFieldMaster')">Cerrar</button>
-                    <button type="button" id="btnSaveField" class="btn-main px-4 shadow-sm" onclick="handleSaveMasterField()">Guardar Cambios</button>
+                    <button type="submit" id="btnSaveField" class="btn-main px-4 shadow-sm">Guardar Cambios</button>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- Bootstrap Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
-        // CORE UI
-        function toggleSidebar() { 
-            document.getElementById('mainSidebar').classList.toggle('show'); 
-            document.getElementById('sidebarOverlay').classList.toggle('active'); 
-        }
-        function toggleA11yMenu(e) { 
-            e.stopPropagation(); 
-            document.getElementById('a11yMenu').classList.toggle('show'); 
-            document.getElementById('a11yTrigger').classList.toggle('active'); 
-        }
-        function toggleUserMenu(e) { 
-            e.stopPropagation(); 
-            document.getElementById('userMenu').classList.toggle('show'); 
-        }
-        
-        document.addEventListener('click', () => {
-            if (document.getElementById('a11yMenu')) {
-                document.getElementById('a11yMenu').classList.remove('show');
-                document.getElementById('a11yTrigger').classList.remove('active');
-            }
-            if (document.getElementById('userMenu')) document.getElementById('userMenu').classList.remove('show');
-            if (document.getElementById('sidebarGlobalPopup')) document.getElementById('sidebarGlobalPopup').classList.remove('show');
-        });
-
-        function handleLogout() { if(confirm('¿Desea cerrar sesión?')) location.reload(); }
-
-        // ACCESIBILIDAD
-        function changeFontSize(delta) {
-            let current = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--font-scale')) || 1;
-            let newScale = Math.min(Math.max(current + delta, 0.8), 1.5);
-            document.documentElement.style.setProperty('--font-scale', newScale);
-            document.getElementById('fontSizeDisplay').innerText = Math.round(newScale * 100) + '%';
-        }
-        function toggleGrayscale() { document.body.classList.toggle('grayscale-mode'); }
-
         // MOCK DATA
         let mockMasterFields = [
-            { id: 1, label: 'Fecha de Expedición', tech: 'fec_expedicion', type: 'DATE', status: 'ACTI', required: true, order: 10, placeholder: 'dd/mm/aaaa', maxLength: 10, history: [
-                { action: 'CREATE', user: 'cgonzalez', date: '10/01/2024 08:30:15', desc: 'Registro inicial.' }
-            ]},
-            { id: 2, label: 'Tipo de Documento', tech: 'tip_documento', type: 'FIXED_LIST', status: 'INAC', required: true, order: 20, possibleValues: 'Cédula, Pasaporte, Licencia', images_by_value: { 'Pasaporte': '/img/pasaporte.jpg' }, history: [] },
-            { id: 3, label: 'Departamento de Residencia', tech: 'id_departamento', type: 'SELECT', status: 'ACTI', required: true, order: 30, desc: 'SELECT id_dep, nom_dep FROM par_departamentos ORDER BY nom_dep', history: [
-                { action: 'CREATE', user: 'admin', date: '05/01/2026 14:20:00', desc: 'Campo de selección dinámica agregado.' }
-            ]}
+            { id: 1, label: 'Lugar de Nacimiento', tech: 'lug_nacimiento', type: 'TEXT', status: 'ACTI', required: true, order: 10, hasLinkedRecords: true, history: [{ date: '10/01/2024 08:30:15', action: 'CREATE', user: 'cgonzalez', desc: 'Registro inicial.' }] },
+            { id: 2, label: 'Tipo de Documento', tech: 'tip_documento', type: 'FIXED_LIST', status: 'INAC', required: true, order: 20, hasLinkedRecords: false, history: [] },
+            { id: 3, label: 'Departamento de Residencia', tech: 'id_departamento', type: 'SELECT', status: 'ACTI', required: true, order: 30, hasLinkedRecords: false, history: [] }
         ];
 
-        let pendingActivationId = null;
+        let idToDelete = null;
+        let editingId = null;
 
-        // Grid Logic
+        function initTooltips() {
+            var triggerEls = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            triggerEls.forEach(function (el) {
+                // Verificar visibilidad efectiva para evitar error: "Please use show on visible elements"
+                const style = window.getComputedStyle(el);
+                const isVisible = !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length) && style.display !== 'none' && style.visibility !== 'hidden';
+                
+                if (isVisible) {
+                    var instance = bootstrap.Tooltip.getInstance(el);
+                    if (instance) instance.dispose();
+                    new bootstrap.Tooltip(el);
+                }
+            });
+        }
+
         function renderMasterFields() {
             const body = document.getElementById('masterFieldsTableBody');
             body.innerHTML = mockMasterFields.map(f => `
-                <tr class="${f.status === 'INAC' ? 'row-inactive' : ''}" data-id="${f.id}">
-                    <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()" ${f.status === 'INAC' ? 'disabled' : ''}></td>
+                <tr class="${f.status === 'INAC' ? 'row-inactive opacity-75' : ''}" data-id="${f.id}">
+                    <td class="text-center"><input type="checkbox" class="record-check doc-check" onchange="updateSelectionUI()" ${f.status === 'INAC' ? 'disabled' : ''}></td>
                     <td class="text-center fw-bold text-navy">${f.id}</td>
                     <td><div class="fw-bold text-navy">${f.label}</div></td>
                     <td><code>${f.tech}</code></td>
-                    <td><span class="badge bg-light text-dark border px-2">${formatType(f.type)}</span></td>
-                    <td class="text-end">
-                        <div class="d-flex justify-content-end gap-2 align-items-center">
-                            ${f.status === 'INAC' ? `<button class="btn-action-icon btn-action-activate" onclick="handleActivate(${f.id})" title="Activar"><i data-lucide="check-circle" style="width:18px"></i></button>` : ''}
-                            <button class="btn-action-icon" onclick="openFieldModal('view', ${f.id})" title="Visualizar"><i data-lucide="eye" style="width:18px"></i></button>
-                            <button class="btn-action-icon" onclick="openFieldModal('edit', ${f.id})" title="Editar" ${f.status === 'INAC' ? 'disabled' : ''}><i data-lucide="edit-3" style="width:18px"></i></button>
+                    <td><span class="badge bg-light text-dark border px-2">${f.type}</span></td>
+                    <td><span class="small fw-bold ${f.status==='ACTI'?'text-success':'text-muted'}">${f.status==='ACTI'?'Activo':'Inactivo'}</span></td>
+                    <td class="text-center action-cell">
+                        <div class="action-wrapper">
+                            <button class="btn-action-icon btn-action-view" onclick="openFieldModal('view', ${f.id})" data-bs-toggle="tooltip" title="Visualizar"><i data-lucide="eye" style="width:16px"></i></button>
+                            <button class="btn-action-icon btn-action-edit" onclick="openFieldModal('edit', ${f.id})" data-bs-toggle="tooltip" title="Editar"><i data-lucide="edit-3" style="width:16px"></i></button>
+                            ${ !f.hasLinkedRecords ? `<button class="btn-action-icon btn-action-delete" onclick="handleDeleteClick(${f.id})" data-bs-toggle="tooltip" title="Eliminar"><i data-lucide="trash-2" style="width:16px"></i></button>` : '<div style="width:32px"></div>'}
                         </div>
                     </td>
                 </tr>
             `).join('');
             lucide.createIcons();
-            updatePaginationInfo();
+            document.getElementById('paginationInfo').innerText = `Mostrando 1 a ${mockMasterFields.length} de ${mockMasterFields.length} registros`;
+            updateSelectionUI();
         }
 
-        function formatType(type) {
-            const map = { 'FIXED_LIST': 'Lista fija', 'SELECT': 'Selección', 'DATE': 'Fecha', 'TEXT': 'Texto', 'NUMBER': 'Numérico' };
-            return map[type] || type;
-        }
-
-        // FUNCIONALIDAD ACTIVAR (MODAL)
-        function handleActivate(id) {
-            pendingActivationId = id;
+        function handleDeleteClick(id) {
+            idToDelete = id;
             const field = mockMasterFields.find(f => f.id === id);
-            if(field) {
-                document.getElementById('activeItemInfo').innerText = `ID ${field.id}: ${field.label}`;
-                document.getElementById('modalConfirmActivate').style.display = 'flex';
-                lucide.createIcons();
-            }
+            document.getElementById('deleteItemInfo').innerText = `CAMPO: ${field.label} (${field.tech})`;
+            document.getElementById('modalDeleteConfirm').style.display = 'flex';
+            lucide.createIcons();
+            setTimeout(initTooltips, 150);
         }
 
-        function executeActivation() {
-            if(pendingActivationId) {
-                const field = mockMasterFields.find(f => f.id === pendingActivationId);
-                if(field) {
-                    field.status = 'ACTI';
-                    renderMasterFields();
-                    closeModal('modalConfirmActivate');
-                    pendingActivationId = null;
-                }
-            }
+        function confirmLogicalDelete() {
+            mockMasterFields = mockMasterFields.filter(f => f.id !== idToDelete);
+            renderMasterFields(); closeModal('modalDeleteConfirm'); idToDelete = null;
         }
 
         function updateSelectionUI() {
-            const checkboxes = document.querySelectorAll('.record-check:checked');
-            document.getElementById('btnInactivateFields').disabled = checkboxes.length === 0;
+            const checks = document.querySelectorAll('.record-check:checked');
+            const total = document.querySelectorAll('.record-check:not(:disabled)').length;
+            const btnInactivate = document.getElementById('btnInactivateFields');
+            const btnCancel = document.getElementById('btnCancelSelection');
             const selectAll = document.getElementById('selectAllFields');
-            const allChecks = document.querySelectorAll('.record-check:not(:disabled)');
-            if (allChecks.length > 0) selectAll.checked = checkboxes.length === allChecks.length;
+
+            if(btnInactivate) btnInactivate.disabled = checks.length === 0;
+            if(btnCancel) btnCancel.style.display = checks.length > 0 ? 'flex' : 'none';
+            if(selectAll) selectAll.checked = (checks.length === total && total > 0);
+            initTooltips();
         }
 
         function toggleSelectAllItems() {
-            const check = document.getElementById('selectAllFields').checked;
-            document.querySelectorAll('.record-check:not(:disabled)').forEach(c => c.checked = check);
+            const checked = document.getElementById('selectAllFields').checked;
+            document.querySelectorAll('.record-check:not(:disabled)').forEach(cb => cb.checked = checked);
             updateSelectionUI();
         }
 
         function handleCancelSelection() {
-            document.querySelectorAll('.record-check').forEach(c => c.checked = false);
             const sa = document.getElementById('selectAllFields');
             if(sa) sa.checked = false;
+            document.querySelectorAll('.record-check').forEach(cb => cb.checked = false);
             updateSelectionUI();
         }
 
-        function confirmInactivateItems() {
-            const checkboxes = document.querySelectorAll('.record-check:checked');
-            const listContainer = document.getElementById('selectedItemsList');
-            listContainer.innerHTML = '';
-            checkboxes.forEach(cb => {
-                const row = cb.closest('tr');
-                const id = row.cells[1].innerText;
-                const label = row.querySelector('.fw-bold').innerText;
-                listContainer.innerHTML += `<div class="p-2 border-bottom small fw-bold text-navy">ID ${id}: ${label}</div>`;
+        function handleInactivateSelection() {
+            const checks = document.querySelectorAll('.record-check:checked');
+            const list = document.getElementById('inactivateItemsList');
+            list.innerHTML = "";
+            checks.forEach(cb => {
+                const id = parseInt(cb.closest('tr').dataset.id);
+                const field = mockMasterFields.find(f => f.id === id);
+                list.innerHTML += `<div class="selection-item"><span>${field.label}</span><code>${field.tech}</code></div>`;
             });
+            document.getElementById('modalInactivateConfirm').style.display = 'flex';
             lucide.createIcons();
-            document.getElementById('modalConfirmInactivate').style.display = 'flex';
+            setTimeout(initTooltips, 150);
         }
 
-        function executeInactivation() {
-            const checkboxes = document.querySelectorAll('.record-check:checked');
-            checkboxes.forEach(cb => {
+        function confirmLogicalInactivation() {
+            const checks = document.querySelectorAll('.record-check:checked');
+            checks.forEach(cb => {
                 const id = parseInt(cb.closest('tr').dataset.id);
                 const field = mockMasterFields.find(f => f.id === id);
                 if(field) field.status = 'INAC';
             });
-            closeModal('modalConfirmInactivate');
-            handleCancelSelection();
+            renderMasterFields(); closeModal('modalInactivateConfirm'); handleCancelSelection();
+        }
+
+        function openFieldModal(mode, id) {
+            editingId = id;
+            const f = document.getElementById('formMasterField');
+            const inputs = f.querySelectorAll('input, select, textarea');
+            const auditSection = document.getElementById('auditSection');
+            f.reset();
+            inputs.forEach(i => i.disabled = false);
+            document.getElementById('btnSaveField').style.display = 'block';
+            auditSection.classList.add('d-none');
+
+            if (mode !== 'add') {
+                const data = mockMasterFields.find(x => x.id === id);
+                document.getElementById('masterFieldModalTitle').innerText = (mode==='edit'?'Editar: ':'Ver: ') + data.label;
+                document.getElementById('fieldLabel').value = data.label || '';
+                document.getElementById('fieldName').value = data.tech || '';
+                document.getElementById('fieldType').value = data.type || '';
+                document.getElementById('fieldBaseOrder').value = data.order || 1;
+                document.getElementById('fieldMaxLength').value = data.maxLength || '';
+                document.getElementById('fieldRequiredBase').checked = data.required || false;
+                document.getElementById('docStatus').value = data.status || 'ACTI';
+                document.getElementById('fieldPossibleValues').value = data.possibleValues || '';
+                document.getElementById('fieldImagePath').value = data.imagePath || '';
+                document.getElementById('fieldPlaceholder').value = data.placeholder || '';
+                document.getElementById('fieldSql').value = data.sql || '';
+                document.getElementById('fieldGeneralDesc').value = data.generalDesc || '';
+                
+                toggleOptionsField();
+
+                if (mode === 'view') {
+                    inputs.forEach(i => i.disabled = true);
+                    document.getElementById('btnSaveField').style.display = 'none';
+                    auditSection.classList.remove('d-none');
+                    document.getElementById('auditTimeline').innerHTML = `
+                        <thead><tr><th>Fecha</th><th>Acción</th><th>Usuario</th><th>Descripción</th></tr></thead>
+                        <tbody>${(data.history||[]).map(h=>`<tr><td>${h.date}</td><td><span class="badge-audit tag-${h.action.toLowerCase()}">${h.action}</span></td><td>${h.user}</td><td>${h.desc}</td></tr>`).join('')}</tbody>
+                    `;
+                }
+            } else {
+                editingId = null;
+                document.getElementById('masterFieldModalTitle').innerText = 'Nuevo Campo Maestro';
+                document.getElementById('docStatus').value = 'ACTI';
+                toggleOptionsField();
+            }
+            document.getElementById('modalFieldMaster').style.display = 'flex';
+            lucide.createIcons();
+            setTimeout(initTooltips, 150);
+        }
+
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        
+        function handleSaveMasterField(e) { 
+            e.preventDefault(); 
+            const status = document.getElementById('docStatus').value;
+            const label = document.getElementById('fieldLabel').value;
+            const tech = document.getElementById('fieldName').value;
+            const type = document.getElementById('fieldType').value;
+            const order = document.getElementById('fieldBaseOrder').value;
+            const required = document.getElementById('fieldRequiredBase').checked;
+
+            if (editingId) {
+                const index = mockMasterFields.findIndex(f => f.id === editingId);
+                if (index !== -1) {
+                    mockMasterFields[index] = {
+                        ...mockMasterFields[index],
+                        label, tech, type, order, required, status,
+                        possibleValues: document.getElementById('fieldPossibleValues').value,
+                        imagePath: document.getElementById('fieldImagePath').value,
+                        placeholder: document.getElementById('fieldPlaceholder').value,
+                        sql: document.getElementById('fieldSql').value,
+                        generalDesc: document.getElementById('fieldGeneralDesc').value
+                    };
+                    mockMasterFields[index].history.push({
+                        date: new Date().toLocaleString(),
+                        action: 'UPDATE',
+                        user: 'cgonzalez',
+                        desc: 'Actualización de configuración y estado.'
+                    });
+                }
+            } else {
+                const newId = mockMasterFields.length > 0 ? Math.max(...mockMasterFields.map(f => f.id)) + 1 : 1;
+                mockMasterFields.push({
+                    id: newId, label, tech, type, status, required, order,
+                    hasLinkedRecords: false,
+                    possibleValues: document.getElementById('fieldPossibleValues').value,
+                    history: [{ date: new Date().toLocaleString(), action: 'CREATE', user: 'cgonzalez', desc: 'Registro inicial.' }]
+                });
+            }
+
+            closeModal('modalFieldMaster'); 
             renderMasterFields();
-            alert('Registros inactivados correctamente.');
         }
 
-        function updatePaginationInfo() {
-            document.getElementById('paginationInfo').innerText = `Mostrando 1 a ${mockMasterFields.length} de ${mockMasterFields.length} registros`;
-        }
-
-        function handleMasterFieldSearch() {
-            const query = document.getElementById('masterFieldSearch').value.toLowerCase();
-            const rows = document.querySelectorAll('#masterFieldsTableBody tr');
-            rows.forEach(row => {
-                const text = row.innerText.toLowerCase();
-                row.style.display = text.includes(query) ? '' : 'none';
-            });
-        }
-
-        // Form Logic
         function toggleOptionsField() {
             const type = document.getElementById('fieldType').value;
             document.getElementById('containerPossibleValues').classList.toggle('d-none', type !== 'FIXED_LIST');
@@ -737,7 +712,7 @@
             const vals = input.value.split(',').map(v => v.trim()).filter(v => v.length > 0);
             
             if (vals.length === 0) {
-                list.innerHTML = `<div class="p-3 bg-light border-warning text-warning small fw-bold rounded-3">Debe ingresar valores posibles antes de habilitar imágenes.</div>`;
+                list.innerHTML = `<div class="p-3 bg-light border-warning text-warning small fw-bold rounded-3">Ingrese valores separados por coma arriba.</div>`;
                 return;
             }
 
@@ -747,69 +722,26 @@
                     <input type="text" class="form-control-mre" placeholder="Ruta de imagen...">
                 </div>
             `).join('');
+            initTooltips();
         }
 
-        function openFieldModal(mode, id) {
-            const f = document.getElementById('formMasterField');
-            const inputs = f.querySelectorAll('input, select, textarea');
-            f.reset();
-            document.getElementById('auditSection').classList.add('d-none');
-            inputs.forEach(i => i.disabled = false);
-            document.getElementById('btnSaveField').classList.remove('d-none');
-
-            if (mode !== 'add') {
-                const data = mockMasterFields.find(x => x.id === id);
-                document.getElementById('fieldLabel').value = data.label || '';
-                document.getElementById('fieldName').value = data.tech || '';
-                document.getElementById('fieldType').value = data.type || '';
-                document.getElementById('fieldBaseOrder').value = data.order || 1;
-                document.getElementById('fieldMaxLength').value = data.maxLength || '';
-                document.getElementById('fieldRequiredBase').checked = data.required || false;
-                document.getElementById('fieldPossibleValues').value = data.possibleValues || '';
-                
-                toggleOptionsField();
-
-                if (mode === 'view') {
-                    inputs.forEach(i => i.disabled = true);
-                    document.getElementById('btnSaveField').classList.add('d-none');
-                    document.getElementById('auditSection').classList.remove('d-none');
-                    const timeline = document.getElementById('auditTimeline');
-                    timeline.innerHTML = `
-                        <table class="audit-grid-table">
-                            <thead><tr><th>Fecha</th><th>Acción</th><th>Usuario</th><th>Descripción</th></tr></thead>
-                            <tbody>${(data.history || []).map(h => `<tr><td>${h.date}</td><td><span class="badge-audit tag-${h.action.toLowerCase()}">${h.action}</span></td><td>${h.user}</td><td>${h.desc}</td></tr>`).join('')}</tbody>
-                        </table>`;
-                }
-            }
-            document.getElementById('modalFieldMaster').style.display = 'flex';
-            lucide.createIcons();
+        function toggleSidebar() { document.getElementById('mainSidebar').classList.toggle('show'); document.getElementById('sidebarOverlay').classList.toggle('active'); setTimeout(initTooltips, 150); }
+        function toggleA11yMenu(e) { e.stopPropagation(); document.getElementById('a11yMenu').classList.toggle('show'); setTimeout(initTooltips, 150); }
+        function toggleUserMenu(e) { e.stopPropagation(); document.getElementById('userMenu').classList.toggle('show'); setTimeout(initTooltips, 150); }
+        function changeFontSize(delta) {
+            let current = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--font-scale')) || 1;
+            let newScale = Math.min(Math.max(current + delta, 0.8), 1.5);
+            document.documentElement.style.setProperty('--font-scale', newScale);
+            document.getElementById('fontSizeDisplay').innerText = Math.round(newScale * 100) + '%';
         }
+        function toggleGrayscale() { document.body.classList.toggle('grayscale-mode'); }
+        function handleLogout() { if(confirm('¿Cerrar sesión?')) location.reload(); }
 
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        function handleSaveMasterField() { alert('Guardado con éxito.'); closeModal('modalFieldMaster'); }
-
-        // Sidebar Popups
-        let popupTimer;
-        const globalPopup = document.getElementById('sidebarGlobalPopup');
-        document.querySelectorAll('.nav-link-mre[data-popup]').forEach(link => {
-            link.addEventListener('mouseenter', () => {
-                clearTimeout(popupTimer);
-                const r = link.getBoundingClientRect();
-                globalPopup.innerHTML = link.dataset.popup;
-                globalPopup.style.top = `${r.top + (r.height / 2)}px`;
-                globalPopup.style.left = `${r.right + 10}px`;
-                globalPopup.style.transform = 'translateY(-50%)';
-                globalPopup.classList.add('show');
-            });
-            link.addEventListener('mouseleave', () => {
-                popupTimer = setTimeout(() => { if (!globalPopup.matches(':hover')) globalPopup.classList.remove('show'); }, 150);
-            });
+        document.addEventListener('click', () => {
+            ['userMenu', 'a11yMenu'].forEach(id => document.getElementById(id)?.classList.remove('show'));
         });
 
-        document.addEventListener('DOMContentLoaded', () => { 
-            renderMasterFields(); 
-            lucide.createIcons(); 
-        });
+        document.addEventListener('DOMContentLoaded', () => { renderMasterFields(); });
     </script>
 </body>
 </html>
