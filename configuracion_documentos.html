@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIA-PY | Configuración de Documentos</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --mre-blue: #002855;
+            --mre-blue-light: #0038A8;
+            --mre-red: #D52B1E;
+            --mre-green: #10B981;
+            --mre-amber: #F59E0B;
+            --soft-bg: #f0f4f8; 
+            --border-color: #E2E8F0;
+            --input-bg: #F8FAFC;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            --card-shadow: 0 10px 15px -3px rgba(0, 40, 85, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-scale: 1; 
+            --base-font-size: 16px;
+        }
+
+        html { font-size: calc(var(--base-font-size) * var(--font-scale)); }
+
+        /* --- MODOS DE ACCESIBILIDAD --- */
+        body.high-contrast {
+            --mre-blue: #000000; --mre-blue-light: #000000; --mre-red: #D50000;
+            --soft-bg: #FFFFFF; --border-color: #000000; --input-bg: #FFFFFF;
+            --text-main: #000000; --text-muted: #000000; --card-shadow: none;
+        }
+        body.grayscale-mode { filter: grayscale(100%); }
+
+        body { 
+            font-family: 'Inter', sans-serif; margin: 0; background-color: var(--soft-bg); 
+            color: var(--text-main); overflow: hidden; display: flex; flex-direction: column; height: 100vh;
+        }
+
+        .portal-header { 
+            display: flex; justify-content: space-between; align-items: center; background: white; 
+            padding: 1.25rem 2.5rem; box-shadow: 0 4px 10px -1px rgba(0,0,0,0.05); 
+            border-bottom: 1px solid var(--border-color); z-index: 2000; flex-shrink: 0;
+        }
+
+        /* --- LAYOUT PRINCIPAL --- */
+        .app-container { display: flex; flex: 1; overflow: hidden; }
+
+        .main-sidebar {
+            width: 280px; background: white; border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column; z-index: 100; box-shadow: 4px 0 10px rgba(0,0,0,0.02);
+            flex-shrink: 0;
+        }
+
+        .nav-menu { padding: 1.5rem 1rem; flex: 1; }
+        .nav-link-mre {
+            display: flex; align-items: center; gap: 12px; padding: 0.85rem 1rem;
+            color: var(--text-muted); text-decoration: none; border-radius: 12px;
+            font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; transition: var(--transition);
+        }
+        .nav-link-mre:hover { background: #F1F5F9; color: var(--mre-blue); }
+        .nav-link-mre.active { background: #f0f7ff; color: var(--mre-blue-light); box-shadow: 0 4px 6px -1px rgba(0, 40, 85, 0.05); }
+
+        .content-area { flex: 1; padding: 2rem 3rem; overflow-y: auto; position: relative; }
+        
+        /* --- GRILLA --- */
+        .grid-frame { 
+            background: white; border-radius: 20px; box-shadow: var(--card-shadow); 
+            border: 1px solid #E2E8F0; position: relative; overflow: hidden;
+            display: flex; flex-direction: column; margin-bottom: 2rem;
+        }
+        .grid-frame::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(to right, var(--mre-red), var(--mre-blue)); }
+        
+        .grid-header-frame { 
+            background-color: #F1F5F9; padding: 1rem 1.5rem; border-bottom: 1px solid #E2E8F0; 
+            display: flex; justify-content: space-between; align-items: center; 
+        }
+
+        .mre-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 0.85rem 1.5rem; border-bottom: 2px solid #E2E8F0; }
+        .mre-table td { padding: 0.85rem 1.5rem; font-size: 0.8rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
+
+        /* --- BOTONES --- */
+        .btn-main { 
+            background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); 
+            color: #ffffff; border: none; border-radius: 12px; padding: 0.6rem 1.2rem; 
+            font-weight: 700; font-size: 0.85rem; transition: var(--transition); 
+        }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 40, 85, 0.2); color: white; }
+
+        .btn-tool-generic {
+            background: #FFFFFF; color: var(--mre-blue); border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem; border-radius: 10px; font-size: 0.75rem; font-weight: 700;
+            display: flex; align-items: center; gap: 8px; transition: var(--transition);
+            cursor: pointer;
+        }
+        .btn-tool-generic:hover { background: #F1F5F9; border-color: var(--mre-blue); }
+
+        /* Alineación de acciones */
+        .action-cell { min-width: 140px; }
+        .action-wrapper { 
+            display: flex; 
+            justify-content: center; 
+            gap: 6px; 
+            width: 100%;
+        }
+
+        .btn-action-icon {
+            width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 8px; border: 1px solid var(--border-color); background: white; color: var(--text-muted);
+            transition: var(--transition); cursor: pointer; flex-shrink: 0;
+        }
+        .btn-action-icon:hover { background: #F1F5F9; color: var(--mre-blue); border-color: var(--mre-blue); }
+        .btn-action-view:hover { color: var(--mre-blue-light); border-color: var(--mre-blue-light); }
+        .btn-action-edit:hover { color: var(--mre-green); border-color: var(--mre-green); }
+        .btn-action-delete:hover { color: var(--mre-red); border-color: var(--mre-red); }
+
+        .grid-footer {
+            padding: 1rem 1.5rem; background-color: #F8FAFC; border-top: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .btn-pagination {
+            width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+            background: white; border: 1px solid #E2E8F0; border-radius: 8px;
+            color: #64748B; cursor: pointer; transition: var(--transition);
+        }
+        .btn-pagination:hover:not(:disabled) { background: var(--mre-blue); color: white; border-color: var(--mre-blue); }
+        .page-indicator { font-size: 0.85rem; font-weight: 700; color: var(--mre-blue); padding: 0 8px; }
+
+        /* MODALES */
+        .mre-modal-overlay { position: fixed; inset: 0; background: rgba(0, 40, 85, 0.4); backdrop-filter: blur(4px); z-index: 4000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .mre-modal { background: white; border-radius: 24px; max-width: 900px; width: 100%; padding: 2.5rem; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.2); max-height: 95vh; overflow-y: auto; }
+        
+        .section-title { font-size: 0.95rem; font-weight: 900; color: var(--mre-blue); text-transform: uppercase; display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: #E2E8F0; }
+        
+        .form-label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem; display: block; }
+        .form-control-mre { background-color: var(--input-bg); border: 1px solid #E2E8F0; border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.9rem; width: 100%; transition: var(--transition); }
+        .form-control-readonly { background-color: #F1F5F9; color: #64748B; font-family: monospace; font-weight: 700; cursor: not-allowed; }
+
+        /* AUDITORÍA */
+        .audit-table { width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; }
+        .audit-table th { background: #F8FAFC; color: #64748B; font-size: 0.65rem; font-weight: 800; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-color); text-transform: uppercase; }
+        .audit-table td { padding: 0.75rem 1rem; border-bottom: 1px solid #F1F5F9; font-size: 0.75rem; }
+        .badge-audit { padding: 3px 8px; border-radius: 5px; font-size: 0.65rem; font-weight: 800; }
+        .tag-create { background: #DCFCE7; color: #15803D; }
+        .tag-update { background: #E0F2FE; color: #0369A1; }
+
+        /* SELECCIÓN */
+        .selection-list { max-height: 150px; overflow-y: auto; border: 1px solid #E2E8F0; border-radius: 12px; padding: 0.5rem; background: #F8FAFC; }
+        .selection-item { padding: 0.5rem 0.75rem; border-bottom: 1px solid #E2E8F0; font-size: 0.8rem; font-weight: 600; display: flex; justify-content: space-between; }
+        .selection-item:last-child { border-bottom: none; }
+
+        .mre-footer { background: white; padding: 1rem 2.5rem; border-top: 1px solid var(--border-color); font-size: 0.75rem; color: #64748B; display: flex; justify-content: space-between; flex-shrink: 0; }
+
+        .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <header class="portal-header">
+        <div class="d-flex align-items-center gap-3">
+            <div class="bg-white p-2 rounded-3 border d-none d-sm-block" style="box-shadow: 0 4px 8px rgba(0,0,0,0.08)">
+                <i data-lucide="globe" style="color: var(--mre-blue); width: 28px;"></i>
+            </div>
+            <div>
+                <h6 class="fw-800 mb-0" style="color: var(--mre-blue); font-size: 1.4rem;">SIA-PY</h6>
+                <p class="small mb-0 fw-bold uppercase" style="font-size: 0.7rem; color: #000;">SISTEMA INTEGRADO DE APOSTILLA ELECTRÓNICA</p>
+            </div>
+        </div>
+        
+        <div class="d-flex align-items-center gap-3">
+            <div class="a11y-container position-relative">
+                <button class="btn btn-light btn-sm border fw-bold px-3 rounded-pill" onclick="toggleA11yMenu()">
+                    <i data-lucide="accessibility" style="width: 16px;" class="me-1"></i> Accesibilidad
+                </button>
+                <div id="a11yMenu" class="dropdown-menu p-3 shadow-lg border-0 position-absolute end-0 mt-2" style="width:220px; display: none;">
+                    <div class="small fw-800 mb-2 text-muted text-uppercase">Tamaño de Texto</div>
+                    <div class="d-flex justify-content-between align-items-center mb-3 bg-light p-1 rounded-3">
+                        <button class="btn btn-sm btn-white border shadow-sm" onclick="changeFontSize(-0.1)">-</button>
+                        <span id="fontLabel" class="fw-bold">100%</span>
+                        <button class="btn btn-sm btn-white border shadow-sm" onclick="changeFontSize(0.1)">+</button>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" onchange="document.body.classList.toggle('grayscale-mode')">
+                        <label class="form-check-label small fw-bold">Escala de Grises</label>
+                    </div>
+                </div>
+            </div>
+            <div class="user-info text-end d-none d-md-block">
+                <div class="fw-bold small">Carlos González</div>
+                <div class="text-muted" style="font-size: 0.65rem;">CI: 4.567.890</div>
+            </div>
+            <div class="bg-light p-2 rounded-circle border"><i data-lucide="user"></i></div>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <aside class="main-sidebar">
+            <nav class="mt-4">
+                <p class="px-4 small text-muted fw-800 uppercase mb-2" style="letter-spacing: 1px;">Administración</p>
+                <a href="#" class="nav-link-mre"><i data-lucide="file-text" style="width:18px"></i> Tipos de documentos</a>
+                <a href="#" class="nav-link-mre"><i data-lucide="users" style="width:18px"></i> Usuarios</a>
+                <a href="#" class="nav-link-mre"><i data-lucide="settings-2" style="width:18px"></i> Ref. Maestras</a>
+                <a href="#" class="nav-link-mre"><i data-lucide="layout-grid" style="width:18px"></i> Config. de campos</a>
+                <a href="#" class="nav-link-mre active"><i data-lucide="file-cog" style="width:18px"></i> Config. de documentos</a>
+            </nav>
+        </aside>
+
+        <main class="content-area">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-800 m-0 text-navy">Configuración de Documentos</h2>
+                    <p class="text-muted small">Gestione los parámetros técnicos y formatos permitidos por cada tipo de documento</p>
+                </div>
+                <button class="btn-main shadow-sm" onclick="openModal('add')">
+                    <i data-lucide="plus-circle" class="me-2"></i> Agregar
+                </button>
+            </div>
+
+            <div class="grid-frame animate-fade">
+                <div class="grid-header-frame">
+                    <h6 class="fw-800 m-0 uppercase" style="font-size: 0.75rem; color: var(--mre-blue)">Listado de Documentos</h6>
+                    <div class="d-flex gap-2">
+                        <button class="btn-tool-generic" onclick="alert('Configurar Columnas...')">
+                            <i data-lucide="layout-columns" style="width: 16px;"></i> Columnas
+                        </button>
+                        <button class="btn-tool-generic" onclick="alert('Exportando listado completo a Excel...')">
+                            <i data-lucide="file-spreadsheet" style="width: 16px;"></i> Excel
+                        </button>
+                        <button class="btn-tool-generic" onclick="alert('Exportando listado completo a PDF...')">
+                            <i data-lucide="file-text" style="width:16px;"></i> PDF
+                        </button>
+                        <div class="position-relative">
+                            <i data-lucide="search" class="position-absolute" style="left:10px; top:50%; transform:translateY(-50%); width:14px; color:#94A3B8;"></i>
+                            <input type="text" class="form-control form-control-sm border ps-4" placeholder="Buscar documento..." style="width:200px; border-radius: 8px;">
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="mre-table">
+                        <thead>
+                            <tr>
+                                <th width="40" class="text-center">
+                                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this.checked)">
+                                </th>
+                                <th class="text-center" width="120">Código</th>
+                                <th>Nombre del Documento</th>
+                                <th class="text-center">Formato</th>
+                                <th class="text-center">Req.</th>
+                                <th class="text-center">Tam. Máx</th>
+                                <th>Estado</th>
+                                <th class="text-center action-cell">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="docsTable">
+                            <!-- Inyectado por render() -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="grid-footer">
+                    <div>
+                        <span class="text-muted small fw-bold" id="paginationInfo">Cargando registros...</span>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-danger fw-bold d-flex align-items-center gap-2" id="btnInactivate" disabled onclick="handleInactivateSelection()" style="border-radius: 12px; border-width: 2px; font-size: 0.8rem;">
+                            <i data-lucide="power" style="width: 14px;"></i> Inactivar
+                        </button>
+                        <button class="btn btn-outline-secondary fw-bold d-flex align-items-center gap-2" id="btnCancelSelection" onclick="cancelSelection()" style="border-radius: 12px; border-width: 2px; font-size: 0.8rem; display: none;">
+                            <i data-lucide="x" style="width: 14px;"></i> Cancelar
+                        </button>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-1">
+                        <button class="btn-pagination" title="Anterior"><i data-lucide="chevron-left" style="width: 16px;"></i></button>
+                        <span class="page-indicator">Pág 1</span>
+                        <button class="btn-pagination" title="Siguiente"><i data-lucide="chevron-right" style="width: 16px;"></i></button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="mre-footer">
+        <div>&copy; 2026 Ministerio de Relaciones Exteriores - Paraguay</div>
+        <div class="fw-bold">Dirección de Informática</div>
+    </footer>
+
+    <!-- MODAL PRINCIPAL -->
+    <div class="mre-modal-overlay" id="modalDoc">
+        <div class="mre-modal shadow-lg">
+            <div class="section-title" id="modalTitle">Nuevo Documento</div>
+            <form id="formDoc" onsubmit="saveData(event)">
+                <div class="row g-4 mb-4">
+                    <div class="col-md-8">
+                        <label class="form-label">Nombre del Documento <span class="text-danger">*</span></label>
+                        <input type="text" id="docName" class="form-control-mre" placeholder="ej: Certificado de Nacimiento" oninput="generateCode(this.value)" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Código Único (Automático)</label>
+                        <input type="text" id="docCode" class="form-control-mre form-control-readonly" readonly required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Formato Permitido <span class="text-danger">*</span></label>
+                        <select id="docFormat" class="form-control-mre" required>
+                            <option value="">Seleccione...</option>
+                            <option value="pdf">pdf</option>
+                            <option value="png">png</option>
+                            <option value="excel">excel</option>
+                            <option value="jpg">jpg</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Orden <span class="text-danger">*</span></label>
+                        <input type="number" id="docOrder" class="form-control-mre" value="10" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Requerido <span class="text-danger">*</span></label>
+                        <select id="docRequired" class="form-control-mre" required>
+                            <option value="Si">Si</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Tamaño Máx (MB) <span class="text-danger">*</span></label>
+                        <input type="number" id="docMaxSize" class="form-control-mre" value="5" required>
+                    </div>
+                    <div class="col-md-4" id="docStatusContainer">
+                        <label class="form-label">Estado <span class="text-danger">*</span></label>
+                        <select id="docStatus" class="form-control-mre" required>
+                            <option value="ACTI">Activo</option>
+                            <option value="INAC">Inactivo</option>
+                        </select>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Descripción (Opcional)</label>
+                        <textarea id="docDesc" class="form-control-mre" rows="2" placeholder="Notas adicionales sobre la carga del documento..."></textarea>
+                    </div>
+                </div>
+
+                <div id="auditSection" class="mt-4 pt-4 border-top" style="display: none;">
+                    <div class="section-title">Historial de Auditoría</div>
+                    <div class="table-responsive mt-3">
+                        <table class="audit-table">
+                            <thead>
+                                <tr>
+                                    <th>Fecha y Hora</th>
+                                    <th>Acción</th>
+                                    <th>Usuario</th>
+                                    <th>Descripción del Cambio</th>
+                                </tr>
+                            </thead>
+                            <tbody id="auditHistoryTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-3 border-top pt-4">
+                    <button type="button" class="btn btn-light border rounded-pill px-4 fw-800" onclick="closeModal('modalDoc')">Cerrar</button>
+                    <button type="submit" id="btnSave" class="btn-main px-5 shadow-sm">Guardar Configuración</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL DE CONFIRMACIÓN DE ELIMINACIÓN -->
+    <div class="mre-modal-overlay" id="modalDeleteConfirm">
+        <div class="mre-modal shadow-lg" style="max-width: 480px;">
+            <div class="text-center mb-4">
+                <div class="bg-danger bg-opacity-10 text-danger d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 64px; height: 64px;">
+                    <i data-lucide="alert-triangle" style="width: 32px; height: 32px;"></i>
+                </div>
+                <h5 class="fw-800 text-navy mb-2">Confirmar Eliminación Lógica</h5>
+                <p class="text-muted small px-3">¿Está seguro que desea eliminar este registro? Esta acción marcará el documento como eliminado y ya no estará disponible en el portal del ciudadano.</p>
+            </div>
+            
+            <div id="deleteItemInfo" class="bg-light p-3 rounded-4 border mb-4 text-center fw-bold text-navy small"></div>
+
+            <div class="d-flex justify-content-center gap-3 mt-4 pt-3 border-top">
+                <button type="button" class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalDeleteConfirm')">No, mantener</button>
+                <button type="button" class="btn-main bg-danger border-danger px-4" onclick="confirmLogicalDelete()">Sí, eliminar registro</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CONFIRMACIÓN DE INACTIVACIÓN MASIVA -->
+    <div class="mre-modal-overlay" id="modalInactivateConfirm">
+        <div class="mre-modal shadow-lg" style="max-width: 550px;">
+            <div class="text-center mb-4">
+                <div class="bg-warning bg-opacity-10 text-warning d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 64px; height: 64px;">
+                    <i data-lucide="power" style="width: 32px; height: 32px; color: var(--mre-amber);"></i>
+                </div>
+                <h5 class="fw-800 text-navy mb-2">Confirmar Inactivación Masiva</h5>
+                <p class="text-muted small px-3">Usted ha seleccionado los siguientes documentos para ser inactivados. Estos dejarán de estar visibles para el público general.</p>
+            </div>
+            
+            <div id="inactivateItemsList" class="selection-list mb-4">
+                <!-- Inyectado por JS -->
+            </div>
+
+            <div class="d-flex justify-content-center gap-3 mt-4 pt-3 border-top">
+                <button type="button" class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalInactivateConfirm')">Cancelar</button>
+                <button type="button" class="btn-main px-4 shadow-sm" style="background: var(--mre-amber);" onclick="confirmLogicalInactivation()">Confirmar Inactivación</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let documents = [
+            { 
+                code: 'CERT_NAC', name: 'Certificado de Nacimiento', format: 'pdf', req: 'Si', size: 5, status: 'ACTI',
+                hasLinkedRecords: true,
+                history: [ { date: '15/01/2026 09:12:05', action: 'CREATE', user: 'cgonzalez', desc: 'Registro inicial del documento.' } ]
+            },
+            { 
+                code: 'ANTE_POL', name: 'Antecedentes Policiales', format: 'png', req: 'Si', size: 2, status: 'ACTI',
+                hasLinkedRecords: false,
+                history: [ { date: '10/01/2026 08:00:00', action: 'CREATE', user: 'cgonzalez', desc: 'Carga técnica del requisito policial.' } ]
+            },
+            { 
+                code: 'ANTE_JUD', name: 'Antecedentes Judiciales', format: 'pdf', req: 'Si', size: 5, status: 'INAC',
+                hasLinkedRecords: false,
+                history: [ { date: '05/01/2026 11:45:22', action: 'CREATE', user: 'rlopez', desc: 'Creación de tipo de documento judicial.' } ]
+            }
+        ];
+
+        let currentMode = 'add';
+        let codeToDelete = null;
+
+        function generateCode(val) {
+            if (currentMode !== 'add') return;
+            const codeInput = document.getElementById('docCode');
+            if(!val) return codeInput.value = "";
+            let id = val.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^A-Z0-9\s]/g, "").trim().replace(/\s+/g, "_");
+            let finalId = id, counter = 1;
+            while(documents.some(d => d.code === finalId)) { finalId = id + "_" + counter++; }
+            codeInput.value = finalId;
+        }
+
+        function render() {
+            const body = document.getElementById('docsTable');
+            body.innerHTML = documents.map(d => `
+                <tr class="${d.status === 'INAC' ? 'opacity-75 bg-light' : ''}" data-code="${d.code}">
+                    <td class="text-center">
+                        <input type="checkbox" class="doc-check" onchange="updateSelectionUI()">
+                    </td>
+                    <td class="text-center"><code>${d.code}</code></td>
+                    <td class="fw-bold text-navy">${d.name}</td>
+                    <td class="text-center"><span class="badge bg-light border text-primary px-2">${d.format}</span></td>
+                    <td class="text-center fw-bold ${d.req==='Si'?'text-danger':''}">${d.req}</td>
+                    <td class="text-center small">${d.size} MB</td>
+                    <td>
+                        <span class="small fw-bold ${d.status==='ACTI'?'text-success':'text-muted'}">
+                            ${d.status==='ACTI'?'Activo':'Inactivo'}
+                        </span>
+                    </td>
+                    <td class="text-center action-cell">
+                        <div class="action-wrapper">
+                            <button class="btn-action-icon btn-action-view" onclick="openModal('view','${d.code}')" title="Visualizar">
+                                <i data-lucide="eye" style="width:14px"></i>
+                            </button>
+                            <button class="btn-action-icon btn-action-edit" onclick="openModal('edit','${d.code}')" title="Editar">
+                                <i data-lucide="edit-3" style="width:14px"></i>
+                            </button>
+                            ${ !d.hasLinkedRecords ? `
+                            <button class="btn-action-icon btn-action-delete" onclick="handleDeleteClick('${d.code}')" title="Eliminar">
+                                <i data-lucide="trash-2" style="width:14px"></i>
+                            </button>` : `<div style="width: 32px;"></div>` }
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+            document.getElementById('paginationInfo').innerText = `Mostrando 1 a ${documents.length} de ${documents.length} registros`;
+            updateSelectionUI();
+        }
+
+        function toggleSelectAll(checked) {
+            document.querySelectorAll('.doc-check').forEach(cb => cb.checked = checked);
+            updateSelectionUI();
+        }
+
+        function updateSelectionUI() {
+            const checks = document.querySelectorAll('.doc-check:checked');
+            const totalChecks = document.querySelectorAll('.doc-check').length;
+            const btnInactivate = document.getElementById('btnInactivate');
+            const btnCancel = document.getElementById('btnCancelSelection');
+            const selectAll = document.getElementById('selectAll');
+
+            if (btnInactivate) btnInactivate.disabled = checks.length === 0;
+            if (btnCancel) btnCancel.style.display = checks.length > 0 ? 'flex' : 'none';
+            if (totalChecks > 0 && selectAll) selectAll.checked = (checks.length === totalChecks);
+        }
+
+        function cancelSelection() {
+            const selectAll = document.getElementById('selectAll');
+            if (selectAll) selectAll.checked = false;
+            toggleSelectAll(false);
+        }
+
+        function handleInactivateSelection() {
+            const checks = document.querySelectorAll('.doc-check:checked');
+            const listContainer = document.getElementById('inactivateItemsList');
+            listContainer.innerHTML = "";
+            checks.forEach(cb => {
+                const code = cb.closest('tr').dataset.code;
+                const doc = documents.find(d => d.code === code);
+                listContainer.innerHTML += `<div class="selection-item"><span>${doc.name}</span><code>${doc.code}</code></div>`;
+            });
+            document.getElementById('modalInactivateConfirm').style.display = 'flex';
+            lucide.createIcons();
+        }
+
+        function confirmLogicalInactivation() {
+            const checks = document.querySelectorAll('.doc-check:checked');
+            checks.forEach(cb => {
+                const code = cb.closest('tr').dataset.code;
+                const doc = documents.find(d => d.code === code);
+                if(doc) doc.status = 'INAC';
+            });
+            render();
+            closeModal('modalInactivateConfirm');
+            alert('Los documentos seleccionados han sido inactivados.');
+            cancelSelection();
+        }
+
+        function handleDeleteClick(code) {
+            codeToDelete = code;
+            const doc = documents.find(d => d.code === code);
+            document.getElementById('deleteItemInfo').innerText = `DOCUMENTO: ${doc.name} (${doc.code})`;
+            document.getElementById('modalDeleteConfirm').style.display = 'flex';
+            lucide.createIcons();
+        }
+
+        function confirmLogicalDelete() {
+            if(codeToDelete) {
+                documents = documents.filter(d => d.code !== codeToDelete);
+                render();
+                closeModal('modalDeleteConfirm');
+                alert('El registro ha sido eliminado lógicamente del sistema.');
+                codeToDelete = null;
+            }
+        }
+
+        function openModal(mode, code) {
+            currentMode = mode;
+            const form = document.getElementById('formDoc');
+            const btnSave = document.getElementById('btnSave');
+            const statusContainer = document.getElementById('docStatusContainer');
+            const auditSection = document.getElementById('auditSection');
+            const auditBody = document.getElementById('auditHistoryTable');
+            
+            form.reset();
+            const inputs = form.querySelectorAll('input, select, textarea');
+            inputs.forEach(i => i.disabled = false);
+            btnSave.style.display = 'block';
+            statusContainer.style.display = (mode === 'add') ? 'none' : 'block';
+            auditSection.style.display = 'none';
+
+            if(mode === 'add') {
+                document.getElementById('modalTitle').innerText = 'Agregar Nuevo Documento';
+                document.getElementById('docOrder').value = (documents.length + 1) * 10;
+            } else {
+                let d = documents.find(x => x.code === code);
+                document.getElementById('modalTitle').innerText = (mode === 'edit' ? 'Editar Documento: ' : 'Visualizar Documento: ') + code;
+                document.getElementById('docCode').value = d.code;
+                document.getElementById('docName').value = d.name;
+                document.getElementById('docFormat').value = d.format;
+                document.getElementById('docRequired').value = d.req;
+                document.getElementById('docMaxSize').value = d.size;
+                document.getElementById('docStatus').value = d.status;
+
+                if(mode === 'view') {
+                    inputs.forEach(i => i.disabled = true);
+                    btnSave.style.display = 'none';
+                    auditSection.style.display = 'block';
+                    auditBody.innerHTML = (d.history || []).map(h => `
+                        <tr>
+                            <td class="fw-bold">${h.date}</td>
+                            <td><span class="badge-audit tag-${h.action.toLowerCase()}">${h.action}</span></td>
+                            <td class="text-muted fw-bold">${h.user}</td>
+                            <td>${h.desc}</td>
+                        </tr>
+                    `).join('');
+                }
+            }
+            document.getElementById('modalDoc').style.display = 'flex';
+        }
+
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        
+        function saveData(e) { 
+            e.preventDefault(); 
+            alert('Configuración guardada correctamente.'); 
+            closeModal('modalDoc'); 
+        }
+        
+        function changeFontSize(delta) {
+            let current = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--font-scale')) || 1;
+            let newS = Math.min(Math.max(current + delta, 0.8), 1.4);
+            document.documentElement.style.setProperty('--font-scale', newS);
+            const label = document.getElementById('fontLabel');
+            if (label) label.innerText = Math.round(newS * 100) + '%';
+        }
+
+        function toggleA11yMenu() { 
+            const menu = document.getElementById('a11yMenu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => { render(); lucide.createIcons(); });
+        document.addEventListener('click', (e) => { 
+            if(!e.target.closest('.a11y-container')) {
+                const menu = document.getElementById('a11yMenu');
+                if (menu) menu.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
