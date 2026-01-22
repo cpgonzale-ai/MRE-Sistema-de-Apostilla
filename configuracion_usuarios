@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIA-PY | Gestión de Usuarios</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --mre-blue: #002855;
+            --mre-blue-light: #0038A8;
+            --mre-red: #D52B1E;
+            --mre-green: #10B981;
+            --soft-bg: #f0f4f8; 
+            --border-color: #E2E8F0;
+            --input-bg: #F8FAFC;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            --card-shadow: 0 10px 15px -3px rgba(0, 40, 85, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-scale: 1; 
+            --base-font-size: 16px;
+        }
+
+        html { font-size: calc(var(--base-font-size) * var(--font-scale)); }
+
+        /* --- MODOS DE ACCESIBILIDAD --- */
+        body.high-contrast {
+            --mre-blue: #000000;
+            --mre-blue-light: #000000;
+            --mre-red: #D50000;
+            --soft-bg: #FFFFFF;
+            --border-color: #000000;
+            --input-bg: #FFFFFF;
+            --text-main: #000000;
+            --text-muted: #000000;
+            --card-shadow: none;
+        }
+        body.grayscale-mode { filter: grayscale(100%); }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; background-color: var(--soft-bg); color: var(--text-main); 
+            display: flex; flex-direction: column; height: 100vh;
+        }
+
+        .elegant-background { 
+            position: fixed; inset: 0; z-index: -1; background-color: #f8fafc; 
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(0, 56, 168, 0.08) 0px, transparent 50%), 
+                radial-gradient(at 100% 0%, rgba(213, 43, 30, 0.05) 0px, transparent 50%);
+        }
+
+        /* --- CABECERA --- */
+        .portal-header { 
+            display: flex; justify-content: space-between; align-items: center; background: white; 
+            padding: 1.25rem 2.5rem; box-shadow: 0 4px 10px -1px rgba(0,0,0,0.05); 
+            border-bottom: 1px solid var(--border-color); position: relative; z-index: 2000;
+        }
+
+        .a11y-container { position: relative; }
+        .btn-a11y-trigger {
+            background: #F8FAFC; border: 1px solid var(--border-color); color: var(--mre-blue);
+            border-radius: 12px; padding: 0.5rem 1rem; font-weight: 700; font-size: 0.8rem;
+            display: flex; align-items: center; gap: 8px; transition: var(--transition);
+        }
+        .a11y-dropdown-menu {
+            position: absolute; top: calc(100% + 10px); right: 0; 
+            background: white; border-radius: 16px; width: 280px;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.15); border: 1px solid var(--border-color);
+            display: none; z-index: 3000; padding: 1rem; animation: fadeIn 0.2s ease-out;
+        }
+        .a11y-dropdown-menu.show { display: block; }
+        .a11y-section-title { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #94A3B8; margin-bottom: 0.8rem; letter-spacing: 0.5px; }
+        .text-resize-controls { display: flex; justify-content: space-between; align-items: center; background: #F8FAFC; border-radius: 10px; padding: 4px; border: 1px solid #E2E8F0; margin-bottom: 1rem; }
+        .btn-resize { width: 32px; height: 32px; border: none; background: white; border-radius: 8px; color: var(--mre-blue); display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: var(--transition); }
+        .btn-resize:hover { background: var(--mre-blue); color: white; }
+        .font-size-display { font-size: 0.85rem; font-weight: 700; color: #475569; }
+        .switch-control { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid #F1F5F9; }
+        .switch-label { font-size: 0.85rem; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
+        .toggle-switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; inset: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--mre-blue); }
+        input:checked + .slider:before { transform: translateX(18px); }
+
+        .dots-menu-trigger {
+            width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+            border-radius: 12px; cursor: pointer; transition: var(--transition); color: var(--text-muted);
+            background: #F8FAFC; border: 1px solid var(--border-color);
+        }
+        .dropdown-menu-mre { 
+            position: absolute; top: calc(100% + 10px); right: 0; background: white; border-radius: 12px; 
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); border: 1px solid var(--border-color); 
+            width: 180px; display: none; z-index: 3000; overflow: hidden; animation: fadeIn 0.2s ease-out;
+        }
+        .dropdown-menu-mre.show { display: block; }
+        .dropdown-item-mre {
+            padding: 12px 16px; border: none; background: none; width: 100%; text-align: left;
+            font-size: 0.9rem; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 10px;
+        }
+        .dropdown-item-mre:hover { background: #F8FAFC; color: var(--mre-red); }
+
+        /* --- LAYOUT --- */
+        .app-container { display: flex; flex: 1; overflow: hidden; position: relative; }
+        .main-sidebar {
+            width: 280px; background: white; border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column; z-index: 1000;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.02);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .nav-menu { padding: 1.5rem 1rem; flex: 1; }
+        .nav-link-mre {
+            display: flex; align-items: center; gap: 12px; padding: 0.85rem 1rem;
+            color: var(--text-muted); text-decoration: none; border-radius: 12px;
+            font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; transition: var(--transition);
+        }
+        .nav-link-mre:hover { background: #F1F5F9; color: var(--mre-blue); }
+        .nav-link-mre.active { background: #f0f7ff; color: var(--mre-blue-light); box-shadow: 0 4px 6px -1px rgba(0, 40, 85, 0.05); }
+
+        .mre-sidebar-popup {
+            position: fixed; background: #1e293b; color: #f1f5f9; padding: 12px 16px;
+            border-radius: 12px; font-size: 0.75rem; font-weight: 600;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); z-index: 6000;
+            display: none; opacity: 0; transition: opacity 0.2s ease-out; max-width: 240px;
+        }
+        .mre-sidebar-popup.show { display: block; opacity: 1; }
+
+        /* --- CONTENIDO --- */
+        .content-area { flex: 1; padding: 2rem 3rem; overflow-y: auto; position: relative; }
+        
+        .grid-frame { 
+            background: white; border-radius: 20px; box-shadow: var(--card-shadow); 
+            border: 1px solid #E2E8F0; position: relative; overflow: hidden;
+            display: flex; flex-direction: column; margin-bottom: 2rem;
+        }
+        .grid-frame::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(to right, var(--mre-red), var(--mre-blue)); }
+        
+        .grid-header-frame { 
+            background-color: #F1F5F9; padding: 1rem 1.5rem; border-bottom: 1px solid #E2E8F0; 
+            display: flex; justify-content: space-between; align-items: center; 
+        }
+
+        .mre-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 0.85rem 1rem; border-bottom: 2px solid #E2E8F0; }
+        .mre-table td { padding: 0.85rem 1rem; font-size: 0.8rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
+
+        .btn-action-icon {
+            width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 10px; border: 1px solid var(--border-color); background: white; color: var(--text-muted);
+            transition: var(--transition); cursor: pointer;
+        }
+        .btn-action-icon:hover { background: #F1F5F9; color: var(--mre-blue); border-color: var(--mre-blue); }
+        .btn-action-delete:hover { color: var(--mre-red); border-color: var(--mre-red); }
+
+        .actions-cell-container { display: flex; justify-content: flex-end; align-items: center; gap: 8px; min-width: 120px; }
+
+        .badge-status { padding: 0.4rem 0.8rem; border-radius: 8px; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; }
+        .status-active { background-color: #DCFCE7; color: #15803D; }
+        .status-inactive { background-color: #F1F5F9; color: #64748B; border: 1px solid #E2E8F0; }
+
+        /* FOOTER GRILLA */
+        .grid-footer {
+            padding: 1.25rem 1.5rem; background-color: #F8FAFC; border-top: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .btn-pagination {
+            width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+            background: white; border: 1px solid #E2E8F0; border-radius: 8px;
+            color: #64748B; cursor: pointer; transition: var(--transition);
+        }
+        .btn-pagination:hover:not(:disabled) { background: var(--mre-blue); color: white; border-color: var(--mre-blue); }
+        .btn-pagination:disabled { opacity: 0.5; cursor: not-allowed; background: #F1F5F9; }
+        .page-indicator { font-size: 0.85rem; font-weight: 700; color: var(--mre-blue); padding: 0 8px; }
+
+        .btn-outline-mre-danger { 
+            border: 2px solid var(--mre-red); color: var(--mre-red); font-weight: 800; border-radius: 12px;
+            padding: 0.5rem 1.2rem; font-size: 0.75rem; background: transparent; transition: var(--transition);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .btn-outline-mre-danger:hover:not(:disabled) { background: var(--mre-red); color: white; }
+        .btn-outline-mre-danger:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .btn-outline-mre-secondary {
+            border: 2px solid #94A3B8; color: #475569; font-weight: 800; border-radius: 12px;
+            padding: 0.5rem 1.2rem; font-size: 0.75rem; background: transparent; transition: var(--transition);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .btn-outline-mre-secondary:hover { background: #94A3B8; color: white; }
+
+        /* BOTONES PRINCIPALES */
+        .btn-main { background: var(--mre-blue); color: #ffffff; border: none; border-radius: 12px; padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.85rem; transition: var(--transition); text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 40, 85, 0.2); color: #fff; }
+        
+        .btn-tool-generic { background: white; color: var(--mre-blue); border: 1px solid var(--border-color); padding: 0.5rem 1rem; border-radius: 10px; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 8px; transition: var(--transition); cursor: pointer; }
+
+        /* FORMULARIOS */
+        #viewForm { display: none; }
+        .section-title { font-size: 0.95rem; font-weight: 900; color: var(--mre-blue); text-transform: uppercase; display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: #E2E8F0; }
+        .form-label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem; display: block; }
+        .form-control-mre { background-color: var(--input-bg); border: 1px solid #E2E8F0; border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.9rem; width: 100%; transition: var(--transition); }
+        .form-control-mre:focus { outline: none; border-color: var(--mre-blue-light); box-shadow: 0 0 0 3px rgba(0, 56, 168, 0.1); }
+        .form-control-mre:read-only, .form-control-mre:disabled { background-color: #EDF2F7 !important; color: #475569; }
+
+        /* DUAL LIST */
+        .dual-list-container { display: flex; gap: 1.5rem; align-items: center; }
+        .dual-list-box { flex: 1; border: 1px solid var(--border-color); border-radius: 15px; height: 180px; overflow-y: auto; background: var(--input-bg); padding: 5px; }
+        .list-title { font-size: 0.7rem; font-weight: 800; text-align: center; color: var(--text-muted); text-transform: uppercase; padding: 8px; border-bottom: 1px solid var(--border-color); background: white; margin-bottom: 5px; }
+        .list-item { padding: 10px 15px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border-bottom: 1px solid #F1F5F9; display: flex; align-items: center; gap: 10px; transition: var(--transition); border-radius: 8px; }
+        .list-item:hover { background: #F1F7FF; color: var(--mre-blue); }
+
+        /* AUDITORIA */
+        .audit-grid-table { width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; margin-top: 1rem; }
+        .audit-grid-table th { background: #F8FAFC; color: #64748B; font-size: 0.65rem; font-weight: 800; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-color); text-transform: uppercase; }
+        .audit-grid-table td { padding: 0.75rem 1rem; border-bottom: 1px solid #F1F5F9; font-size: 0.75rem; }
+        .badge-audit { padding: 3px 8px; border-radius: 5px; font-size: 0.65rem; font-weight: 800; }
+        .tag-create { background: #DCFCE7; color: #15803D; }
+        .tag-update { background: #E0F2FE; color: #0369A1; }
+
+        /* MODALES */
+        .mre-modal-overlay { position: fixed; inset: 0; background: rgba(0, 40, 85, 0.4); backdrop-filter: blur(4px); z-index: 4000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .mre-modal { background: white; border-radius: 24px; max-width: 950px; width: 100%; padding: 2.5rem; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.2); max-height: 95vh; overflow-y: auto; }
+        
+        .error-feedback { color: var(--mre-red); font-size: 0.7rem; font-weight: 700; margin-top: 5px; display: none; animation: fadeIn 0.2s ease-in; }
+
+        .mre-footer {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid #E2E8F0; padding: 1.2rem 2.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: auto;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade { animation: fadeIn 0.3s ease-out forwards; }
+    </style>
+</head>
+<body>
+
+    <div class="elegant-background"></div>
+    <div id="sidebarGlobalPopup" class="mre-sidebar-popup"></div>
+
+    <!-- HEADER INSTITUCIONAL -->
+    <header class="portal-header animate-fade">
+        <div class="d-flex align-items-center gap-3">
+            <button class="mobile-toggle-btn d-lg-none" onclick="toggleSidebar()" title="Menú móvil">
+                <i data-lucide="menu" style="width: 26px;"></i>
+            </button>
+            <div class="bg-white p-2 rounded-3 border d-none d-sm-block">
+                <i data-lucide="globe" style="color: var(--mre-blue); width: 28px;"></i>
+            </div>
+            <div>
+                <h6 class="fw-black mb-0" style="color: var(--mre-blue); font-size: 1.4rem; letter-spacing: -0.5px;">SIA-PY</h6>
+                <p class="small mb-0 fw-bold uppercase" style="font-size: 0.75rem; letter-spacing: 1.5px; color: #000 !important;">SISTEMA INTEGRADO DE APOSTILLA ELECTRÓNICA DEL PARAGUAY</p>
+            </div>
+        </div>
+        
+        <div class="user-dropdown d-flex align-items-center gap-3">
+            <div class="a11y-container">
+                <button class="btn-a11y-trigger" id="a11yTrigger" onclick="toggleA11yMenu(event)" title="Accesibilidad">
+                    <i data-lucide="accessibility" style="width: 20px;"></i>
+                    <span>Accesibilidad</span>
+                    <i data-lucide="chevron-down" style="width: 14px; margin-left: 4px;"></i>
+                </button>
+                <div class="a11y-dropdown-menu" id="a11yMenu" onclick="event.stopPropagation()">
+                    <div class="a11y-section-title">Tamaño de Texto</div>
+                    <div class="text-resize-controls">
+                        <button class="btn-resize" onclick="changeFontSize(-0.1)"><i data-lucide="minus" style="width: 16px;"></i></button>
+                        <span class="font-size-display" id="fontSizeDisplay">100%</span>
+                        <button class="btn-resize" onclick="changeFontSize(0.1)"><i data-lucide="plus" style="width: 16px;"></i></button>
+                    </div>
+                    <div class="a11y-section-title mt-3">Visualización</div>
+                    <div class="switch-control">
+                        <div class="switch-label fw-bold small">Grises</div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" onchange="toggleGrayscale()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="user-info-text d-none d-md-block text-end">
+                <div class="user-name fw-bold" style="font-size: 0.85rem;">Carlos González</div>
+                <div class="user-id text-muted" style="font-size: 0.7rem;">CI: 4.567.890</div>
+            </div>
+            <div class="dots-menu-trigger" onclick="toggleUserMenu(event)">
+                <i data-lucide="user" style="width: 24px;"></i>
+            </div>
+            <div class="dropdown-menu-mre" id="userMenu">
+                <button class="dropdown-item-mre text-danger" onclick="location.reload()">
+                    <i data-lucide="log-out" style="width: 14px;"></i> Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <aside class="main-sidebar animate-fade">
+            <nav class="nav-menu">
+                <p class="px-3 mb-2 text-muted fw-bold uppercase" style="font-size: 0.7rem; letter-spacing: 1.2px;">Administración</p>
+                <a href="#" class="nav-link-mre" title="Tipos de documentos"><i data-lucide="file-text" style="width: 18px;"></i> <span>Tipos de documentos</span></a>
+                <a href="javascript:void(0)" onclick="showListView()" class="nav-link-mre active" title="Gestión de Usuarios"><i data-lucide="users" style="width: 18px;"></i> <span>Usuarios</span></a>
+                <a href="#" class="nav-link-mre" title="Grupos y Permisos"><i data-lucide="shield-check" style="width: 18px;"></i> <span>Grupos y Permisos</span></a>
+                <a href="#" class="nav-link-mre" title="Configuración de referencia"><i data-lucide="settings-2" style="width: 18px;"></i> <span>Configuración de referencia</span></a>
+                <a href="#" class="nav-link-mre" title="Configuración de campos"><i data-lucide="layout-grid" style="width: 18px;"></i> <span>Configuración de campos</span></a>
+                <a href="#" class="nav-link-mre" title="Configuración de documentos"><i data-lucide="settings" style="width: 18px;"></i> <span>Configuración de documentos</span></a>
+            </nav>
+        </aside>
+
+        <main class="content-area">
+            <!-- VISTA LISTADO DE USUARIOS -->
+            <div id="viewList" class="animate-fade">
+                <header class="d-flex justify-content-between align-items-end mb-4">
+                    <div>
+                        <h2 class="fw-black text-navy m-0">Gestión de Usuarios</h2>
+                        <p class="text-muted small mb-0">Administre el acceso y perfiles de los usuarios del sistema</p>
+                    </div>
+                    <button class="btn-main d-flex align-items-center gap-2 shadow-sm" onclick="showFormView('add')" title="Registrar un nuevo usuario">
+                        <i data-lucide="plus-circle" style="width: 18px;"></i> Agregar Usuario
+                    </button>
+                </header>
+
+                <div class="grid-frame animate-fade">
+                    <div class="grid-header-frame">
+                        <h4 class="fw-black text-uppercase m-0" style="color: var(--mre-blue); font-size: 0.85rem;" title="Listado de Usuarios registrados">Listado de Usuarios</h4>
+                        <div class="d-flex align-items-center gap-2">
+                            <button class="btn-tool-generic" onclick="alert('Columnas')" title="Columnas"><i data-lucide="layout-columns" style="width: 16px;"></i> Columnas</button>
+                            <button class="btn-tool-generic" onclick="alert('Excel')" title="Excel"><i data-lucide="file-spreadsheet" style="width: 16px;"></i> Excel</button>
+                            <button class="btn-tool-generic" onclick="alert('PDF')" title="PDF"><i data-lucide="file-text" style="width: 16px;"></i> PDF</button>
+                            <div class="position-relative" style="width: 250px;">
+                                <i data-lucide="search" class="position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:#94A3B8; width:16px;"></i>
+                                <input type="text" class="form-control-mre ps-5" placeholder="Filtrar usuario...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="mre-table">
+                            <thead>
+                                <tr>
+                                    <th width="40" class="text-center"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
+                                    <th width="70" class="text-center">ID</th>
+                                    <th>Usuario</th>
+                                    <th>Nombre Completo</th>
+                                    <th>Email</th>
+                                    <th>Grupo</th>
+                                    <th>Estado</th>
+                                    <th>Expiración</th>
+                                    <th width="140" class="text-end">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userTableBody">
+                                <!-- CARLOS GONZALEZ (ASOCIADO -> SIN ELIMINAR) -->
+                                <tr data-associated="true">
+                                    <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()"></td>
+                                    <td class="text-center fw-bold text-navy">1001</td>
+                                    <td><code class="fw-bold">cgonzalez</code></td>
+                                    <td class="fw-bold text-navy">Carlos González</td>
+                                    <td>cgonzalez@mre.gov.py</td>
+                                    <td><span class="badge bg-light text-dark border px-2">Administrador de sistema</span></td>
+                                    <td><span class="badge-status status-active">Activo</span></td>
+                                    <td>31/12/2026</td>
+                                    <td class="text-end">
+                                        <div class="actions-cell-container">
+                                            <button class="btn-action-icon" title="Visualizar" onclick="showFormView('view', 1001)"><i data-lucide="eye" style="width:18px"></i></button>
+                                            <button class="btn-action-icon" title="Editar" onclick="showFormView('edit', 1001)"><i data-lucide="edit-3" style="width:18px"></i></button>
+                                            <div style="width:38px"></div> 
+                                        </div>
+                                    </td>
+                                </tr>
+                                <!-- MARTA RIQUELME (SIN ASOCIAR -> CON ELIMINAR) -->
+                                <tr data-associated="false">
+                                    <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()"></td>
+                                    <td class="text-center fw-bold text-navy">1002</td>
+                                    <td><code class="fw-bold">mriquelme</code></td>
+                                    <td class="fw-bold text-navy">Marta Riquelme</td>
+                                    <td>mriquelme@mre.gov.py</td>
+                                    <td><span class="badge bg-light text-dark border px-2">Operador ológrafo</span></td>
+                                    <td><span class="badge-status status-active">Activo</span></td>
+                                    <td>15/08/2026</td>
+                                    <td class="text-end">
+                                        <div class="actions-cell-container">
+                                            <button class="btn-action-icon" title="Visualizar" onclick="showFormView('view', 1002)"><i data-lucide="eye" style="width:18px"></i></button>
+                                            <button class="btn-action-icon" title="Editar" onclick="showFormView('edit', 1002)"><i data-lucide="edit-3" style="width:18px"></i></button>
+                                            <button class="btn-action-icon btn-action-delete" title="Eliminar" onclick="requestDeletion(1002, 'Marta Riquelme')"><i data-lucide="trash-2" style="width:18px"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <!-- JORGE SALINAS (ASOCIADO) -->
+                                <tr data-associated="true">
+                                    <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()"></td>
+                                    <td class="text-center fw-bold text-navy">1003</td>
+                                    <td><code class="fw-bold">jsalinas</code></td>
+                                    <td class="fw-bold text-navy">Jorge Salinas</td>
+                                    <td>jsalinas@mre.gov.py</td>
+                                    <td><span class="badge bg-light text-dark border px-2">Operador Verificación previa</span></td>
+                                    <td><span class="badge-status status-inactive">Inactivo</span></td>
+                                    <td>20/12/2026</td>
+                                    <td class="text-end">
+                                        <div class="actions-cell-container">
+                                            <button class="btn-action-icon" title="Visualizar" onclick="showFormView('view', 1003)"><i data-lucide="eye" style="width:18px"></i></button>
+                                            <button class="btn-action-icon" title="Editar" onclick="showFormView('edit', 1003)"><i data-lucide="edit-3" style="width:18px"></i></button>
+                                            <div style="width:38px"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <!-- LUCIA LOPEZ (SIN ASOCIAR) -->
+                                <tr data-associated="false">
+                                    <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()"></td>
+                                    <td class="text-center fw-bold text-navy">1004</td>
+                                    <td><code class="fw-bold">llopez</code></td>
+                                    <td class="fw-bold text-navy">Lucía López</td>
+                                    <td>llopez@mre.gov.py</td>
+                                    <td><span class="badge bg-light text-dark border px-2">Administrador de Operadores</span></td>
+                                    <td><span class="badge-status status-active">Activo</span></td>
+                                    <td>10/05/2026</td>
+                                    <td class="text-end">
+                                        <div class="actions-cell-container">
+                                            <button class="btn-action-icon" title="Visualizar" onclick="showFormView('view', 1004)"><i data-lucide="eye" style="width:18px"></i></button>
+                                            <button class="btn-action-icon" title="Editar" onclick="showFormView('edit', 1004)"><i data-lucide="edit-3" style="width:18px"></i></button>
+                                            <button class="btn-action-icon btn-action-delete" title="Eliminar" onclick="requestDeletion(1004, 'Lucía López')"><i data-lucide="trash-2" style="width:18px"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <!-- ALBERTO MARTINEZ (ASOCIADO) -->
+                                <tr data-associated="true">
+                                    <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()"></td>
+                                    <td class="text-center fw-bold text-navy">1005</td>
+                                    <td><code class="fw-bold">amartinez</code></td>
+                                    <td class="fw-bold text-navy">Alberto Martínez</td>
+                                    <td>amartinez@mre.gov.py</td>
+                                    <td><span class="badge bg-light text-dark border px-2">Ciudadano</span></td>
+                                    <td><span class="badge-status status-active">Activo</span></td>
+                                    <td>01/01/2027</td>
+                                    <td class="text-end">
+                                        <div class="actions-cell-container">
+                                            <button class="btn-action-icon" title="Visualizar" onclick="showFormView('view', 1005)"><i data-lucide="eye" style="width:18px"></i></button>
+                                            <button class="btn-action-icon" title="Editar" onclick="showFormView('edit', 1005)"><i data-lucide="edit-3" style="width:18px"></i></button>
+                                            <div style="width:38px"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="grid-footer">
+                        <div><span class="text-muted small fw-bold" id="paginationInfo">Mostrando 1 a 5 de 5 registros</span></div>
+                        <div class="d-flex gap-2">
+                            <button class="btn-outline-mre-danger" id="btnMassAction" disabled onclick="showModalInactivateMass()" title="Inactivar masivamente">
+                                <i data-lucide="power" style="width: 14px;"></i> Inactivar
+                            </button>
+                            <button class="btn-outline-mre-secondary" onclick="cancelSelection()" title="Cancelar selección">
+                                <i data-lucide="x" style="width: 14px;"></i> Cancelar
+                            </button>
+                        </div>
+                        <div class="d-flex align-items-center gap-1">
+                            <button class="btn-pagination" disabled title="Primero"><i data-lucide="chevrons-left" style="width: 16px;"></i></button>
+                            <button class="btn-pagination" disabled title="Anterior"><i data-lucide="chevron-left" style="width: 16px;"></i></button>
+                            <span class="page-indicator">Pág 1 de 1</span>
+                            <button class="btn-pagination" disabled title="Siguiente"><i data-lucide="chevron-right" style="width: 16px;"></i></button>
+                            <button class="btn-pagination" disabled title="Último"><i data-lucide="chevrons-right" style="width: 16px;"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISTA FORMULARIO FULL-SCREEN (AGREGAR / VISUALIZAR / EDITAR) -->
+            <div id="viewForm" class="animate-fade">
+                <header class="mb-4">
+                    <h2 class="fw-black text-navy m-0" id="formHeaderTitle">Agregar Usuario</h2>
+                    <p class="text-muted small" id="formHeaderSubtitle">Complete los datos de perfil para el nuevo usuario</p>
+                </header>
+
+                <div class="grid-frame p-5 animate-fade">
+                    <form id="userFormDetail">
+                        <div class="section-title">Datos del Usuario (Sistema MRE)</div>
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-4">
+                                <label class="form-label">Nombre de usuario (MRE) <span class="text-danger" id="reqUser">*</span></label>
+                                <div class="d-flex">
+                                    <input type="text" id="u_search_detail" class="form-control-mre" placeholder="Ej: jperon" style="border-radius: 10px 0 0 10px;" oninput="hideSearchError()">
+                                    <button type="button" id="btnSearchDetail" class="btn btn-primary px-3" style="border-radius: 0 10px 10px 0; background-color: var(--mre-blue-light);" onclick="simulateSearchDetail()">
+                                        <i data-lucide="search" style="width: 18px;"></i>
+                                    </button>
+                                </div>
+                                <div id="searchErrorMsg" class="error-feedback">No existe creado el usuario en el sistema MRE favor verifique</div>
+                            </div>
+                            <div class="col-md-4"><label class="form-label">Nombre</label><input type="text" id="f_name_detail" class="form-control-mre" readonly></div>
+                            <div class="col-md-4"><label class="form-label">Apellido</label><input type="text" id="f_last_detail" class="form-control-mre" readonly></div>
+                        </div>
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-4"><label class="form-label">Tipo de Documento</label><select id="f_type_detail" class="form-control-mre" disabled><option value="CI">Cédula de Identidad</option></select></div>
+                            <div class="col-md-4"><label class="form-label">Nro. de Documento</label><input type="text" id="f_doc_detail" class="form-control-mre" readonly></div>
+                            <div class="col-md-4"><label class="form-label">Email</label><input type="email" id="f_email_detail" class="form-control-mre" readonly></div>
+                        </div>
+
+                        <div class="row g-4 mb-5">
+                            <div class="col-md-4"><label class="form-label">Teléfono</label><input type="text" id="f_phone_detail" class="form-control-mre" readonly></div>
+                            <div class="col-md-4"><label class="form-label">Fecha de Expiración</label><input type="date" id="f_exp_detail" class="form-control-mre"></div>
+                        </div>
+
+                        <div class="section-title">Asignación de Grupos</div>
+                        <div class="dual-list-container mb-5" id="groupSelector">
+                            <div class="w-100">
+                                <div class="list-title">Grupos Disponibles</div>
+                                <div class="dual-list-box" id="availGroupsBox">
+                                    <div class="list-item" onclick="moveGroup(this, 'assignedGroupsDetail')">Administrador de sistema</div>
+                                    <div class="list-item" onclick="moveGroup(this, 'assignedGroupsDetail')">Operador ológrafo</div>
+                                    <div class="list-item" onclick="moveGroup(this, 'assignedGroupsDetail')">Ciudadano</div>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-column gap-2"><button type="button" class="btn btn-sm btn-light border"><i data-lucide="chevrons-right"></i></button><button type="button" class="btn btn-sm btn-light border"><i data-lucide="chevrons-left"></i></button></div>
+                            <div class="w-100"><div class="list-title">Grupos Asociados</div><div class="dual-list-box" id="assignedGroupsDetail"></div></div>
+                        </div>
+
+                        <div id="credentialsSectionDetail" class="d-none animate-fade">
+                            <div class="section-title">Credenciales</div>
+                            <div class="p-3 rounded-3 border bg-light mb-5 d-flex align-items-center gap-3">
+                                <input type="checkbox" id="f_force_pass" style="width: 20px; height: 20px;">
+                                <label for="f_force_pass" class="fw-bold text-muted small uppercase m-0 cursor-pointer">Forzar cambio de contraseña al iniciar sesión</label>
+                            </div>
+                        </div>
+
+                        <!-- SECCION AUDITORIA -->
+                        <div id="auditSectionDetail" class="d-none mt-5 pt-4 border-top animate-fade">
+                            <div class="section-title">Historial de Auditoría</div>
+                            <div class="table-responsive">
+                                <table class="audit-grid-table">
+                                    <thead><tr><th>Fecha y Hora</th><th>Acción</th><th>Usuario Responsable</th><th>Descripción</th></tr></thead>
+                                    <tbody id="auditTableBody">
+                                        <tr><td>22/01/2026 09:15</td><td><span class="badge-audit tag-update">UPDATE</span></td><td>admin_mre</td><td>Actualización de perfil</td></tr>
+                                        <tr><td>10/01/2026 14:00</td><td><span class="badge-audit tag-create">CREATE</span></td><td>system</td><td>Alta inicial</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-top d-flex justify-content-end gap-3">
+                            <button type="button" class="btn-tool-generic px-4 py-2" onclick="showListView()" style="background: #94A3B8; color: white; border: none;">Cancelar</button>
+                            <button type="button" id="btnSubmitForm" class="btn-main px-5 py-2" onclick="alert('Operación exitosa')">Guardar Cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="mre-footer">
+        <div class="footer-left">&copy; 2026 Ministerio de Relaciones Exteriores - Dirección de Informática</div>
+    </footer>
+
+    <!-- MODALES -->
+    <div class="mre-modal-overlay" id="modalDelete">
+        <div class="mre-modal animate-fade text-center" style="max-width: 450px;">
+            <div class="bg-danger bg-opacity-10 text-danger d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 64px; height: 64px;">
+                <i data-lucide="trash-2" style="width: 32px; height: 32px;"></i>
+            </div>
+            <h5 class="fw-800 text-navy mb-2">Confirmar Eliminación</h5>
+            <p class="text-muted small px-4">¿Desea eliminar definitivamente al usuario <strong id="deleteUserName"></strong>? Esta acción es irreversible.</p>
+            <div class="d-flex justify-content-center gap-3 mt-4 pt-3 border-top">
+                <button class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalDelete')">Cancelar</button>
+                <button class="btn btn-danger rounded-pill px-4 fw-800" onclick="alert('Eliminado satisfactoriamente.'); closeModal('modalDelete');">Sí, eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mre-modal-overlay" id="modalInactivateMass">
+        <div class="mre-modal animate-fade text-center" style="max-width: 450px;">
+            <div class="bg-warning bg-opacity-10 text-warning d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 64px; height: 64px;">
+                <i data-lucide="power" style="width: 32px; height: 32px;"></i>
+            </div>
+            <h5 class="fw-800 text-navy mb-2">Confirmar Inactivación</h5>
+            <p class="text-muted small px-4">¿Desea inactivar de forma masiva los usuarios seleccionados de forma simultánea?</p>
+            <div class="d-flex justify-content-center gap-3 mt-4 pt-3 border-top">
+                <button class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalInactivateMass')">Cancelar</button>
+                <button class="btn-main px-5 py-2" onclick="alert('Registros inactivados correctamente.'); closeModal('modalInactivateMass'); cancelSelection();">Sí, inactivar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => { 
+            lucide.createIcons(); 
+            initSidebarPopups();
+        });
+
+        // NAVEGACIÓN
+        function showListView() {
+            document.getElementById('viewForm').style.display = 'none';
+            document.getElementById('viewList').style.display = 'block';
+        }
+
+        function showFormView(mode, id) {
+            const viewForm = document.getElementById('viewForm');
+            const headerTitle = document.getElementById('formHeaderTitle');
+            const btnSubmit = document.getElementById('btnSubmitForm');
+            const auditSection = document.getElementById('auditSectionDetail');
+            const form = document.getElementById('userFormDetail');
+            const searchBtn = document.getElementById('btnSearchDetail');
+            const userSearch = document.getElementById('u_search_detail');
+
+            document.getElementById('viewList').style.display = 'none';
+            viewForm.style.display = 'block';
+            window.scrollTo(0,0);
+            
+            form.reset();
+            hideSearchError();
+            auditSection.classList.add('d-none');
+            btnSubmit.classList.remove('d-none');
+            searchBtn.classList.remove('d-none');
+            userSearch.readOnly = false;
+            document.getElementById('assignedGroupsDetail').innerHTML = "";
+
+            const allInputs = form.querySelectorAll('input, select');
+            allInputs.forEach(i => {
+                i.disabled = false;
+                i.readOnly = false;
+                i.style.backgroundColor = "var(--input-bg)";
+            });
+
+            if (mode === 'add') {
+                headerTitle.innerText = "Agregar Usuario";
+            } 
+            else if (mode === 'view' || mode === 'edit') {
+                headerTitle.innerText = mode === 'view' ? "Visualizar Usuario" : "Editar Usuario";
+                if(mode === 'view') {
+                    btnSubmit.classList.add('d-none');
+                    auditSection.classList.remove('d-none');
+                }
+                searchBtn.classList.add('d-none');
+                userSearch.readOnly = true;
+                loadMockData(id);
+                if(mode === 'view') {
+                    allInputs.forEach(i => { i.disabled = true; i.style.backgroundColor = "#F1F5F9"; });
+                } else {
+                    ['f_name_detail', 'f_last_detail', 'f_type_detail', 'f_doc_detail', 'f_email_detail', 'f_phone_detail', 'u_search_detail'].forEach(fid => {
+                        const el = document.getElementById(fid);
+                        if(el && el.tagName === 'SELECT') el.disabled = true; else el.readOnly = true;
+                        if(el) el.style.backgroundColor = "#F1F5F9";
+                    });
+                }
+                checkCitizen();
+            }
+            lucide.createIcons();
+        }
+
+        function loadMockData(id) {
+            const data = {
+                1001: { u: 'cgonzalez', n: 'Carlos', l: 'González', g: 'Administrador de sistema' },
+                1002: { u: 'mriquelme', n: 'Marta', l: 'Riquelme', g: 'Operador ológrafo' },
+                1005: { u: 'amartinez', n: 'Alberto', l: 'Martínez', g: 'Ciudadano' }
+            };
+            const user = data[id] || data[1001];
+            document.getElementById('u_search_detail').value = user.u;
+            document.getElementById('f_name_detail').value = user.n;
+            document.getElementById('f_last_detail').value = user.l;
+            document.getElementById('assignedGroupsDetail').innerHTML = `<div class="list-item" onclick="moveGroup(this, 'availGroupsBox')">${user.g}</div>`;
+        }
+
+        function requestDeletion(id, name) {
+            document.getElementById('deleteUserName').innerText = name;
+            document.getElementById('modalDelete').style.display = 'flex';
+        }
+
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function showModalInactivateMass() { document.getElementById('modalInactivateMass').style.display = 'flex'; }
+        
+        function moveGroup(el, targetId) {
+            if(document.getElementById('btnSubmitForm').classList.contains('d-none')) return;
+            document.getElementById(targetId).appendChild(el);
+            el.onclick = function() { moveGroup(this, targetId === 'assignedGroupsDetail' ? 'availGroupsBox' : 'assignedGroupsDetail'); };
+            checkCitizen();
+        }
+
+        function checkCitizen() {
+            const isCitizen = Array.from(document.getElementById('assignedGroupsDetail').querySelectorAll('.list-item'))
+                                   .some(i => i.innerText.trim() === "Ciudadano");
+            document.getElementById('credentialsSectionDetail').classList.toggle('d-none', !isCitizen);
+        }
+
+        function toggleSelectAll() {
+            const check = document.getElementById('selectAll').checked;
+            document.querySelectorAll('.record-check').forEach(c => c.checked = check);
+            updateSelectionUI();
+        }
+        function updateSelectionUI() {
+            const checkedCount = document.querySelectorAll('.record-check:checked').length;
+            document.getElementById('btnMassAction').disabled = checkedCount === 0;
+            const sa = document.getElementById('selectAll');
+            if(sa) sa.checked = (checkedCount === document.querySelectorAll('.record-check').length && checkedCount > 0);
+        }
+        function cancelSelection() {
+            document.querySelectorAll('.record-check').forEach(c => c.checked = false);
+            if(document.getElementById('selectAll')) document.getElementById('selectAll').checked = false;
+            updateSelectionUI();
+        }
+
+        function hideSearchError() { document.getElementById('searchErrorMsg').style.display = 'none'; }
+        function simulateSearchDetail() {
+            const user = document.getElementById('u_search_detail').value;
+            if(!user) return;
+            hideSearchError();
+            document.getElementById('f_name_detail').value = "Juan";
+            document.getElementById('f_last_detail').value = "Pérez";
+            ['f_name_detail', 'f_last_detail', 'f_type_detail', 'f_doc_detail', 'f_email_detail', 'f_phone_detail'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el && el.tagName === 'SELECT') el.disabled = true; else el.readOnly = true;
+                if(el) el.style.backgroundColor = "#F1F5F9";
+            });
+        }
+
+        function initSidebarPopups() {
+            let popupTimer;
+            const globalPopup = document.getElementById('sidebarGlobalPopup');
+            document.querySelectorAll('.nav-link-mre[data-popup]').forEach(link => {
+                link.addEventListener('mouseenter', () => {
+                    clearTimeout(popupTimer);
+                    const r = link.getBoundingClientRect();
+                    globalPopup.innerHTML = link.dataset.popup;
+                    globalPopup.style.top = `${r.top + (r.height / 2)}px`;
+                    globalPopup.style.left = `${r.right + 10}px`;
+                    globalPopup.style.transform = 'translateY(-50%)';
+                    globalPopup.classList.add('show');
+                });
+                link.addEventListener('mouseleave', () => {
+                    popupTimer = setTimeout(() => { if (!globalPopup.matches(':hover')) globalPopup.classList.remove('show'); }, 150);
+                });
+            });
+        }
+        function toggleSidebar() { document.querySelector('.main-sidebar').classList.toggle('show'); }
+    </script>
+</body>
+</html>
