@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIA-PY | Gestión de Leyes</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --mre-blue: #002855;
+            --mre-blue-light: #0038A8;
+            --mre-red: #D52B1E;
+            --mre-green: #10B981;
+            --mre-amber: #F59E0B;
+            --soft-bg: #f0f4f8; 
+            --border-color: #E2E8F0;
+            --input-bg: #F8FAFC;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            --card-shadow: 0 10px 15px -3px rgba(0, 40, 85, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-scale: 1; 
+            --base-font-size: 16px;
+        }
+
+        html { font-size: calc(var(--base-font-size) * var(--font-scale)); }
+
+        /* --- MODOS DE ACCESIBILIDAD --- */
+        body.grayscale-mode { filter: grayscale(100%); }
+
+        body { 
+            font-family: 'Inter', sans-serif; margin: 0; background-color: var(--soft-bg); 
+            color: var(--text-main); overflow: hidden; display: flex; flex-direction: column; height: 100vh;
+        }
+
+        .elegant-background { 
+            position: fixed; inset: 0; z-index: -1; background-color: #f8fafc; 
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(0, 56, 168, 0.08) 0px, transparent 50%), 
+                radial-gradient(at 100% 0%, rgba(213, 43, 30, 0.05) 0px, transparent 50%);
+        }
+
+        /* --- CABECERA --- */
+        .portal-header { 
+            display: flex; justify-content: space-between; align-items: center; background: white; 
+            padding: 1.25rem 2.5rem; box-shadow: 0 4px 10px -1px rgba(0,0,0,0.05); 
+            border-bottom: 1px solid var(--border-color); position: relative; z-index: 2000;
+        }
+
+        .a11y-container { position: relative; }
+        .btn-a11y-trigger {
+            background: #F8FAFC; border: 1px solid var(--border-color); color: var(--mre-blue);
+            border-radius: 12px; padding: 0.5rem 1rem; font-weight: 700; font-size: 0.8rem;
+            display: flex; align-items: center; gap: 8px; transition: var(--transition);
+        }
+        .a11y-dropdown-menu {
+            position: absolute; top: calc(100% + 10px); right: 0; 
+            background: white; border-radius: 16px; width: 280px;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.15); border: 1px solid var(--border-color);
+            display: none; z-index: 3000; padding: 1rem; animation: fadeIn 0.2s ease-out;
+        }
+        .a11y-dropdown-menu.show { display: block; }
+        .a11y-section-title { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem; }
+        .text-resize-controls { display: flex; align-items: center; justify-content: space-between; background: #F8FAFC; padding: 8px; border-radius: 12px; border: 1px solid var(--border-color); }
+        .btn-resize { background: white; border: 1px solid var(--border-color); border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .font-size-display { font-weight: 800; color: var(--mre-blue); font-size: 0.85rem; }
+        .switch-control { display: flex; align-items: center; justify-content: space-between; padding: 4px 0; }
+        .switch-label { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #CBD5E1; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--mre-blue-light); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        .dots-menu-trigger {
+            width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+            border-radius: 12px; cursor: pointer; transition: var(--transition); color: var(--text-muted);
+            background: #F8FAFC; border: 1px solid var(--border-color);
+        }
+        .dropdown-menu-mre { 
+            position: absolute; top: calc(100% + 10px); right: 0; background: white; border-radius: 12px; 
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); border: 1px solid var(--border-color); 
+            width: 180px; display: none; z-index: 3000; overflow: hidden; animation: fadeIn 0.2s ease-out;
+        }
+        .dropdown-menu-mre.show { display: block; }
+        .dropdown-item-mre { padding: 12px 16px; border: none; background: none; width: 100%; text-align: left; font-size: 0.9rem; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 10px; }
+        .dropdown-item-mre:hover { background: #F8FAFC; color: var(--mre-red); }
+
+        /* --- LAYOUT PRINCIPAL --- */
+        .app-container { display: flex; flex: 1; overflow: hidden; position: relative; }
+        .main-sidebar {
+            width: 280px; background: white; border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column; z-index: 1000;
+        }
+        .nav-link-mre {
+            display: flex; align-items: center; gap: 12px; padding: 0.85rem 1rem;
+            color: var(--text-muted); text-decoration: none; border-radius: 12px;
+            font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; transition: var(--transition);
+        }
+        .nav-link-mre.active { background: #f0f7ff; color: var(--mre-blue-light); }
+        .content-area { flex: 1; padding: 2rem 3rem; overflow-y: auto; }
+
+        /* --- GRILLA --- */
+        .grid-frame { 
+            background: white; border-radius: 20px; box-shadow: var(--card-shadow); 
+            border: 1px solid #E2E8F0; position: relative; overflow: hidden;
+            display: flex; flex-direction: column;
+        }
+        .grid-frame::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(to right, var(--mre-red), var(--mre-blue)); }
+        .grid-header-frame { background-color: #F1F5F9; padding: 1.25rem 1.5rem; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; }
+
+        /* --- TABLA --- */
+        .mre-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 1rem 1.5rem; border-bottom: 2px solid #E2E8F0; }
+        .mre-table td { padding: 1rem 1.5rem; font-size: 0.85rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
+        .mre-table tr:hover { background-color: #F8FAFC; }
+
+        /* --- BOTONES --- */
+        .btn-main { background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); color: #ffffff; border: none; border-radius: 12px; padding: 0.65rem 1.25rem; font-weight: 700; font-size: 0.85rem; transition: var(--transition); display: inline-flex; align-items: center; gap: 8px; }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 40, 85, 0.2); color: white; }
+
+        /* --- FOOTER & PAGINADO --- */
+        .grid-footer { padding: 1rem 1.5rem; background-color: #F8FAFC; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .btn-pagination { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #E2E8F0; border-radius: 8px; color: #64748B; cursor: pointer; transition: var(--transition); }
+        .btn-pagination:hover:not(:disabled) { background: var(--mre-blue); color: white; border-color: var(--mre-blue); }
+        .page-indicator { font-size: 0.85rem; font-weight: 700; color: var(--mre-blue); padding: 0 8px; }
+
+        /* --- MODALES --- */
+        .mre-modal-overlay { position: fixed; inset: 0; background: rgba(0, 40, 85, 0.4); backdrop-filter: blur(4px); z-index: 4000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .mre-modal { background: white; border-radius: 24px; max-width: 850px; width: 100%; padding: 2.5rem; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.2); max-height: 95vh; overflow-y: auto; }
+        .section-title { font-size: 0.9rem; font-weight: 900; color: var(--mre-blue); text-transform: uppercase; display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: #E2E8F0; }
+
+        .form-label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem; display: block; }
+        .form-control-mre { background-color: var(--input-bg); border: 1px solid #E2E8F0; border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.9rem; width: 100%; transition: var(--transition); }
+
+        .selection-list { max-height: 200px; overflow-y: auto; border: 1px solid #E2E8F0; border-radius: 12px; padding: 0.5rem; background: #F8FAFC; }
+        .selection-item { padding: 0.65rem 0.85rem; border-bottom: 1px solid #E2E8F0; font-size: 0.8rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+        .selection-item:last-child { border-bottom: none; }
+
+        /* --- AUDITORÍA --- */
+        .audit-table { width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; margin-top: 1rem; }
+        .audit-table th { background: #F8FAFC; color: #64748B; font-size: 0.65rem; font-weight: 800; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-color); text-transform: uppercase; }
+        .audit-table td { padding: 0.75rem 1rem; border-bottom: 1px solid #F1F5F9; font-size: 0.75rem; }
+        .badge-audit { padding: 3px 8px; border-radius: 5px; font-size: 0.65rem; font-weight: 800; }
+        .tag-create { background: #DCFCE7; color: #15803D; }
+        .tag-update { background: #E0F2FE; color: #0369A1; }
+
+        .mre-footer { background: white; padding: 1rem 2.5rem; border-top: 1px solid var(--border-color); font-size: 0.75rem; color: #64748B; display: flex; justify-content: space-between; margin-top: auto; }
+
+        .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div class="elegant-background"></div>
+
+    <header class="portal-header animate-fade">
+        <div class="d-flex align-items-center gap-3">
+            <div class="bg-white p-2 rounded-3 border d-none d-sm-block" style="box-shadow: 0 4px 8px rgba(0,0,0,0.08)">
+                <i data-lucide="scale" style="color: var(--mre-blue); width: 28px;"></i>
+            </div>
+            <div>
+                <h6 class="fw-black mb-0" style="color: var(--mre-blue); font-size: 1.4rem; letter-spacing: -0.5px;">SIA-PY</h6>
+                <p class="small mb-0 fw-bold uppercase" style="font-size: 0.75rem; letter-spacing: 1.5px; color: #000 !important;">SISTEMA INTEGRADO DE APOSTILLA ELECTRÓNICA DEL PARAGUAY</p>
+            </div>
+        </div>
+        
+        <div class="user-dropdown d-flex align-items-center gap-3">
+            <div class="a11y-container">
+                <button class="btn-a11y-trigger" id="a11yTrigger" onclick="toggleA11yMenu(event)">
+                    <i data-lucide="accessibility" style="width: 20px;"></i>
+                    <span>Accesibilidad</span>
+                    <i data-lucide="chevron-down" style="width: 14px; margin-left: 4px;"></i>
+                </button>
+                <div class="a11y-dropdown-menu" id="a11yMenu" onclick="event.stopPropagation()">
+                    <div class="a11y-section-title">Tamaño de Texto</div>
+                    <div class="text-resize-controls">
+                        <button class="btn-resize" onclick="changeFontSize(-0.1)"><i data-lucide="minus" style="width: 16px;"></i></button>
+                        <span class="font-size-display" id="fontSizeDisplay">100%</span>
+                        <button class="btn-resize" onclick="changeFontSize(0.1)"><i data-lucide="plus" style="width: 16px;"></i></button>
+                    </div>
+                    <div class="a11y-section-title mt-3">Visualización</div>
+                    <div class="switch-control">
+                        <div class="switch-label"><i data-lucide="eye-off" style="width: 16px;"></i> Escala de Grises</div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="switchGrayscale" onchange="toggleGrayscale()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="user-info-text d-none d-md-block text-end">
+                <div class="user-name fw-bold" style="font-size: 0.85rem;">Carlos González</div>
+                <div class="user-id text-muted" style="font-size: 0.7rem;">CI: 4.567.890</div>
+            </div>
+            <div class="dots-menu-trigger" id="profileTrigger" onclick="toggleUserMenu(event)">
+                <i data-lucide="user" style="width: 24px;"></i>
+            </div>
+            <div class="dropdown-menu-mre" id="userMenu">
+                <button class="dropdown-item-mre text-danger" onclick="handleLogout()">
+                    <i data-lucide="log-out" style="width: 14px;"></i> Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <aside class="main-sidebar animate-fade">
+            <nav class="p-3">
+                <p class="px-3 mb-2 text-muted fw-bold uppercase" style="font-size: 0.7rem; letter-spacing: 1.2px;">Administración</p>
+                <a href="#" class="nav-link-mre active"><i data-lucide="book-open" style="width: 18px;"></i> <span>Configuración de Leyes</span></a>
+            </nav>
+        </aside>
+
+        <main class="content-area">
+            <header class="d-flex justify-content-between align-items-end mb-4 animate-fade">
+                <div>
+                    <h2 class="fw-black text-navy m-0" style="color: var(--mre-blue); font-size: 1.8rem;">Configuración de Leyes</h2>
+                    <p class="text-muted small mb-0">Listado y configuración de base legal para aranceles</p>
+                </div>
+                <button class="btn-main shadow-sm" onclick="openModal('add')">
+                    <i data-lucide="plus-circle" style="width: 18px;"></i> Agregar Nueva Ley
+                </button>
+            </header>
+
+            <div class="grid-frame animate-fade">
+                <div class="grid-header-frame">
+                    <h4 class="fw-black text-uppercase m-0" style="color: var(--mre-blue); font-size: 0.85rem;">Listado de Leyes Vigentes</h4>
+                    <div class="position-relative" style="width: 320px;">
+                        <i data-lucide="search" class="position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:#94A3B8; width:16px;"></i>
+                        <input type="text" class="form-control-mre ps-5" placeholder="Filtrar por descripción o número...">
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="mre-table">
+                        <thead>
+                            <tr>
+                                <th width="40" class="text-center"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
+                                <th width="80" class="text-center">ID</th>
+                                <th width="140">Número de Ley</th>
+                                <th>Descripción de la Ley</th>
+                                <th width="100">Valor</th>
+                                <th width="120">Tipo</th>
+                                <th width="120">Fecha</th>
+                                <th width="150" class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leyesTableBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="grid-footer">
+                    <div><span class="text-muted small fw-bold" id="paginationInfo">Mostrando registros</span></div>
+                    
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-danger fw-bold d-flex align-items-center gap-2" id="btnInactivateLaws" disabled onclick="handleInactivarMasivo()" style="border-radius: 12px; border-width: 2px;">
+                            <i data-lucide="power" style="width: 14px;"></i> Inactivar
+                        </button>
+                        <button class="btn btn-outline-secondary fw-bold d-flex align-items-center gap-2" id="btnCancelSelection" onclick="handleCancelSelection()" style="border-radius: 12px; border-width: 2px; display: none;">
+                            <i data-lucide="x" style="width: 14px;"></i> Cancelar
+                        </button>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-1">
+                        <button class="btn-pagination" title="Anterior"><i data-lucide="chevron-left" style="width: 16px;"></i></button>
+                        <span class="page-indicator">Pág 1</span>
+                        <button class="btn-pagination" title="Siguiente"><i data-lucide="chevron-right" style="width: 16px;"></i></button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL FORMULARIO -->
+    <div class="mre-modal-overlay" id="modalLeyes">
+        <div class="mre-modal animate-fade">
+            <div class="section-title" id="modalTitle">Detalles de la Ley</div>
+            <form id="formLeyes">
+                <div class="row g-4 mb-5">
+                    <div class="col-md-4">
+                        <label class="form-label">Número de Ley <span class="text-danger">*</span></label>
+                        <input type="text" id="leyNumero" class="form-control-mre" placeholder="Ej: 1030" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Párrafo de la ley</label>
+                        <input type="text" id="leyParrafo" class="form-control-mre" placeholder="Ej: Art 1ro.">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Fecha de la ley</label>
+                        <input type="date" id="leyFecha" class="form-control-mre">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Descripción de la ley <span class="text-danger">*</span></label>
+                        <textarea id="leyDescripcion" class="form-control-mre" rows="3" placeholder="Descripción legal completa..." required></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Tipo de valor</label>
+                        <select id="leyTipoValor" class="form-control-mre">
+                            <option value="jornal">Jornal</option>
+                            <option value="dolar">Dolar</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Valor</label>
+                        <input type="text" id="leyValor" class="form-control-mre" placeholder="Ej: 0.5">
+                    </div>
+                </div>
+
+                <div id="auditSection" class="mt-4 pt-4 border-top d-none">
+                    <div class="section-title">Historial de Auditoría</div>
+                    <div class="table-responsive mt-3">
+                        <table class="audit-table">
+                            <thead>
+                                <tr><th>Fecha y Hora</th><th>Acción</th><th>Usuario</th><th>Descripción</th></tr>
+                            </thead>
+                            <tbody id="auditTimeline"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="mt-5 pt-4 border-top d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" onclick="closeModal('modalLeyes')">Cerrar</button>
+                    <button type="submit" id="btnSubmit" class="btn-main px-4 shadow-sm">Guardar Registro</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL ELIMINAR -->
+    <div class="mre-modal-overlay" id="modalDelete">
+        <div class="mre-modal" style="max-width: 450px;">
+            <div class="text-center">
+                <div class="bg-danger bg-opacity-10 text-danger rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                    <i data-lucide="alert-triangle" style="width: 30px;"></i>
+                </div>
+                <h5 class="fw-bold">¿Eliminar Registro?</h5>
+                <p class="text-muted small">Esta acción no se puede deshacer. La ley será eliminada permanentemente del sistema.</p>
+            </div>
+            <div class="d-flex justify-content-center gap-2 mt-4">
+                <button class="btn btn-light px-4 rounded-pill fw-bold" onclick="closeModal('modalDelete')">No, volver</button>
+                <button class="btn btn-danger px-4 rounded-pill fw-bold" onclick="confirmDelete()">Sí, eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL INACTIVAR MASIVO -->
+    <div class="mre-modal-overlay" id="modalInactivateConfirm">
+        <div class="mre-modal shadow-lg" style="max-width: 550px;">
+            <div class="text-center mb-4">
+                <div class="bg-warning bg-opacity-10 text-warning d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 64px; height: 64px;">
+                    <i data-lucide="power" style="width: 32px; height: 32px; color: var(--mre-amber);"></i>
+                </div>
+                <h5 class="fw-800 text-navy mb-2">Confirmar Inactivación Masiva</h5>
+                <p class="text-muted small px-3">Se inactivarán las siguientes leyes seleccionadas. Los registros dejarán de ser visibles para nuevas operaciones.</p>
+            </div>
+            <div id="inactivateItemsList" class="selection-list mb-4"></div>
+            <div class="d-flex justify-content-center gap-3 mt-4 pt-3 border-top">
+                <button type="button" class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalInactivateConfirm')">Cancelar</button>
+                <button type="button" class="btn-main px-4 shadow-sm" style="background: var(--mre-amber); border-color: var(--mre-amber);" onclick="confirmLogicalInactivation()">Confirmar Inactivación</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mre-footer">
+        <div>&copy; 2026 Ministerio de Relaciones Exteriores - Dirección de Informática</div>
+    </footer>
+
+    <script>
+        let leyes = [
+            { 
+                id: 1, numero: '1030', desc: 'Ley Nº 1030 Certificado Nacimiento - N', valor: '0,5', tipo: 'jornal', fecha: '1997-01-13', parrafo: 'Art 1ro.',
+                history: [
+                    { date: '15/01/2026 08:30', action: 'CREATE', user: 'cgonzalez', desc: 'Migración inicial de datos.' },
+                    { date: '20/01/2026 14:15', action: 'UPDATE', user: 'admin_mre', desc: 'Ajuste de valor por resolución 14/2026.' }
+                ]
+            },
+            { 
+                id: 2, numero: '1030', desc: 'Ley Nº 1030 Certificado de Defunción - N', valor: '1', tipo: 'jornal', fecha: '2008-01-13', parrafo: 'Art 1ro.',
+                history: [{ date: '10/01/2026 09:00', action: 'CREATE', user: 'sys_root', desc: 'Registro manual.' }]
+            },
+            { id: 3, numero: '1030', desc: 'Ley Nº 1030 Certificado de Matrimonio - N', valor: '0,5', tipo: 'dolar', fecha: '2008-01-13', parrafo: 'Art 1ro.', history: [] },
+            { id: 4, numero: '1030', desc: 'Ley Nº 1030 Permiso del Menor - N', valor: '0,5', tipo: 'jornal', fecha: '2008-01-13', parrafo: 'Art 1ro.', history: [] },
+            { id: 5, numero: '1030', desc: 'Ley Nº 1030 Poderes - N', valor: '1', tipo: 'dolar', fecha: '2008-01-13', parrafo: 'Art 1ro.', history: [] }
+        ];
+
+        let deleteId = null;
+
+        function renderLeyes() {
+            const body = document.getElementById('leyesTableBody');
+            body.innerHTML = leyes.map(l => `
+                <tr data-id="${l.id}">
+                    <td class="text-center"><input type="checkbox" class="row-check" onchange="updateBulkUI()"></td>
+                    <td class="text-center fw-bold text-navy">${l.id}</td>
+                    <td><span class="badge bg-light text-navy border">${l.numero}</span></td>
+                    <td><div class="fw-bold" style="font-size: 0.8rem">${l.desc}</div><div class="text-muted" style="font-size: 0.7rem">${l.parrafo}</div></td>
+                    <td class="fw-bold">${l.valor}</td>
+                    <td class="text-capitalize fw-bold ${l.tipo === 'dolar' ? 'text-primary' : 'text-muted'}">${l.tipo}</td>
+                    <td class="text-muted small">${l.fecha.split('-').reverse().join('/')}</td>
+                    <td class="text-center">
+                        <div class="d-flex justify-content-center gap-1">
+                            <button class="btn btn-sm btn-light border" onclick="openModal('view', ${l.id})"><i data-lucide="eye" style="width:14px"></i></button>
+                            <button class="btn btn-sm btn-light border" onclick="openModal('edit', ${l.id})"><i data-lucide="pencil" style="width:14px"></i></button>
+                            <button class="btn btn-sm btn-light border text-danger" onclick="handleDelete(${l.id})"><i data-lucide="trash-2" style="width:14px"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+            document.getElementById('paginationInfo').innerText = `Mostrando 1 a ${leyes.length} de ${leyes.length} registros`;
+            lucide.createIcons();
+        }
+
+        // Header funcs
+        function toggleA11yMenu(e) { e.stopPropagation(); document.getElementById('a11yMenu').classList.toggle('show'); }
+        function toggleUserMenu(e) { e.stopPropagation(); document.getElementById('userMenu').classList.toggle('show'); }
+        function changeFontSize(delta) {
+            let current = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--font-scale')) || 1;
+            let newScale = Math.min(Math.max(current + delta, 0.8), 1.5);
+            document.documentElement.style.setProperty('--font-scale', newScale);
+            document.getElementById('fontSizeDisplay').innerText = Math.round(newScale * 100) + '%';
+        }
+        function toggleGrayscale() { document.body.classList.toggle('grayscale-mode'); }
+        function handleLogout() { if(confirm('¿Cerrar sesión?')) location.reload(); }
+
+        // Modal funcs
+        function openModal(mode, id = null) {
+            const modal = document.getElementById('modalLeyes');
+            const form = document.getElementById('formLeyes');
+            const title = document.getElementById('modalTitle');
+            const btnSubmit = document.getElementById('btnSubmit');
+            const auditSection = document.getElementById('auditSection');
+            const inputs = form.querySelectorAll('input, textarea, select');
+
+            modal.style.display = 'flex';
+            inputs.forEach(i => i.disabled = false);
+            btnSubmit.style.display = 'block';
+            auditSection.classList.add('d-none');
+
+            if(mode === 'add') {
+                title.innerText = 'Agregar Nueva Ley';
+                form.reset();
+            } else {
+                const l = leyes.find(x => x.id === id);
+                title.innerText = (mode === 'edit' ? 'Editar' : 'Visualizar') + ' Ley: ' + l.numero;
+                document.getElementById('leyNumero').value = l.numero;
+                document.getElementById('leyParrafo').value = l.parrafo;
+                document.getElementById('leyFecha').value = l.fecha;
+                document.getElementById('leyDescripcion').value = l.desc;
+                document.getElementById('leyTipoValor').value = l.tipo;
+                document.getElementById('leyValor').value = l.valor;
+
+                if(mode === 'view') {
+                    inputs.forEach(i => i.disabled = true);
+                    btnSubmit.style.display = 'none';
+                    auditSection.classList.remove('d-none');
+                    const auditBody = document.getElementById('auditTimeline');
+                    auditBody.innerHTML = l.history.length > 0 ? l.history.map(h => `
+                        <tr><td><b>${h.date}</b></td><td><span class="badge-audit tag-${h.action.toLowerCase()}">${h.action}</span></td><td><b>${h.user}</b></td><td class="small">${h.desc}</td></tr>
+                    `).join('') : '<tr><td colspan="4" class="text-center py-3">Sin historial</td></tr>';
+                }
+            }
+            lucide.createIcons();
+        }
+
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        
+        function toggleSelectAll() {
+            const checked = document.getElementById('selectAll').checked;
+            document.querySelectorAll('.row-check').forEach(cb => cb.checked = checked);
+            updateBulkUI();
+        }
+
+        function updateBulkUI() {
+            const checkedCount = document.querySelectorAll('.row-check:checked').length;
+            const btnInactivate = document.getElementById('btnInactivateLaws');
+            const btnCancel = document.getElementById('btnCancelSelection');
+            const selectAll = document.getElementById('selectAll');
+            const total = document.querySelectorAll('.row-check').length;
+
+            if(btnInactivate) btnInactivate.disabled = checkedCount === 0;
+            if(btnCancel) btnCancel.style.display = checkedCount > 0 ? 'flex' : 'none';
+            if(selectAll) selectAll.checked = (checkedCount === total && total > 0);
+        }
+
+        function handleCancelSelection() {
+            document.getElementById('selectAll').checked = false;
+            document.querySelectorAll('.row-check').forEach(cb => cb.checked = false);
+            updateBulkUI();
+        }
+
+        function handleDelete(id) { deleteId = id; document.getElementById('modalDelete').style.display = 'flex'; }
+        function confirmDelete() { leyes = leyes.filter(l => l.id !== deleteId); renderLeyes(); closeModal('modalDelete'); }
+        
+        function handleInactivarMasivo() { 
+            const checks = document.querySelectorAll('.row-check:checked');
+            const listContainer = document.getElementById('inactivateItemsList');
+            listContainer.innerHTML = "";
+            
+            checks.forEach(cb => {
+                const id = parseInt(cb.closest('tr').dataset.id);
+                const law = leyes.find(l => l.id === id);
+                listContainer.innerHTML += `
+                    <div class="selection-item">
+                        <span>Número de Ley: <b>${law.numero}</b></span>
+                        <span class="badge bg-light text-muted border">ID: ${law.id}</span>
+                    </div>`;
+            });
+
+            document.getElementById('modalInactivateConfirm').style.display = 'flex';
+            lucide.createIcons();
+        }
+
+        function confirmLogicalInactivation() {
+            const checks = document.querySelectorAll('.row-check:checked');
+            checks.forEach(cb => {
+                const id = parseInt(cb.closest('tr').dataset.id);
+                console.log("Inactivando ley con ID:", id);
+            });
+            
+            closeModal('modalInactivateConfirm');
+            handleCancelSelection();
+            alert('Las leyes seleccionadas han sido inactivadas.');
+        }
+
+        document.addEventListener('click', () => {
+            ['userMenu', 'a11yMenu'].forEach(id => document.getElementById(id)?.classList.remove('show'));
+        });
+
+        window.onload = renderLeyes;
+    </script>
+</body>
+</html>
