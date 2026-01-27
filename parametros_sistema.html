@@ -271,14 +271,8 @@
             <div class="section-title" id="modalTitle">Configuración de Parámetro</div>
             <form id="formParam">
                 <div class="row g-3 mb-4">
-                    <div class="col-md-4">
-                        <label class="form-label">Tipo <span class="text-danger">*</span></label>
-                        <select id="paramType" class="form-control-mre" required>
-                            <option value="SIL">SIL</option>
-                            <option value="SIA">SIA</option>
-                        </select>
-                    </div>
-                    <div class="col-md-8">
+                    <!-- Se eliminó el campo 'Tipo' del formulario por requerimiento -->
+                    <div class="col-md-12">
                         <label class="form-label">Nombre del Parámetro <span class="text-danger">*</span></label>
                         <input type="text" id="paramName" class="form-control-mre" placeholder="Ej: cambio_dolar" required>
                     </div>
@@ -300,6 +294,7 @@
                     </div>
                 </div>
 
+                <!-- SECCIÓN DE AUDITORÍA (Visible solo en Visualizar) -->
                 <div id="auditSection" class="mt-4 pt-4 border-top d-none">
                     <div class="section-title">Historial de Auditoría</div>
                     <div class="table-responsive mt-3">
@@ -461,7 +456,7 @@
             if (mode !== 'add') {
                 const p = mockParams.find(x => x.id === id);
                 document.getElementById('modalTitle').innerText = (mode === 'view' ? 'Visualizar' : 'Editar') + ' Parámetro';
-                document.getElementById('paramType').value = p.type;
+                // El campo 'paramType' ya no se asigna pues fue removido del HTML
                 document.getElementById('paramName').value = p.name;
                 document.getElementById('paramValue').value = p.value;
                 document.getElementById('dateFrom').value = p.dateFrom.substring(0, 16);
