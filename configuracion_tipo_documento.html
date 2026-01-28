@@ -93,7 +93,7 @@
 
         /* --- MODALES Y FORMULARIOS --- */
         .mre-modal-overlay { position: fixed; inset: 0; background: rgba(0, 15, 35, 0.4); backdrop-filter: blur(4px); z-index: 4000; display: none; align-items: center; justify-content: center; padding: 15px; }
-        .mre-modal { background: white; border-radius: 20px; max-width: 1100px; width: 100%; padding: 1.5rem; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.15); max-height: 92vh; overflow-y: auto; }
+        .mre-modal { background: white; border-radius: 20px; max-width: 1150px; width: 100%; padding: 1.5rem; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.15); max-height: 92vh; overflow-y: auto; }
         
         .apartado-container { margin-bottom: 0.75rem; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; background: white; transition: var(--transition); }
         .apartado-header { 
@@ -264,21 +264,21 @@
                                 <label class="form-label">Origen</label>
                                 <select id="docOrigen" class="form-control-mre">
                                     <option value="EXT">Extranjero</option>
-                                    <option value="LOC">Local</option>
+                                    <option value="NAC">Nacional</option>
                                 </select>
                             </div>
                             <div class="col-md-2">
                                 <label class="form-label">Género</label>
                                 <select id="docGenero" class="form-control-mre">
-                                    <option value="PERS">Personal</option>
-                                    <option value="INST">Institucional</option>
+                                    <option value="PERSONAL">Personal</option>
+                                    <option value="COMERCIAL">Comercial</option>
                                 </select>
                             </div>
                             <div class="col-md-2">
                                 <label class="form-label">Grupo</label>
                                 <select id="docGrupo" class="form-control-mre">
-                                    <option value="EXT">Extranjeros</option>
                                     <option value="NAC">Nacionales</option>
+                                    <option value="COM">Comerciales</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
@@ -372,7 +372,7 @@
                             <div class="col-12 mt-2">
                                 <div class="sub-section-title mt-0">Base Legal Asociada</div>
                                 <div class="row g-2 align-items-end">
-                                    <div class="col-md-5">
+                                    <div class="col-md-3">
                                         <label class="form-label">Buscar Ley</label>
                                         <select id="lawInput" class="form-control-mre">
                                             <option value="">Seleccionar Ley...</option>
@@ -390,15 +390,23 @@
                                             <option value="89">Ley 4033 - Tasas Consulares</option>
                                         </select>
                                     </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Cuenta de Depósito</label>
+                                        <select id="lawAccount" class="form-control-mre">
+                                            <option value="">Seleccionar Cuenta...</option>
+                                            <option value="00000094555551442">00000094555551442</option>
+                                            <option value="00000094555551443">00000094555551443</option>
+                                        </select>
+                                    </div>
                                     <div class="col-md-2"><label class="form-label">Desde</label><input type="date" id="lawDesde" class="form-control-mre"></div>
                                     <div class="col-md-2"><label class="form-label">Hasta</label><input type="date" id="lawHasta" class="form-control-mre"></div>
-                                    <div class="col-md-3"><button type="button" class="btn-main w-100" onclick="addItem('law')">Agregar</button></div>
+                                    <div class="col-md-2"><button type="button" class="btn-main w-100" onclick="addItem('law')">Agregar</button></div>
                                 </div>
                                 <div class="table-container-embedded mt-2">
                                     <table class="mre-table mb-0">
                                         <thead>
                                             <tr>
-                                                <th width="70">ID</th><th>Referencia Ley</th><th>Desde</th><th>Hasta</th><th width="40"></th>
+                                                <th width="70">ID</th><th>Referencia Ley</th><th>Cuenta</th><th>Vigencia</th><th width="40"></th>
                                             </tr>
                                         </thead>
                                         <tbody id="lawsTableBody"><tr><td colspan="5" class="text-center text-muted small py-2">Sin leyes asignadas</td></tr></tbody>
@@ -409,7 +417,7 @@
                             <div class="col-12 mt-2">
                                 <div class="sub-section-title">Excepciones Aplicables</div>
                                 <div class="row g-2 align-items-end">
-                                    <div class="col-md-5">
+                                    <div class="col-md-3">
                                         <label class="form-label">Ley de Excepción</label>
                                         <select id="excInput" class="form-control-mre">
                                             <option value="">Seleccionar Excepción...</option>
@@ -419,15 +427,23 @@
                                             <option value="E4">Art 67 de la Constitución Nacional exoneración para indígenas</option>
                                         </select>
                                     </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Cuenta de Depósito</label>
+                                        <select id="excAccount" class="form-control-mre">
+                                            <option value="">Seleccionar Cuenta...</option>
+                                            <option value="00000094555551442">00000094555551442</option>
+                                            <option value="00000094555551443">00000094555551443</option>
+                                        </select>
+                                    </div>
                                     <div class="col-md-2"><label class="form-label">Desde</label><input type="date" id="excDesde" class="form-control-mre"></div>
                                     <div class="col-md-2"><label class="form-label">Hasta</label><input type="date" id="excHasta" class="form-control-mre"></div>
-                                    <div class="col-md-3"><button type="button" class="btn-main w-100" onclick="addItem('exc')">Agregar</button></div>
+                                    <div class="col-md-2"><button type="button" class="btn-main w-100" onclick="addItem('exc')">Agregar</button></div>
                                 </div>
                                 <div class="table-container-embedded mt-2">
                                     <table class="mre-table mb-0">
                                         <thead>
                                             <tr>
-                                                <th width="70">ID</th><th>Descripción Excepción</th><th>Desde</th><th>Hasta</th><th width="40"></th>
+                                                <th width="70">ID</th><th>Descripción Excepción</th><th>Cuenta</th><th>Vigencia</th><th width="40"></th>
                                             </tr>
                                         </thead>
                                         <tbody id="excTableBody"><tr><td colspan="5" class="text-center text-muted small py-2">Sin excepciones asignadas</td></tr></tbody>
@@ -523,8 +539,8 @@
     <script>
         let mockData = [
             { id: 1030, name: 'Certificado de Antecedentes E', origen: 'Extranjero', emision: 'MANUAL', firma: 'OLÓGRAFA', estado: 'ACTIVO' },
-            { id: 1031, name: 'Certificado de Nacimiento N', origen: 'Local', emision: 'AUTOMÁTICA', firma: 'ELECTRÓNICA', estado: 'ACTIVO' },
-            { id: 1032, name: 'Certificado de Defunción N', origen: 'Local', emision: 'VAL. PREVIA', firma: 'ELECTRÓNICA', estado: 'ACTIVO' }
+            { id: 1031, name: 'Certificado de Nacimiento N', origen: 'Nacional', emision: 'AUTOMÁTICA', firma: 'ELECTRÓNICA', estado: 'ACTIVO' },
+            { id: 1032, name: 'Certificado de Defunción N', origen: 'Nacional', emision: 'VAL. PREVIA', firma: 'ELECTRÓNICA', estado: 'ACTIVO' }
         ];
 
         const mockOffices = {
@@ -615,7 +631,9 @@
                 offSelect.disabled = true;
             } else {
                 const inputId = type === 'law' ? 'lawInput' : 'excInput';
+                const accountId = type === 'law' ? 'lawAccount' : 'excAccount';
                 const select = document.getElementById(inputId);
+                const account = document.getElementById(accountId);
                 const desde = document.getElementById(type === 'law' ? 'lawDesde' : 'excDesde').value;
                 const hasta = document.getElementById(type === 'law' ? 'lawHasta' : 'excHasta').value;
 
@@ -626,12 +644,13 @@
                 row.innerHTML = `
                     <td class="text-center fw-bold text-navy">${select.value}</td>
                     <td>${info[0]}</td>
-                    <td>${desde || '-'}</td>
-                    <td>${hasta || '-'}</td>
+                    <td class="small fw-bold">${account.value || '---'}</td>
+                    <td class="small">${desde || '-'} a ${hasta || '-'}</td>
                     <td class="text-center"><button type="button" class="btn btn-sm text-danger border-0 p-0" onclick="this.closest('tr').remove()"><i data-lucide="trash-2" style="width:14px"></i></button></td>
                 `;
                 body.appendChild(row);
                 select.value = "";
+                account.value = "";
             }
             lucide.createIcons();
         }
