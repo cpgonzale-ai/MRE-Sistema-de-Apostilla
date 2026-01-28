@@ -210,8 +210,8 @@
                                 <th width="60" class="text-center">ID</th>
                                 <th>Nombre del Tipo de Documento</th>
                                 <th>Origen</th>
-                                <th>Emisión</th>
-                                <th>Firma</th>
+                                <th>Tipo de Emisión</th>
+                                <th>Tipo de Firma</th>
                                 <th>Estado</th>
                                 <th width="140" class="text-center">Acciones</th>
                             </tr>
@@ -282,7 +282,7 @@
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label">Emisión</label>
+                                <label class="form-label">Tipo de Emisión</label>
                                 <select id="docEmision" class="form-control-mre">
                                     <option value="AUT">Automática</option>
                                     <option value="PRE">Presencial</option>
@@ -290,10 +290,11 @@
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label">Firma</label>
+                                <label class="form-label">Tipo de Firma</label>
                                 <select id="docFirma" class="form-control-mre">
-                                    <option value="ELE">Electrónica / QR</option>
-                                    <option value="OLO">Ológrafa / Sello</option>
+                                    <option value="ELE">Electrónica</option>
+                                    <option value="VER">Verificable</option>
+                                    <option value="OLO">Ológrafa</option>
                                 </select>
                             </div>
                             <div class="col-md-3 d-none" id="containerDocEstado">
@@ -375,6 +376,16 @@
                                         <label class="form-label">Buscar Ley</label>
                                         <select id="lawInput" class="form-control-mre">
                                             <option value="">Seleccionar Ley...</option>
+                                            <option value="1030_1">Ley Nº 1030 Certificado Nacimiento - N</option>
+                                            <option value="1030_2">Ley Nº 1030 Certificado de Defuncion - N</option>
+                                            <option value="1030_3">Ley Nº 1030 Certificado de Matrimonio - N</option>
+                                            <option value="1030_4">Ley Nº 1030 Permiso del Menor - N</option>
+                                            <option value="1030_5">Ley Nº 1030 Poderes - N</option>
+                                            <option value="1030_6">Ley Nº 1030 Permiso para Conducir - N</option>
+                                            <option value="1030_7">Ley Nº 1030 Legalización de Pasaporte Policial - N</option>
+                                            <option value="1030_8">Ley Nº 1030 Legalización de Documento Comercial - N</option>
+                                            <option value="1030_9">Ley Nº 1030 Certificado Fitosanitario - N</option>
+                                            <option value="1030_10">Ley Nº 1030 Sentencia - N</option>
                                             <option value="49">Ley 1030 - Antecedentes</option>
                                             <option value="89">Ley 4033 - Tasas Consulares</option>
                                         </select>
@@ -402,8 +413,10 @@
                                         <label class="form-label">Ley de Excepción</label>
                                         <select id="excInput" class="form-control-mre">
                                             <option value="">Seleccionar Excepción...</option>
-                                            <option value="52">Res. 162 - Fuero Pobreza</option>
-                                            <option value="73">Ley 431 - Excombatientes</option>
+                                            <option value="E1">Resol Nº 162 Fuero de pobreza para documentos personales de paraguayos</option>
+                                            <option value="E2">Ley Nº 431 Art. 20 Excombatientes y esposas</option>
+                                            <option value="E3">Ley Nº 110 Franquicias Diplomáticas</option>
+                                            <option value="E4">Art 67 de la Constitución Nacional exoneración para indígenas</option>
                                         </select>
                                     </div>
                                     <div class="col-md-2"><label class="form-label">Desde</label><input type="date" id="excDesde" class="form-control-mre"></div>
