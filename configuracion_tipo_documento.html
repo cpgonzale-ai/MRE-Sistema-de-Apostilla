@@ -1,1 +1,1052 @@
-d
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIA-PY | Tipos de Documentos</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* --- ESTILOS DEL CÓDIGO PROPORCIONADO (BASE) --- */
+        :root {
+            --mre-blue: #002855;
+            --mre-blue-light: #0038A8;
+            --mre-red: #D52B1E;
+            --mre-green: #10B981;
+            --mre-amber: #F59E0B;
+            --soft-bg: #f0f4f8; 
+            --border-color: #E2E8F0;
+            --input-bg: #F8FAFC;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            --card-shadow: 0 10px 15px -3px rgba(0, 40, 85, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-scale: 1; 
+            --base-font-size: 16px;
+        }
+
+        html { font-size: calc(var(--base-font-size) * var(--font-scale)); }
+
+        /* --- ESTILO TOOLTIP PERSONALIZADO --- */
+        .tooltip {
+            --bs-tooltip-bg: #ffffff;
+            --bs-tooltip-color: #000000;
+            --bs-tooltip-opacity: 1;
+            --bs-tooltip-padding-y: 0.5rem;
+            --bs-tooltip-padding-x: 1rem;
+            --bs-tooltip-border-radius: 8px;
+            --bs-tooltip-font-size: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .tooltip-inner {
+            border: 1px solid var(--border-color);
+            font-weight: 600;
+            text-align: center;
+        }
+
+        /* --- MODOS DE ACCESIBILIDAD --- */
+        body.high-contrast {
+            --mre-blue: #000000; --mre-blue-light: #000000; --mre-red: #D50000;
+            --soft-bg: #FFFFFF; --border-color: #000000; --input-bg: #FFFFFF;
+            --text-main: #000000; --text-muted: #000000; --card-shadow: none;
+        }
+        body.grayscale-mode { filter: grayscale(100%); }
+
+        body { 
+            font-family: 'Inter', sans-serif; margin: 0; background-color: var(--soft-bg); 
+            color: var(--text-main); overflow: hidden; display: flex; flex-direction: column; height: 100vh;
+        }
+
+        .elegant-background { 
+            position: fixed; inset: 0; z-index: -1; background-color: #f8fafc; 
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(0, 56, 168, 0.08) 0px, transparent 50%), 
+                radial-gradient(at 100% 0%, rgba(213, 43, 30, 0.05) 0px, transparent 50%);
+        }
+
+        /* --- CABECERA --- */
+        .portal-header { 
+            display: flex; justify-content: space-between; align-items: center; background: white; 
+            padding: 1.25rem 2.5rem; box-shadow: 0 4px 10px -1px rgba(0,0,0,0.05); 
+            border-bottom: 1px solid var(--border-color); position: relative; z-index: 2000;
+        }
+
+        .mobile-toggle-btn { background: transparent; border: none; color: var(--mre-blue); cursor: pointer; padding: 4px; display: none; border-radius: 8px; transition: var(--transition); }
+        
+        .a11y-container { position: relative; }
+        .btn-a11y-trigger {
+            background: #F8FAFC; border: 1px solid var(--border-color); color: var(--mre-blue);
+            border-radius: 12px; padding: 0.5rem 1rem; font-weight: 700; font-size: 0.8rem;
+            display: flex; align-items: center; gap: 8px; transition: var(--transition);
+        }
+        .a11y-dropdown-menu {
+            position: absolute; top: calc(100% + 10px); right: 0; 
+            background: white; border-radius: 16px; width: 280px;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.15); border: 1px solid var(--border-color);
+            display: none; z-index: 3000; padding: 1rem; animation: fadeIn 0.2s ease-out;
+        }
+        .a11y-dropdown-menu.show { display: block; }
+        .a11y-section-title { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem; }
+        .text-resize-controls { display: flex; align-items: center; justify-content: space-between; background: #F8FAFC; padding: 8px; border-radius: 12px; border: 1px solid var(--border-color); }
+        .btn-resize { background: white; border: 1px solid var(--border-color); border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .font-size-display { font-weight: 800; color: var(--mre-blue); font-size: 0.85rem; }
+        .switch-control { display: flex; align-items: center; justify-content: space-between; padding: 4px 0; }
+        .switch-label { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #CBD5E1; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--mre-blue-light); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        .dots-menu-trigger {
+            width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+            border-radius: 12px; cursor: pointer; transition: var(--transition); color: var(--text-muted);
+            background: #F8FAFC; border: 1px solid var(--border-color);
+        }
+        .dropdown-menu-mre { 
+            position: absolute; top: calc(100% + 10px); right: 0; background: white; border-radius: 12px; 
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); border: 1px solid var(--border-color); 
+            width: 180px; display: none; z-index: 3000; overflow: hidden; animation: fadeIn 0.2s ease-out;
+        }
+        .dropdown-menu-mre.show { display: block; }
+        .dropdown-item-mre { padding: 12px 16px; border: none; background: none; width: 100%; text-align: left; font-size: 0.9rem; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 10px; }
+        .dropdown-item-mre:hover { background: #F8FAFC; color: var(--mre-red); }
+
+        /* --- LAYOUT PRINCIPAL --- */
+        .app-container { display: flex; flex: 1; overflow: hidden; position: relative; }
+
+        .main-sidebar {
+            width: 280px; background: white; border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column; z-index: 1000;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.02); transition: var(--transition);
+            overflow-x: hidden;
+        }
+
+        .nav-menu { padding: 1.5rem 1rem; flex: 1; }
+        .nav-link-mre {
+            display: flex; align-items: center; gap: 12px; padding: 0.85rem 1rem;
+            color: var(--text-muted); text-decoration: none; border-radius: 12px;
+            font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; transition: var(--transition);
+            white-space: nowrap;
+        }
+        .nav-link-mre:hover { background: #F1F5F9; color: var(--mre-blue); }
+        .nav-link-mre.active { background: #f0f7ff; color: var(--mre-blue-light); box-shadow: 0 4px 6px -1px rgba(0, 40, 85, 0.05); }
+
+        .content-area { flex: 1; padding: 2rem 3rem; overflow-y: auto; position: relative; }
+        
+        /* --- GRILLA --- */
+        .grid-frame { 
+            background: white; border-radius: 20px; box-shadow: var(--card-shadow); 
+            border: 1px solid #E2E8F0; position: relative; overflow: hidden;
+            display: flex; flex-direction: column; margin-bottom: 2rem;
+        }
+        .grid-frame::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(to right, var(--mre-red), var(--mre-blue)); }
+        
+        .grid-header-frame { background-color: #F1F5F9; padding: 1rem 1.5rem; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; }
+
+        .mre-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 0.85rem 1.5rem; border-bottom: 2px solid #E2E8F0; }
+        .mre-table td { padding: 0.85rem 1.5rem; font-size: 0.8rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
+
+        .btn-main { background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); color: #ffffff; border: none; border-radius: 12px; padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.85rem; transition: var(--transition); }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 40, 85, 0.2); color: white; }
+
+        .btn-action-table { 
+            padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border-color); 
+            background: white; color: var(--text-muted); transition: var(--transition);
+            display: inline-flex; align-items: center; justify-content: center;
+        }
+        .btn-action-table:hover { background: var(--input-bg); color: var(--mre-blue); border-color: var(--mre-blue-light); }
+
+        /* --- FOOTER & PAGINADO (DEL CÓDIGO NUEVO) --- */
+        .grid-footer { padding: 1rem 1.5rem; background-color: #F8FAFC; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .btn-pagination { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #E2E8F0; border-radius: 8px; color: #64748B; cursor: pointer; transition: var(--transition); }
+        .btn-pagination:hover:not(:disabled) { background: var(--mre-blue); color: white; border-color: var(--mre-blue); }
+        .page-indicator { font-size: 0.85rem; font-weight: 700; color: var(--mre-blue); padding: 0 8px; }
+
+        .mre-footer { background: white; padding: 1rem 2.5rem; border-top: 1px solid var(--border-color); font-size: 0.75rem; color: #64748B; display: flex; justify-content: space-between; margin-top: auto; }
+
+        /* --- ESTILOS ESPECÍFICOS DE LA GESTIÓN DE DOCUMENTOS (MANTENIDOS) --- */
+        .mre-modal-overlay { position: fixed; inset: 0; background: rgba(0, 40, 85, 0.4); backdrop-filter: blur(4px); z-index: 4000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .mre-modal { background: white; border-radius: 24px; max-width: 1200px; width: 100%; padding: 2.5rem; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.2); max-height: 95vh; overflow-y: auto; }
+        
+        .modal-sm-custom { max-width: 450px; border-radius: 16px; text-align: center; padding: 2rem; }
+
+        .apartado-container { margin-bottom: 0.75rem; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; background: white; transition: var(--transition); }
+        .apartado-header { 
+            background: #F8FAFC; padding: 0.85rem 1.25rem; cursor: pointer; display: flex; 
+            justify-content: space-between; align-items: center; transition: var(--transition);
+        }
+        .apartado-header:hover { background: #F1F5F9; }
+        .apartado-container.active { border-color: var(--mre-blue-light); box-shadow: 0 4px 10px rgba(0, 56, 168, 0.05); }
+        .apartado-container.active .apartado-header { border-bottom: 1px solid var(--border-color); background: white; }
+        
+        .apartado-title { font-size: 0.75rem; font-weight: 800; color: var(--mre-blue); text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
+        .apartado-icon-step { width: 22px; height: 22px; border-radius: 50%; background: var(--border-color); color: var(--text-muted); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 800; }
+        .apartado-container.active .apartado-icon-step { background: var(--mre-blue-light); color: white; }
+
+        .apartado-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; padding: 0 1.25rem; }
+        .apartado-container.active .apartado-content { max-height: 3000px; padding: 1.25rem; }
+
+        .form-label { font-size: 0.62rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.3rem; display: block; letter-spacing: 0.5px; }
+        .form-control-mre { background-color: var(--input-bg); border: 1px solid #E2E8F0; border-radius: 8px; padding: 0.45rem 0.75rem; font-size: 0.8rem; width: 100%; transition: var(--transition); }
+        .form-control-mre:focus { outline: none; border-color: var(--mre-blue-light); box-shadow: 0 0 0 3px rgba(0, 56, 168, 0.08); }
+        .form-control-mre:disabled { background-color: #F1F5F9; color: #1E293B; border-color: #CBD5E1; opacity: 0.8; }
+
+        .sub-section-title { font-size: 0.7rem; font-weight: 800; color: var(--mre-blue-light); text-transform: uppercase; margin: 1rem 0 0.75rem 0; padding-left: 0.5rem; border-left: 3px solid var(--mre-blue-light); }
+
+        .dual-list-wrapper { display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem; background: #F8FAFC; padding: 1rem; border-radius: 12px; border: 1px solid #E2E8F0; }
+        .list-container { flex: 1; background: white; border: 1px solid #E2E8F0; border-radius: 10px; height: 220px; display: flex; flex-direction: column; overflow: hidden; }
+        .list-header { background: #F1F5F9; padding: 6px 10px; border-bottom: 1px solid #E2E8F0; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; color: #64748B; display: flex; justify-content: space-between; }
+        .list-content { flex: 1; overflow-y: auto; padding: 5px; }
+        .list-item-field { padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: 0.2s; border: 1px solid transparent; margin-bottom: 2px; }
+        .list-item-field:hover { background: #F8FAFC; border-color: #CBD5E1; }
+        .list-item-field.selected { background: #E0F2FE; border-color: var(--mre-blue-light); }
+        .btn-transfer { width: 32px; height: 32px; border-radius: 8px; border: 1px solid #E2E8F0; background: white; color: var(--mre-blue); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .btn-transfer:hover:not(:disabled) { background: var(--mre-blue); color: white; }
+        .btn-transfer:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .table-associated { font-size: 0.7rem; width: 100%; border-collapse: collapse; }
+        .table-associated td { padding: 6px 10px; border-bottom: 1px solid #F1F5F9; }
+
+        .badge-status { padding: 3px 8px; border-radius: 5px; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; }
+        .status-active { background: #DCFCE7; color: #15803D; }
+
+        .table-container-embedded { border: 1px solid #E2E8F0; border-radius: 10px; overflow: hidden; margin-bottom: 1rem; background: white; }
+        .table-container-embedded .mre-table td { padding: 0.5rem 0.75rem; font-size: 0.7rem; }
+        .table-container-embedded .mre-table th { padding: 0.6rem 0.75rem; font-size: 0.6rem; }
+
+        .mre-toast {
+            position: fixed; bottom: 2rem; right: 2rem; background: var(--mre-blue); color: white;
+            padding: 0.85rem 1.25rem; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            display: none; align-items: center; gap: 10px; z-index: 5000; font-size: 0.85rem;
+        }
+
+        .animate-fade { animation: fadeIn 0.3s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Lista de selección para confirmación */
+        .selection-list { max-height: 150px; overflow-y: auto; border: 1px solid #E2E8F0; border-radius: 12px; padding: 0.5rem; background: #F8FAFC; }
+        .selection-item { padding: 0.5rem 0.75rem; border-bottom: 1px solid #E2E8F0; font-size: 0.8rem; font-weight: 600; display: flex; justify-content: space-between; }
+        .selection-item:last-child { border-bottom: none; }
+    </style>
+</head>
+<body>
+
+    <div class="elegant-background"></div>
+
+    <header class="portal-header animate-fade">
+        <div class="d-flex align-items-center gap-3">
+            <button class="mobile-toggle-btn" onclick="toggleSidebar()" aria-label="Abrir menú de navegación" data-bs-toggle="tooltip" title="Abrir Menú Lateral">
+                <i data-lucide="menu" style="width: 26px;"></i>
+            </button>
+            <div class="bg-white p-2 rounded-3 border d-none d-sm-block" style="box-shadow: 0 4px 8px rgba(0,0,0,0.08)">
+                <i data-lucide="globe" style="color: var(--mre-blue); width: 28px;"></i>
+            </div>
+            <div>
+                <h6 class="fw-black mb-0" style="color: var(--mre-blue); font-size: 1.4rem; letter-spacing: -0.5px;">SIA-PY</h6>
+                <p class="small mb-0 fw-bold uppercase" style="font-size: 0.75rem; letter-spacing: 1.5px; color: #000 !important;">SISTEMA INTEGRADO DE APOSTILLA ELECTRÓNICA DEL PARAGUAY</p>
+            </div>
+        </div>
+        
+        <div class="user-dropdown d-flex align-items-center gap-3">
+            <div class="a11y-container">
+                <button class="btn-a11y-trigger" id="a11yTrigger" onclick="toggleA11yMenu(event)" data-bs-toggle="tooltip" title="Opciones de Accesibilidad">
+                    <i data-lucide="accessibility" style="width: 20px;"></i>
+                    <span>Accesibilidad</span>
+                    <i data-lucide="chevron-down" class="lucide-chevron-down" style="width: 14px; margin-left: 4px;"></i>
+                </button>
+                <div class="a11y-dropdown-menu" id="a11yMenu" onclick="event.stopPropagation()">
+                    <div class="a11y-section-title">Tamaño de Texto</div>
+                    <div class="text-resize-controls">
+                        <button class="btn-resize" onclick="changeFontSize(-0.1)" data-bs-toggle="tooltip" title="Reducir Fuente"><i data-lucide="minus" style="width: 16px;"></i></button>
+                        <span class="font-size-display" id="fontSizeDisplay">100%</span>
+                        <button class="btn-resize" onclick="changeFontSize(0.1)" data-bs-toggle="tooltip" title="Aumentar Fuente"><i data-lucide="plus" style="width: 16px;"></i></button>
+                    </div>
+                    <div class="a11y-section-title mt-3">Visualización</div>
+                    <div class="switch-control">
+                        <div class="switch-label"><i data-lucide="eye-off" style="width: 16px;"></i> Escala de Grises</div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="switchGrayscale" onchange="toggleGrayscale()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="user-info-text d-none d-md-block text-end">
+                <div class="user-name fw-bold" style="font-size: 0.85rem;">Carlos González</div>
+                <div class="user-id text-muted" style="font-size: 0.7rem;">CI: 4.567.890</div>
+            </div>
+            <div class="dots-menu-trigger" id="profileTrigger" onclick="toggleUserMenu(event)" data-bs-toggle="tooltip" title="Perfil de Usuario">
+                <i data-lucide="user" style="width: 24px;"></i>
+            </div>
+            <div class="dropdown-menu-mre" id="userMenu">
+                <button class="dropdown-item-mre text-danger" onclick="handleLogout()" data-bs-toggle="tooltip" title="Finalizar sesión actual" data-bs-placement="left">
+                    <i data-lucide="log-out" style="width: 14px;"></i> Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <aside class="main-sidebar animate-fade" id="mainSidebar">
+            <nav class="nav-menu p-3">
+                <p class="px-3 mb-2 text-muted fw-bold uppercase" style="font-size: 0.7rem; letter-spacing: 1.2px;">Administración</p>
+                <a href="#" class="nav-link-mre active"><i data-lucide="file-text" style="width: 18px;"></i> <span>Tipos de documentos</span></a>
+                <a href="#" class="nav-link-mre"><i data-lucide="users" style="width: 18px;"></i> <span>Usuarios</span></a>
+                <a href="#" class="nav-link-mre"><i data-lucide="shield-check" style="width: 18px;"></i> <span>Grupos y Permisos</span></a>
+                <a href="#" class="nav-link-mre"><i data-lucide="settings-2" style="width: 18px;"></i> <span>Configuración de referencias</span></a>
+                <a href="#" class="nav-link-mre"><i data-lucide="layout-grid" style="width: 18px;"></i> <span>Configuración de campos</span></a>
+            </nav>
+        </aside>
+
+        <main class="content-area">
+            <header class="d-flex justify-content-between align-items-end mb-4 animate-fade">
+                <div>
+                    <h2 class="fw-black text-navy m-0">Tipo de documento</h2>
+                    <p class="text-muted small mb-0">Configuración modular y paramétrica de registros</p>
+                </div>
+                <button class="btn-main d-inline-flex align-items-center gap-2 shadow-sm" onclick="openDocModal('add')">
+                    <i data-lucide="plus-circle" style="width: 18px;"></i> Nuevo Documento
+                </button>
+            </header>
+
+            <div class="grid-frame animate-fade">
+                <div class="grid-header-frame">
+                    <h4 class="fw-black text-uppercase m-0" style="color: var(--mre-blue); font-size: 0.8rem;">Registros Activos</h4>
+                    <div class="position-relative" style="width: 300px;">
+                        <i data-lucide="search" class="position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:#94A3B8; width:16px;"></i>
+                        <input type="text" class="form-control-mre ps-5" placeholder="Buscar por nombre o ID...">
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="mre-table">
+                        <thead>
+                            <tr>
+                                <th width="40" class="text-center"><input type="checkbox" id="selectAllGroups" onchange="toggleSelectAllItems()" data-bs-toggle="tooltip" title="Marcar todos"></th>
+                                <th width="60" class="text-center">ID</th>
+                                <th>Nombre del Tipo de Documento</th>
+                                <th>Origen</th>
+                                <th>Tipo de Emisión</th>
+                                <th>Tipo de Firma</th>
+                                <th>Estado</th>
+                                <th width="160" class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="docsTableBody"></tbody>
+                    </table>
+                </div>
+
+                <!-- Footer del grid con paginación y acciones masivas -->
+                <div class="grid-footer">
+                    <div><span class="text-muted small fw-bold" id="paginationInfo">Mostrando registros</span></div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-danger fw-bold d-flex align-items-center gap-2" id="btnInactivateGroups" disabled onclick="handleInactivateSelection()" style="border-radius: 12px; border-width: 2px;" data-bs-toggle="tooltip" title="Inactivar documentos seleccionados">
+                            <i data-lucide="power" style="width: 14px;"></i> Inactivar
+                        </button>
+                        <button class="btn btn-outline-secondary fw-bold d-flex align-items-center gap-2" id="btnCancelSelection" onclick="handleCancelSelection()" style="border-radius: 12px; border-width: 2px; display: none;" data-bs-toggle="tooltip" title="Limpiar selección">
+                            <i data-lucide="x" style="width: 14px;"></i> Cancelar
+                        </button>
+                    </div>
+                    <div class="d-flex align-items-center gap-1">
+                        <button class="btn-pagination" title="Anterior"><i data-lucide="chevron-left" style="width: 16px;"></i></button>
+                        <span class="page-indicator">Pág 1</span>
+                        <button class="btn-pagination" title="Siguiente"><i data-lucide="chevron-right" style="width: 16px;"></i></button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="mre-footer">
+        <div>&copy; 2026 Ministerio de Relaciones Exteriores - Dirección de Informática</div>
+    </footer>
+
+    <!-- MODAL DETALLE DOCUMENTO -->
+    <div class="mre-modal-overlay" id="modalDoc">
+        <div class="mre-modal animate-fade">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                    <h6 class="fw-900 text-navy mb-1" id="modalTitle">Nuevo Tipo de Documento</h6>
+                    <p class="text-muted small mb-0" style="font-size: 0.7rem;">Información ordenada por apartados operativos.</p>
+                </div>
+                <button class="btn-action-table border-0 text-muted" onclick="closeModal('modalDoc')"><i data-lucide="x" style="width: 20px;"></i></button>
+            </div>
+
+            <form id="formDoc">
+                
+                <!-- APARTADO 1: INFORMACIÓN GENERAL -->
+                <div class="apartado-container active" id="apartado1">
+                    <div class="apartado-header" onclick="toggleApartado(1)">
+                        <div class="apartado-title">
+                            <span class="apartado-icon-step">1</span>
+                            Información Principal y Origen
+                        </div>
+                        <i data-lucide="chevron-down" class="text-muted" style="width: 16px;"></i>
+                    </div>
+                    <div class="apartado-content">
+                        <div class="row g-3">
+                            <div class="col-md-9">
+                                <label class="form-label">Nombre del Documento <span class="text-danger">*</span></label>
+                                <input type="text" id="docName" class="form-control-mre" placeholder="Ej: Certificado de Antecedentes Penales" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Tipo de evento <span class="text-danger">*</span></label>
+                                <select id="docEvento" class="form-control-mre">
+                                    <option value="APO_LEG">Apostilla o Legalización</option>
+                                    <option value="LEG">Legalización</option>
+                                    <option value="APO">Apostilla</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-2">
+                                <label class="form-label">Origen</label>
+                                <select id="docOrigen" class="form-control-mre">
+                                    <option value="EXT">Extranjero</option>
+                                    <option value="NAC">Nacional</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Género</label>
+                                <select id="docGenero" class="form-control-mre">
+                                    <option value="PERSONAL">Personal</option>
+                                    <option value="COMERCIAL">Comercial</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Grupo</label>
+                                <select id="docGrupo" class="form-control-mre">
+                                    <option value="NAC">Nacionales</option>
+                                    <option value="COM">Comerciales</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Tipo de Emisión</label>
+                                <select id="docEmision" class="form-control-mre">
+                                    <option value="AUT">Automática</option>
+                                    <option value="PRE">Presencial</option>
+                                    <option value="VAL">Validación previa</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Tipo de Firma</label>
+                                <select id="docFirma" class="form-control-mre">
+                                    <option value="ELE">Electrónica</option>
+                                    <option value="VER">Verificable</option>
+                                    <option value="OLO">Ológrafa</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 d-none" id="containerDocEstado">
+                                <label class="form-label">Estado Registro</label>
+                                <select id="docEstado" class="form-control-mre fw-bold">
+                                    <option value="ACTIVO">ACTIVO</option>
+                                    <option value="INACTIVO">INACTIVO</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="sub-section-title mode-edit-only">Oficinas y Entidades Vinculadas</div>
+                        <div class="row g-2 align-items-end p-3 bg-light rounded-3 border mb-2 mode-edit-only">
+                            <div class="col-md-5">
+                                <label class="form-label">Entidad Responsable</label>
+                                <select id="entityInput" class="form-control-mre" onchange="handleEntityChange()">
+                                    <option value="">-- Seleccionar Entidad --</option>
+                                    <option value="1">Ministerio de Relaciones Exteriores</option>
+                                    <option value="2">Ministerio de Salud Pública</option>
+                                    <option value="3">Ministerio de Educación y Ciencias</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Oficina / Dependencia</label>
+                                <select id="officeInput" class="form-control-mre" disabled>
+                                    <option value="">-- Seleccionar Oficina --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <button type="button" class="btn-main w-100 action-btn" onclick="addItem('office')">
+                                    <i data-lucide="link" class="me-1" style="width:12px"></i> Vincular
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="table-container-embedded m-0 shadow-sm mt-2">
+                            <table class="mre-table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th width="80" class="text-center">ID Ent.</th>
+                                        <th>Entidad</th>
+                                        <th width="80" class="text-center">ID Ofi.</th>
+                                        <th>Oficina</th>
+                                        <th width="40" class="text-center action-col"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="officesTableBody">
+                                    <tr><td colspan="5" class="text-center text-muted italic p-2 small">No hay oficinas vinculadas</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="text-end mt-3">
+                            <button type="button" class="btn btn-primary btn-sm fw-bold px-4 rounded-pill" onclick="toggleApartado(2)">
+                                Siguiente: Aranceles <i data-lucide="arrow-right" class="ms-1" style="width:14px"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- APARTADO 2: ARANCELES -->
+                <div class="apartado-container" id="apartado2">
+                    <div class="apartado-header" onclick="toggleApartado(2)">
+                        <div class="apartado-title"><span class="apartado-icon-step">2</span> Aranceles, Leyes y Excepciones</div>
+                        <i data-lucide="chevron-down" class="text-muted" style="width: 16px;"></i>
+                    </div>
+                    <div class="apartado-content">
+                        <div class="row g-3 p-3 bg-light rounded-3 border mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Tiempo validación liquidación</label>
+                                <input type="text" class="form-control-mre" placeholder="Ej: 48 horas">
+                            </div>
+                            
+                            <div class="col-12 mt-2">
+                                <div class="sub-section-title mt-0">Base Legal Asociada</div>
+                                <div class="row g-2 align-items-end mode-edit-only">
+                                    <div class="col-md-3">
+                                        <label class="form-label">Buscar Ley</label>
+                                        <select id="lawInput" class="form-control-mre">
+                                            <option value="">Seleccionar Ley...</option>
+                                            <option value="1030_1">Ley Nº 1030 Certificado Nacimiento - N</option>
+                                            <option value="1030_2">Ley Nº 1030 Certificado de Defuncion - N</option>
+                                            <option value="1030_3">Ley Nº 1030 Certificado de Matrimonio - N</option>
+                                            <option value="1030_4">Ley Nº 1030 Permiso del Menor - N</option>
+                                            <option value="1030_5">Ley Nº 1030 Poderes - N</option>
+                                            <option value="1030_6">Ley Nº 1030 Permiso para Conducir - N</option>
+                                            <option value="1030_7">Ley Nº 1030 Legalización de Pasaporte Policial - N</option>
+                                            <option value="1030_8">Ley Nº 1030 Legalización de Documento Comercial - N</option>
+                                            <option value="1030_9">Ley Nº 1030 Certificado Fitosanitario - N</option>
+                                            <option value="1030_10">Ley Nº 1030 Sentencia - N</option>
+                                            <option value="49">Ley 1030 - Antecedentes</option>
+                                            <option value="89">Ley 4033 - Tasas Consulares</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Cuenta de Depósito</label>
+                                        <select id="lawAccount" class="form-control-mre">
+                                            <option value="">Seleccionar Cuenta...</option>
+                                            <option value="00000094555551442">00000094555551442</option>
+                                            <option value="00000094555551443">00000094555551443</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2"><label class="form-label">Desde</label><input type="date" id="lawDesde" class="form-control-mre"></div>
+                                    <div class="col-md-2"><label class="form-label">Hasta</label><input type="date" id="lawHasta" class="form-control-mre"></div>
+                                    <div class="col-md-2"><button type="button" class="btn-main w-100 action-btn" onclick="addItem('law')">Agregar</button></div>
+                                </div>
+                                <div class="table-container-embedded mt-2">
+                                    <table class="mre-table mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th width="70">ID</th><th>Referencia Ley</th><th>Cuenta</th><th>Vigencia</th><th width="40" class="action-col"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="lawsTableBody"><tr><td colspan="5" class="text-center text-muted small py-2">Sin leyes asignadas</td></tr></tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="col-12 mt-2">
+                                <div class="sub-section-title">Excepciones Aplicables</div>
+                                <div class="row g-2 align-items-end mode-edit-only">
+                                    <div class="col-md-3">
+                                        <label class="form-label">Ley de Excepción</label>
+                                        <select id="excInput" class="form-control-mre">
+                                            <option value="">Seleccionar Excepción...</option>
+                                            <option value="E1">Resol Nº 162 Fuero de pobreza para documentos personales de paraguayos</option>
+                                            <option value="E2">Ley Nº 431 Art. 20 Excombatientes y esposas</option>
+                                            <option value="E3">Ley Nº 110 Franquicias Diplomáticas</option>
+                                            <option value="E4">Art 67 de la Constitución Nacional exoneración para indígenas</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Cuenta de Depósito</label>
+                                        <select id="excAccount" class="form-control-mre">
+                                            <option value="">Seleccionar Cuenta...</option>
+                                            <option value="00000094555551442">00000094555551442</option>
+                                            <option value="00000094555551443">00000094555551443</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2"><label class="form-label">Desde</label><input type="date" id="excDesde" class="form-control-mre"></div>
+                                    <div class="col-md-2"><label class="form-label">Hasta</label><input type="date" id="excHasta" class="form-control-mre"></div>
+                                    <div class="col-md-2"><button type="button" class="btn-main w-100 action-btn" onclick="addItem('exc')">Agregar</button></div>
+                                </div>
+                                <div class="table-container-embedded mt-2">
+                                    <table class="mre-table mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th width="70">ID</th><th>Descripción Excepción</th><th>Cuenta</th><th>Vigencia</th><th width="40" class="action-col"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="excTableBody"><tr><td colspan="5" class="text-center text-muted small py-2">Sin excepciones asignadas</td></tr></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <button type="button" class="btn btn-primary btn-sm fw-bold px-4 rounded-pill" onclick="toggleApartado(3)">Siguiente: Campos <i data-lucide="arrow-right" class="ms-1" style="width:14px"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- APARTADO 3: CAMPOS -->
+                <div class="apartado-container" id="apartado3">
+                    <div class="apartado-header" onclick="toggleApartado(3)">
+                        <div class="apartado-title"><span class="apartado-icon-step">3</span> Datos Específicos</div>
+                        <i data-lucide="chevron-down" class="text-muted" style="width: 16px;"></i>
+                    </div>
+                    <div class="apartado-content">
+                        <div class="dual-list-wrapper">
+                            <div class="list-container">
+                                <div class="list-header">Campos Disponibles</div>
+                                <div class="list-content" id="listAvailableFields">
+                                    <div class="list-item-field" onclick="toggleItem(this)" data-id="f1">Número de referencia</div>
+                                    <div class="list-item-field" onclick="toggleItem(this)" data-id="f2">Código único del documento</div>
+                                    <div class="list-item-field" onclick="toggleItem(this)" data-id="f3">Número de Documento</div>
+                                </div>
+                            </div>
+                            <div class="transfer-actions d-flex flex-column gap-2">
+                                <button type="button" class="btn-transfer" onclick="transferGeneric('fields', 'toAssigned')"><i data-lucide="chevron-right"></i></button>
+                                <button type="button" class="btn-transfer" onclick="transferGeneric('fields', 'toAvailable')"><i data-lucide="chevron-left"></i></button>
+                            </div>
+                            <div class="list-container">
+                                <div class="list-header d-flex justify-content-between"><span>Campos Asociados</span><span>Obli.</span></div>
+                                <div class="list-content p-0"><table class="table-associated" id="tableFields"><tbody></tbody></table></div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <button type="button" class="btn btn-primary btn-sm fw-bold px-4 rounded-pill" onclick="toggleApartado(4)">Siguiente <i data-lucide="arrow-right" class="ms-1" style="width:14px"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- APARTADO 4: ADJUNTOS -->
+                <div class="apartado-container" id="apartado4">
+                    <div class="apartado-header" onclick="toggleApartado(4)">
+                        <div class="apartado-title"><span class="apartado-icon-step">4</span> Adjuntos Requeridos</div>
+                        <i data-lucide="chevron-down" class="text-muted" style="width: 16px;"></i>
+                    </div>
+                    <div class="apartado-content">
+                        <div class="dual-list-wrapper">
+                            <div class="list-container">
+                                <div class="list-header">Disponibles</div>
+                                <div class="list-content" id="listAvailableAdj">
+                                    <div class="list-item-field" onclick="toggleItem(this)" data-id="a1">Cédula de Identidad</div>
+                                    <div class="list-item-field" onclick="toggleItem(this)" data-id="a2">Pasaporte (PDF)</div>
+                                </div>
+                            </div>
+                            <div class="transfer-actions d-flex flex-column gap-2">
+                                <button type="button" class="btn-transfer" onclick="transferGeneric('adj', 'toAssigned')"><i data-lucide="chevron-right"></i></button>
+                                <button type="button" class="btn-transfer" onclick="transferGeneric('adj', 'toAvailable')"><i data-lucide="chevron-left"></i></button>
+                            </div>
+                            <div class="list-container">
+                                <div class="list-header d-flex justify-content-between"><span>Asociados</span><span>Obli.</span></div>
+                                <div class="list-content p-0"><table class="table-associated" id="tableAdj"><tbody></tbody></table></div>
+                            </div>
+                        </div>
+                        <div class="text-end" id="nextToAuditBtn">
+                            <button type="button" class="btn btn-primary btn-sm fw-bold px-4 rounded-pill" onclick="toggleApartado(5)">Siguiente <i data-lucide="arrow-right" class="ms-1" style="width:14px"></i></button>
+                        </div>
+                        <div class="d-flex justify-content-end gap-2 mt-4 mode-edit-only">
+                            <button type="button" class="btn btn-light btn-sm rounded-pill px-4 border fw-bold" onclick="closeModal('modalDoc')">Cancelar</button>
+                            <button type="submit" class="btn-main px-5">Guardar Registro</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- APARTADO 5: AUDITORÍA (SOLO VISUALIZAR) -->
+                <div class="apartado-container" id="apartado5" style="display: none;">
+                    <div class="apartado-header" onclick="toggleApartado(5)">
+                        <div class="apartado-title"><span class="apartado-icon-step">5</span> Historial de Auditoría</div>
+                        <i data-lucide="chevron-down" class="text-muted" style="width: 16px;"></i>
+                    </div>
+                    <div class="apartado-content">
+                        <div class="table-container-embedded m-0 shadow-sm">
+                            <table class="mre-table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th width="180">Fecha y Hora</th>
+                                        <th width="150">Acción</th>
+                                        <th width="150">Usuario</th>
+                                        <th>Descripción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="auditTableBody">
+                                    <tr>
+                                        <td class="text-muted small">20/01/2026 08:30:12</td>
+                                        <td><span class="badge bg-success" style="font-size: 0.55rem;">CREACIÓN</span></td>
+                                        <td class="fw-bold">admin_sia</td>
+                                        <td class="small">Creación inicial del tipo de documento en el sistema.</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-muted small">25/01/2026 14:22:05</td>
+                                        <td><span class="badge bg-warning text-dark" style="font-size: 0.55rem;">MODIFICACIÓN</span></td>
+                                        <td class="fw-bold">operador_c1</td>
+                                        <td class="small">Actualización de parámetros de aranceles y cuentas de depósito.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <button type="button" class="btn btn-light btn-sm rounded-pill px-4 border fw-bold" onclick="closeModal('modalDoc')">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMAR ELIMINACIÓN -->
+    <div class="mre-modal-overlay" id="modalDelete">
+        <div class="mre-modal modal-sm-custom animate-fade">
+            <div class="d-flex flex-column align-items-center mb-3">
+                <div class="bg-danger bg-opacity-10 p-3 rounded-circle mb-3">
+                    <i data-lucide="alert-triangle" style="color: var(--mre-red); width: 40px; height: 40px;"></i>
+                </div>
+                <h5 class="fw-black text-navy mb-2">Confirmar Eliminación</h5>
+                <p class="text-muted small px-3">¿Está seguro que desea eliminar este tipo de documento? Esta acción no se puede deshacer.</p>
+                <div class="bg-light p-2 rounded-3 w-100 border text-start mb-4">
+                    <div class="small fw-bold text-navy" id="deleteDocInfo">ID: 0000 - Nombre del Doc</div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-center gap-2">
+                <button type="button" class="btn btn-light rounded-pill px-4 border fw-bold small" onclick="closeModal('modalDelete')">Cancelar</button>
+                <button type="button" class="btn btn-danger rounded-pill px-4 fw-bold small" onclick="confirmDeletion()">Eliminar Registro</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMACIÓN INACTIVACIÓN MASIVA -->
+    <div class="mre-modal-overlay" id="modalInactivateConfirm">
+        <div class="mre-modal modal-sm-custom shadow-lg">
+            <div class="text-center mb-4">
+                <div class="bg-warning bg-opacity-10 text-warning d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 64px; height: 64px;">
+                    <i data-lucide="power" style="width: 32px; height: 32px; color: var(--mre-amber);"></i>
+                </div>
+                <h5 class="fw-800 text-navy mb-2">Confirmar Inactivación Masiva</h5>
+                <p class="text-muted small px-3">Se inactivarán los siguientes documentos seleccionados.</p>
+            </div>
+            <div id="inactivateItemsList" class="selection-list mb-4 text-start"></div>
+            <div class="d-flex justify-content-center gap-3 mt-4 pt-3 border-top">
+                <button type="button" class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalInactivateConfirm')">Cancelar</button>
+                <button type="button" class="btn-main px-4 shadow-sm" style="background: var(--mre-amber); border-color: var(--mre-amber);" onclick="confirmLogicalInactivation()">Confirmar Inactivación</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFICACIONES -->
+    <div id="mreToast" class="mre-toast">
+        <i data-lucide="check-circle" style="width: 18px;"></i>
+        <span id="toastMsg">Operación exitosa</span>
+    </div>
+
+    <!-- Bootstrap Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        let mockData = [
+            { id: 1030, name: 'Certificado de Antecedentes E', origen: 'Extranjero', emision: 'MANUAL', firma: 'OLÓGRAFA', estado: 'ACTIVO' },
+            { id: 1031, name: 'Certificado de Nacimiento N', origen: 'Nacional', emision: 'AUTOMÁTICA', firma: 'ELECTRÓNICA', estado: 'ACTIVO' },
+            { id: 1032, name: 'Certificado de Defunción N', origen: 'Nacional', emision: 'VAL. PREVIA', firma: 'ELECTRÓNICA', estado: 'ACTIVO' }
+        ];
+
+        let selectedDocForDelete = null;
+
+        const mockOffices = {
+            "1": [{id: "101", name: "Dirección de Legalizaciones"}, {id: "102", name: "Departamento de Pasaportes"}],
+            "2": [{id: "201", name: "Vigilancia Sanitaria"}, {id: "202", name: "Registro de Profesionales"}],
+            "3": [{id: "301", name: "Secretaría General"}, {id: "302", name: "Dirección de Títulos"}]
+        };
+
+        function showToast(msg) {
+            const toast = document.getElementById('mreToast');
+            document.getElementById('toastMsg').innerText = msg;
+            toast.style.display = 'flex';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
+
+        // --- Funciones del Layout/Cabecera ---
+        function toggleSidebar() { document.getElementById('mainSidebar').classList.toggle('show'); }
+        function toggleA11yMenu(e) { e.stopPropagation(); document.getElementById('a11yMenu').classList.toggle('show'); }
+        function toggleUserMenu(e) { e.stopPropagation(); document.getElementById('userMenu').classList.toggle('show'); }
+        function changeFontSize(delta) {
+            let current = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--font-scale')) || 1;
+            let newScale = Math.min(Math.max(current + delta, 0.8), 1.5);
+            document.documentElement.style.setProperty('--font-scale', newScale);
+            document.getElementById('fontSizeDisplay').innerText = Math.round(newScale * 100) + '%';
+        }
+        function toggleGrayscale() { document.body.classList.toggle('grayscale-mode'); }
+        function handleLogout() { if(confirm('¿Cerrar sesión?')) location.reload(); }
+
+        document.addEventListener('click', () => {
+            ['userMenu', 'a11yMenu'].forEach(id => document.getElementById(id)?.classList.remove('show'));
+        });
+
+        // --- Lógica de Selección Masiva ---
+        function updateSelectionUI() {
+            const checks = document.querySelectorAll('.record-check:checked');
+            const total = document.querySelectorAll('.record-check:not(:disabled)').length;
+            const btnInactivate = document.getElementById('btnInactivateGroups');
+            const btnCancel = document.getElementById('btnCancelSelection');
+            const selectAll = document.getElementById('selectAllGroups');
+            
+            if(btnInactivate) btnInactivate.disabled = checks.length === 0;
+            if(btnCancel) btnCancel.style.display = checks.length > 0 ? 'flex' : 'none';
+            if(selectAll) selectAll.checked = (checks.length === total && total > 0);
+        }
+
+        function toggleSelectAllItems() {
+            const checked = document.getElementById('selectAllGroups').checked;
+            document.querySelectorAll('.record-check:not(:disabled)').forEach(cb => cb.checked = checked);
+            updateSelectionUI();
+        }
+
+        function handleCancelSelection() {
+            document.getElementById('selectAllGroups').checked = false;
+            document.querySelectorAll('.record-check').forEach(cb => cb.checked = false);
+            updateSelectionUI();
+        }
+
+        function handleInactivateSelection() {
+            const checks = document.querySelectorAll('.record-check:checked');
+            const list = document.getElementById('inactivateItemsList');
+            list.innerHTML = "";
+            checks.forEach(cb => {
+                const id = parseInt(cb.closest('tr').dataset.id);
+                const doc = mockData.find(d => d.id === id);
+                list.innerHTML += `<div class="selection-item"><span>${doc.name}</span> <span class="badge bg-light text-muted border">ID: ${doc.id}</span></div>`;
+            });
+            document.getElementById('modalInactivateConfirm').style.display = 'flex';
+            lucide.createIcons();
+        }
+
+        function confirmLogicalInactivation() {
+            const checks = document.querySelectorAll('.record-check:checked');
+            checks.forEach(cb => {
+                const id = parseInt(cb.closest('tr').dataset.id);
+                const doc = mockData.find(d => d.id === id);
+                if(doc) doc.estado = 'INACTIVO';
+            });
+            renderDocs();
+            closeModal('modalInactivateConfirm');
+            handleCancelSelection();
+            showToast('Documentos inactivados correctamente.');
+        }
+
+        // --- Lógica de Documentos ---
+        function handleEntityChange() {
+            const entityId = document.getElementById('entityInput').value;
+            const officeSelect = document.getElementById('officeInput');
+            officeSelect.innerHTML = '<option value="">-- Seleccionar Oficina --</option>';
+            
+            if (entityId && mockOffices[entityId]) {
+                officeSelect.disabled = false;
+                mockOffices[entityId].forEach(o => {
+                    officeSelect.innerHTML += `<option value="${o.id}">${o.name}</option>`;
+                });
+            } else {
+                officeSelect.disabled = true;
+            }
+        }
+
+        function toggleApartado(num) {
+            document.querySelectorAll('.apartado-container').forEach(el => el.classList.remove('active'));
+            const target = document.getElementById('apartado' + num);
+            if (target) {
+                target.classList.add('active');
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function openDocModal(mode, id) {
+            const modal = document.getElementById('modalDoc');
+            const form = document.getElementById('formDoc');
+            const auditSection = document.getElementById('apartado5');
+            const nextToAudit = document.getElementById('nextToAuditBtn');
+            modal.style.display = 'flex';
+            toggleApartado(1);
+            
+            const isView = mode === 'view';
+            const elements = form.querySelectorAll('input, select, textarea, .btn-transfer');
+            elements.forEach(el => el.disabled = isView);
+            
+            auditSection.style.display = isView ? 'block' : 'none';
+            nextToAudit.style.display = isView ? 'block' : 'none';
+
+            document.querySelectorAll('.action-col').forEach(el => el.style.display = isView ? 'none' : '');
+            document.querySelectorAll('.mode-edit-only').forEach(el => el.style.display = isView ? 'none' : 'flex');
+
+            const containerEstado = document.getElementById('containerDocEstado');
+            if(mode === 'edit' || mode === 'view') {
+                containerEstado.classList.remove('d-none');
+                const item = mockData.find(d => d.id === id);
+                document.getElementById('modalTitle').innerText = (mode === 'edit' ? 'Modificar Documento: ' : 'Visualizar Documento: ') + item.id;
+                document.getElementById('docName').value = item.name;
+            } else {
+                containerEstado.classList.add('d-none');
+                document.getElementById('modalTitle').innerText = 'Nuevo Tipo de Documento';
+                form.reset();
+                document.getElementById('officesTableBody').innerHTML = '<tr><td colspan="5" class="text-center text-muted italic p-2 small">No hay oficinas vinculadas</td></tr>';
+                document.getElementById('lawsTableBody').innerHTML = '<tr><td colspan="5" class="text-center text-muted small py-2">Sin leyes asignadas</td></tr>';
+                document.getElementById('excTableBody').innerHTML = '<tr><td colspan="5" class="text-center text-muted small py-2">Sin excepciones asignadas</td></tr>';
+            }
+            lucide.createIcons();
+        }
+
+        function openDeleteModal(id, name) {
+            selectedDocForDelete = id;
+            document.getElementById('deleteDocInfo').innerText = `ID: ${id} - ${name}`;
+            document.getElementById('modalDelete').style.display = 'flex';
+            lucide.createIcons();
+        }
+
+        function confirmDeletion() {
+            if (selectedDocForDelete) {
+                mockData = mockData.filter(d => d.id !== selectedDocForDelete);
+                renderDocs();
+                showToast('Registro eliminado exitosamente.');
+                closeModal('modalDelete');
+                selectedDocForDelete = null;
+            }
+        }
+
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        function toggleItem(el) { 
+            const isReadonly = el.closest('.list-container').closest('form').querySelector('input').disabled;
+            if (isReadonly) return;
+            el.classList.toggle('selected'); 
+        }
+
+        function addItem(type) {
+            const tableId = type === 'law' ? 'lawsTableBody' : (type === 'exc' ? 'excTableBody' : 'officesTableBody');
+            const body = document.getElementById(tableId);
+
+            if(type === 'office') {
+                const entSelect = document.getElementById('entityInput');
+                const offSelect = document.getElementById('officeInput');
+                if(!entSelect.value || !offSelect.value) return;
+
+                if(body.rows.length === 1 && body.rows[0].cells.length === 1) body.innerHTML = '';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="text-center fw-bold text-navy">${entSelect.value}</td>
+                    <td>${entSelect.options[entSelect.selectedIndex].text}</td>
+                    <td class="text-center fw-bold text-navy">${offSelect.value}</td>
+                    <td>${offSelect.options[offSelect.selectedIndex].text}</td>
+                    <td class="text-center action-col"><button type="button" class="btn btn-sm text-danger border-0 p-0" onclick="this.closest('tr').remove()"><i data-lucide="x-circle" style="width:14px"></i></button></td>
+                `;
+                body.appendChild(row);
+                entSelect.value = "";
+                offSelect.innerHTML = '<option value="">-- Seleccionar Oficina --</option>';
+                offSelect.disabled = true;
+            } else {
+                const inputId = type === 'law' ? 'lawInput' : 'excInput';
+                const accountId = type === 'law' ? 'lawAccount' : 'excAccount';
+                const select = document.getElementById(inputId);
+                const account = document.getElementById(accountId);
+                const desde = document.getElementById(type === 'law' ? 'lawDesde' : 'excDesde').value;
+                const hasta = document.getElementById(type === 'law' ? 'lawHasta' : 'excHasta').value;
+
+                if(!select.value) return;
+                if(body.rows.length === 1 && body.rows[0].cells.length === 1) body.innerHTML = '';
+                const row = document.createElement('tr');
+                const info = select.options[select.selectedIndex].text.split(' - ');
+                row.innerHTML = `
+                    <td class="text-center fw-bold text-navy">${select.value}</td>
+                    <td>${info[0]}</td>
+                    <td class="small fw-bold">${account.value || '---'}</td>
+                    <td class="small">${desde || '-'} a ${hasta || '-'}</td>
+                    <td class="text-center action-col"><button type="button" class="btn btn-sm text-danger border-0 p-0" onclick="this.closest('tr').remove()"><i data-lucide="trash-2" style="width:14px"></i></button></td>
+                `;
+                body.appendChild(row);
+                select.value = "";
+                account.value = "";
+            }
+            lucide.createIcons();
+        }
+
+        function transferGeneric(type, dir) {
+            const listId = type === 'fields' ? 'listAvailableFields' : 'listAvailableAdj';
+            const tableId = type === 'fields' ? 'tableFields' : 'tableAdj';
+            const availableList = document.getElementById(listId);
+            const tableBody = document.querySelector(`#${tableId} tbody`);
+
+            if(dir === 'toAssigned') {
+                const selected = availableList.querySelectorAll('.list-item-field.selected');
+                selected.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.dataset.id = item.dataset.id;
+                    row.innerHTML = `<td class="ps-2">${item.innerText}</td><td width="30" class="text-center"><input type="checkbox" class="form-check-input" style="width:14px; height:14px;"></td>`;
+                    row.onclick = function(e) { if(e.target.type !== 'checkbox' && !this.querySelector('input').disabled) this.classList.toggle('selected'); };
+                    tableBody.appendChild(row);
+                    item.style.display = 'none';
+                    item.classList.remove('selected');
+                });
+            } else {
+                const rows = tableBody.querySelectorAll('tr.selected');
+                rows.forEach(row => {
+                    const item = availableList.querySelector(`[data-id="${row.dataset.id}"]`);
+                    if(item) item.style.display = 'block';
+                    row.remove();
+                });
+            }
+        }
+
+        function renderDocs() {
+            const body = document.getElementById('docsTableBody');
+            if (mockData.length === 0) {
+                body.innerHTML = '<tr><td colspan="8" class="text-center p-4 text-muted">No se encontraron registros activos.</td></tr>';
+                document.getElementById('paginationInfo').innerText = "Sin registros";
+                return;
+            }
+            body.innerHTML = mockData.map(d => `
+                <tr data-id="${d.id}" class="${d.estado === 'INACTIVO' ? 'opacity-75 bg-light' : ''}">
+                    <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()" ${d.estado === 'INACTIVO' ? 'disabled' : ''}></td>
+                    <td class="text-center fw-bold text-navy">${d.id}</td>
+                    <td><div class="fw-bold">${d.name}</div></td>
+                    <td><span class="text-muted small">${d.origen}</span></td>
+                    <td><span class="text-muted small">${d.emision}</span></td>
+                    <td><span class="text-muted small">${d.firma}</span></td>
+                    <td><span class="badge-status status-active ${d.estado === 'INACTIVO' ? 'bg-secondary text-white' : ''}">${d.estado}</span></td>
+                    <td class="text-center">
+                        <div class="d-flex justify-content-center gap-1">
+                            <button class="btn-action-table" onclick="openDocModal('view', ${d.id})" title="Visualizar"><i data-lucide="eye" style="width:14px"></i></button>
+                            <button class="btn-action-table" onclick="openDocModal('edit', ${d.id})" title="Editar"><i data-lucide="edit-3" style="width:14px"></i></button>
+                            <button class="btn-action-table text-danger" onclick="openDeleteModal(${d.id}, '${d.name}')" title="Eliminar"><i data-lucide="trash-2" style="width:14px"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+            document.getElementById('paginationInfo').innerText = `Mostrando 1 a ${mockData.length} de ${mockData.length} registros`;
+            updateSelectionUI();
+        }
+
+        document.getElementById('formDoc').addEventListener('submit', (e) => {
+            e.preventDefault();
+            showToast('Registro guardado correctamente.');
+            closeModal('modalDoc');
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderDocs();
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>
