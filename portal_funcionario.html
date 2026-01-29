@@ -278,14 +278,6 @@
                         <i data-lucide="plus" style="width:14px"></i> Crear Solicitud
                     </button>
                 </div>
-                <div id="turnIndicator" class="hidden bg-warning-subtle text-warning-emphasis px-3 py-2 rounded-3 border border-warning-subtle fw-bold small d-flex align-items-center gap-2">
-                    <div class="d-flex flex-column lh-1 text-start">
-                        <span style="font-size: 0.6rem; text-transform: uppercase;">Modo Asignación</span>
-                        <span class="fw-bold">ORDEN DE LLEGADA (FIFO)</span>
-                    </div>
-                    <i data-lucide="arrow-right" class="opacity-50" style="width:16px"></i>
-                    <div class="bg-white px-2 py-1 rounded text-primary fw-black">SIGUIENTE</div>
-                </div>
             </div>
 
             <div class="status-scroll-wrapper">
@@ -613,67 +605,34 @@
                     <p class="text-muted">La transacción ha sido registrada correctamente.</p>
                 </div>
 
-                <div class="row g-4">
-                    <div class="col-md-5">
-                        <div class="ticket-style">
-                            <div class="text-center mb-3">
-                                <h6 class="fw-bold text-uppercase m-0">Comprobante de Ingreso</h6>
-                                <small class="text-muted">Serie A - Nro. 001-001-0002345</small>
-                            </div>
-                            <div class="d-flex justify-content-between mb-2 small">
-                                <span class="text-muted">Fecha:</span>
-                                <span class="fw-bold" id="liqDate">22/01/2026</span>
-                            </div>
-                            <div class="d-flex justify-content-between mb-2 small">
-                                <span class="text-muted">RUC/CI:</span>
-                                <span class="fw-bold" id="liqRuc">4444440-3</span>
-                            </div>
-                            <div class="d-flex justify-content-between mb-3 small">
-                                <span class="text-muted">Nombre:</span>
-                                <span class="fw-bold" id="liqName">CONSUMIDOR FINAL</span>
-                            </div>
-                            <hr class="border-dashed my-3">
-                            <div class="mb-3">
-                                <div class="d-flex justify-content-between small mb-1">
-                                    <span>Tasa Consular/Apostilla x2</span>
-                                    <span>Gs. 160.200</span>
-                                </div>
-                            </div>
-                            <hr class="border-dashed my-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="fw-bold text-uppercase">Total</span>
-                                <span class="fw-black fs-5">Gs. 160.200</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-7">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
                         <div class="card border-0 shadow-sm rounded-4 h-100">
-                            <div class="card-body p-4 d-flex flex-column">
-                                <h6 class="fw-black text-navy mb-3">Documentos Listos para Impresión</h6>
-                                <div class="alert alert-light border small text-muted">
+                            <div class="card-body p-4 d-flex flex-column text-center">
+                                <h6 class="fw-black text-navy mb-4 fs-5">Documentos Listos para Impresión</h6>
+                                <div class="alert alert-light border small text-muted mb-4 text-start">
                                     <i data-lucide="printer" style="width:14px; vertical-align:text-bottom"></i> 
                                     Las etiquetas de apostilla se generaron con los siguientes códigos:
                                 </div>
-                                <ul class="list-group list-group-flush mb-4 small fw-bold">
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <ul class="list-group list-group-flush mb-4 small fw-bold text-start">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center bg-light rounded mb-2 border-0">
                                         <span><i data-lucide="file-check" style="width:14px" class="me-2 text-success"></i> Solicitud #2026-10430</span>
                                         <span class="badge bg-dark">A-99923</span>
                                     </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center bg-light rounded border-0">
                                         <span><i data-lucide="file-check" style="width:14px" class="me-2 text-success"></i> Solicitud #2026-10431</span>
                                         <span class="badge bg-dark">A-99924</span>
                                     </li>
                                 </ul>
 
-                                <div class="mt-auto d-grid gap-2">
+                                <div class="mt-auto d-grid gap-2 col-md-10 mx-auto">
                                     <button class="btn btn-outline-dark fw-bold py-2" onclick="alert('Imprimiendo comprobante...')">
                                         <i data-lucide="printer" style="width:16px; margin-right:5px"></i> Imprimir Comprobante
                                     </button>
                                     <button class="btn btn-main py-2" onclick="alert('Imprimiendo etiquetas...')">
                                         <i data-lucide="qr-code" style="width:16px; margin-right:5px"></i> Imprimir Apostillas
                                     </button>
-                                    <button class="btn btn-light text-muted fw-bold" onclick="backToDashboard()">
+                                    <button class="btn btn-light text-muted fw-bold mt-2" onclick="backToDashboard()">
                                         Finalizar y Volver
                                     </button>
                                 </div>
@@ -835,6 +794,133 @@
             return new Date(year, month - 1, day, hour, min);
         }
 
+        // FUNCIÓN PARA GENERAR EL PDF DEL COMPROBANTE (RÉPLICA EXACTA)
+        function generateReceiptPDF(id) {
+            const req = requests.find(r => r.id === id);
+            if (!req) return;
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const margin = 20;
+            let y = 20;
+
+            // --- 1. LOGOS Y ENCABEZADO IZQUIERDO ---
+            doc.setDrawColor(200);
+            doc.setFillColor(245, 245, 245);
+            doc.circle(35, 30, 15, 'F'); 
+            doc.setFontSize(6);
+            doc.setTextColor(150);
+            doc.text("LOGO", 35, 30, { align: 'center' });
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(8);
+            doc.setTextColor(180, 180, 180); 
+            doc.text("TETÃNGUÉRA NDIVE", 60, 22);
+            doc.text("JOKUPYTYRÃ", 60, 26);
+            doc.text("Motenondeha", 60, 30);
+            
+            doc.setFontSize(7);
+            doc.text("Ministerio de", 60, 36);
+            doc.text("RELACIONES", 60, 40);
+            doc.text("EXTERIORES", 60, 44);
+
+            // --- 2. ENCABEZADO DERECHO (DATOS INSTITUCIONALES) ---
+            doc.setTextColor(0);
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "bold");
+            doc.text("Ministerio de Relaciones Exteriores", 190, 20, { align: 'right' });
+            
+            doc.setFont("helvetica", "normal");
+            doc.text("RUC: 80001464-2", 190, 25, { align: 'right' });
+            doc.text("Según Decreto N° 606/18", 190, 30, { align: 'right' });
+            
+            doc.setFont("helvetica", "bold");
+            doc.text("Comprobante de Ingreso Electrónico", 190, 38, { align: 'right' });
+
+            // --- 3. SERIE ---
+            y = 60;
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "normal");
+            doc.text("Serie EL: Nro.", margin, y);
+            doc.setFont("helvetica", "bold");
+            doc.text("03548754", margin + 25, y); 
+            
+            y += 15;
+
+            // --- 4. BLOQUE DE DATOS DEL CLIENTE ---
+            doc.setFont("helvetica", "normal");
+            const lineHeight = 6;
+            
+            const seq = "656565556";
+            const fecha = "14/10/2024 10:34:35";
+            const cliente = req.name || "Victor Brizuela";
+            const ruc = req.ci || "6745454";
+            const cambio = "7859";
+            const usuario = "Hernan Suarez";
+
+            doc.text(`Seq.: ${seq}`, margin, y); y += lineHeight;
+            doc.text(`Fecha: ${fecha}`, margin, y); y += lineHeight;
+            doc.text(`Cliente: ${cliente}`, margin, y); y += lineHeight;
+            doc.text(`Ruc: ${ruc}`, margin, y); y += lineHeight;
+            doc.text(`Cambio Dólar: ${cambio}`, margin, y); y += lineHeight;
+            doc.text(`Usuario: ${usuario}`, margin, y); y += 15;
+
+            // --- 5. TABLA DE CONCEPTOS ---
+            const monto = req.amount || req.importe || 161500;
+            
+            doc.autoTable({
+                startY: y,
+                head: [['Cant.', 'Concepto', 'Total']],
+                body: [
+                    ['1', `Ley N° 1030 Varios N (${req.type})`, monto.toLocaleString('es-PY')],
+                    ['2', 'Permiso del Menor N', '0'] 
+                ],
+                foot: [['', 'Total:', monto.toLocaleString('es-PY')]],
+                theme: 'plain',
+                styles: {
+                    font: 'helvetica',
+                    fontSize: 10,
+                    cellPadding: 4,
+                    lineWidth: 0.1,
+                    lineColor: [0, 0, 0],
+                    textColor: [0, 0, 0]
+                },
+                headStyles: {
+                    fillColor: [220, 220, 220],
+                    textColor: [0, 0, 0],
+                    fontStyle: 'bold',
+                    halign: 'center',
+                    lineWidth: 0.1,
+                    lineColor: [0, 0, 0]
+                },
+                footStyles: {
+                    fillColor: [255, 255, 255],
+                    textColor: [0, 0, 0],
+                    fontStyle: 'bold',
+                    halign: 'right',
+                    lineWidth: 0.1,
+                    lineColor: [0, 0, 0]
+                },
+                columnStyles: {
+                    0: { halign: 'center', cellWidth: 30 },
+                    1: { halign: 'left' },
+                    2: { halign: 'right', cellWidth: 50 }
+                }
+            });
+
+            y = doc.lastAutoTable.finalY + 15;
+
+            // --- 6. PIE DE PÁGINA ---
+            doc.setFont("helvetica", "normal");
+            const montoLetras = "Ciento sesenta y un mil quinientos"; 
+            doc.text(`Son Guaraníes: ${montoLetras}.`, margin, y); y += 12;
+
+            doc.text("Nro. de recibo: C-2669994", margin, y); y += lineHeight;
+            doc.text("Nro. de orden: 107070/2024", margin, y);
+
+            doc.save(`Comprobante_${req.id}.pdf`);
+        }
+
         // FUNCIÓN CENTRALIZADA DE RESUMEN PARA MODALES
         function getRequestSummaryHTML(req) {
             return `
@@ -864,9 +950,6 @@
 
         function changeProfile(select) {
             currentProfile = select.value;
-            const turnIndicator = document.getElementById('turnIndicator');
-            if (currentProfile === 'electronico') turnIndicator.classList.remove('hidden');
-            else turnIndicator.classList.add('hidden');
             filterTable(currentStatus, document.querySelector('.status-btn.active'));
         }
 
@@ -877,6 +960,12 @@
 
             const thead = document.getElementById('tableHeadRow');
             
+            // Lógica para mostrar columna Turno:
+            // 1. Perfil Electrónico (siempre, excepto finalizados)
+            // 2. Perfil Supervisor (SOLO en Análisis)
+            let showTurno = (currentProfile === 'electronico' && status !== 'Finalizados') || 
+                            (currentProfile === 'supervisor' && status === 'Análisis');
+
             // CONFIGURACION DE COLUMNAS SEGUN ESTADO
             if (status === 'Finalizados') {
                 // ACTUALIZADO: Se eliminaron las columnas 'Tipo' e 'Institución'
@@ -894,16 +983,19 @@
             } else {
                 let checkCol = status === 'Aprobado' ? `<th class="text-center" style="width: 60px;"><input type="checkbox" class="form-check-input" onclick="toggleSelectAll(this)"></th>` : '';
                 let importeCol = status === 'Aprobado' ? `<th class="text-end">Importe</th>` : '';
+                
+                // Columna Turno condicional
+                let turnoCol = showTurno ? `<th>Nro Turno</th>` : '';
 
                 thead.innerHTML = `
                     ${checkCol}
+                    ${turnoCol}
                     <th>Nro. Solicitud</th>
                     <th>Fecha</th>
                     <th>Titular</th>
                     <th>Nro. de Certificado</th>
                     <th>Documento</th>
                     <th>Tipo Firma</th>
-                    <th>País</th>
                     ${importeCol}
                     <th class="text-center">Acción</th>
                 `;
@@ -930,20 +1022,30 @@
             batchActions.style.setProperty('display', (status === 'Aprobado' ? 'flex' : 'none'), 'important');
 
             if (filtered.length === 0) {
-                const colspan = status === 'Finalizados' ? 9 : (status === 'Aprobado' ? 10 : 9);
-                tbody.innerHTML = `<tr><td colspan="${colspan}" class="text-center py-5 text-muted">No hay registros en esta bandeja.</td></tr>`;
+                // Ajustar colspan dinámicamente si se muestra turno
+                let colCount = 8; 
+                if (status === 'Finalizados') colCount = 9;
+                if (status === 'Aprobado') colCount = 10;
+                if (showTurno) colCount++; 
+
+                tbody.innerHTML = `<tr><td colspan="${colCount}" class="text-center py-5 text-muted">No hay registros en esta bandeja.</td></tr>`;
                 return;
             }
 
-            filtered.forEach(req => {
+            // Contador para turnos electrónicos mixtos (Supervisor)
+            let electronicCounter = 0;
+
+            filtered.forEach((req, index) => {
+                // Si es firma electrónica, incrementamos el contador global de esta vista
+                if (req.signature === 'Electrónica') electronicCounter++;
+
                 let row = '';
                 if (status === 'Finalizados') {
-                    // ACTUALIZADO: Se eliminaron las celdas de 'type' e 'institution'
                     row = `
                         <tr>
                             <td class="fw-black text-navy p-3">${req.id}</td>
                             <td class="text-center p-3"><button class="btn-ver-pago d-inline-flex align-items-center gap-2" onclick="alert('Descargando documento final...')"><i data-lucide="download" style="width:14px;"></i> ${req.type === 'Apostilla' ? 'Descargar Apostilla' : 'Descargar Legalización'}</button></td>
-                            <td class="text-center p-3"><i data-lucide="file-down" style="width:18px; cursor:pointer; color:var(--mre-blue)" title="Descargar Comprobante de Pago" onclick="alert('Descargando comprobante...')"></i></td>
+                            <td class="text-center p-3"><i data-lucide="file-down" style="width:18px; cursor:pointer; color:var(--mre-blue)" title="Descargar Comprobante de Pago" onclick="generateReceiptPDF('${req.id}')"></i></td>
                             <td class="small text-muted p-3">${req.date}</td>
                             <td class="text-uppercase small fw-bold p-3">${req.name}</td>
                             <td class="fw-bold text-primary p-3">${req.physicalNumber || '-'}</td>
@@ -955,6 +1057,24 @@
                 } else {
                     let checkCell = status === 'Aprobado' ? `<td class="text-center p-3"><input type="checkbox" class="form-check-input pay-check" value="${req.id}" checked></td>` : '';
                     let importeCell = status === 'Aprobado' ? `<td class="text-end fw-black text-primary p-3">Gs. ${(req.amount || 0).toLocaleString('es-PY')}</td>` : '';
+                    
+                    // Lógica Celda de Turno
+                    let turnoCell = '';
+                    if (showTurno) {
+                        let turnoValue = '';
+                        if (currentProfile === 'electronico') {
+                            // En perfil electrónico, todos son electrónicos, usamos índice directo
+                            turnoValue = `#${index + 1}`;
+                        } else if (currentProfile === 'supervisor') {
+                            // En supervisor (mixto), solo mostramos si es Electrónica
+                            if (req.signature === 'Electrónica') {
+                                turnoValue = `#${electronicCounter}`;
+                            } else {
+                                turnoValue = '<span class="text-muted opacity-25">-</span>';
+                            }
+                        }
+                        turnoCell = `<td class="fw-black text-primary p-3">${turnoValue}</td>`;
+                    }
 
                     let rowClass = '';
                     let isNext = false;
@@ -969,7 +1089,9 @@
                     let actionBtn = '';
                     if (status === 'Análisis') {
                         const hasOtherLocked = myLockedRequest && myLockedRequest.id !== req.id;
-                        const isDisabled = req.lockedBy === 'OtroFuncionario' || (currentProfile === 'electronico' && !isNext) || hasOtherLocked;
+                        const isDisabled = req.lockedBy === 'OtroFuncionario' || 
+                                           (currentProfile === 'electronico' && !isNext) || 
+                                           hasOtherLocked;
                         const titleText = hasOtherLocked ? "Ya tiene una solicitud en curso" : "Ver Detalle";
                         const actionDisabled = !isTakenByMe;
                         
@@ -995,13 +1117,13 @@
                     row = `
                         <tr class="${rowClass}">
                             ${checkCell}
+                            ${turnoCell}
                             <td class="fw-black text-navy p-3">${req.id}</td>
                             <td class="small text-muted p-3">${req.date}</td>
                             <td class="text-uppercase fw-bold p-3">${req.name}</td>
                             <td class="fw-bold text-primary p-3">${req.physicalNumber || '-'}</td>
                             <td class="p-3 small">${req.doc}</td>
                             <td class="p-3"><span class="badge bg-light text-dark border">${req.signature}</span></td>
-                            <td class="p-3">${req.country}</td>
                             ${importeCell}
                             <td class="text-center p-3">${actionBtn}</td>
                         </tr>
@@ -1205,7 +1327,6 @@
         function addToGrid(valType, isValid) {
             const name = document.getElementById('titularName').value;
             const cert = document.getElementById('titularCertNum').value;
-            // const ci = document.getElementById('titularCI').value; // ELIMINADO: Captura de CI removida
             const doc = document.getElementById('reqDocType').value;
             const sig = document.getElementById('reqSignature').value;
             const inst = document.getElementById('reqInstitution').value;
@@ -1347,7 +1468,10 @@
             const type = req.type || 'Apostilla';
             const inst = req.institution || 'N/A';
             const phys = req.physicalNumber || 'N/A';
-            const sig = req.signatureType || req.signature || 'N/A'; // Manejo de ambas propiedades
+            // Se normaliza la firma para evitar inconsistencias
+            let sig = req.signature || req.signatureType || 'N/A';
+            if(sig.includes('Electrónica')) sig = 'Electrónica';
+            if(sig.includes('Ológrafa')) sig = 'Ológrafa';
             
             let officialHtml = '';
             if (req.official) {
@@ -1381,7 +1505,12 @@
                 </div>
                 <div class="col-6">
                     <label class="small text-muted fw-bold text-uppercase d-block">Firma</label>
-                    <span class="badge ${sig.includes('Electrónica') ? 'bg-primary-subtle text-primary border border-primary-subtle' : 'bg-light text-dark border'}">${sig}</span>
+                    <span class="badge ${sig === 'Electrónica' ? 'bg-primary-subtle text-primary border border-primary-subtle' : 'bg-light text-dark border'}">${sig}</span>
+                </div>
+                <div class="col-12">
+                    <label class="small text-muted fw-bold text-uppercase d-block">Titular del Documento</label>
+                    <strong class="text-dark text-uppercase">${req.name || req.titularName}</strong>
+                    <div class="small text-muted">CI: ${req.ci || 'N/A'}</div>
                 </div>
                 ${officialHtml}
             `;
@@ -1390,16 +1519,17 @@
             const viewerContainer = document.querySelector('.split-side-a');
             const physicalBanner = document.getElementById('physicalVerificationBanner');
 
-            // Reset classes
+            // Reset classes: Siempre mostrar split mode, ocultar banner del lado B
             splitContainer.classList.remove('single-mode');
             viewerContainer.classList.remove('hidden');
             physicalBanner.classList.add('hidden');
 
-            // Usar la variable local 'sig' que normaliza la propiedad signature/signatureType
-            if (sig.includes('Ológrafa')) {
+            if (sig === 'Ológrafa') {
+                // MODO OLÓGRAFO: Ocultar panel visualizador, mostrar banner
                 splitContainer.classList.add('single-mode');
                 physicalBanner.classList.remove('hidden');
             } else {
+                // MODO ELECTRÓNICO: Mostrar visor simulado en el panel IZQUIERDO
                 viewerContainer.innerHTML = `
                     <div class="pdf-viewer-placeholder">
                         <i data-lucide="file-text" style="width: 64px; height: 64px; opacity: 0.5;"></i>
