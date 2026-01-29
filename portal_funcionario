@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIA-PY | Gestión de Funcionarios</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- PDF Generation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    
+    <style>
+        :root {
+            --mre-blue: #002855;
+            --mre-blue-light: #0038A8;
+            --mre-red: #D52B1E;
+            --mre-green: #10B981;
+            --soft-bg: #f0f4f8;
+            --border-color: #E2E8F0;
+            --input-bg: #F8FAFC;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 40, 85, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --base-font-size: 16px;
+            --font-scale: 1;
+        }
+
+        html { font-size: calc(var(--base-font-size) * var(--font-scale)); }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            background-color: var(--soft-bg); 
+            color: #1E293B; 
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            text-align: left;
+        }
+
+        .hidden { display: none !important; }
+
+        /* --- BACKGROUNDS --- */
+        .elegant-background { 
+            position: fixed; inset: 0; z-index: -1; background-color: #f8fafc; 
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(0, 56, 168, 0.08) 0px, transparent 50%), 
+                radial-gradient(at 100% 0%, rgba(213, 43, 30, 0.05) 0px, transparent 50%), 
+                radial-gradient(at 100% 100%, rgba(0, 40, 85, 0.06) 0px, transparent 50%); 
+        }
+        
+        .bg-pattern { 
+            position: fixed; inset: 0; z-index: -1; opacity: 0.5; 
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23002855' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); 
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
+
+        /* --- HEADER --- */
+        #portalSection { padding: 1rem 3%; max-width: 1600px; margin: 0 auto; flex: 1; width: 100%; }
+        .portal-header { 
+            display: flex; justify-content: space-between; align-items: center; background: white; 
+            padding: 1.2rem 2.5rem; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 1rem; 
+            border: 1px solid var(--border-color); position: relative; z-index: 1100;
+        }
+
+        /* --- UI ELEMENTS --- */
+        .btn-main { 
+            background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); 
+            color: #ffffff; border: none; border-radius: 14px; padding: 0.8rem 1.2rem; 
+            font-weight: 800; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; 
+            box-shadow: 0 10px 15px -3px rgba(0, 40, 85, 0.15); transition: var(--transition); 
+        }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 15px 20px -3px rgba(0, 40, 85, 0.25); color: white; }
+
+        .btn-main-success {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            color: #ffffff; border: none; border-radius: 14px; padding: 0.8rem 1.2rem; 
+            font-weight: 800; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; 
+            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.15); transition: var(--transition);
+        }
+        .btn-main-success:hover { transform: translateY(-2px); box-shadow: 0 15px 20px -3px rgba(16, 185, 129, 0.25); color: white; }
+
+        .btn-main-warning {
+            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+            color: #ffffff; border: none; border-radius: 14px; padding: 0.8rem 1.2rem; 
+            font-weight: 800; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; 
+            box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.15); transition: var(--transition);
+        }
+        .btn-main-warning:hover { transform: translateY(-2px); box-shadow: 0 15px 20px -3px rgba(245, 158, 11, 0.25); color: white; }
+
+        .btn-main-danger {
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+            color: #ffffff; border: none; border-radius: 14px; padding: 0.8rem 1.2rem; 
+            font-weight: 800; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; 
+            box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.15); transition: var(--transition);
+        }
+        .btn-main-danger:hover { transform: translateY(-2px); box-shadow: 0 15px 20px -3px rgba(239, 68, 68, 0.25); color: white; }
+
+        /* NUEVOS ESTILOS PARA BANDEJA FINALIZADOS */
+        .btn-ver-pago {
+            background: var(--mre-green); color: white; border: none; 
+            padding: 4px 10px; 
+            border-radius: 8px; font-size: 0.65rem; font-weight: 800; 
+            text-transform: uppercase; transition: var(--transition);
+            box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+            white-space: nowrap; 
+        }
+        .btn-ver-pago:hover { background: #059669; transform: translateY(-1px); }
+
+        .btn-ver-detalle {
+            background: #E0F2FE; color: #0284C7; border: 1px solid #BAE6FD;
+            padding: 4px 10px; border-radius: 6px; font-size: 0.65rem; font-weight: 800;
+            text-transform: uppercase; transition: var(--transition);
+        }
+        .btn-ver-detalle:hover { background: #BAE6FD; }
+
+        .form-control-mre {
+            background-color: var(--input-bg); border: 1px solid #E2E8F0; border-radius: 14px;
+            padding: 0.8rem 1rem; font-size: 0.85rem; width: 100%; transition: all 0.25s ease;
+            color: var(--mre-blue); font-weight: 500;
+        }
+        .form-control-mre:focus { background-color: #ffffff; border-color: var(--mre-blue-light); outline: none; box-shadow: 0 0 0 4px rgba(0, 56, 168, 0.08); }
+
+        /* Custom Select Styles */
+        .custom-select { position: relative; }
+        .custom-select-trigger {
+            background-color: var(--input-bg); border: 1px solid #E2E8F0; border-radius: 14px;
+            padding: 0.8rem 1rem; font-size: 0.85rem; width: 100%; text-align: left;
+            display: flex; justify-content: space-between; align-items: center;
+            color: var(--mre-blue); font-weight: 500; cursor: pointer; transition: all 0.25s ease;
+        }
+        .custom-select-trigger:focus { border-color: var(--mre-blue-light); box-shadow: 0 0 0 4px rgba(0, 56, 168, 0.08); outline: none; }
+        .dropdown-menu.w-100 { 
+            display: none; position: absolute; width: 100%; z-index: 1000; background: white; 
+            border: 1px solid var(--border-color); border-radius: 14px; margin-top: 5px; 
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); padding: 0.5rem;
+        }
+        .dropdown-menu.w-100.show { display: block; animation: fadeIn 0.2s ease-out; }
+        .options-container { max-height: 200px; overflow-y: auto; }
+        .dropdown-item { padding: 8px 12px; cursor: pointer; transition: background 0.2s; font-size: 0.85rem; display: block; text-decoration: none; color: #333; border-radius: 8px; }
+        .dropdown-item:hover { background-color: #f8fafc; color: var(--mre-blue); }
+
+        /* --- STATUS TRAYS --- */
+        .status-scroll-wrapper { position: relative; display: flex; align-items: center; margin-bottom: 1.25rem; }
+        .status-container { display: flex; gap: 0.65rem; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; flex: 1; }
+        .status-btn { 
+            background: white; border: 1px solid #E2E8F0; border-radius: 12px; padding: 0.75rem 1rem; 
+            flex: 1; display: flex; align-items: center; justify-content: space-between; transition: var(--transition); 
+            cursor: pointer; min-width: 180px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .status-btn:hover { transform: translateY(-2px); border-color: #CBD5E1; }
+        .status-btn.active { border: 2px solid var(--mre-blue); background: #f0f7ff; }
+
+        /* --- GRID --- */
+        .grid-frame { background: white; border-radius: 20px; padding: 0; box-shadow: var(--card-shadow); border: 1px solid #E2E8F0; overflow: hidden; position: relative; }
+        .grid-frame::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(to right, var(--mre-red), var(--mre-blue)); }
+        .grid-header-frame { background-color: #F1F5F9; padding: 1rem 1.5rem; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; }
+
+        .mre-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 0.85rem; border-bottom: 2px solid #E2E8F0; white-space: normal; vertical-align: bottom; background: #F8FAFC; }
+        .mre-table td { padding: 0.85rem; font-size: 0.85rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
+        .mre-table tr:hover td { background-color: #F8FAFC; }
+
+        /* --- SPLIT SCREEN --- */
+        .split-screen-container { display: flex; height: calc(100vh - 200px); min-height: 600px; gap: 0; }
+        .split-side-a { flex: 1; border-right: 1px solid var(--border-color); background: #333; position: relative; }
+        .split-side-b { flex: 1; background: white; overflow-y: auto; padding: 2rem; display: flex; flex-direction: column; }
+        .pdf-viewer-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: white; flex-direction: column; }
+        
+        /* Highlighting Turn System */
+        .next-turn-highlight { background-color: #ecfdf5 !important; }
+        .next-turn-highlight td:first-child { border-left: 4px solid var(--mre-green); }
+        .taken-by-me-highlight { background-color: #e0f2fe !important; }
+        .taken-by-me-highlight td:first-child { border-left: 4px solid #0284c7; }
+        .row-locked-other { opacity: 0.6; background-color: #f8fafc; }
+
+        /* Single Mode for Holographic Profile */
+        .single-mode .split-side-a { display: none !important; }
+        .single-mode .split-side-b { flex: 0 0 100%; max-width: 1000px; margin: 0 auto; border-left: 1px solid #E2E8F0; border-right: 1px solid #E2E8F0; }
+
+        /* --- POPUPS --- */
+        .mre-popup-overlay { position: fixed; inset: 0; background: rgba(0, 40, 85, 0.4); backdrop-filter: blur(4px); z-index: 3000; display: none; align-items: center; justify-content: center; }
+        .mre-popup { background: white; border-radius: 20px; max-width: 500px; width: 100%; padding: 2rem; animation: fadeIn 0.3s ease-out; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); position: relative; }
+
+        /* --- FOOTER --- */
+        .mre-footer {
+            background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px);
+            border-top: 1px solid #E2E8F0; padding: 1rem 2.5rem;
+            display: flex; justify-content: space-between; align-items: center; margin-top: auto;
+        }
+
+        .ticket-style {
+            background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            max-width: 400px; margin: 0 auto; padding: 2rem; position: relative;
+        }
+        .ticket-style::before {
+            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 6px;
+            background: repeating-linear-gradient(45deg, var(--mre-blue), var(--mre-blue) 10px, white 10px, white 20px, var(--mre-red) 20px, var(--mre-red) 30px, white 30px, white 40px);
+            border-radius: 12px 12px 0 0;
+        }
+
+        @media (max-width: 992px) {
+            .split-screen-container { flex-direction: column; height: auto; }
+            .split-side-a { height: 400px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="elegant-background"></div>
+    <div class="bg-pattern"></div>
+
+    <!-- POPUP GENÉRICO -->
+    <div class="mre-popup-overlay" id="genericPopup">
+        <div class="mre-popup">
+            <h5 class="fw-black text-navy mb-3" id="popupTitle">Información</h5>
+            <div class="mb-4" id="popupContent">Contenido...</div>
+            <div id="popupActions" class="d-flex gap-2 justify-content-end">
+                <button class="btn btn-main w-100" onclick="closePopup()">Entendido</button>
+            </div>
+        </div>
+    </div>
+
+    <section id="portalSection">
+        <!-- HEADER -->
+        <header class="portal-header animate-fade">
+            <div class="d-flex align-items-center gap-3">
+                <div class="bg-mre-blue p-2 rounded-3" style="background: var(--mre-blue);">
+                    <i data-lucide="shield-check" style="color: white; width: 24px;"></i>
+                </div>
+                <div>
+                    <h6 class="fw-black mb-0">SIA-PY | MÓDULO FUNCIONARIO</h6>
+                    <p class="text-muted mb-0 fw-bold text-uppercase" style="font-size: 0.65rem;">Sistema Integral de Apostilla Electrónica del Paraguay</p>
+                </div>
+            </div>
+            
+            <div class="d-flex align-items-center gap-4">
+                <div class="d-none d-md-flex align-items-center bg-light border rounded-pill p-1 px-2 gap-2">
+                    <span class="small fw-bold text-muted ps-2">PERFIL:</span>
+                    <select class="form-select form-select-sm border-0 bg-transparent fw-bold text-primary shadow-none" style="width: auto; cursor: pointer;" onchange="changeProfile(this)">
+                        <option value="olografo">Operador Ológrafo (Presencial)</option>
+                        <option value="electronico">Verificación Electrónica (Turnos)</option>
+                        <option value="supervisor">Supervisor</option>
+                    </select>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                    <div class="text-end d-none d-md-block">
+                        <p class="small fw-black mb-0 text-uppercase">Lic. María Gonzalez</p>
+                        <p class="text-muted mb-0" style="font-size: 0.6rem; font-weight: 700;">Oficial de Legalizaciones</p>
+                    </div>
+                    <div class="bg-light border rounded-circle p-2" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <i data-lucide="user" style="width:20px; color: var(--mre-blue);"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- DASHBOARD VIEW -->
+        <div id="dashboardView" class="animate-fade">
+            <div class="d-flex justify-content-between align-items-center mb-4 gap-3">
+                <div class="position-relative flex-grow-1" style="max-width: 600px;">
+                    <input type="text" class="form-control-mre ps-5" placeholder="Buscar por Nro. Cédula (CI) o Código de Solicitud..." id="mainSearch" onkeyup="filterByCI(this)">
+                    <i data-lucide="search" class="position-absolute text-muted" style="left: 15px; top: 50%; transform: translateY(-50%); width: 18px;"></i>
+                    <button class="btn btn-sm btn-light border position-absolute end-0 top-50 translate-middle-y me-2 fw-bold small" onclick="createManualRequest()">
+                        <i data-lucide="plus" style="width:14px"></i> Crear Solicitud
+                    </button>
+                </div>
+                <div id="turnIndicator" class="hidden bg-warning-subtle text-warning-emphasis px-3 py-2 rounded-3 border border-warning-subtle fw-bold small d-flex align-items-center gap-2">
+                    <div class="d-flex flex-column lh-1 text-start">
+                        <span style="font-size: 0.6rem; text-transform: uppercase;">Modo Asignación</span>
+                        <span class="fw-bold">ORDEN DE LLEGADA (FIFO)</span>
+                    </div>
+                    <i data-lucide="arrow-right" class="opacity-50" style="width:16px"></i>
+                    <div class="bg-white px-2 py-1 rounded text-primary fw-black">SIGUIENTE</div>
+                </div>
+            </div>
+
+            <div class="status-scroll-wrapper">
+                <div class="status-container">
+                    <div class="status-btn active" onclick="filterTable('Análisis', this)">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="bg-primary-subtle p-2 rounded-circle text-primary"><i data-lucide="inbox" style="width: 16px;"></i></div>
+                            <span class="fw-bold text-navy">En Análisis</span>
+                        </div>
+                        <span class="fs-5 fw-black text-primary" id="count-analisis">04</span>
+                    </div>
+                    <div class="status-btn" onclick="filterTable('Aprobado', this)">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="bg-success-subtle p-2 rounded-circle text-success"><i data-lucide="check-circle-2" style="width: 16px;"></i></div>
+                            <span class="fw-bold text-navy">Aprobados</span>
+                        </div>
+                        <span class="fs-5 fw-black text-success" id="count-aprobado">02</span>
+                    </div>
+                    <div class="status-btn" onclick="filterTable('Devuelto', this)">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="bg-warning-subtle p-2 rounded-circle text-warning-emphasis"><i data-lucide="rotate-ccw" style="width: 16px;"></i></div>
+                            <span class="fw-bold text-navy">Devueltos</span>
+                        </div>
+                        <span class="fs-5 fw-black text-warning-emphasis" id="count-devuelto">01</span>
+                    </div>
+                    <div class="status-btn" onclick="filterTable('Rechazado', this)">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="bg-danger-subtle p-2 rounded-circle text-danger"><i data-lucide="x-circle" style="width: 16px;"></i></div>
+                            <span class="fw-bold text-navy">Rechazados</span>
+                        </div>
+                        <span class="fs-5 fw-black text-danger">00</span>
+                    </div>
+                    <div class="status-btn" onclick="filterTable('Finalizados', this)">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="bg-dark-subtle p-2 rounded-circle text-dark"><i data-lucide="file-badge" style="width: 16px;"></i></div>
+                            <span class="fw-bold text-navy">Apostillas y Legalizaciones</span>
+                        </div>
+                        <span class="fs-5 fw-black text-dark">02</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-frame animate-fade">
+                <div class="grid-header-frame">
+                    <h5 class="fw-black text-uppercase m-0 text-navy fs-6" id="tableTitle">Bandeja de Entrada</h5>
+                    <div class="d-flex gap-2" id="batchActions" style="display: none !important;">
+                        <button class="btn btn-sm btn-main d-flex align-items-center gap-2" onclick="openPaymentModal()">
+                            <i data-lucide="credit-card" style="width:16px"></i> Generar Liquidación / Cobrar
+                        </button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="mre-table" id="requestsTable">
+                        <thead>
+                            <tr id="tableHeadRow">
+                                <!-- JS Header injection -->
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEW REQUEST VIEW -->
+        <div id="newRequestView" class="hidden animate-fade">
+            <div class="grid-frame p-4 p-md-5 mx-auto" style="max-width: 900px; margin-top: 2rem;">
+                <div id="requestFormContainer">
+                    <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+                        <h4 class="fw-black text-navy m-0" id="formTitle">Crear Solicitud Manual</h4>
+                        <span class="badge bg-light text-dark border" id="formBadge">Nuevo Trámite</span>
+                    </div>
+                    <form id="newRequestForm" onsubmit="event.preventDefault(); submitFormAction();">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">País de Destino</label>
+                                <div class="dropdown custom-select" id="div_reqCountry">
+                                    <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <span class="selected-value text-muted">Seleccione...</span>
+                                        <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
+                                    </button>
+                                    <div class="dropdown-menu w-100 p-2 border-0 shadow-sm" style="border:1px solid var(--border-color)!important">
+                                        <input type="text" class="form-control form-control-sm mb-2" placeholder="Buscar..." onkeyup="filterOptions(this)">
+                                        <div class="options-container" style="max-height: 200px; overflow-y: auto;">
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqCountry', 'Argentina', this)">Argentina</a>
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqCountry', 'Brasil', this)">Brasil</a>
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqCountry', 'España', this)">España</a>
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqCountry', 'Estados Unidos', this)">Estados Unidos</a>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="reqCountry" required>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Institución Emisora</label>
+                                <div class="dropdown custom-select" id="div_reqInstitution">
+                                    <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <span class="selected-value text-muted">Seleccione...</span>
+                                        <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
+                                    </button>
+                                    <div class="dropdown-menu w-100 p-2 border-0 shadow-sm" style="border:1px solid var(--border-color)!important">
+                                        <input type="text" class="form-control form-control-sm mb-2" placeholder="Buscar..." onkeyup="filterOptions(this)">
+                                        <div class="options-container" style="max-height: 200px; overflow-y: auto;">
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqInstitution', 'Registro Civil', this)">Registro Civil</a>
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqInstitution', 'Ministerio de Educación', this)">Ministerio de Educación</a>
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqInstitution', 'Corte Suprema', this)">Corte Suprema</a>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="reqInstitution" required>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Tipo de Trámite</label>
+                                <div class="dropdown custom-select" id="div_reqType">
+                                    <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <span class="selected-value text-muted">Seleccione...</span>
+                                        <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
+                                    </button>
+                                    <div class="dropdown-menu w-100 p-2 border-0 shadow-sm" style="border:1px solid var(--border-color)!important">
+                                        <div class="options-container">
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqType', 'Apostilla', this)">Apostilla</a>
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqType', 'Legalización', this)">Legalización</a>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="reqType" required>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Tipo de Firma</label>
+                                <div class="dropdown custom-select" id="div_reqSignature">
+                                    <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <span class="selected-value text-muted">Seleccione...</span>
+                                        <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
+                                    </button>
+                                    <div class="dropdown-menu w-100 p-2 border-0 shadow-sm" style="border:1px solid var(--border-color)!important">
+                                        <div class="options-container">
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqSignature', 'Electrónica', this); handleSignatureChange()">Electrónica o verificable en línea</a>
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqSignature', 'Ológrafa', this); handleSignatureChange()">Ológrafa (Manuscrita)</a>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="reqSignature" required>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 hidden animate-fade" id="attachmentField">
+                                <div class="p-3 bg-light border rounded-3 border-dashed" style="border-style: dashed !important; border-color: #cbd5e1 !important;">
+                                    <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2 text-primary">Adjuntar Documento (PDF)</label>
+                                    <input type="file" class="form-control-mre" id="reqFile" accept=".pdf">
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Tipo de Documento</label>
+                                <div class="dropdown custom-select" id="div_reqDocType">
+                                    <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="btn_reqDocType" disabled>
+                                        <span class="selected-value text-muted">Seleccione primero el tipo de firma...</span>
+                                        <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
+                                    </button>
+                                    <div class="dropdown-menu w-100 p-2 border-0 shadow-sm" style="border:1px solid var(--border-color)!important">
+                                        <input type="text" class="form-control form-control-sm mb-2" placeholder="Buscar..." onkeyup="filterOptions(this)">
+                                        <div class="options-container" style="max-height: 200px; overflow-y: auto;">
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqDocType', 'Certificado de Nacimiento', this); handleDocTypeChange()">Certificado de Nacimiento</a>
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqDocType', 'Antecedentes Policiales', this); handleDocTypeChange()">Antecedentes Policiales</a>
+                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqDocType', 'Título Universitario', this); handleDocTypeChange()">Título Universitario</a>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="reqDocType" required>
+                                </div>
+                            </div>
+                            
+                            <div id="additionalDataTabs" class="col-12 mt-4 hidden animate-fade">
+                                <div class="p-4 bg-light border rounded-3">
+                                    <h6 class="fw-black text-navy small mb-3 border-bottom pb-2">Datos del Documento Seleccionado</h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                             <label class="form-label text-muted small fw-bold text-uppercase">Nombre del Titular</label>
+                                             <input type="text" class="form-control-mre" id="titularName" required>
+                                        </div>
+                                         <div class="col-md-6">
+                                             <label class="form-label text-muted small fw-bold text-uppercase">
+                                                 Número de certificado <a href="#" onclick="showCertHelp(event)" class="ms-1 text-primary text-decoration-none"><i data-lucide="help-circle" style="width:12px"></i></a>
+                                             </label>
+                                             <input type="text" class="form-control-mre" id="titularCertNum" required>
+                                        </div>
+                                        <!-- CAMPO CÉDULA ELIMINADO SEGÚN SOLICITUD -->
+                                        <div class="col-md-12 hidden animate-fade" id="officialField">
+                                            <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Funcionario Firmante</label>
+                                            <div class="dropdown custom-select" id="div_reqOfficial">
+                                                <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <span class="selected-value text-muted">Seleccione...</span>
+                                                    <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
+                                                </button>
+                                                <div class="dropdown-menu w-100 p-2 border-0 shadow-sm" style="border:1px solid var(--border-color)!important">
+                                                    <input type="text" class="form-control form-control-sm mb-2" placeholder="Buscar..." onkeyup="filterOptions(this)">
+                                                    <div class="options-container" style="max-height: 200px; overflow-y: auto;">
+                                                        <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqOfficial', 'Juan Pérez (REC)', this)">Juan Pérez (REC)</a>
+                                                        <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqOfficial', 'María González (MEC)', this)">María González (MEC)</a>
+                                                    </div>
+                                                </div>
+                                                <input type="hidden" id="reqOfficial">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 mt-4 d-flex justify-content-end gap-3 border-top pt-4">
+                                <button type="button" class="btn btn-light border fw-bold px-4" onclick="backToDashboard()">Cancelar</button>
+                                <button type="submit" class="btn-main px-5 shadow-sm d-flex align-items-center gap-2" id="btnSubmitForm">
+                                    <i data-lucide="plus-circle" style="width:16px;"></i> Añadir
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- GRILLA DE CARGA EN LOTE (COPIADA) -->
+                <div id="loadedDocsSection" class="mt-0 hidden animate-fade">
+                    <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+                        <h5 class="fw-black text-navy m-0">Documentos Cargados</h5>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="mre-table" id="loadedDocsTable">
+                            <thead>
+                                <tr>
+                                    <th>Tipo de Firma</th>
+                                    <th>Institución</th>
+                                    <th>Tipo de Documento</th>
+                                    <th>Validación</th>
+                                    <th class="text-center">Validado</th>
+                                    <th class="text-end">Importe</th>
+                                    <th class="text-center">Archivo</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="loadedDocsBody"></tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-end gap-3 mt-4 pt-3 border-top">
+                        <button class="btn btn-outline-primary fw-bold px-4 rounded-3" onclick="showRequestForm()">
+                            <i data-lucide="plus" style="width:16px; margin-right: 5px;"></i> Agregar Nuevo Trámite
+                        </button>
+                        <button class="btn-main px-5 shadow" onclick="submitFinalRequest()">
+                            Generar Solicitud <i data-lucide="check" style="width:16px; margin-left: 5px;"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA DE VERIFICACIÓN (SPLIT SCREEN) -->
+        <div id="verificationView" class="hidden animate-fade" style="margin-top: 1rem;">
+            <div class="grid-frame p-0 overflow-hidden">
+                <div class="grid-header-frame py-2 bg-navy text-white d-flex justify-content-between" style="background: var(--mre-blue);">
+                    <div class="d-flex align-items-center gap-3">
+                        <button class="btn btn-sm btn-outline-light border-0" onclick="backToDashboard()">
+                            <i data-lucide="arrow-left"></i>
+                        </button>
+                        <div>
+                            <span class="d-block fw-bold small text-white-50" id="verifyReqId">Solicitud #</span>
+                            <span class="fw-black text-white" id="verifyReqName"></span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-warning text-dark border-0">En Análisis</span>
+                    </div>
+                </div>
+                
+                <div class="split-screen-container">
+                    <div class="split-side-a">
+                        <!-- El contenido se inyecta dinámicamente según perfil -->
+                    </div>
+
+                    <div class="split-side-b">
+                        <div id="physicalVerificationBanner" class="hidden mb-4 p-3 bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-3 d-flex align-items-center gap-3">
+                            <i data-lucide="scan-line" style="width:24px; height:24px;"></i>
+                            <div>
+                                <h6 class="fw-bold m-0">Verificación Física en Curso</h6>
+                                <small>Realice el control sobre el documento físico original presentado por el ciudadano.</small>
+                            </div>
+                        </div>
+
+                        <h6 class="fw-black text-navy border-bottom pb-2 mb-3">Datos de la Solicitud</h6>
+                        
+                        <!-- CONTENEDOR DINÁMICO DE DATOS -->
+                        <div class="row g-3 mb-4" id="verifyDataContainer">
+                            <!-- Se llena vía JS en openVerification -->
+                        </div>
+
+                        <div class="mt-auto">
+                            <label class="small text-muted fw-bold mb-2">Acciones de Gestión</label>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-main-success fw-bold py-2" onclick="openApproveModal()">
+                                    <i data-lucide="check" style="width:18px; margin-right:5px"></i> APROBAR
+                                </button>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-main-warning fw-bold w-50" onclick="openReturnModal()">
+                                        <i data-lucide="rotate-ccw" style="width:18px; margin-right:5px"></i> DEVOLVER
+                                    </button>
+                                    <button class="btn btn-main-danger fw-bold w-50" onclick="openRejectModal()">
+                                        <i data-lucide="x" style="width:18px; margin-right:5px"></i> RECHAZAR
+                                    </button>
+                                </div>
+                                <button class="btn btn-sm btn-outline-secondary fw-bold mt-2" onclick="unlockRequestFromVerification()" title="Liberar Solicitud">
+                                    <i data-lucide="unlock" style="width:16px; margin-right:5px"></i> Liberar Solicitud
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA DE LIQUIDACIÓN / COMPROBANTE -->
+        <div id="liquidationView" class="hidden animate-fade" style="margin-top: 2rem;">
+            <div class="container" style="max-width: 900px;">
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex bg-success p-3 rounded-circle text-white shadow mb-3">
+                        <i data-lucide="check" style="width:40px; height:40px;"></i>
+                    </div>
+                    <h3 class="fw-black text-navy">Liquidación Generada</h3>
+                    <p class="text-muted">La transacción ha sido registrada correctamente.</p>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-md-5">
+                        <div class="ticket-style">
+                            <div class="text-center mb-3">
+                                <h6 class="fw-bold text-uppercase m-0">Comprobante de Ingreso</h6>
+                                <small class="text-muted">Serie A - Nro. 001-001-0002345</small>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2 small">
+                                <span class="text-muted">Fecha:</span>
+                                <span class="fw-bold" id="liqDate">22/01/2026</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2 small">
+                                <span class="text-muted">RUC/CI:</span>
+                                <span class="fw-bold" id="liqRuc">4444440-3</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-3 small">
+                                <span class="text-muted">Nombre:</span>
+                                <span class="fw-bold" id="liqName">CONSUMIDOR FINAL</span>
+                            </div>
+                            <hr class="border-dashed my-3">
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between small mb-1">
+                                    <span>Tasa Consular/Apostilla x2</span>
+                                    <span>Gs. 160.200</span>
+                                </div>
+                            </div>
+                            <hr class="border-dashed my-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold text-uppercase">Total</span>
+                                <span class="fw-black fs-5">Gs. 160.200</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-7">
+                        <div class="card border-0 shadow-sm rounded-4 h-100">
+                            <div class="card-body p-4 d-flex flex-column">
+                                <h6 class="fw-black text-navy mb-3">Documentos Listos para Impresión</h6>
+                                <div class="alert alert-light border small text-muted">
+                                    <i data-lucide="printer" style="width:14px; vertical-align:text-bottom"></i> 
+                                    Las etiquetas de apostilla se generaron con los siguientes códigos:
+                                </div>
+                                <ul class="list-group list-group-flush mb-4 small fw-bold">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span><i data-lucide="file-check" style="width:14px" class="me-2 text-success"></i> Solicitud #2026-10430</span>
+                                        <span class="badge bg-dark">A-99923</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span><i data-lucide="file-check" style="width:14px" class="me-2 text-success"></i> Solicitud #2026-10431</span>
+                                        <span class="badge bg-dark">A-99924</span>
+                                    </li>
+                                </ul>
+
+                                <div class="mt-auto d-grid gap-2">
+                                    <button class="btn btn-outline-dark fw-bold py-2" onclick="alert('Imprimiendo comprobante...')">
+                                        <i data-lucide="printer" style="width:16px; margin-right:5px"></i> Imprimir Comprobante
+                                    </button>
+                                    <button class="btn btn-main py-2" onclick="alert('Imprimiendo etiquetas...')">
+                                        <i data-lucide="qr-code" style="width:16px; margin-right:5px"></i> Imprimir Apostillas
+                                    </button>
+                                    <button class="btn btn-light text-muted fw-bold" onclick="backToDashboard()">
+                                        Finalizar y Volver
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="mre-footer">
+        <div class="footer-left small fw-bold text-muted">
+            &copy; 2026 MRE - Sistema Integrado de Apostilla
+        </div>
+        <div class="footer-right">
+            <span class="badge bg-light text-muted border">Versión 1.0 (Funcionario)</span>
+        </div>
+    </footer>
+
+    <!-- MODALES DE ACCIÓN -->
+
+    <!-- Modal Pago -->
+    <div class="mre-popup-overlay" id="paymentModal">
+        <div class="mre-popup">
+            <h5 class="fw-black text-navy mb-3">Liquidación y Pago</h5>
+            <div class="p-3 bg-light border rounded mb-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="small fw-bold text-muted">Solicitudes Seleccionadas:</span>
+                    <strong id="payQty">2</strong>
+                </div>
+                <div class="d-flex justify-content-between border-top pt-2 mt-2">
+                    <span class="fw-black text-navy">TOTAL (Gs):</span>
+                    <span class="fw-black text-primary fs-4" id="payTotalGs">Gs. 0</span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label small fw-bold text-uppercase">Datos de Facturación (Opcional)</label>
+                <input type="text" class="form-control form-control-sm mb-2" placeholder="RUC / CI" id="billingRuc">
+                <input type="text" class="form-control form-control-sm" placeholder="Razón Social / Nombre" id="billingName">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label small fw-bold text-uppercase">Medio de Pago</label>
+                <select class="form-control-mre" id="paymentMethod">
+                    <option value="POS">POS (Tarjeta Crédito/Débito)</option>
+                    <option value="EFECTIVO">Efectivo</option>
+                </select>
+            </div>
+            
+            <div class="d-flex gap-2 justify-content-end">
+                <button class="btn btn-light border fw-bold" onclick="closePopup()">Cancelar</button>
+                <button class="btn-main" onclick="confirmPayment()">Confirmar Pago</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Devolución -->
+    <div class="mre-popup-overlay" id="returnModal">
+        <div class="mre-popup">
+            <h5 class="fw-black text-navy mb-3 d-flex align-items-center gap-2">
+                <span class="text-warning-emphasis"><i data-lucide="rotate-ccw"></i></span> Confirmar Devolución
+            </h5>
+            <div id="returnModalContent" class="mb-3 p-3 bg-light border rounded small"></div>
+            <p class="small text-muted">La solicitud será devuelta al ciudadano para su corrección.</p>
+            <div class="mb-3">
+                <label class="form-label small fw-bold text-uppercase">Observación <span class="text-danger">*</span></label>
+                <textarea class="form-control" id="returnObs" rows="4" placeholder="Ingrese el motivo de la devolución..."></textarea>
+            </div>
+            <div class="d-flex gap-2 justify-content-end">
+                <button class="btn btn-light border fw-bold" onclick="closePopup()">Cancelar</button>
+                <button class="btn-main-warning fw-bold border-0 px-4" onclick="processReturn()">Confirmar Devolución</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Rechazo -->
+    <div class="mre-popup-overlay" id="rejectModal">
+        <div class="mre-popup">
+            <h5 class="fw-black text-navy mb-3 d-flex align-items-center gap-2">
+                <span class="text-danger"><i data-lucide="x-circle"></i></span> Confirmar Rechazo
+            </h5>
+            <div id="rejectModalContent" class="mb-3 p-3 bg-light border rounded small"></div>
+            <p class="small text-muted">Esta acción es definitiva. El trámite finalizará.</p>
+            <div class="mb-3">
+                <label class="form-label small fw-bold text-uppercase">Observación <span class="text-danger">*</span></label>
+                <textarea class="form-control" id="rejectObs" rows="3" placeholder="Ingrese el motivo del rechazo..."></textarea>
+            </div>
+            <div class="d-flex gap-2 justify-content-end">
+                <button class="btn btn-light border fw-bold" onclick="closePopup()">Cancelar</button>
+                <button class="btn-main-danger fw-bold px-4" onclick="processReject()">Confirmar Rechazo</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Aprobación -->
+    <div class="mre-popup-overlay" id="approveModal">
+        <div class="mre-popup">
+            <h5 class="fw-black text-navy mb-3 d-flex align-items-center gap-2">
+                <span class="text-success"><i data-lucide="check-circle"></i></span> Confirmar Aprobación
+            </h5>
+            <div id="approveModalContent" class="mb-3 p-3 bg-light border rounded small"></div>
+            <p class="small text-muted">La solicitud pasará a la etapa de pago/finalización.</p>
+            <div class="mb-3">
+                <label class="form-label small fw-bold text-uppercase">Observación (Opcional)</label>
+                <textarea class="form-control" id="approveObs" rows="3" placeholder="Observaciones adicionales..."></textarea>
+            </div>
+            <div class="d-flex gap-2 justify-content-end">
+                <button class="btn btn-light border fw-bold" onclick="closePopup()">Cancelar</button>
+                <button class="btn-main-success fw-bold border-0 px-4" onclick="processApprove()">Confirmar Aprobación</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ver Detalle -->
+    <div class="mre-popup-overlay" id="detailModal">
+        <div class="mre-popup" style="max-width: 600px;">
+            <h5 class="fw-black text-navy mb-3">Detalle de Solicitud</h5>
+            <div class="p-3 bg-light border rounded mb-4" id="detailModalContent"></div>
+            <div class="d-flex gap-2 justify-content-end" id="detailModalFooter">
+                <!-- JS Inject -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => { 
+            lucide.createIcons(); 
+            filterTable('Análisis');
+        });
+
+        // DATOS MOCK CON NUMERO FISICO Y ORIGEN
+        const requests = [
+            { id: '2026-10442', date: '21/01/2026 09:15', name: 'Juan Román Pérez', ci: '4.567.890', doc: 'Certificado de Nacimiento', physicalNumber: 'AC-99223', signature: 'Electrónica', country: 'España', amount: 80100, status: 'Análisis', lockedBy: null, origin: 'Web' },
+            { id: '2026-10445', date: '21/01/2026 09:30', name: 'Ana Gómez', ci: '1.222.333', doc: 'Antecedentes Policiales', physicalNumber: 'PN-44120', signature: 'Ológrafa', country: 'Argentina', amount: 80100, status: 'Análisis', lockedBy: 'OtroFuncionario', origin: 'Web' },
+            { id: '2026-10448', date: '21/01/2026 10:05', name: 'Carlos Ruiz', ci: '3.444.555', doc: 'Título Universitario', physicalNumber: 'UNI-8812', signature: 'Electrónica', country: 'Alemania', amount: 80100, status: 'Análisis', lockedBy: null, origin: 'Web' },
+            { id: '2026-10400', date: '19/01/2026 08:00', name: 'Maria Lopez', ci: '1.111.111', doc: 'Título', physicalNumber: 'UNI-4455', signature: 'Electrónica', country: 'Uruguay', amount: 80100, status: 'Devuelto', lockedBy: null, origin: 'Web' },
+            // Solicitud Creada por Funcionario (para demo)
+            { id: '2026-10333', date: '25/01/2026 14:00', name: 'Pedro Benítez', ci: '2.222.222', doc: 'Certificado de Estudios', physicalNumber: 'ED-1122', signature: 'Ológrafa', country: 'Brasil', amount: 80100, status: 'Devuelto', lockedBy: null, origin: 'Funcionario' },
+            // Solicitudes Finalizadas (Apostillas/Legalizaciones)
+            { id: '2026-00007', date: '08/01/2026 08:30', name: 'Juan Perez', ci: '1.234.567', type: 'Apostilla', country: 'Paraguay', institution: 'Registro Civil', doc: 'Certificado de Nacimiento', physicalNumber: 'AC-001', signature: 'Electrónica', amount: 80100, status: 'Finalizados', lockedBy: null, origin: 'Funcionario' },
+            { id: '2026-00008', date: '08/01/2026 08:45', name: 'Maria Gomez', ci: '2.345.678', type: 'Legalización', country: 'Paraguay', institution: 'Ministerio de Educación', doc: 'Certificado de Estudios', physicalNumber: 'ED-002', signature: 'Ológrafa', amount: 80100, status: 'Finalizados', lockedBy: null, origin: 'Web' }
+        ];
+
+        let tempRequestsList = [];
+        let currentStatus = 'Análisis';
+        let currentProfile = 'olografo';
+        let actionTargetId = null;
+        let electronicSigCount = 0;
+        let isEditing = false;
+        let editingId = null;
+
+        function parseDateStr(str) {
+            const [d, t] = str.split(' ');
+            const [day, month, year] = d.split('/');
+            const [hour, min] = t.split(':');
+            return new Date(year, month - 1, day, hour, min);
+        }
+
+        // FUNCIÓN CENTRALIZADA DE RESUMEN PARA MODALES
+        function getRequestSummaryHTML(req) {
+            return `
+                <div class="row g-2 text-start">
+                    <div class="col-6">
+                        <span class="fw-bold text-muted small text-uppercase">Nro. Solicitud</span><br>
+                        <strong class="text-navy">${req.id}</strong>
+                    </div>
+                    <div class="col-6 text-end">
+                        <span class="fw-bold text-muted small text-uppercase">Fecha</span><br>
+                        <span class="text-dark">${req.date}</span>
+                    </div>
+                    <div class="col-12 border-top my-2"></div>
+                    <div class="col-12">
+                        <span class="fw-bold text-muted small text-uppercase">Nombre del Titular</span><br>
+                        <span class="text-dark fw-bold text-uppercase">${req.name}</span>
+                    </div>
+                    <div class="col-12 mt-1">
+                        <div class="p-3 bg-white border rounded">
+                            <span class="fw-bold text-muted small text-uppercase">Número Físico del Documento</span><br>
+                            <strong class="text-primary fs-5">${req.physicalNumber || 'NO ASIGNADO'}</strong>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function changeProfile(select) {
+            currentProfile = select.value;
+            const turnIndicator = document.getElementById('turnIndicator');
+            if (currentProfile === 'electronico') turnIndicator.classList.remove('hidden');
+            else turnIndicator.classList.add('hidden');
+            filterTable(currentStatus, document.querySelector('.status-btn.active'));
+        }
+
+        function filterTable(status, btn) {
+            currentStatus = status;
+            document.querySelectorAll('.status-btn').forEach(b => b.classList.remove('active'));
+            if(btn) btn.classList.add('active');
+
+            const thead = document.getElementById('tableHeadRow');
+            
+            // CONFIGURACION DE COLUMNAS SEGUN ESTADO
+            if (status === 'Finalizados') {
+                // ACTUALIZADO: Se eliminaron las columnas 'Tipo' e 'Institución'
+                thead.innerHTML = `
+                    <th>Nro. Solicitud</th>
+                    <th class="text-center">Documento Final</th>
+                    <th class="text-center">Comprobante</th>
+                    <th>Fecha</th>
+                    <th>Titular</th>
+                    <th>Nro. de Certificado</th>
+                    <th>Documento</th>
+                    <th>Tipo Firma</th>
+                    <th class="text-center">Acción</th>
+                `;
+            } else {
+                let checkCol = status === 'Aprobado' ? `<th class="text-center" style="width: 60px;"><input type="checkbox" class="form-check-input" onclick="toggleSelectAll(this)"></th>` : '';
+                let importeCol = status === 'Aprobado' ? `<th class="text-end">Importe</th>` : '';
+
+                thead.innerHTML = `
+                    ${checkCol}
+                    <th>Nro. Solicitud</th>
+                    <th>Fecha</th>
+                    <th>Titular</th>
+                    <th>Nro. de Certificado</th>
+                    <th>Documento</th>
+                    <th>Tipo Firma</th>
+                    <th>País</th>
+                    ${importeCol}
+                    <th class="text-center">Acción</th>
+                `;
+            }
+
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            let filtered = requests.filter(r => r.status === status);
+            if (currentProfile === 'olografo') filtered = filtered.filter(r => r.signature === 'Ológrafa');
+            else if (currentProfile === 'electronico') filtered = filtered.filter(r => r.signature === 'Electrónica');
+
+            filtered.sort((a, b) => parseDateStr(a.date) - parseDateStr(b.date));
+            
+            let nextAvailableId = null;
+            const myLockedRequest = requests.find(r => r.lockedBy === 'Me');
+
+            if (currentProfile === 'electronico' && status === 'Análisis') {
+                const next = filtered.find(r => !r.lockedBy || r.lockedBy === 'Me');
+                if (next) nextAvailableId = next.id;
+            }
+
+            const batchActions = document.getElementById('batchActions');
+            batchActions.style.setProperty('display', (status === 'Aprobado' ? 'flex' : 'none'), 'important');
+
+            if (filtered.length === 0) {
+                const colspan = status === 'Finalizados' ? 9 : (status === 'Aprobado' ? 10 : 9);
+                tbody.innerHTML = `<tr><td colspan="${colspan}" class="text-center py-5 text-muted">No hay registros en esta bandeja.</td></tr>`;
+                return;
+            }
+
+            filtered.forEach(req => {
+                let row = '';
+                if (status === 'Finalizados') {
+                    // ACTUALIZADO: Se eliminaron las celdas de 'type' e 'institution'
+                    row = `
+                        <tr>
+                            <td class="fw-black text-navy p-3">${req.id}</td>
+                            <td class="text-center p-3"><button class="btn-ver-pago d-inline-flex align-items-center gap-2" onclick="alert('Descargando documento final...')"><i data-lucide="download" style="width:14px;"></i> ${req.type === 'Apostilla' ? 'Descargar Apostilla' : 'Descargar Legalización'}</button></td>
+                            <td class="text-center p-3"><i data-lucide="file-down" style="width:18px; cursor:pointer; color:var(--mre-blue)" title="Descargar Comprobante de Pago" onclick="alert('Descargando comprobante...')"></i></td>
+                            <td class="small text-muted p-3">${req.date}</td>
+                            <td class="text-uppercase small fw-bold p-3">${req.name}</td>
+                            <td class="fw-bold text-primary p-3">${req.physicalNumber || '-'}</td>
+                            <td class="fw-bold text-navy p-3">${req.doc}</td>
+                            <td class="p-3"><span class="badge bg-light text-dark border">${req.signature}</span></td>
+                            <td class="text-center p-3"><button class="btn-ver-detalle" onclick="showRequestDetails('${req.id}')" title="Ver detalles completos">Ver Detalle</button></td>
+                        </tr>
+                    `;
+                } else {
+                    let checkCell = status === 'Aprobado' ? `<td class="text-center p-3"><input type="checkbox" class="form-check-input pay-check" value="${req.id}" checked></td>` : '';
+                    let importeCell = status === 'Aprobado' ? `<td class="text-end fw-black text-primary p-3">Gs. ${(req.amount || 0).toLocaleString('es-PY')}</td>` : '';
+
+                    let rowClass = '';
+                    let isNext = false;
+                    const isTakenByMe = req.lockedBy === 'Me';
+                    
+                    if (status === 'Análisis') {
+                        if (req.lockedBy === 'OtroFuncionario') rowClass = 'row-locked-other';
+                        else if (isTakenByMe) { isNext = true; rowClass = 'taken-by-me-highlight'; }
+                        else if (currentProfile === 'electronico' && req.id === nextAvailableId) { rowClass = 'next-turn-highlight'; isNext = true; }
+                    }
+
+                    let actionBtn = '';
+                    if (status === 'Análisis') {
+                        const hasOtherLocked = myLockedRequest && myLockedRequest.id !== req.id;
+                        const isDisabled = req.lockedBy === 'OtroFuncionario' || (currentProfile === 'electronico' && !isNext) || hasOtherLocked;
+                        const titleText = hasOtherLocked ? "Ya tiene una solicitud en curso" : "Ver Detalle";
+                        const actionDisabled = !isTakenByMe;
+                        
+                        actionBtn = `<div class="d-flex gap-1 justify-content-center">
+                            <button class="btn btn-sm btn-primary" onclick="handleDetailClick('${req.id}')" ${isDisabled ? 'disabled' : ''} title="${titleText}"><i data-lucide="eye" style="width:14px"></i></button>
+                            <button class="btn btn-sm btn-success" onclick="openApproveModal('${req.id}')" ${actionDisabled ? 'disabled' : ''} title="Aprobar"><i data-lucide="check" style="width:14px"></i></button>
+                            <button class="btn btn-sm btn-warning text-white" onclick="openReturnModal('${req.id}')" ${actionDisabled ? 'disabled' : ''} title="Devolver"><i data-lucide="rotate-ccw" style="width:14px"></i></button>
+                            <button class="btn btn-sm btn-danger" onclick="openRejectModal('${req.id}')" ${actionDisabled ? 'disabled' : ''} title="Rechazar"><i data-lucide="x" style="width:14px"></i></button>
+                            ${isTakenByMe ? `<button class="btn btn-sm btn-outline-secondary" onclick="unlockRequest('${req.id}')" title="Desbloquear Solicitud"><i data-lucide="unlock" style="width:14px"></i></button>` : ''}
+                        </div>`;
+                    } else if (status === 'Aprobado') {
+                         actionBtn = currentProfile === 'supervisor' ? `<button class="btn btn-sm btn-info text-white" onclick="exonerateRequest('${req.id}')">Exonerar</button>` : `<span class="badge bg-success">Listo para Pago</span>`;
+                    } else if (status === 'Devuelto') {
+                        if (req.origin === 'Funcionario') {
+                             actionBtn = `<button class="btn btn-sm btn-warning text-dark fw-bold border-0 shadow-sm" onclick="completeRequest('${req.id}')"><i data-lucide="edit" style="width:14px; margin-right:4px"></i> Corregir</button>`;
+                        } else {
+                             actionBtn = `<span class="badge bg-warning text-dark">Pendiente Ciudadano</span>`;
+                        }
+                    } else if (status === 'Rechazado') {
+                         actionBtn = `<span class="badge bg-danger">Rechazado</span>`;
+                    }
+
+                    row = `
+                        <tr class="${rowClass}">
+                            ${checkCell}
+                            <td class="fw-black text-navy p-3">${req.id}</td>
+                            <td class="small text-muted p-3">${req.date}</td>
+                            <td class="text-uppercase fw-bold p-3">${req.name}</td>
+                            <td class="fw-bold text-primary p-3">${req.physicalNumber || '-'}</td>
+                            <td class="p-3 small">${req.doc}</td>
+                            <td class="p-3"><span class="badge bg-light text-dark border">${req.signature}</span></td>
+                            <td class="p-3">${req.country}</td>
+                            ${importeCell}
+                            <td class="text-center p-3">${actionBtn}</td>
+                        </tr>
+                    `;
+                }
+                tbody.insertAdjacentHTML('beforeend', row);
+            });
+            lucide.createIcons();
+        }
+
+        // --- FUNCIONES NUEVA PANTALLA ---
+        function createManualRequest() {
+            document.getElementById('dashboardView').classList.add('hidden');
+            document.getElementById('newRequestView').classList.remove('hidden');
+            
+            // Reset state
+            isEditing = false;
+            editingId = null;
+            document.getElementById('formTitle').innerText = "Crear Solicitud Manual";
+            document.getElementById('formBadge').innerText = "Nuevo Trámite";
+            document.getElementById('btnSubmitForm').innerHTML = `<i data-lucide="plus-circle" style="width:16px;"></i> Añadir`;
+            
+            tempRequestsList = [];
+            renderLoadedDocuments();
+            document.getElementById('newRequestForm').reset();
+            document.querySelectorAll('.selected-value').forEach(el => {
+                el.innerText = "Seleccione...";
+                el.classList.add('text-muted');
+            });
+            
+            document.getElementById('requestFormContainer').classList.remove('hidden');
+            document.getElementById('loadedDocsSection').classList.add('hidden');
+            
+            handleSignatureChange();
+            handleDocTypeChange();
+            lucide.createIcons();
+        }
+
+        // --- LÓGICA DE CORRECCIÓN ---
+        function completeRequest(id) {
+            const req = requests.find(r => r.id === id);
+            if (!req) return;
+
+            document.getElementById('dashboardView').classList.add('hidden');
+            document.getElementById('newRequestView').classList.remove('hidden');
+            document.getElementById('requestFormContainer').classList.remove('hidden');
+            document.getElementById('loadedDocsSection').classList.add('hidden');
+
+            // Set Editing Mode
+            isEditing = true;
+            editingId = id;
+            document.getElementById('formTitle').innerText = `Corregir Solicitud #${id}`;
+            document.getElementById('formBadge').innerText = "Modificación";
+            document.getElementById('btnSubmitForm').innerHTML = `<i data-lucide="save" style="width:16px;"></i> Guardar Cambios`;
+
+            // Populate Form (Simplified)
+            setOption('reqCountry', req.country, document.getElementById('div_reqCountry'));
+            setOption('reqSignature', req.signature, document.getElementById('div_reqSignature'));
+            document.getElementById('titularName').value = req.name;
+            document.getElementById('titularCertNum').value = "123456"; // Dummy
+            // document.getElementById('titularCI').value = req.ci; // ELIMINADO: Ya no existe el campo en el DOM
+
+            handleSignatureChange();
+        }
+
+        function submitFormAction() {
+            if (isEditing) {
+                // Logic for editing
+                const req = requests.find(r => r.id === editingId);
+                if(req) {
+                    req.status = 'Análisis'; // Return to Analysis
+                    alert(`Solicitud #${editingId} corregida y enviada a Análisis.`);
+                    backToDashboard();
+                }
+            } else {
+                initiateAddProcess();
+            }
+        }
+
+        function initiateAddProcess() {
+            const signature = document.getElementById('reqSignature').value;
+            if (signature.includes('Electrónica')) {
+                startValidationProcess();
+            } else {
+                addToGrid('Previa', null);
+            }
+        }
+
+        function startValidationProcess() {
+            const popupTitle = document.getElementById('popupTitle');
+            const popupContent = document.getElementById('popupContent');
+            const popupActions = document.getElementById('popupActions');
+
+            popupTitle.innerText = "Validando Documento...";
+            popupContent.innerHTML = `
+                <div class="text-center p-4">
+                    <div class="spinner-border text-primary mb-3" role="status"></div>
+                    <p class="text-muted small fw-bold">Conectando con servicio de firma electrónica o verificable...</p>
+                </div>
+            `;
+            popupActions.innerHTML = '';
+            document.getElementById('genericPopup').style.display = 'flex';
+
+            setTimeout(() => {
+                showValidationResult();
+            }, 1500); 
+        }
+
+        function showValidationResult() {
+            electronicSigCount++;
+            let scenario = ''; 
+            const demoIndex = (electronicSigCount % 3);
+            if (demoIndex === 1) scenario = 'SUCCESS';
+            else if (demoIndex === 2) scenario = 'CONN_ERROR';
+            else scenario = 'INVALID'; 
+
+            const popupTitle = document.getElementById('popupTitle');
+            const popupContent = document.getElementById('popupContent');
+            const popupActions = document.getElementById('popupActions');
+
+            let icon = '', title = '', message = '';
+
+            if (scenario === 'SUCCESS') {
+                icon = '<div class="bg-success-subtle text-success p-3 rounded-circle d-inline-flex mb-3"><i data-lucide="check-circle-2" style="width:40px; height:40px"></i></div>';
+                title = 'Validación Exitosa';
+                message = '<p class="fw-bold text-success">El documento ha sido validado correctamente.</p>';
+            } else if (scenario === 'CONN_ERROR') {
+                icon = '<div class="bg-warning-subtle text-warning-emphasis p-3 rounded-circle d-inline-flex mb-3"><i data-lucide="wifi-off" style="width:40px; height:40px"></i></div>';
+                title = 'Error de Conexión';
+                message = '<p class="fw-bold text-warning-emphasis">No se pudo conectar con el servicio de validación.</p>';
+            } else if (scenario === 'INVALID') {
+                icon = '<div class="bg-danger-subtle text-danger p-3 rounded-circle d-inline-flex mb-3"><i data-lucide="x-circle" style="width:40px; height:40px"></i></div>';
+                title = 'Documento No Válido';
+                message = '<p class="fw-bold text-danger">No se pudo validar el documento.</p>';
+            }
+
+            popupTitle.innerText = title;
+            popupContent.innerHTML = `<div class="text-center p-2">${icon}${message}</div>`;
+            popupActions.innerHTML = `
+                <div class="d-flex gap-2 w-100">
+                    <button class="btn btn-light w-50 border fw-bold" onclick="closePopup()">Volver</button>
+                    <button class="btn-main w-100" onclick="handleValidationDecision('${scenario}')">Aceptar</button>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        function handleValidationDecision(scenario) {
+            closePopup();
+            if (scenario === 'SUCCESS') addToGrid('Automática', true);
+            else addToGrid('Previa', false); 
+        }
+
+        function setOption(inputId, value, element) {
+            document.getElementById(inputId).value = value;
+            const display = element.closest('.custom-select').querySelector('.selected-value');
+            display.innerText = value;
+            display.classList.remove('text-muted');
+        }
+
+        function filterOptions(input) {
+            const filter = input.value.toUpperCase();
+            const items = input.nextElementSibling.getElementsByClassName('dropdown-item');
+            for (let i = 0; i < items.length; i++) {
+                items[i].style.display = items[i].innerText.toUpperCase().includes(filter) ? "" : "none";
+            }
+        }
+
+        function handleSignatureChange() {
+            const sig = document.getElementById('reqSignature').value;
+            const attach = document.getElementById('attachmentField');
+            const official = document.getElementById('officialField');
+            const btnDoc = document.getElementById('btn_reqDocType');
+            
+            attach.classList.add('hidden');
+            official.classList.add('hidden');
+            document.getElementById('reqFile').required = false;
+            document.getElementById('reqOfficial').required = false;
+
+            if (sig.includes('Electrónica')) {
+                attach.classList.remove('hidden');
+                document.getElementById('reqFile').required = true;
+            } else if (sig.includes('Ológrafa')) {
+                official.classList.remove('hidden');
+            }
+
+            btnDoc.disabled = !sig;
+        }
+
+        function handleDocTypeChange() {
+            const doc = document.getElementById('reqDocType').value;
+            const tabs = document.getElementById('additionalDataTabs');
+            if(doc) tabs.classList.remove('hidden');
+            else tabs.classList.add('hidden');
+        }
+
+        function addToBatchGrid() {
+            // Lógica interna llamada por initiateAddProcess -> addToGrid
+        }
+
+        function addToGrid(valType, isValid) {
+            const name = document.getElementById('titularName').value;
+            const cert = document.getElementById('titularCertNum').value;
+            // const ci = document.getElementById('titularCI').value; // ELIMINADO: Captura de CI removida
+            const doc = document.getElementById('reqDocType').value;
+            const sig = document.getElementById('reqSignature').value;
+            const inst = document.getElementById('reqInstitution').value;
+            const type = document.getElementById('reqType').value; 
+            const country = document.getElementById('reqCountry').value; 
+            const official = document.getElementById('reqOfficial').value; 
+
+            if(!name || !cert) return;
+
+            tempRequestsList.push({
+                titularName: name, 
+                titularDocNum: cert, 
+                titularCI: '', // Se deja vacío ya que no se carga manualmente
+                docType: doc, 
+                signature: sig, 
+                institution: inst, 
+                type: type,
+                country: country,
+                official: official,
+                validationType: valType, 
+                isValidated: isValid, 
+                hasFile: sig.includes('Electrónica'), 
+                amount: 80100
+            });
+
+            renderLoadedDocuments();
+            document.getElementById('requestFormContainer').classList.add('hidden');
+            document.getElementById('loadedDocsSection').classList.remove('hidden');
+        }
+
+        function renderLoadedDocuments() {
+            const tbody = document.getElementById('loadedDocsBody');
+            tbody.innerHTML = tempRequestsList.map((item, i) => `
+                <tr>
+                    <td><span class="badge bg-light text-dark border">${item.signature}</span></td>
+                    <td class="small">${item.institution}</td>
+                    <td class="fw-bold text-navy">${item.docType}</td>
+                    <td>${item.validationType === 'Automática' ? '<span class="badge bg-primary-subtle text-primary border border-primary-subtle">Automática</span>' : '<span class="badge bg-warning-subtle text-dark border border-warning-subtle">Validación Previa</span>'}</td>
+                    <td class="text-center">${item.isValidated === true ? '<span class="badge bg-success">SÍ</span>' : (item.isValidated === false ? '<span class="badge bg-danger">NO</span>' : '-')}</td>
+                    <td class="text-end fw-bold">Gs. ${item.amount.toLocaleString('es-PY')}</td> <!-- CORREGIDO: item.importe a item.amount -->
+                    <td class="text-center">${item.hasFile ? '<i data-lucide="file-check" class="text-success"></i>' : '-'}</td>
+                    <td class="text-center"><button class="btn btn-sm text-danger" onclick="removeFromGrid(${i})"><i data-lucide="trash-2"></i></button></td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function removeFromGrid(index) { 
+            tempRequestsList.splice(index, 1); 
+            renderLoadedDocuments(); 
+            if(tempRequestsList.length === 0) {
+                document.getElementById('loadedDocsSection').classList.add('hidden');
+                document.getElementById('requestFormContainer').classList.remove('hidden');
+            }
+        }
+
+        function submitFinalRequest() {
+            tempRequestsList.forEach(item => {
+                requests.push({ 
+                    id: `2026-${Math.floor(Math.random()*90000)}`, 
+                    date: '28/01/2026 20:30', 
+                    ...item, 
+                    name: item.titularName, 
+                    ci: item.titularCI || 'N/A', 
+                    doc: item.docType, 
+                    physicalNumber: item.titularDocNum, // MAPEO CORRECTO
+                    signatureType: item.signature,
+                    status: item.validationType === 'Automática' ? 'Aprobado' : 'Análisis', 
+                    lockedBy: null,
+                    origin: 'Funcionario' 
+                });
+            });
+            backToDashboard();
+        }
+
+        function showRequestForm() {
+            document.getElementById('newRequestForm').reset();
+            document.querySelectorAll('.selected-value').forEach(e => e.innerText = 'Seleccione...');
+            document.getElementById('requestFormContainer').classList.remove('hidden');
+            document.getElementById('loadedDocsSection').classList.add('hidden');
+            document.getElementById('additionalDataTabs').classList.add('hidden');
+        }
+
+        function showCertHelp(e) {
+            e.preventDefault();
+            const popupTitle = document.getElementById('popupTitle');
+            const popupContent = document.getElementById('popupContent');
+            popupTitle.innerText = "Ayuda";
+            popupContent.innerHTML = `<div class="p-3 text-center">Aquí va la imagen de ayuda del certificado.</div>`;
+            document.getElementById('genericPopup').style.display = 'flex';
+        }
+
+        function handleDetailClick(id) {
+            // VERIFICACIÓN DE SEGURIDAD: Impedir tomar más de una solicitud
+            const myLocked = requests.find(r => r.lockedBy === 'Me');
+            if (myLocked && myLocked.id !== id) {
+                alert(`Usted ya está procesando la solicitud #${myLocked.id}. Debe finalizarla o liberarla antes de tomar otra.`);
+                return;
+            }
+
+            const req = requests.find(r => r.id === id);
+            actionTargetId = id;
+            document.getElementById('detailModalContent').innerHTML = getRequestSummaryHTML(req);
+            
+            const footer = document.getElementById('detailModalFooter');
+            if (req.lockedBy === 'Me') {
+                footer.innerHTML = `
+                    <button class="btn btn-light border fw-bold" onclick="closePopup()">Cancelar</button>
+                    <button class="btn btn-outline-secondary fw-bold" onclick="unlockRequest('${req.id}'); closePopup()">Liberar</button>
+                    <button class="btn-main px-4" onclick="takeRequestFromModal()">Continuar</button>
+                `;
+            } else {
+                footer.innerHTML = `
+                    <button class="btn btn-light border fw-bold" onclick="closePopup()">Cancelar</button>
+                    <button class="btn-main px-4" onclick="takeRequestFromModal()">Tomar Solicitud</button>
+                `;
+            }
+
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+
+        function takeRequestFromModal() {
+            const req = requests.find(r => r.id === actionTargetId);
+            if (req.lockedBy !== 'Me') req.lockedBy = 'Me';
+            document.getElementById('detailModal').style.display = 'none';
+            openVerification(req.id);
+        }
+
+        function openVerification(id) {
+            const req = requests.find(r => r.id === id);
+            
+            // Header Info
+            document.getElementById('verifyReqId').innerText = `Solicitud #${req.id}`;
+            document.getElementById('verifyReqName').innerText = `${req.name} (CI: ${req.ci})`;
+
+            // Populate Data Container
+            const container = document.getElementById('verifyDataContainer');
+            
+            const type = req.type || 'Apostilla';
+            const inst = req.institution || 'N/A';
+            const phys = req.physicalNumber || 'N/A';
+            const sig = req.signatureType || req.signature || 'N/A'; // Manejo de ambas propiedades
+            
+            let officialHtml = '';
+            if (req.official) {
+                officialHtml = `
+                <div class="col-12 bg-light p-2 rounded border mt-2">
+                    <label class="small text-muted fw-bold text-uppercase d-block">Funcionario Firmante Detectado</label>
+                    <strong class="text-dark text-uppercase">${req.official}</strong>
+                </div>`;
+            }
+
+            container.innerHTML = `
+                <div class="col-6">
+                    <label class="small text-muted fw-bold text-uppercase d-block">País Destino</label>
+                    <strong class="text-dark">${req.country}</strong>
+                </div>
+                <div class="col-6">
+                    <label class="small text-muted fw-bold text-uppercase d-block">Trámite</label>
+                    <strong class="text-dark">${type}</strong>
+                </div>
+                <div class="col-12">
+                    <label class="small text-muted fw-bold text-uppercase d-block">Institución Emisora</label>
+                    <strong class="text-dark">${inst}</strong>
+                </div>
+                <div class="col-12">
+                    <label class="small text-muted fw-bold text-uppercase d-block">Tipo Documento</label>
+                    <strong class="text-primary fs-5">${req.doc}</strong>
+                </div>
+                <div class="col-6">
+                    <label class="small text-muted fw-bold text-uppercase d-block">Nro. Físico / Certificado</label>
+                    <strong class="text-dark">${phys}</strong>
+                </div>
+                <div class="col-6">
+                    <label class="small text-muted fw-bold text-uppercase d-block">Firma</label>
+                    <span class="badge ${sig.includes('Electrónica') ? 'bg-primary-subtle text-primary border border-primary-subtle' : 'bg-light text-dark border'}">${sig}</span>
+                </div>
+                ${officialHtml}
+            `;
+
+            const splitContainer = document.querySelector('.split-screen-container');
+            const viewerContainer = document.querySelector('.split-side-a');
+            const physicalBanner = document.getElementById('physicalVerificationBanner');
+
+            // Reset classes
+            splitContainer.classList.remove('single-mode');
+            viewerContainer.classList.remove('hidden');
+            physicalBanner.classList.add('hidden');
+
+            // Usar la variable local 'sig' que normaliza la propiedad signature/signatureType
+            if (sig.includes('Ológrafa')) {
+                splitContainer.classList.add('single-mode');
+                physicalBanner.classList.remove('hidden');
+            } else {
+                viewerContainer.innerHTML = `
+                    <div class="pdf-viewer-placeholder">
+                        <i data-lucide="file-text" style="width: 64px; height: 64px; opacity: 0.5;"></i>
+                        <p class="mt-3 fw-bold">Visualizador de Documento</p>
+                        <small class="text-white-50">Aquí se cargará el PDF digital o escaneado</small>
+                        <button class="btn btn-sm btn-outline-light mt-3" onclick="alert('Simulando zoom...')"><i data-lucide="maximize"></i> Ampliar</button>
+                    </div>
+                `;
+            }
+
+            document.getElementById('dashboardView').classList.add('hidden');
+            document.getElementById('verificationView').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function backToDashboard() {
+            document.getElementById('verificationView').classList.add('hidden');
+            document.getElementById('liquidationView').classList.add('hidden');
+            document.getElementById('newRequestView').classList.add('hidden');
+            document.getElementById('dashboardView').classList.remove('hidden');
+            filterTable(currentStatus);
+        }
+
+        function processApprove() {
+            const req = requests.find(r => r.id === actionTargetId || r.lockedBy === 'Me');
+            req.status = 'Aprobado';
+            req.lockedBy = null;
+            closePopup();
+            backToDashboard();
+        }
+
+        function processReturn() {
+            const obs = document.getElementById('returnObs').value;
+            if(!obs) return alert("Ingrese el motivo.");
+            const req = requests.find(r => r.id === actionTargetId || r.lockedBy === 'Me');
+            req.status = 'Devuelto';
+            req.lockedBy = null;
+            closePopup();
+            backToDashboard();
+        }
+
+        function processReject() {
+            const obs = document.getElementById('rejectObs').value;
+            if(!obs) return alert("Ingrese el motivo.");
+            const req = requests.find(r => r.id === actionTargetId || r.lockedBy === 'Me');
+            req.status = 'Rechazado';
+            req.lockedBy = null;
+            closePopup();
+            backToDashboard();
+        }
+
+        function unlockRequest(id) {
+            const req = requests.find(r => r.id === id);
+            req.lockedBy = null;
+            filterTable(currentStatus);
+        }
+
+        function unlockRequestFromVerification() { unlockRequest(actionTargetId); backToDashboard(); }
+
+        function openPaymentModal() { 
+            const count = document.querySelectorAll('.pay-check:checked').length;
+            document.getElementById('payQty').innerText = count;
+            document.getElementById('payTotalGs').innerText = `Gs. ${(count * 80100).toLocaleString('es-PY')}`;
+            document.getElementById('paymentModal').style.display = 'flex'; 
+        }
+
+        function confirmPayment() {
+            closePopup();
+            document.getElementById('dashboardView').classList.add('hidden');
+            document.getElementById('liquidationView').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closePopup() { document.querySelectorAll('.mre-popup-overlay').forEach(p => p.style.display = 'none'); }
+        
+        function openReturnModal(id = null) { 
+            if(id) actionTargetId = id;
+            const req = requests.find(r => r.id === actionTargetId || r.lockedBy === 'Me');
+            document.getElementById('returnModalContent').innerHTML = getRequestSummaryHTML(req);
+            document.getElementById('returnModal').style.display = 'flex'; 
+        }
+
+        function openRejectModal(id = null) { 
+            if(id) actionTargetId = id;
+            const req = requests.find(r => r.id === actionTargetId || r.lockedBy === 'Me');
+            document.getElementById('rejectModalContent').innerHTML = getRequestSummaryHTML(req);
+            document.getElementById('rejectModal').style.display = 'flex'; 
+        }
+
+        function openApproveModal(id = null) { 
+            if(id) actionTargetId = id;
+            const req = requests.find(r => r.id === actionTargetId || r.lockedBy === 'Me');
+            document.getElementById('approveModalContent').innerHTML = getRequestSummaryHTML(req);
+            document.getElementById('approveModal').style.display = 'flex'; 
+        }
+
+        function handleDetailModalClose() { document.getElementById('detailModal').style.display = 'none'; }
+        function toggleSelectAll(cb) { document.querySelectorAll('.pay-check').forEach(p => p.checked = cb.checked); }
+        
+        function filterOptions(input) {
+            const filter = input.value.toUpperCase();
+            const items = input.nextElementSibling.getElementsByClassName('dropdown-item');
+            for (let i = 0; i < items.length; i++) {
+                items[i].style.display = items[i].innerText.toUpperCase().includes(filter) ? "" : "none";
+            }
+        }
+
+        function filterByCI(input) {
+            const val = input.value.toLowerCase().replace(/\./g, '');
+            if (!val) { filterTable(currentStatus); return; }
+            const rows = document.querySelectorAll('#tableBody tr');
+            rows.forEach(r => r.style.display = r.innerText.toLowerCase().includes(val) ? '' : 'none');
+        }
+    </script>
+</body>
+</html>
