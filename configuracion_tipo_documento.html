@@ -397,7 +397,7 @@
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Tipo de evento <span class="text-danger">*</span></label>
-                                <select id="docEvento" class="form-control-mre">
+                                <select id="docEvento" class="form-control-mre" required>
                                     <option value="APO_LEG">Apostilla o Legalización</option>
                                     <option value="LEG">Legalización</option>
                                     <option value="APO">Apostilla</option>
@@ -405,45 +405,45 @@
                             </div>
                             
                             <div class="col-md-2">
-                                <label class="form-label">Origen</label>
-                                <select id="docOrigen" class="form-control-mre">
+                                <label class="form-label">Origen <span class="text-danger">*</span></label>
+                                <select id="docOrigen" class="form-control-mre" required>
                                     <option value="EXT">Extranjero</option>
                                     <option value="NAC">Nacional</option>
                                 </select>
                             </div>
                             <div class="col-md-2">
-                                <label class="form-label">Género</label>
-                                <select id="docGenero" class="form-control-mre">
+                                <label class="form-label">Género <span class="text-danger">*</span></label>
+                                <select id="docGenero" class="form-control-mre" required>
                                     <option value="PERSONAL">Personal</option>
                                     <option value="COMERCIAL">Comercial</option>
                                 </select>
                             </div>
                             <div class="col-md-2">
-                                <label class="form-label">Grupo</label>
-                                <select id="docGrupo" class="form-control-mre">
+                                <label class="form-label">Grupo <span class="text-danger">*</span></label>
+                                <select id="docGrupo" class="form-control-mre" required>
                                     <option value="NAC">Nacionales</option>
                                     <option value="COM">Comerciales</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label">Tipo de Emisión</label>
-                                <select id="docEmision" class="form-control-mre">
+                                <label class="form-label">Tipo de Emisión <span class="text-danger">*</span></label>
+                                <select id="docEmision" class="form-control-mre" required>
                                     <option value="AUT">Automática</option>
                                     <option value="PRE">Presencial</option>
                                     <option value="VAL">Validación previa</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label">Tipo de Firma</label>
-                                <select id="docFirma" class="form-control-mre">
+                                <label class="form-label">Tipo de Firma <span class="text-danger">*</span></label>
+                                <select id="docFirma" class="form-control-mre" required>
                                     <option value="ELE">Electrónica</option>
                                     <option value="VER">Verificable</option>
                                     <option value="OLO">Ológrafa</option>
                                 </select>
                             </div>
                             <div class="col-md-3 d-none" id="containerDocEstado">
-                                <label class="form-label">Estado Registro</label>
-                                <select id="docEstado" class="form-control-mre fw-bold">
+                                <label class="form-label">Estado Registro <span class="text-danger">*</span></label>
+                                <select id="docEstado" class="form-control-mre fw-bold" required>
                                     <option value="ACTIVO">ACTIVO</option>
                                     <option value="INACTIVO">INACTIVO</option>
                                 </select>
@@ -516,7 +516,7 @@
                                 <div class="sub-section-title mt-0">Base Legal Asociada</div>
                                 <div class="row g-2 align-items-end mode-edit-only">
                                     <div class="col-md-3">
-                                        <label class="form-label">Buscar Ley</label>
+                                        <label class="form-label">Buscar Ley <span class="text-danger">*</span></label>
                                         <select id="lawInput" class="form-control-mre">
                                             <option value="">Seleccionar Ley...</option>
                                             <option value="1030_1">Ley Nº 1030 Certificado Nacimiento - N</option>
@@ -534,15 +534,15 @@
                                         </select>
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Cuenta de Depósito</label>
+                                        <label class="form-label">Cuenta de Depósito <span class="text-danger">*</span></label>
                                         <select id="lawAccount" class="form-control-mre">
                                             <option value="">Seleccionar Cuenta...</option>
                                             <option value="00000094555551442">00000094555551442</option>
                                             <option value="00000094555551443">00000094555551443</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-2"><label class="form-label">Desde</label><input type="date" id="lawDesde" class="form-control-mre"></div>
-                                    <div class="col-md-2"><label class="form-label">Hasta</label><input type="date" id="lawHasta" class="form-control-mre"></div>
+                                    <div class="col-md-2"><label class="form-label">Desde <span class="text-danger">*</span></label><input type="date" id="lawDesde" class="form-control-mre"></div>
+                                    <div class="col-md-2"><label class="form-label">Hasta <span class="text-danger">*</span></label><input type="date" id="lawHasta" class="form-control-mre"></div>
                                     <div class="col-md-2"><button type="button" class="btn-main w-100 action-btn" onclick="addItem('law')">Agregar</button></div>
                                 </div>
                                 <div class="table-container-embedded mt-2">
@@ -962,7 +962,17 @@
                 const desde = document.getElementById(type === 'law' ? 'lawDesde' : 'excDesde').value;
                 const hasta = document.getElementById(type === 'law' ? 'lawHasta' : 'excHasta').value;
 
-                if(!select.value) return;
+                // Validación específica para Leyes (Campos obligatorios)
+                if (type === 'law') {
+                    if (!select.value || !account.value || !desde || !hasta) {
+                        showToast('Error: Todos los campos de la Base Legal (Ley, Cuenta, Desde, Hasta) son obligatorios.');
+                        return;
+                    }
+                } else {
+                    // Para excepciones u otros, validación básica del select
+                    if(!select.value) return;
+                }
+
                 if(body.rows.length === 1 && body.rows[0].cells.length === 1) body.innerHTML = '';
                 const row = document.createElement('tr');
                 const info = select.options[select.selectedIndex].text.split(' - ');
@@ -1039,6 +1049,25 @@
 
         document.getElementById('formDoc').addEventListener('submit', (e) => {
             e.preventDefault();
+            
+            // Validar que exista al menos una ley en la Base Legal (Apartado 2)
+            const lawsRows = document.querySelectorAll('#lawsTableBody tr');
+            const hasLaws = lawsRows.length > 0 && !lawsRows[0].textContent.includes('Sin leyes asignadas');
+
+            if (!hasLaws) {
+                showToast('Error: Debe asociar al menos una Ley con cuenta y vigencia en el apartado 2.');
+                toggleApartado(2);
+                return;
+            }
+
+            // Validar que exista al menos un dato específico (Apartado 3)
+            const specificFieldsRows = document.querySelectorAll('#tableFields tbody tr');
+            if (specificFieldsRows.length === 0) {
+                showToast('Error: Debe seleccionar al menos un dato específico en el apartado 3.');
+                toggleApartado(3);
+                return;
+            }
+
             showToast('Registro guardado correctamente.');
             closeModal('modalDoc');
         });
