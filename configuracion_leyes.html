@@ -288,7 +288,7 @@
                 <div class="row g-4 mb-5">
                     <div class="col-md-4">
                         <label class="form-label">Tipo de Registro <span class="text-danger">*</span></label>
-                        <select id="leyTipoRegistro" class="form-control-mre" onchange="handleRegistroTypeChange()">
+                        <select id="leyTipoRegistro" class="form-control-mre" onchange="handleRegistroTypeChange()" required>
                             <option value="LEY">Ley</option>
                             <option value="EXCEPCION">Excepción</option>
                         </select>
@@ -298,8 +298,8 @@
                         <input type="text" id="leyNumero" class="form-control-mre" placeholder="Ej: 1030" required>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">Párrafo de la ley</label>
-                        <input type="text" id="leyParrafo" class="form-control-mre" placeholder="Ej: Art 1ro.">
+                        <label class="form-label">Párrafo de la ley <span class="text-danger">*</span></label>
+                        <input type="text" id="leyParrafo" class="form-control-mre" placeholder="Ej: Art 1ro." required>
                     </div>
                     
                     <!-- Campo condicional: Fecha -->
@@ -414,15 +414,15 @@
                     <td class="text-center fw-bold text-navy">${l.id}</td>
                     <td><span class="badge bg-light text-navy border">${l.numero}</span></td>
                     <td>
-                        <div class="fw-bold" style="font-size: 0.8rem">${l.desc}</div>
+                        <div class="fw-bold" style="font-size: 0.8rem">${l.desc || 'Sin descripción'}</div>
                         <div class="text-muted d-flex gap-2" style="font-size: 0.7rem">
                             <span>${l.parrafo}</span>
                             ${l.tipoReg === 'EXCEPCION' ? '<span class="badge bg-warning text-dark px-1 py-0" style="font-size:0.6rem">EXCEPCIÓN</span>' : ''}
                         </div>
                     </td>
-                    <td class="fw-bold">${l.tipoReg === 'EXCEPCION' ? '-' : l.valor}</td>
-                    <td class="text-capitalize fw-bold ${l.tipo === 'dolar' ? 'text-primary' : 'text-muted'}">${l.tipoReg === 'EXCEPCION' ? '-' : l.tipo}</td>
-                    <td class="text-muted small">${l.tipoReg === 'EXCEPCION' ? '-' : l.fecha.split('-').reverse().join('/')}</td>
+                    <td class="fw-bold">${l.tipoReg === 'EXCEPCION' ? '-' : (l.valor || '-')}</td>
+                    <td class="text-capitalize fw-bold ${l.tipo === 'dolar' ? 'text-primary' : 'text-muted'}">${l.tipoReg === 'EXCEPCION' ? '-' : (l.tipo || '-')}</td>
+                    <td class="text-muted small">${l.tipoReg === 'EXCEPCION' ? '-' : (l.fecha ? l.fecha.split('-').reverse().join('/') : '-')}</td>
                     <td class="text-center">
                         <div class="d-flex justify-content-center gap-1">
                             <button class="btn btn-sm btn-light border" onclick="openModal('view', ${l.id})"><i data-lucide="eye" style="width:14px"></i></button>
@@ -487,10 +487,10 @@
                 document.getElementById('leyTipoRegistro').value = l.tipoReg || 'LEY';
                 document.getElementById('leyNumero').value = l.numero;
                 document.getElementById('leyParrafo').value = l.parrafo;
-                document.getElementById('leyFecha').value = l.fecha;
-                document.getElementById('leyDescripcion').value = l.desc;
-                document.getElementById('leyTipoValor').value = l.tipo;
-                document.getElementById('leyValor').value = l.valor;
+                document.getElementById('leyFecha').value = l.fecha || '';
+                document.getElementById('leyDescripcion').value = l.desc || '';
+                document.getElementById('leyTipoValor').value = l.tipo || 'jornal';
+                document.getElementById('leyValor').value = l.valor || '';
 
                 handleRegistroTypeChange();
 
@@ -566,6 +566,12 @@
             handleCancelSelection();
             alert('Las leyes seleccionadas han sido inactivadas.');
         }
+
+        document.getElementById('formLeyes').onsubmit = (e) => {
+            e.preventDefault();
+            alert('Registro guardado exitosamente.');
+            closeModal('modalLeyes');
+        };
 
         document.addEventListener('click', () => {
             ['userMenu', 'a11yMenu'].forEach(id => document.getElementById(id)?.classList.remove('show'));
