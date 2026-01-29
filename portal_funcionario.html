@@ -126,6 +126,14 @@
         }
         .btn-ver-detalle:hover { background: #BAE6FD; }
 
+        /* NUEVO: Botón Exonerar Azul Marino */
+        .btn-exonerate {
+            background: var(--mre-blue); color: white; border: none;
+            padding: 4px 10px; border-radius: 6px; font-size: 0.65rem; font-weight: 800;
+            text-transform: uppercase; transition: var(--transition);
+        }
+        .btn-exonerate:hover { background: var(--mre-blue-light); }
+
         .form-control-mre {
             background-color: var(--input-bg); border: 1px solid #E2E8F0; border-radius: 14px;
             padding: 0.8rem 1rem; font-size: 0.85rem; width: 100%; transition: all 0.25s ease;
@@ -612,17 +620,11 @@
                                 <h6 class="fw-black text-navy mb-4 fs-5">Documentos Listos para Impresión</h6>
                                 <div class="alert alert-light border small text-muted mb-4 text-start">
                                     <i data-lucide="printer" style="width:14px; vertical-align:text-bottom"></i> 
-                                    Las etiquetas de apostilla se generaron con los siguientes códigos:
+                                    Las etiquetas de apostilla se generaron para los siguientes códigos:
                                 </div>
-                                <ul class="list-group list-group-flush mb-4 small fw-bold text-start">
-                                    <li class="list-group-item d-flex justify-content-between align-items-center bg-light rounded mb-2 border-0">
-                                        <span><i data-lucide="file-check" style="width:14px" class="me-2 text-success"></i> Solicitud #2026-10430</span>
-                                        <span class="badge bg-dark">A-99923</span>
-                                    </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center bg-light rounded border-0">
-                                        <span><i data-lucide="file-check" style="width:14px" class="me-2 text-success"></i> Solicitud #2026-10431</span>
-                                        <span class="badge bg-dark">A-99924</span>
-                                    </li>
+                                <!-- AGREGADO ID liquidationList PARA ACTUALIZACIÓN DINÁMICA -->
+                                <ul class="list-group list-group-flush mb-4 small fw-bold text-start" id="liquidationList">
+                                    <!-- Se llenará dinámicamente desde confirmPayment -->
                                 </ul>
 
                                 <div class="mt-auto d-grid gap-2 col-md-10 mx-auto">
@@ -749,6 +751,47 @@
         </div>
     </div>
 
+    <!-- NUEVO MODAL: EXONERACIÓN -->
+    <div class="mre-popup-overlay" id="exonerationModal">
+        <div class="mre-popup">
+            <h5 class="fw-black text-navy mb-3 d-flex align-items-center gap-2">
+                <span class="text-info"><i data-lucide="percent"></i></span> Motivo de Exoneración
+            </h5>
+            <div class="alert alert-info border-info-subtle small mb-3 text-start">
+                <i data-lucide="info" style="width:14px; margin-right:5px; vertical-align:text-bottom"></i>
+                Al exonerar, el costo del trámite se actualizará a <strong>Gs. 0</strong>. Este cambio requiere una justificación obligatoria para auditoría.
+            </div>
+            <div class="mb-3">
+                <label class="form-label small fw-bold text-uppercase">Justificación <span class="text-danger">*</span></label>
+                <textarea class="form-control" id="exonerationObs" rows="3" placeholder="Ingrese el motivo (Ej: Caso social, Decreto N° X/Y, Funcionario Diplomático)..."></textarea>
+            </div>
+            <div class="d-flex gap-2 justify-content-end">
+                <button class="btn btn-light border fw-bold" onclick="cancelExoneration()">Cancelar</button>
+                <button class="btn-main border-0 px-4" onclick="confirmExoneration()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NUEVO MODAL: TOMA FORZOSA (SUPERVISOR) -->
+    <div class="mre-popup-overlay" id="forceTakeModal">
+        <div class="mre-popup">
+            <h5 class="fw-black text-navy mb-3 d-flex align-items-center gap-2">
+                <span class="text-warning-emphasis"><i data-lucide="alert-triangle"></i></span> Atención de Excepción
+            </h5>
+            <div class="alert alert-warning border-warning-subtle small mb-3">
+                <strong>Fuera de Turno:</strong> Esta solicitud no es la siguiente en la cola de atención FIFO. Como Supervisor, debe justificar este cambio de prioridad.
+            </div>
+            <div class="mb-3">
+                <label class="form-label small fw-bold text-uppercase">Motivo de la selección manual <span class="text-danger">*</span></label>
+                <textarea class="form-control" id="forceTakeObs" rows="3" placeholder="Ej: Urgencia humanitaria, orden judicial, etc..."></textarea>
+            </div>
+            <div class="d-flex gap-2 justify-content-end">
+                <button class="btn btn-light border fw-bold" onclick="document.getElementById('forceTakeModal').style.display='none'">Cancelar</button>
+                <button class="btn-main-warning fw-bold border-0 px-4" onclick="confirmForceTake()">Confirmar Toma</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Ver Detalle -->
     <div class="mre-popup-overlay" id="detailModal">
         <div class="mre-popup" style="max-width: 600px;">
@@ -786,6 +829,7 @@
         let electronicSigCount = 0;
         let isEditing = false;
         let editingId = null;
+        let currentVerificationId = null; // ID actual en pantalla de verificación
 
         function parseDateStr(str) {
             const [d, t] = str.split(' ');
@@ -866,7 +910,8 @@
             doc.text(`Usuario: ${usuario}`, margin, y); y += 15;
 
             // --- 5. TABLA DE CONCEPTOS ---
-            const monto = req.amount || req.importe || 161500;
+            // CORRECCIÓN: Usar 0 si está definido, sino usar valor por defecto.
+            const monto = (req.amount !== undefined) ? req.amount : 80100;
             
             doc.autoTable({
                 startY: y,
@@ -912,7 +957,10 @@
 
             // --- 6. PIE DE PÁGINA ---
             doc.setFont("helvetica", "normal");
-            const montoLetras = "Ciento sesenta y un mil quinientos"; 
+            let montoLetras = "Ochenta mil cien"; 
+            if (monto === 161500) montoLetras = "Ciento sesenta y un mil quinientos";
+            if (monto === 0) montoLetras = "Cero (Exonerado)";
+
             doc.text(`Son Guaraníes: ${montoLetras}.`, margin, y); y += 12;
 
             doc.text("Nro. de recibo: C-2669994", margin, y); y += lineHeight;
@@ -961,10 +1009,9 @@
             const thead = document.getElementById('tableHeadRow');
             
             // Lógica para mostrar columna Turno:
-            // 1. Perfil Electrónico (siempre, excepto finalizados)
-            // 2. Perfil Supervisor (SOLO en Análisis)
-            let showTurno = (currentProfile === 'electronico' && status !== 'Finalizados') || 
-                            (currentProfile === 'supervisor' && status === 'Análisis');
+            // Mostrar si el perfil no es ológrafo (es decir, maneja electrónicas) y no es bandeja histórica
+            // Esto cubre: Perfil Electrónico (todo) y Perfil Supervisor (filas electrónicas)
+            let showTurno = (currentProfile !== 'olografo') && (status !== 'Finalizados');
 
             // CONFIGURACION DE COLUMNAS SEGUN ESTADO
             if (status === 'Finalizados') {
@@ -1004,9 +1051,15 @@
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
 
+            // Normalización de filtro por perfil
             let filtered = requests.filter(r => r.status === status);
-            if (currentProfile === 'olografo') filtered = filtered.filter(r => r.signature === 'Ológrafa');
-            else if (currentProfile === 'electronico') filtered = filtered.filter(r => r.signature === 'Electrónica');
+            // Normalizar propiedad signature para filtrado seguro
+            filtered = filtered.filter(r => {
+                const sig = r.signature || r.signatureType || '';
+                if (currentProfile === 'olografo') return sig.includes('Ológrafa');
+                if (currentProfile === 'electronico') return sig.includes('Electrónica');
+                return true; // Supervisor ve todo
+            });
 
             filtered.sort((a, b) => parseDateStr(a.date) - parseDateStr(b.date));
             
@@ -1032,12 +1085,13 @@
                 return;
             }
 
-            // Contador para turnos electrónicos mixtos (Supervisor)
+            // Contador para turnos electrónicos
             let electronicCounter = 0;
 
             filtered.forEach((req, index) => {
+                const sig = req.signature || req.signatureType || 'N/A';
                 // Si es firma electrónica, incrementamos el contador global de esta vista
-                if (req.signature === 'Electrónica') electronicCounter++;
+                if (sig.includes('Electrónica')) electronicCounter++;
 
                 let row = '';
                 if (status === 'Finalizados') {
@@ -1050,7 +1104,7 @@
                             <td class="text-uppercase small fw-bold p-3">${req.name}</td>
                             <td class="fw-bold text-primary p-3">${req.physicalNumber || '-'}</td>
                             <td class="fw-bold text-navy p-3">${req.doc}</td>
-                            <td class="p-3"><span class="badge bg-light text-dark border">${req.signature}</span></td>
+                            <td class="p-3"><span class="badge bg-light text-dark border">${sig}</span></td>
                             <td class="text-center p-3"><button class="btn-ver-detalle" onclick="showRequestDetails('${req.id}')" title="Ver detalles completos">Ver Detalle</button></td>
                         </tr>
                     `;
@@ -1062,16 +1116,12 @@
                     let turnoCell = '';
                     if (showTurno) {
                         let turnoValue = '';
-                        if (currentProfile === 'electronico') {
-                            // En perfil electrónico, todos son electrónicos, usamos índice directo
-                            turnoValue = `#${index + 1}`;
-                        } else if (currentProfile === 'supervisor') {
-                            // En supervisor (mixto), solo mostramos si es Electrónica
-                            if (req.signature === 'Electrónica') {
-                                turnoValue = `#${electronicCounter}`;
-                            } else {
-                                turnoValue = '<span class="text-muted opacity-25">-</span>';
-                            }
+                        // Mostrar número si es electrónica
+                        if (sig.includes('Electrónica')) {
+                            turnoValue = `#${electronicCounter}`;
+                        } else {
+                            // Si es ológrafa (visto por Supervisor), no lleva turno de cola digital
+                            turnoValue = '<span class="text-muted opacity-25">-</span>';
                         }
                         turnoCell = `<td class="fw-black text-primary p-3">${turnoValue}</td>`;
                     }
@@ -1089,9 +1139,7 @@
                     let actionBtn = '';
                     if (status === 'Análisis') {
                         const hasOtherLocked = myLockedRequest && myLockedRequest.id !== req.id;
-                        const isDisabled = req.lockedBy === 'OtroFuncionario' || 
-                                           (currentProfile === 'electronico' && !isNext) || 
-                                           hasOtherLocked;
+                        const isDisabled = req.lockedBy === 'OtroFuncionario' || (currentProfile === 'electronico' && !isNext) || hasOtherLocked;
                         const titleText = hasOtherLocked ? "Ya tiene una solicitud en curso" : "Ver Detalle";
                         const actionDisabled = !isTakenByMe;
                         
@@ -1103,7 +1151,14 @@
                             ${isTakenByMe ? `<button class="btn btn-sm btn-outline-secondary" onclick="unlockRequest('${req.id}')" title="Desbloquear Solicitud"><i data-lucide="unlock" style="width:14px"></i></button>` : ''}
                         </div>`;
                     } else if (status === 'Aprobado') {
-                         actionBtn = currentProfile === 'supervisor' ? `<button class="btn btn-sm btn-info text-white" onclick="exonerateRequest('${req.id}')">Exonerar</button>` : `<span class="badge bg-success">Listo para Pago</span>`;
+                         // ACTUALIZADO: Ocultar botón exonerar si el importe es 0
+                         const val = req.amount !== undefined ? req.amount : 0;
+                         if (val === 0) {
+                             actionBtn = `<span class="badge bg-info text-white border-0">Exonerado</span>`;
+                         } else {
+                             // CAMBIO: Se usa la clase .btn-exonerate (Azul Marino) en lugar de btn-info
+                             actionBtn = currentProfile === 'supervisor' ? `<button class="btn-exonerate" onclick="exonerateRequest('${req.id}')">Exonerar</button>` : `<span class="badge bg-success">Listo para Pago</span>`;
+                         }
                     } else if (status === 'Devuelto') {
                         if (req.origin === 'Funcionario') {
                              actionBtn = `<button class="btn btn-sm btn-warning text-dark fw-bold border-0 shadow-sm" onclick="completeRequest('${req.id}')"><i data-lucide="edit" style="width:14px; margin-right:4px"></i> Corregir</button>`;
@@ -1123,7 +1178,7 @@
                             <td class="text-uppercase fw-bold p-3">${req.name}</td>
                             <td class="fw-bold text-primary p-3">${req.physicalNumber || '-'}</td>
                             <td class="p-3 small">${req.doc}</td>
-                            <td class="p-3"><span class="badge bg-light text-dark border">${req.signature}</span></td>
+                            <td class="p-3"><span class="badge bg-light text-dark border">${sig}</span></td>
                             ${importeCell}
                             <td class="text-center p-3">${actionBtn}</td>
                         </tr>
@@ -1457,6 +1512,7 @@
 
         function openVerification(id) {
             const req = requests.find(r => r.id === id);
+            currentVerificationId = id; // Guardar ID actual para lógica interna
             
             // Header Info
             document.getElementById('verifyReqId').innerText = `Solicitud #${req.id}`;
@@ -1468,11 +1524,12 @@
             const type = req.type || 'Apostilla';
             const inst = req.institution || 'N/A';
             const phys = req.physicalNumber || 'N/A';
-            // Se normaliza la firma para evitar inconsistencias
-            let sig = req.signature || req.signatureType || 'N/A';
-            if(sig.includes('Electrónica')) sig = 'Electrónica';
-            if(sig.includes('Ológrafa')) sig = 'Ológrafa';
+            const sig = req.signature || req.signatureType || 'N/A'; 
             
+            // Lógica de Exoneración
+            const currentAmount = req.amount !== undefined ? req.amount : 80100;
+            const isExonerated = currentAmount === 0;
+
             let officialHtml = '';
             if (req.official) {
                 officialHtml = `
@@ -1505,13 +1562,28 @@
                 </div>
                 <div class="col-6">
                     <label class="small text-muted fw-bold text-uppercase d-block">Firma</label>
-                    <span class="badge ${sig === 'Electrónica' ? 'bg-primary-subtle text-primary border border-primary-subtle' : 'bg-light text-dark border'}">${sig}</span>
+                    <span class="badge ${sig.includes('Electrónica') ? 'bg-primary-subtle text-primary border border-primary-subtle' : 'bg-light text-dark border'}">${sig}</span>
                 </div>
                 <div class="col-12">
                     <label class="small text-muted fw-bold text-uppercase d-block">Titular del Documento</label>
                     <strong class="text-dark text-uppercase">${req.name || req.titularName}</strong>
                     <div class="small text-muted">CI: ${req.ci || 'N/A'}</div>
                 </div>
+
+                <!-- SECCIÓN DE EXONERACIÓN -->
+                <div class="col-12 border-top pt-2 mt-1"></div>
+                <div class="col-6">
+                    <label class="small text-muted fw-bold text-uppercase d-block mb-1">Importe a Pagar</label>
+                    <strong class="text-primary fs-5" id="verifyAmountDisplay">Gs. ${currentAmount.toLocaleString('es-PY')}</strong>
+                </div>
+                <div class="col-6">
+                    <label class="small text-muted fw-bold text-uppercase d-block mb-1">¿Exonerar Pago?</label>
+                    <select class="form-select form-select-sm border-secondary-subtle fw-bold text-dark" id="verifyExonerateSelect" onchange="handleExonerationChange(this)">
+                        <option value="No" ${!isExonerated ? 'selected' : ''}>No</option>
+                        <option value="Si" ${isExonerated ? 'selected' : ''}>Sí</option>
+                    </select>
+                </div>
+
                 ${officialHtml}
             `;
 
@@ -1519,17 +1591,15 @@
             const viewerContainer = document.querySelector('.split-side-a');
             const physicalBanner = document.getElementById('physicalVerificationBanner');
 
-            // Reset classes: Siempre mostrar split mode, ocultar banner del lado B
+            // Reset classes
             splitContainer.classList.remove('single-mode');
             viewerContainer.classList.remove('hidden');
             physicalBanner.classList.add('hidden');
 
-            if (sig === 'Ológrafa') {
-                // MODO OLÓGRAFO: Ocultar panel visualizador, mostrar banner
+            if (sig.includes('Ológrafa')) {
                 splitContainer.classList.add('single-mode');
                 physicalBanner.classList.remove('hidden');
             } else {
-                // MODO ELECTRÓNICO: Mostrar visor simulado en el panel IZQUIERDO
                 viewerContainer.innerHTML = `
                     <div class="pdf-viewer-placeholder">
                         <i data-lucide="file-text" style="width: 64px; height: 64px; opacity: 0.5;"></i>
@@ -1543,6 +1613,80 @@
             document.getElementById('dashboardView').classList.add('hidden');
             document.getElementById('verificationView').classList.remove('hidden');
             lucide.createIcons();
+        }
+
+        function handleExonerationChange(select) {
+            if (select.value === 'Si') {
+                // Abrir modal de motivo
+                document.getElementById('exonerationObs').value = '';
+                document.getElementById('exonerationModal').style.display = 'flex';
+                lucide.createIcons();
+            } else {
+                // Revertir precio (Reset a 80100 por defecto)
+                const req = requests.find(r => r.id === currentVerificationId);
+                if(req) {
+                    req.amount = 80100; 
+                    req.exonerationReason = null;
+                    document.getElementById('verifyAmountDisplay').innerText = `Gs. ${req.amount.toLocaleString('es-PY')}`;
+                }
+            }
+        }
+
+        // NUEVA FUNCIÓN PARA EL BOTÓN DE LA GRILLA (DASHBOARD)
+        function exonerateRequest(id) {
+            actionTargetId = id; // Guardamos el ID para usarlo en confirmExoneration
+            document.getElementById('exonerationObs').value = '';
+            document.getElementById('exonerationModal').style.display = 'flex';
+            lucide.createIcons();
+        }
+
+        // FUNCIÓN CONFIRMAR ACTUALIZADA (SOPORTA AMBOS CONTEXTOS)
+        function confirmExoneration() {
+            const obs = document.getElementById('exonerationObs').value;
+            if(!obs.trim()) {
+                alert("Debe ingresar un motivo para la exoneración.");
+                return;
+            }
+
+            // Detectar contexto: ¿Estamos en Verificación o en Dashboard?
+            const isVerificationContext = !document.getElementById('verificationView').classList.contains('hidden');
+            
+            // Determinar ID objetivo
+            const targetId = isVerificationContext ? currentVerificationId : actionTargetId;
+            const req = requests.find(r => r.id === targetId);
+
+            if(req) {
+                // --- ACCIÓN PRINCIPAL: CERAR EL IMPORTE ---
+                req.amount = 0; 
+                req.exonerationReason = obs;
+                
+                // MODIFICADO: Ya NO cambia el estado a 'Finalizados' automáticamente.
+                // Se mantiene en el estado actual para que el funcionario continúe el flujo (Aprobar).
+                
+                if (isVerificationContext) {
+                    // Lógica para pantalla de verificación (Solo actualiza visualmente el monto)
+                    const display = document.getElementById('verifyAmountDisplay');
+                    if(display) display.innerText = "Gs. 0";
+                } else {
+                    // Lógica para pantalla dashboard (Si se usara desde allí)
+                    filterTable(currentStatus); 
+                }
+            }
+            
+            document.getElementById('exonerationModal').style.display = 'none';
+        }
+
+        // FUNCIÓN CANCELAR ACTUALIZADA
+        function cancelExoneration() {
+            document.getElementById('exonerationModal').style.display = 'none';
+            
+            // Solo si estamos en verificación revertimos el select
+            const isVerificationContext = !document.getElementById('verificationView').classList.contains('hidden');
+            if (isVerificationContext) {
+                const select = document.getElementById('verifyExonerateSelect');
+                if(select) select.value = 'No';
+            }
+            // En dashboard no hace falta revertir nada visual extra
         }
 
         function backToDashboard() {
@@ -1590,14 +1734,56 @@
         function unlockRequestFromVerification() { unlockRequest(actionTargetId); backToDashboard(); }
 
         function openPaymentModal() { 
-            const count = document.querySelectorAll('.pay-check:checked').length;
+            const checkedBoxes = document.querySelectorAll('.pay-check:checked');
+            // ... (código existente de openPaymentModal)
+            let total = 0;
+            let count = 0;
+            checkedBoxes.forEach(cb => {
+                const req = requests.find(r => r.id === cb.value);
+                if (req) {
+                    total += (req.amount !== undefined ? req.amount : 0);
+                    count++;
+                }
+            });
+
+            if (count === 0) {
+                alert("Seleccione al menos una solicitud.");
+                return;
+            }
+
             document.getElementById('payQty').innerText = count;
-            document.getElementById('payTotalGs').innerText = `Gs. ${(count * 80100).toLocaleString('es-PY')}`;
+            document.getElementById('payTotalGs').innerText = `Gs. ${total.toLocaleString('es-PY')}`;
             document.getElementById('paymentModal').style.display = 'flex'; 
         }
 
         function confirmPayment() {
+            // 1. Identificar las solicitudes seleccionadas
+            const checkedBoxes = document.querySelectorAll('.pay-check:checked');
+            const processedItems = [];
+
+            checkedBoxes.forEach(cb => {
+                const req = requests.find(r => r.id === cb.value);
+                if (req) {
+                    // 2. Actualizar estado a 'Finalizados' (Apostillas y Legalizaciones)
+                    req.status = 'Finalizados';
+                    processedItems.push(req);
+                }
+            });
+
             closePopup();
+
+            // 3. Generar lista visual para la pantalla de liquidación
+            const listContainer = document.getElementById('liquidationList');
+            if(listContainer) {
+                listContainer.innerHTML = processedItems.map(item => `
+                    <li class="list-group-item d-flex justify-content-between align-items-center bg-light rounded mb-2 border-0">
+                        <span><i data-lucide="file-check" style="width:14px" class="me-2 text-success"></i> Solicitud #${item.id}</span>
+                        <span class="badge bg-dark">A-${Math.floor(Math.random()*100000)}</span>
+                    </li>
+                `).join('');
+            }
+
+            // 4. Cambiar vista
             document.getElementById('dashboardView').classList.add('hidden');
             document.getElementById('liquidationView').classList.remove('hidden');
             lucide.createIcons();
@@ -1642,6 +1828,52 @@
             if (!val) { filterTable(currentStatus); return; }
             const rows = document.querySelectorAll('#tableBody tr');
             rows.forEach(r => r.style.display = r.innerText.toLowerCase().includes(val) ? '' : 'none');
+        }
+
+        // --- LÓGICA TOMA FORZOSA SUPERVISOR ---
+        function confirmForceTake() {
+            const obs = document.getElementById('forceTakeObs').value;
+            if (!obs.trim()) {
+                alert("Debe ingresar un motivo para tomar la solicitud fuera de turno.");
+                return;
+            }
+            
+            document.getElementById('forceTakeModal').style.display = 'none';
+            
+            // Proceder con la toma
+            const req = requests.find(r => r.id === actionTargetId);
+            if (req.lockedBy !== 'Me') req.lockedBy = 'Me';
+            
+            // Aquí se podría guardar la observación en el log del sistema
+            console.log(`Supervisor force take request #${req.id}. Reason: ${obs}`);
+            
+            openVerification(req.id);
+        }
+
+        function takeRequestFromModal() {
+            // VERIFICAR SI ES SUPERVISOR Y SI ROMPE LA COLA FIFO
+            if (currentProfile === 'supervisor') {
+                // Obtener el siguiente turno lógico
+                let filtered = requests.filter(r => r.status === 'Análisis');
+                filtered.sort((a, b) => parseDateStr(a.date) - parseDateStr(b.date));
+                const next = filtered.find(r => !r.lockedBy || r.lockedBy === 'Me');
+                
+                // Si existe un siguiente y NO es el que intentamos tomar
+                if (next && next.id !== actionTargetId) {
+                    // Cerrar detalle y abrir modal de excepción
+                    document.getElementById('detailModal').style.display = 'none';
+                    document.getElementById('forceTakeObs').value = '';
+                    document.getElementById('forceTakeModal').style.display = 'flex';
+                    lucide.createIcons();
+                    return; // Detener flujo estándar
+                }
+            }
+
+            // Flujo estándar
+            const req = requests.find(r => r.id === actionTargetId);
+            if (req.lockedBy !== 'Me') req.lockedBy = 'Me';
+            document.getElementById('detailModal').style.display = 'none';
+            openVerification(req.id);
         }
     </script>
 </body>
