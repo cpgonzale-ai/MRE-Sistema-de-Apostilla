@@ -1042,6 +1042,7 @@
                     <th class="text-center">Comprobante</th>
                     <th>Fecha</th>
                     <th>Titular</th>
+                    <th>CI Solicitante</th>
                     <th>Nro. de Certificado</th>
                     <th>Documento</th>
                     <th>Tipo Firma</th>
@@ -1060,6 +1061,7 @@
                     <th>Nro. Solicitud</th>
                     <th>Fecha</th>
                     <th>Titular</th>
+                    <th>CI Solicitante</th>
                     <th>Nro. de Certificado</th>
                     <th>Documento</th>
                     <th>Tipo Firma</th>
@@ -1096,9 +1098,9 @@
 
             if (filtered.length === 0) {
                 // Ajustar colspan dinámicamente si se muestra turno
-                let colCount = 8; 
-                if (status === 'Finalizados') colCount = 9;
-                if (status === 'Aprobado') colCount = 10;
+                let colCount = 9; // Base count + 1 CI column
+                if (status === 'Finalizados') colCount = 10;
+                if (status === 'Aprobado') colCount = 11;
                 if (showTurno) colCount++; 
 
                 tbody.innerHTML = `<tr><td colspan="${colCount}" class="text-center py-5 text-muted">No hay registros en esta bandeja.</td></tr>`;
@@ -1122,6 +1124,7 @@
                             <td class="text-center p-3"><i data-lucide="file-down" style="width:18px; cursor:pointer; color:var(--mre-blue)" title="Descargar Comprobante de Pago" onclick="generateReceiptPDF('${req.id}')"></i></td>
                             <td class="small text-muted p-3">${req.date}</td>
                             <td class="text-uppercase small fw-bold p-3">${req.name}</td>
+                            <td class="p-3 text-muted fw-bold">${req.ci || 'N/A'}</td>
                             <td class="fw-bold text-primary p-3">${req.physicalNumber || '-'}</td>
                             <td class="fw-bold text-navy p-3">${req.doc}</td>
                             <td class="p-3"><span class="badge bg-light text-dark border">${sig}</span></td>
@@ -1200,6 +1203,7 @@
                             <td class="fw-black text-navy p-3">${req.id}</td>
                             <td class="small text-muted p-3">${req.date}</td>
                             <td class="text-uppercase fw-bold p-3">${req.name}</td>
+                            <td class="p-3 text-muted fw-bold">${req.ci || 'N/A'}</td>
                             <td class="fw-bold text-primary p-3">${req.physicalNumber || '-'}</td>
                             <td class="p-3 small">${req.doc}</td>
                             <td class="p-3"><span class="badge bg-light text-dark border">${sig}</span></td>
@@ -1880,10 +1884,25 @@
         }
 
         function filterByCI(input) {
+            // Eliminar puntos del input de búsqueda
             const val = input.value.toLowerCase().replace(/\./g, '');
-            if (!val) { filterTable(currentStatus); return; }
+            
+            if (!val) { 
+                // Si el input está vacío, restaurar la tabla según el estado actual
+                // Nota: Esto re-renderiza la tabla, lo cual es más seguro que mostrar todas las filas ocultas
+                filterTable(currentStatus); 
+                return; 
+            }
+
             const rows = document.querySelectorAll('#tableBody tr');
-            rows.forEach(r => r.style.display = r.innerText.toLowerCase().includes(val) ? '' : 'none');
+            rows.forEach(r => {
+                // Obtener el texto de la fila, convertir a minúsculas y ELIMINAR LOS PUNTOS
+                // Esto permite que '4567890' coincida con '4.567.890' presente en la tabla
+                const rowText = r.innerText.toLowerCase().replace(/\./g, '');
+                
+                // Mostrar si el texto normalizado incluye el valor de búsqueda
+                r.style.display = rowText.includes(val) ? '' : 'none';
+            });
         }
 
         // --- LÓGICA TOMA FORZOSA SUPERVISOR ---
