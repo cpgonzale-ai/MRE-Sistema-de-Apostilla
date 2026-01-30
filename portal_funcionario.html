@@ -792,6 +792,26 @@
         </div>
     </div>
 
+    <!-- NUEVO MODAL: RECONSIDERACIÓN (SUPERVISOR) -->
+    <div class="mre-popup-overlay" id="reconsiderModal">
+        <div class="mre-popup">
+            <h5 class="fw-black text-navy mb-3 d-flex align-items-center gap-2">
+                <span class="text-secondary"><i data-lucide="rotate-ccw"></i></span> Reconsiderar Solicitud
+            </h5>
+            <div class="alert alert-secondary border-secondary-subtle small mb-3">
+                Esta acción moverá el trámite nuevamente a la bandeja de <strong>"En Análisis"</strong> para su gestión.
+            </div>
+            <div class="mb-3">
+                <label class="form-label small fw-bold text-uppercase">Motivo de Reconsideración <span class="text-danger">*</span></label>
+                <textarea class="form-control" id="reconsiderObs" rows="3" placeholder="Ingrese el motivo por el cual se reconsidera el rechazo..."></textarea>
+            </div>
+            <div class="d-flex gap-2 justify-content-end">
+                <button class="btn btn-light border fw-bold" onclick="document.getElementById('reconsiderModal').style.display='none'">Cancelar</button>
+                <button class="btn btn-outline-secondary fw-bold border-2 px-4" onclick="confirmReconsideration()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Ver Detalle -->
     <div class="mre-popup-overlay" id="detailModal">
         <div class="mre-popup" style="max-width: 600px;">
@@ -1156,7 +1176,7 @@
                          if (val === 0) {
                              actionBtn = `<span class="badge bg-info text-white border-0">Exonerado</span>`;
                          } else {
-                             // CAMBIO: Se usa la clase .btn-exonerate (Azul Marino) en lugar de btn-info
+                             // CAMBIO: Lógica ajustada para mostrar SOLO si es perfil supervisor
                              actionBtn = currentProfile === 'supervisor' ? `<button class="btn-exonerate" onclick="exonerateRequest('${req.id}')">Exonerar</button>` : `<span class="badge bg-success">Listo para Pago</span>`;
                          }
                     } else if (status === 'Devuelto') {
@@ -1166,7 +1186,11 @@
                              actionBtn = `<span class="badge bg-warning text-dark">Pendiente Ciudadano</span>`;
                         }
                     } else if (status === 'Rechazado') {
-                         actionBtn = `<span class="badge bg-danger">Rechazado</span>`;
+                         if (currentProfile === 'supervisor') {
+                             actionBtn = `<button class="btn btn-sm btn-outline-secondary fw-bold text-dark" onclick="reconsiderRequest('${req.id}')" title="Volver a Análisis"><i data-lucide="rotate-ccw" style="width:14px; margin-right:4px"></i> Reconsiderar</button>`;
+                         } else {
+                             actionBtn = `<span class="badge bg-danger">Rechazado</span>`;
+                         }
                     }
 
                     row = `
@@ -1539,6 +1563,19 @@
                 </div>`;
             }
 
+            // Lógica condicional para mostrar control de exoneración solo a supervisor
+            let exonerationControlHtml = '';
+            if (currentProfile === 'supervisor') {
+                exonerationControlHtml = `
+                <div class="col-6">
+                    <label class="small text-muted fw-bold text-uppercase d-block mb-1">¿Exonerar Pago?</label>
+                    <select class="form-select form-select-sm border-secondary-subtle fw-bold text-dark" id="verifyExonerateSelect" onchange="handleExonerationChange(this)">
+                        <option value="No" ${!isExonerated ? 'selected' : ''}>No</option>
+                        <option value="Si" ${isExonerated ? 'selected' : ''}>Sí</option>
+                    </select>
+                </div>`;
+            }
+
             container.innerHTML = `
                 <div class="col-6">
                     <label class="small text-muted fw-bold text-uppercase d-block">País Destino</label>
@@ -1576,13 +1613,7 @@
                     <label class="small text-muted fw-bold text-uppercase d-block mb-1">Importe a Pagar</label>
                     <strong class="text-primary fs-5" id="verifyAmountDisplay">Gs. ${currentAmount.toLocaleString('es-PY')}</strong>
                 </div>
-                <div class="col-6">
-                    <label class="small text-muted fw-bold text-uppercase d-block mb-1">¿Exonerar Pago?</label>
-                    <select class="form-select form-select-sm border-secondary-subtle fw-bold text-dark" id="verifyExonerateSelect" onchange="handleExonerationChange(this)">
-                        <option value="No" ${!isExonerated ? 'selected' : ''}>No</option>
-                        <option value="Si" ${isExonerated ? 'selected' : ''}>Sí</option>
-                    </select>
-                </div>
+                ${exonerationControlHtml}
 
                 ${officialHtml}
             `;
@@ -1723,6 +1754,31 @@
             req.lockedBy = null;
             closePopup();
             backToDashboard();
+        }
+
+        function reconsiderRequest(id) {
+            actionTargetId = id; // Guardamos el ID para usarlo en confirmReconsideration
+            document.getElementById('reconsiderObs').value = '';
+            document.getElementById('reconsiderModal').style.display = 'flex';
+            lucide.createIcons();
+        }
+
+        function confirmReconsideration() {
+            const obs = document.getElementById('reconsiderObs').value;
+            if (!obs.trim()) {
+                alert("Debe ingresar un motivo para la reconsideración.");
+                return;
+            }
+
+            const req = requests.find(r => r.id === actionTargetId);
+            if (req) {
+                req.status = 'Análisis';
+                req.lockedBy = null; // Se libera el bloqueo para que cualquiera pueda tomarla
+                // Aquí se podría guardar 'obs' en el historial de la solicitud
+                console.log(`Solicitud #${req.id} reconsiderada. Motivo: ${obs}`);
+                filterTable(currentStatus); // Se refresca la tabla actual (el item desaparecerá de Rechazados)
+            }
+            document.getElementById('reconsiderModal').style.display = 'none';
         }
 
         function unlockRequest(id) {
