@@ -38,10 +38,10 @@
             margin: 0; 
             background-color: var(--soft-bg); 
             color: #1E293B; 
-            overflow-x: hidden;
+            overflow: hidden; /* Prevent body scroll, handle in content area */
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
+            height: 100vh;
             text-align: left;
         }
 
@@ -67,12 +67,19 @@
         }
         .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
 
-        /* --- HEADER --- */
+        /* --- HEADER (FULL WIDTH) --- */
         #portalSection { padding: 1rem 3%; max-width: 1600px; margin: 0 auto; flex: 1; width: 100%; }
+        
         .portal-header { 
             display: flex; justify-content: space-between; align-items: center; background: white; 
-            padding: 1.2rem 2.5rem; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 1rem; 
-            border: 1px solid var(--border-color); position: relative; z-index: 1100;
+            padding: 1rem 2rem; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); 
+            border-bottom: 1px solid var(--border-color); 
+            position: relative; z-index: 1100;
+            width: 100%;
+            /* Estilos reset para full width */
+            border-radius: 0;
+            margin-bottom: 0;
         }
 
         /* --- UI ELEMENTS --- */
@@ -202,13 +209,6 @@
         .mre-popup-overlay { position: fixed; inset: 0; background: rgba(0, 40, 85, 0.4); backdrop-filter: blur(4px); z-index: 3000; display: none; align-items: center; justify-content: center; }
         .mre-popup { background: white; border-radius: 20px; max-width: 500px; width: 100%; padding: 2rem; animation: fadeIn 0.3s ease-out; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); position: relative; }
 
-        /* --- FOOTER --- */
-        .mre-footer {
-            background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px);
-            border-top: 1px solid #E2E8F0; padding: 1rem 2.5rem;
-            display: flex; justify-content: space-between; align-items: center; margin-top: auto;
-        }
-
         .ticket-style {
             background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             max-width: 400px; margin: 0 auto; padding: 2rem; position: relative;
@@ -217,6 +217,35 @@
             content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 6px;
             background: repeating-linear-gradient(45deg, var(--mre-blue), var(--mre-blue) 10px, white 10px, white 20px, var(--mre-red) 20px, var(--mre-red) 30px, white 30px, white 40px);
             border-radius: 12px 12px 0 0;
+        }
+
+        /* --- NUEVOS ESTILOS SIDEBAR (Basado en ejemplo) --- */
+        .app-container { display: flex; flex: 1; overflow: hidden; position: relative; height: calc(100vh - 80px); /* Adjust based on header height approx */ }
+
+        .main-sidebar {
+            width: 280px; background: white; border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column; z-index: 1000;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.02); transition: var(--transition);
+            overflow-x: hidden;
+            min-width: 280px;
+        }
+
+        .nav-menu { padding: 1.5rem 1rem; flex: 1; }
+        
+        .nav-link-mre {
+            display: flex; align-items: center; gap: 12px; padding: 0.85rem 1rem;
+            color: #64748B; text-decoration: none; border-radius: 12px;
+            font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; transition: var(--transition);
+            white-space: nowrap;
+        }
+        .nav-link-mre:hover { background: #F1F5F9; color: var(--mre-blue); }
+        .nav-link-mre.active { background: #f0f7ff; color: var(--mre-blue-light); box-shadow: 0 4px 6px -1px rgba(0, 40, 85, 0.05); }
+
+        /* --- FOOTER --- */
+        .mre-footer {
+            background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px);
+            border-top: 1px solid #E2E8F0; padding: 1rem 2.5rem;
+            display: flex; justify-content: space-between; align-items: center; margin-top: auto;
         }
 
         @media (max-width: 992px) {
@@ -241,423 +270,451 @@
         </div>
     </div>
 
-    <section id="portalSection">
-        <!-- HEADER -->
-        <header class="portal-header animate-fade">
+    <!-- HEADER (AHORA FUERA DEL CONTENEDOR PRINCIPAL, FULL WIDTH) -->
+    <header class="portal-header animate-fade">
+        <div class="d-flex align-items-center gap-3">
+            <div class="bg-mre-blue p-2 rounded-3" style="background: var(--mre-blue);">
+                <i data-lucide="shield-check" style="color: white; width: 24px;"></i>
+            </div>
+            <div>
+                <h6 class="fw-black mb-0">SIA-PY | MÓDULO FUNCIONARIO</h6>
+                <p class="text-muted mb-0 fw-bold text-uppercase" style="font-size: 0.65rem;">Sistema Integral de Apostilla Electrónica del Paraguay</p>
+            </div>
+        </div>
+        
+        <div class="d-flex align-items-center gap-4">
+            <div class="d-none d-md-flex align-items-center bg-light border rounded-pill p-1 px-2 gap-2">
+                <span class="small fw-bold text-muted ps-2">PERFIL:</span>
+                <select class="form-select form-select-sm border-0 bg-transparent fw-bold text-primary shadow-none" style="width: auto; cursor: pointer;" onchange="changeProfile(this)">
+                    <option value="olografo">Operador Ológrafo (Presencial)</option>
+                    <option value="electronico">Verificación Electrónica (Turnos)</option>
+                    <option value="supervisor">Supervisor</option>
+                    <option value="externo">Funcionario Externo</option>
+                </select>
+            </div>
+
             <div class="d-flex align-items-center gap-3">
-                <div class="bg-mre-blue p-2 rounded-3" style="background: var(--mre-blue);">
-                    <i data-lucide="shield-check" style="color: white; width: 24px;"></i>
+                <div class="text-end d-none d-md-block">
+                    <p class="small fw-black mb-0 text-uppercase">Lic. María Gonzalez</p>
+                    <p class="text-muted mb-0" style="font-size: 0.6rem; font-weight: 700;">Oficial de Legalizaciones</p>
                 </div>
-                <div>
-                    <h6 class="fw-black mb-0">SIA-PY | MÓDULO FUNCIONARIO</h6>
-                    <p class="text-muted mb-0 fw-bold text-uppercase" style="font-size: 0.65rem;">Sistema Integral de Apostilla Electrónica del Paraguay</p>
-                </div>
-            </div>
-            
-            <div class="d-flex align-items-center gap-4">
-                <div class="d-none d-md-flex align-items-center bg-light border rounded-pill p-1 px-2 gap-2">
-                    <span class="small fw-bold text-muted ps-2">PERFIL:</span>
-                    <select class="form-select form-select-sm border-0 bg-transparent fw-bold text-primary shadow-none" style="width: auto; cursor: pointer;" onchange="changeProfile(this)">
-                        <option value="olografo">Operador Ológrafo (Presencial)</option>
-                        <option value="electronico">Verificación Electrónica (Turnos)</option>
-                        <option value="supervisor">Supervisor</option>
-                        <option value="externo">Funcionario Externo</option>
-                    </select>
-                </div>
-
-                <div class="d-flex align-items-center gap-3">
-                    <div class="text-end d-none d-md-block">
-                        <p class="small fw-black mb-0 text-uppercase">Lic. María Gonzalez</p>
-                        <p class="text-muted mb-0" style="font-size: 0.6rem; font-weight: 700;">Oficial de Legalizaciones</p>
-                    </div>
-                    <div class="bg-light border rounded-circle p-2" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                        <i data-lucide="user" style="width:20px; color: var(--mre-blue);"></i>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- DASHBOARD VIEW -->
-        <div id="dashboardView" class="animate-fade">
-            <div class="d-flex justify-content-between align-items-center mb-4 gap-3">
-                <div class="position-relative flex-grow-1" style="max-width: 600px;">
-                    <input type="text" class="form-control-mre ps-5" placeholder="Buscar por Nro. Cédula (CI) o Código de Solicitud..." id="mainSearch" onkeyup="filterByCI(this)">
-                    <i data-lucide="search" class="position-absolute text-muted" style="left: 15px; top: 50%; transform: translateY(-50%); width: 18px;"></i>
-                    <!-- AGREGADO ID btn-create-request -->
-                    <button id="btn-create-request" class="btn btn-sm btn-light border position-absolute end-0 top-50 translate-middle-y me-2 fw-bold small" onclick="createManualRequest()">
-                        <i data-lucide="plus" style="width:14px"></i> Crear Solicitud
-                    </button>
-                </div>
-            </div>
-
-            <div class="status-scroll-wrapper">
-                <div class="status-container">
-                    <div class="status-btn active" id="btn-analisis" onclick="filterTable('Análisis', this)">
-                        <div class="d-flex align-items-center gap-2">
-                            <div class="bg-primary-subtle p-2 rounded-circle text-primary"><i data-lucide="inbox" style="width: 16px;"></i></div>
-                            <span class="fw-bold text-navy">En Análisis</span>
-                        </div>
-                        <span class="fs-5 fw-black text-primary" id="count-analisis">04</span>
-                    </div>
-                    <div class="status-btn" id="btn-aprobado" onclick="filterTable('Aprobado', this)">
-                        <div class="d-flex align-items-center gap-2">
-                            <div class="bg-success-subtle p-2 rounded-circle text-success"><i data-lucide="check-circle-2" style="width: 16px;"></i></div>
-                            <span class="fw-bold text-navy">Aprobados</span>
-                        </div>
-                        <span class="fs-5 fw-black text-success" id="count-aprobado">02</span>
-                    </div>
-                    <div class="status-btn" id="btn-devuelto" onclick="filterTable('Devuelto', this)">
-                        <div class="d-flex align-items-center gap-2">
-                            <div class="bg-warning-subtle p-2 rounded-circle text-warning-emphasis"><i data-lucide="rotate-ccw" style="width: 16px;"></i></div>
-                            <span class="fw-bold text-navy">Devueltos</span>
-                        </div>
-                        <span class="fs-5 fw-black text-warning-emphasis" id="count-devuelto">01</span>
-                    </div>
-                    <div class="status-btn" id="btn-rechazado" onclick="filterTable('Rechazado', this)">
-                        <div class="d-flex align-items-center gap-2">
-                            <div class="bg-danger-subtle p-2 rounded-circle text-danger"><i data-lucide="x-circle" style="width: 16px;"></i></div>
-                            <span class="fw-bold text-navy">Rechazados</span>
-                        </div>
-                        <span class="fs-5 fw-black text-danger">00</span>
-                    </div>
-                    <div class="status-btn" id="btn-finalizados" onclick="filterTable('Finalizados', this)">
-                        <div class="d-flex align-items-center gap-2">
-                            <div class="bg-dark-subtle p-2 rounded-circle text-dark"><i data-lucide="file-badge" style="width: 16px;"></i></div>
-                            <span class="fw-bold text-navy">Apostillas y Legalizaciones</span>
-                        </div>
-                        <span class="fs-5 fw-black text-dark">02</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid-frame animate-fade">
-                <div class="grid-header-frame">
-                    <h5 class="fw-black text-uppercase m-0 text-navy fs-6" id="tableTitle">Bandeja de Entrada</h5>
-                    <div class="d-flex gap-2" id="batchActions" style="display: none !important;">
-                        <button class="btn btn-sm btn-main d-flex align-items-center gap-2" onclick="openPaymentModal()">
-                            <i data-lucide="credit-card" style="width:16px"></i> Generar Liquidación / Cobrar
-                        </button>
-                    </div>
-                </div>
-                <div class="table-responsive">
-                    <table class="mre-table" id="requestsTable">
-                        <thead>
-                            <tr id="tableHeadRow">
-                                <!-- JS Header injection -->
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody"></tbody>
-                    </table>
+                <div class="bg-light border rounded-circle p-2" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                    <i data-lucide="user" style="width:20px; color: var(--mre-blue);"></i>
                 </div>
             </div>
         </div>
+    </header>
 
-        <!-- NEW REQUEST VIEW -->
-        <div id="newRequestView" class="hidden animate-fade">
-            <div class="grid-frame p-4 p-md-5 mx-auto" style="max-width: 900px; margin-top: 2rem;">
-                <div id="requestFormContainer">
-                    <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
-                        <h4 class="fw-black text-navy m-0" id="formTitle">Crear Solicitud Manual</h4>
-                        <span class="badge bg-light text-dark border" id="formBadge">Nuevo Trámite</span>
+    <!-- MAIN FLEX WRAPPER FOR SIDEBAR LAYOUT -->
+    <div class="app-container">
+        
+        <!-- SIDEBAR PARA SUPERVISOR -->
+        <aside id="supervisorSidebar" class="main-sidebar hidden">
+            <nav class="nav-menu">
+                <p class="px-3 mb-2 text-muted fw-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 1.2px;">
+                    <i data-lucide="shield" style="width:14px; vertical-align: text-top; margin-right: 4px;"></i> SUPERVISOR
+                </p>
+                
+                <a href="#" class="nav-link-mre active" onclick="event.preventDefault()">
+                    <i data-lucide="file-badge" style="width:18px"></i> <span>Gestión de Apostilla</span>
+                </a>
+                <a href="#" class="nav-link-mre" onclick="event.preventDefault()">
+                    <i data-lucide="users" style="width:18px"></i> <span>Configuración Usuarios</span>
+                </a>
+                <a href="#" class="nav-link-mre" onclick="event.preventDefault()">
+                    <i data-lucide="bar-chart-3" style="width:18px"></i> <span>Reportes</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <div class="d-flex flex-column flex-grow-1 w-100 h-100 overflow-auto" style="min-width: 0;">
+            <section id="portalSection">
+                <!-- HEADER MOVED OUT OF HERE -->
+
+                <!-- DASHBOARD VIEW -->
+                <div id="dashboardView" class="animate-fade">
+                    <div class="d-flex justify-content-between align-items-center mb-4 gap-3">
+                        <div class="position-relative flex-grow-1" style="max-width: 600px;">
+                            <input type="text" class="form-control-mre ps-5" placeholder="Buscar por Nro. Cédula (CI) o Código de Solicitud..." id="mainSearch" onkeyup="filterByCI(this)">
+                            <i data-lucide="search" class="position-absolute text-muted" style="left: 15px; top: 50%; transform: translateY(-50%); width: 18px;"></i>
+                            <!-- AGREGADO ID btn-create-request -->
+                            <button id="btn-create-request" class="btn btn-sm btn-light border position-absolute end-0 top-50 translate-middle-y me-2 fw-bold small" onclick="createManualRequest()">
+                                <i data-lucide="plus" style="width:14px"></i> Crear Solicitud
+                            </button>
+                        </div>
                     </div>
-                    <form id="newRequestForm" onsubmit="event.preventDefault(); submitFormAction();">
-                        <div class="row g-4">
-                            <div class="col-md-6">
-                                <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">País de Destino</label>
-                                <div class="dropdown custom-select" id="div_reqCountry">
-                                    <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <span class="selected-value text-muted">Seleccione...</span>
-                                        <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
-                                    </button>
-                                    <div class="dropdown-menu w-100 p-2 border-0 shadow-sm" style="border:1px solid var(--border-color)!important">
-                                        <input type="text" class="form-control form-control-sm mb-2" placeholder="Buscar..." onkeyup="filterOptions(this)">
-                                        <div class="options-container" style="max-height: 200px; overflow-y: auto;">
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqCountry', 'Argentina', this)">Argentina</a>
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqCountry', 'Brasil', this)">Brasil</a>
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqCountry', 'España', this)">España</a>
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqCountry', 'Estados Unidos', this)">Estados Unidos</a>
+
+                    <div class="status-scroll-wrapper">
+                        <div class="status-container">
+                            <div class="status-btn active" id="btn-analisis" onclick="filterTable('Análisis', this)">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="bg-primary-subtle p-2 rounded-circle text-primary"><i data-lucide="inbox" style="width: 16px;"></i></div>
+                                    <span class="fw-bold text-navy">En Análisis</span>
+                                </div>
+                                <span class="fs-5 fw-black text-primary" id="count-analisis">04</span>
+                            </div>
+                            <div class="status-btn" id="btn-aprobado" onclick="filterTable('Aprobado', this)">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="bg-success-subtle p-2 rounded-circle text-success"><i data-lucide="check-circle-2" style="width: 16px;"></i></div>
+                                    <span class="fw-bold text-navy">Aprobados</span>
+                                </div>
+                                <span class="fs-5 fw-black text-success" id="count-aprobado">02</span>
+                            </div>
+                            <div class="status-btn" id="btn-devuelto" onclick="filterTable('Devuelto', this)">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="bg-warning-subtle p-2 rounded-circle text-warning-emphasis"><i data-lucide="rotate-ccw" style="width: 16px;"></i></div>
+                                    <span class="fw-bold text-navy">Devueltos</span>
+                                </div>
+                                <span class="fs-5 fw-black text-warning-emphasis" id="count-devuelto">01</span>
+                            </div>
+                            <div class="status-btn" id="btn-rechazado" onclick="filterTable('Rechazado', this)">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="bg-danger-subtle p-2 rounded-circle text-danger"><i data-lucide="x-circle" style="width: 16px;"></i></div>
+                                    <span class="fw-bold text-navy">Rechazados</span>
+                                </div>
+                                <span class="fs-5 fw-black text-danger">00</span>
+                            </div>
+                            <div class="status-btn" id="btn-finalizados" onclick="filterTable('Finalizados', this)">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="bg-dark-subtle p-2 rounded-circle text-dark"><i data-lucide="file-badge" style="width: 16px;"></i></div>
+                                    <span class="fw-bold text-navy">Apostillas y Legalizaciones</span>
+                                </div>
+                                <span class="fs-5 fw-black text-dark">02</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-frame animate-fade">
+                        <div class="grid-header-frame">
+                            <h5 class="fw-black text-uppercase m-0 text-navy fs-6" id="tableTitle">Bandeja de Entrada</h5>
+                            <div class="d-flex gap-2" id="batchActions" style="display: none !important;">
+                                <button class="btn btn-sm btn-main d-flex align-items-center gap-2" onclick="openPaymentModal()">
+                                    <i data-lucide="credit-card" style="width:16px"></i> Generar Liquidación / Cobrar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="mre-table" id="requestsTable">
+                                <thead>
+                                    <tr id="tableHeadRow">
+                                        <!-- JS Header injection -->
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEW REQUEST VIEW -->
+                <div id="newRequestView" class="hidden animate-fade">
+                    <div class="grid-frame p-4 p-md-5 mx-auto" style="max-width: 900px; margin-top: 2rem;">
+                        <div id="requestFormContainer">
+                            <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+                                <h4 class="fw-black text-navy m-0" id="formTitle">Crear Solicitud Manual</h4>
+                                <span class="badge bg-light text-dark border" id="formBadge">Nuevo Trámite</span>
+                            </div>
+                            <form id="newRequestForm" onsubmit="event.preventDefault(); submitFormAction();">
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">País de Destino</label>
+                                        <div class="dropdown custom-select" id="div_reqCountry">
+                                            <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <span class="selected-value text-muted">Seleccione...</span>
+                                                <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
+                                            </button>
+                                            <div class="dropdown-menu w-100 p-2 border-0 shadow-sm" style="border:1px solid var(--border-color)!important">
+                                                <input type="text" class="form-control form-control-sm mb-2" placeholder="Buscar..." onkeyup="filterOptions(this)">
+                                                <div class="options-container" style="max-height: 200px; overflow-y: auto;">
+                                                    <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqCountry', 'Argentina', this)">Argentina</a>
+                                                    <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqCountry', 'Brasil', this)">Brasil</a>
+                                                    <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqCountry', 'España', this)">España</a>
+                                                    <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqCountry', 'Estados Unidos', this)">Estados Unidos</a>
+                                                </div>
+                                            </div>
+                                            <input type="hidden" id="reqCountry" required>
                                         </div>
                                     </div>
-                                    <input type="hidden" id="reqCountry" required>
-                                </div>
-                            </div>
 
-                            <div class="col-md-6">
-                                <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Institución Emisora</label>
-                                <div class="dropdown custom-select" id="div_reqInstitution">
-                                    <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <span class="selected-value text-muted">Seleccione...</span>
-                                        <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
-                                    </button>
-                                    <div class="dropdown-menu w-100 p-2 border-0 shadow-sm" style="border:1px solid var(--border-color)!important">
-                                        <input type="text" class="form-control form-control-sm mb-2" placeholder="Buscar..." onkeyup="filterOptions(this)">
-                                        <div class="options-container" style="max-height: 200px; overflow-y: auto;">
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqInstitution', 'Registro Civil', this)">Registro Civil</a>
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqInstitution', 'Ministerio de Educación', this)">Ministerio de Educación</a>
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqInstitution', 'Corte Suprema', this)">Corte Suprema</a>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Institución Emisora</label>
+                                        <div class="dropdown custom-select" id="div_reqInstitution">
+                                            <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <span class="selected-value text-muted">Seleccione...</span>
+                                                <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
+                                            </button>
+                                            <div class="dropdown-menu w-100 p-2 border-0 shadow-sm" style="border:1px solid var(--border-color)!important">
+                                                <input type="text" class="form-control form-control-sm mb-2" placeholder="Buscar..." onkeyup="filterOptions(this)">
+                                                <div class="options-container" style="max-height: 200px; overflow-y: auto;">
+                                                    <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqInstitution', 'Registro Civil', this)">Registro Civil</a>
+                                                    <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqInstitution', 'Ministerio de Educación', this)">Ministerio de Educación</a>
+                                                    <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqInstitution', 'Corte Suprema', this)">Corte Suprema</a>
+                                                </div>
+                                            </div>
+                                            <input type="hidden" id="reqInstitution" required>
                                         </div>
                                     </div>
-                                    <input type="hidden" id="reqInstitution" required>
-                                </div>
-                            </div>
 
-                            <div class="col-md-6">
-                                <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Tipo de Trámite</label>
-                                <div class="dropdown custom-select" id="div_reqType">
-                                    <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <span class="selected-value text-muted">Seleccione...</span>
-                                        <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
-                                    </button>
-                                    <div class="dropdown-menu w-100 p-2 border-0 shadow-sm" style="border:1px solid var(--border-color)!important">
-                                        <div class="options-container">
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqType', 'Apostilla', this)">Apostilla</a>
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqType', 'Legalización', this)">Legalización</a>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Tipo de Trámite</label>
+                                        <div class="dropdown custom-select" id="div_reqType">
+                                            <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <span class="selected-value text-muted">Seleccione...</span>
+                                                <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
+                                            </button>
+                                            <div class="dropdown-menu w-100 p-2 border-0 shadow-sm" style="border:1px solid var(--border-color)!important">
+                                                <div class="options-container">
+                                                    <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqType', 'Apostilla', this)">Apostilla</a>
+                                                    <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqType', 'Legalización', this)">Legalización</a>
+                                                </div>
+                                            </div>
+                                            <input type="hidden" id="reqType" required>
                                         </div>
                                     </div>
-                                    <input type="hidden" id="reqType" required>
-                                </div>
-                            </div>
 
-                            <div class="col-md-6">
-                                <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Tipo de Firma</label>
-                                <div class="dropdown custom-select" id="div_reqSignature">
-                                    <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <span class="selected-value text-muted">Seleccione...</span>
-                                        <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
-                                    </button>
-                                    <div class="dropdown-menu w-100 p-2 border-0 shadow-sm" style="border:1px solid var(--border-color)!important">
-                                        <div class="options-container">
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqSignature', 'Electrónica', this); handleSignatureChange()">Electrónica o verificable en línea</a>
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqSignature', 'Ológrafa', this); handleSignatureChange()">Ológrafa (Manuscrita)</a>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Tipo de Firma</label>
+                                        <div class="dropdown custom-select" id="div_reqSignature">
+                                            <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <span class="selected-value text-muted">Seleccione...</span>
+                                                <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
+                                            </button>
+                                            <div class="dropdown-menu w-100 p-2 border-0 shadow-sm" style="border:1px solid var(--border-color)!important">
+                                                <div class="options-container">
+                                                    <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqSignature', 'Electrónica', this); handleSignatureChange()">Electrónica o verificable en línea</a>
+                                                    <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqSignature', 'Ológrafa', this); handleSignatureChange()">Ológrafa (Manuscrita)</a>
+                                                </div>
+                                            </div>
+                                            <input type="hidden" id="reqSignature" required>
                                         </div>
                                     </div>
-                                    <input type="hidden" id="reqSignature" required>
-                                </div>
-                            </div>
 
-                            <div class="col-md-12 hidden animate-fade" id="attachmentField">
-                                <div class="p-3 bg-light border rounded-3 border-dashed" style="border-style: dashed !important; border-color: #cbd5e1 !important;">
-                                    <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2 text-primary">Adjuntar Documento (PDF)</label>
-                                    <input type="file" class="form-control-mre" id="reqFile" accept=".pdf">
-                                </div>
-                            </div>
-
-                            <div class="col-md-12">
-                                <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Tipo de Documento</label>
-                                <div class="dropdown custom-select" id="div_reqDocType">
-                                    <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="btn_reqDocType" disabled>
-                                        <span class="selected-value text-muted">Seleccione primero el tipo de firma...</span>
-                                        <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
-                                    </button>
-                                    <div class="dropdown-menu w-100 p-2 border-0 shadow-sm" style="border:1px solid var(--border-color)!important">
-                                        <input type="text" class="form-control form-control-sm mb-2" placeholder="Buscar..." onkeyup="filterOptions(this)">
-                                        <div class="options-container" style="max-height: 200px; overflow-y: auto;">
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqDocType', 'Certificado de Nacimiento', this); handleDocTypeChange()">Certificado de Nacimiento</a>
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqDocType', 'Antecedentes Policiales', this); handleDocTypeChange()">Antecedentes Policiales</a>
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqDocType', 'Título Universitario', this); handleDocTypeChange()">Título Universitario</a>
+                                    <div class="col-md-12 hidden animate-fade" id="attachmentField">
+                                        <div class="p-3 bg-light border rounded-3 border-dashed" style="border-style: dashed !important; border-color: #cbd5e1 !important;">
+                                            <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2 text-primary">Adjuntar Documento (PDF)</label>
+                                            <input type="file" class="form-control-mre" id="reqFile" accept=".pdf">
                                         </div>
                                     </div>
-                                    <input type="hidden" id="reqDocType" required>
-                                </div>
-                            </div>
-                            
-                            <div id="additionalDataTabs" class="col-12 mt-4 hidden animate-fade">
-                                <div class="p-4 bg-light border rounded-3">
-                                    <h6 class="fw-black text-navy small mb-3 border-bottom pb-2">Datos del Documento Seleccionado</h6>
-                                    <div class="row g-3">
-                                        <div class="col-md-6">
-                                             <label class="form-label text-muted small fw-bold text-uppercase">Nombre del Titular</label>
-                                             <input type="text" class="form-control-mre" id="titularName" required>
+
+                                    <div class="col-md-12">
+                                        <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Tipo de Documento</label>
+                                        <div class="dropdown custom-select" id="div_reqDocType">
+                                            <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="btn_reqDocType" disabled>
+                                                <span class="selected-value text-muted">Seleccione primero el tipo de firma...</span>
+                                                <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
+                                            </button>
+                                            <div class="dropdown-menu w-100 p-2 border-0 shadow-sm" style="border:1px solid var(--border-color)!important">
+                                                <input type="text" class="form-control form-control-sm mb-2" placeholder="Buscar..." onkeyup="filterOptions(this)">
+                                                <div class="options-container" style="max-height: 200px; overflow-y: auto;">
+                                                    <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqDocType', 'Certificado de Nacimiento', this); handleDocTypeChange()">Certificado de Nacimiento</a>
+                                                    <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqDocType', 'Antecedentes Policiales', this); handleDocTypeChange()">Antecedentes Policiales</a>
+                                                    <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqDocType', 'Título Universitario', this); handleDocTypeChange()">Título Universitario</a>
+                                                </div>
+                                            </div>
+                                            <input type="hidden" id="reqDocType" required>
                                         </div>
-                                         <div class="col-md-6">
-                                             <label class="form-label text-muted small fw-bold text-uppercase">
-                                                 Número de certificado <a href="#" onclick="showCertHelp(event)" class="ms-1 text-primary text-decoration-none"><i data-lucide="help-circle" style="width:12px"></i></a>
-                                             </label>
-                                             <input type="text" class="form-control-mre" id="titularCertNum" required>
-                                        </div>
-                                        <!-- CAMPO CÉDULA ELIMINADO SEGÚN SOLICITUD -->
-                                        <div class="col-md-12 hidden animate-fade" id="officialField">
-                                            <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Funcionario Firmante</label>
-                                            <div class="dropdown custom-select" id="div_reqOfficial">
-                                                <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <span class="selected-value text-muted">Seleccione...</span>
-                                                    <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
-                                                </button>
-                                                <div class="dropdown-menu w-100 p-2 border-0 shadow-sm" style="border:1px solid var(--border-color)!important">
-                                                    <input type="text" class="form-control form-control-sm mb-2" placeholder="Buscar..." onkeyup="filterOptions(this)">
-                                                    <div class="options-container" style="max-height: 200px; overflow-y: auto;">
-                                                        <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqOfficial', 'Juan Pérez (REC)', this)">Juan Pérez (REC)</a>
-                                                        <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqOfficial', 'María González (MEC)', this)">María González (MEC)</a>
+                                    </div>
+                                    
+                                    <div id="additionalDataTabs" class="col-12 mt-4 hidden animate-fade">
+                                        <div class="p-4 bg-light border rounded-3">
+                                            <h6 class="fw-black text-navy small mb-3 border-bottom pb-2">Datos del Documento Seleccionado</h6>
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                     <label class="form-label text-muted small fw-bold text-uppercase">Nombre del Titular</label>
+                                                     <input type="text" class="form-control-mre" id="titularName" required>
+                                                </div>
+                                                 <div class="col-md-6">
+                                                     <label class="form-label text-muted small fw-bold text-uppercase">
+                                                         Número de certificado <a href="#" onclick="showCertHelp(event)" class="ms-1 text-primary text-decoration-none"><i data-lucide="help-circle" style="width:12px"></i></a>
+                                                     </label>
+                                                     <input type="text" class="form-control-mre" id="titularCertNum" required>
+                                                </div>
+                                                <!-- CAMPO CÉDULA ELIMINADO SEGÚN SOLICITUD -->
+                                                <div class="col-md-12 hidden animate-fade" id="officialField">
+                                                    <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Funcionario Firmante</label>
+                                                    <div class="dropdown custom-select" id="div_reqOfficial">
+                                                        <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <span class="selected-value text-muted">Seleccione...</span>
+                                                            <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
+                                                        </button>
+                                                        <div class="dropdown-menu w-100 p-2 border-0 shadow-sm" style="border:1px solid var(--border-color)!important">
+                                                            <input type="text" class="form-control form-control-sm mb-2" placeholder="Buscar..." onkeyup="filterOptions(this)">
+                                                            <div class="options-container" style="max-height: 200px; overflow-y: auto;">
+                                                                <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqOfficial', 'Juan Pérez (REC)', this)">Juan Pérez (REC)</a>
+                                                                <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqOfficial', 'María González (MEC)', this)">María González (MEC)</a>
+                                                            </div>
+                                                        </div>
+                                                        <input type="hidden" id="reqOfficial">
                                                     </div>
                                                 </div>
-                                                <input type="hidden" id="reqOfficial">
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
 
-                            <div class="col-12 mt-4 d-flex justify-content-end gap-3 border-top pt-4">
-                                <button type="button" class="btn btn-light border fw-bold px-4" onclick="backToDashboard()">Cancelar</button>
-                                <button type="submit" class="btn-main px-5 shadow-sm d-flex align-items-center gap-2" id="btnSubmitForm">
-                                    <i data-lucide="plus-circle" style="width:16px;"></i> Añadir
+                                    <div class="col-12 mt-4 d-flex justify-content-end gap-3 border-top pt-4">
+                                        <button type="button" class="btn btn-light border fw-bold px-4" onclick="backToDashboard()">Cancelar</button>
+                                        <button type="submit" class="btn-main px-5 shadow-sm d-flex align-items-center gap-2" id="btnSubmitForm">
+                                            <i data-lucide="plus-circle" style="width:16px;"></i> Añadir
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- GRILLA DE CARGA EN LOTE (COPIADA) -->
+                        <div id="loadedDocsSection" class="mt-0 hidden animate-fade">
+                            <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+                                <h5 class="fw-black text-navy m-0">Documentos Cargados</h5>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="mre-table" id="loadedDocsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Tipo de Firma</th>
+                                            <th>Institución</th>
+                                            <th>Tipo de Documento</th>
+                                            <th>Validación</th>
+                                            <th class="text-center">Validado</th>
+                                            <th class="text-end">Importe</th>
+                                            <th class="text-center">Archivo</th>
+                                            <th class="text-center">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="loadedDocsBody"></tbody>
+                                </table>
+                            </div>
+                            <div class="d-flex justify-content-end gap-3 mt-4 pt-3 border-top">
+                                <button class="btn btn-outline-primary fw-bold px-4 rounded-3" onclick="showRequestForm()">
+                                    <i data-lucide="plus" style="width:16px; margin-right: 5px;"></i> Agregar Nuevo Trámite
+                                </button>
+                                <button class="btn-main px-5 shadow" onclick="submitFinalRequest()">
+                                    Generar Solicitud <i data-lucide="check" style="width:16px; margin-left: 5px;"></i>
                                 </button>
                             </div>
                         </div>
-                    </form>
-                </div>
-
-                <!-- GRILLA DE CARGA EN LOTE (COPIADA) -->
-                <div id="loadedDocsSection" class="mt-0 hidden animate-fade">
-                    <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
-                        <h5 class="fw-black text-navy m-0">Documentos Cargados</h5>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="mre-table" id="loadedDocsTable">
-                            <thead>
-                                <tr>
-                                    <th>Tipo de Firma</th>
-                                    <th>Institución</th>
-                                    <th>Tipo de Documento</th>
-                                    <th>Validación</th>
-                                    <th class="text-center">Validado</th>
-                                    <th class="text-end">Importe</th>
-                                    <th class="text-center">Archivo</th>
-                                    <th class="text-center">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody id="loadedDocsBody"></tbody>
-                        </table>
-                    </div>
-                    <div class="d-flex justify-content-end gap-3 mt-4 pt-3 border-top">
-                        <button class="btn btn-outline-primary fw-bold px-4 rounded-3" onclick="showRequestForm()">
-                            <i data-lucide="plus" style="width:16px; margin-right: 5px;"></i> Agregar Nuevo Trámite
-                        </button>
-                        <button class="btn-main px-5 shadow" onclick="submitFinalRequest()">
-                            Generar Solicitud <i data-lucide="check" style="width:16px; margin-left: 5px;"></i>
-                        </button>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- VISTA DE VERIFICACIÓN (SPLIT SCREEN) -->
-        <div id="verificationView" class="hidden animate-fade" style="margin-top: 1rem;">
-            <div class="grid-frame p-0 overflow-hidden">
-                <div class="grid-header-frame py-2 bg-navy text-white d-flex justify-content-between" style="background: var(--mre-blue);">
-                    <div class="d-flex align-items-center gap-3">
-                        <button class="btn btn-sm btn-outline-light border-0" onclick="backToDashboard()">
-                            <i data-lucide="arrow-left"></i>
-                        </button>
-                        <div>
-                            <span class="d-block fw-bold small text-white-50" id="verifyReqId">Solicitud #</span>
-                            <span class="fw-black text-white" id="verifyReqName"></span>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="badge bg-warning text-dark border-0">En Análisis</span>
-                    </div>
-                </div>
-                
-                <div class="split-screen-container">
-                    <div class="split-side-a">
-                        <!-- El contenido se inyecta dinámicamente según perfil -->
-                    </div>
-
-                    <div class="split-side-b">
-                        <div id="physicalVerificationBanner" class="hidden mb-4 p-3 bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-3 d-flex align-items-center gap-3">
-                            <i data-lucide="scan-line" style="width:24px; height:24px;"></i>
-                            <div>
-                                <h6 class="fw-bold m-0">Verificación Física en Curso</h6>
-                                <small>Realice el control sobre el documento físico original presentado por el ciudadano.</small>
+                <!-- VISTA DE VERIFICACIÓN (SPLIT SCREEN) -->
+                <div id="verificationView" class="hidden animate-fade" style="margin-top: 1rem;">
+                    <div class="grid-frame p-0 overflow-hidden">
+                        <div class="grid-header-frame py-2 bg-navy text-white d-flex justify-content-between" style="background: var(--mre-blue);">
+                            <div class="d-flex align-items-center gap-3">
+                                <button class="btn btn-sm btn-outline-light border-0" onclick="backToDashboard()">
+                                    <i data-lucide="arrow-left"></i>
+                                </button>
+                                <div>
+                                    <span class="d-block fw-bold small text-white-50" id="verifyReqId">Solicitud #</span>
+                                    <span class="fw-black text-white" id="verifyReqName"></span>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-warning text-dark border-0">En Análisis</span>
                             </div>
                         </div>
-
-                        <h6 class="fw-black text-navy border-bottom pb-2 mb-3">Datos de la Solicitud</h6>
                         
-                        <!-- CONTENEDOR DINÁMICO DE DATOS -->
-                        <div class="row g-3 mb-4" id="verifyDataContainer">
-                            <!-- Se llena vía JS en openVerification -->
-                        </div>
-
-                        <div class="mt-auto">
-                            <label class="small text-muted fw-bold mb-2">Acciones de Gestión</label>
-                            <div class="d-grid gap-2">
-                                <button class="btn btn-main-success fw-bold py-2" onclick="openApproveModal()">
-                                    <i data-lucide="check" style="width:18px; margin-right:5px"></i> APROBAR
-                                </button>
-                                <div class="d-flex gap-2">
-                                    <!-- AGREGADOS IDs PARA CONTROL VISUAL -->
-                                    <button id="btn-verify-return" class="btn btn-main-warning fw-bold w-50" onclick="openReturnModal()">
-                                        <i data-lucide="rotate-ccw" style="width:18px; margin-right:5px"></i> DEVOLVER
-                                    </button>
-                                    <button id="btn-verify-reject" class="btn btn-main-danger fw-bold w-50" onclick="openRejectModal()">
-                                        <i data-lucide="x" style="width:18px; margin-right:5px"></i> RECHAZAR
-                                    </button>
-                                </div>
-                                <button class="btn btn-sm btn-outline-secondary fw-bold mt-2" onclick="unlockRequestFromVerification()" title="Liberar Solicitud">
-                                    <i data-lucide="unlock" style="width:16px; margin-right:5px"></i> Liberar Solicitud
-                                </button>
+                        <div class="split-screen-container">
+                            <div class="split-side-a">
+                                <!-- El contenido se inyecta dinámicamente según perfil -->
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- VISTA DE LIQUIDACIÓN / COMPROBANTE -->
-        <div id="liquidationView" class="hidden animate-fade" style="margin-top: 2rem;">
-            <div class="container" style="max-width: 900px;">
-                <div class="text-center mb-4">
-                    <div class="d-inline-flex bg-success p-3 rounded-circle text-white shadow mb-3">
-                        <i data-lucide="check" style="width:40px; height:40px;"></i>
-                    </div>
-                    <h3 class="fw-black text-navy">Liquidación Generada</h3>
-                    <p class="text-muted">La transacción ha sido registrada correctamente.</p>
-                </div>
-
-                <div class="row justify-content-center">
-                    <div class="col-md-8">
-                        <div class="card border-0 shadow-sm rounded-4 h-100">
-                            <div class="card-body p-4 d-flex flex-column text-center">
-                                <h6 class="fw-black text-navy mb-4 fs-5">Documentos Listos para Impresión</h6>
-                                <div class="alert alert-light border small text-muted mb-4 text-start">
-                                    <i data-lucide="printer" style="width:14px; vertical-align:text-bottom"></i> 
-                                    Las etiquetas de apostilla se generaron para los siguientes códigos:
+                            <div class="split-side-b">
+                                <div id="physicalVerificationBanner" class="hidden mb-4 p-3 bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-3 d-flex align-items-center gap-3">
+                                    <i data-lucide="scan-line" style="width:24px; height:24px;"></i>
+                                    <div>
+                                        <h6 class="fw-bold m-0">Verificación Física en Curso</h6>
+                                        <small>Realice el control sobre el documento físico original presentado por el ciudadano.</small>
+                                    </div>
                                 </div>
-                                <!-- AGREGADO ID liquidationList PARA ACTUALIZACIÓN DINÁMICA -->
-                                <ul class="list-group list-group-flush mb-4 small fw-bold text-start" id="liquidationList">
-                                    <!-- Se llenará dinámicamente desde confirmPayment -->
-                                </ul>
 
-                                <div class="mt-auto d-grid gap-2 col-md-10 mx-auto">
-                                    <button class="btn btn-outline-dark fw-bold py-2" onclick="alert('Imprimiendo comprobante...')">
-                                        <i data-lucide="printer" style="width:16px; margin-right:5px"></i> Imprimir Comprobante
-                                    </button>
-                                    <button class="btn btn-main py-2" onclick="alert('Imprimiendo etiquetas...')">
-                                        <i data-lucide="qr-code" style="width:16px; margin-right:5px"></i> Imprimir Apostillas
-                                    </button>
-                                    <button class="btn btn-light text-muted fw-bold mt-2" onclick="backToDashboard()">
-                                        Finalizar y Volver
-                                    </button>
+                                <h6 class="fw-black text-navy border-bottom pb-2 mb-3">Datos de la Solicitud</h6>
+                                
+                                <!-- CONTENEDOR DINÁMICO DE DATOS -->
+                                <div class="row g-3 mb-4" id="verifyDataContainer">
+                                    <!-- Se llena vía JS en openVerification -->
+                                </div>
+
+                                <div class="mt-auto">
+                                    <label class="small text-muted fw-bold mb-2">Acciones de Gestión</label>
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-main-success fw-bold py-2" onclick="openApproveModal()">
+                                            <i data-lucide="check" style="width:18px; margin-right:5px"></i> APROBAR
+                                        </button>
+                                        <div class="d-flex gap-2">
+                                            <!-- AGREGADOS IDs PARA CONTROL VISUAL -->
+                                            <button id="btn-verify-return" class="btn btn-main-warning fw-bold w-50" onclick="openReturnModal()">
+                                                <i data-lucide="rotate-ccw" style="width:18px; margin-right:5px"></i> DEVOLVER
+                                            </button>
+                                            <button id="btn-verify-reject" class="btn btn-main-danger fw-bold w-50" onclick="openRejectModal()">
+                                                <i data-lucide="x" style="width:18px; margin-right:5px"></i> RECHAZAR
+                                            </button>
+                                        </div>
+                                        <button class="btn btn-sm btn-outline-secondary fw-bold mt-2" onclick="unlockRequestFromVerification()" title="Liberar Solicitud">
+                                            <i data-lucide="unlock" style="width:16px; margin-right:5px"></i> Liberar Solicitud
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- FOOTER -->
-    <footer class="mre-footer">
-        <div class="footer-left small fw-bold text-muted">
-            &copy; 2026 MRE - Sistema Integrado de Apostilla
+                <!-- VISTA DE LIQUIDACIÓN / COMPROBANTE -->
+                <div id="liquidationView" class="hidden animate-fade" style="margin-top: 2rem;">
+                    <div class="container" style="max-width: 900px;">
+                        <div class="text-center mb-4">
+                            <div class="d-inline-flex bg-success p-3 rounded-circle text-white shadow mb-3">
+                                <i data-lucide="check" style="width:40px; height:40px;"></i>
+                            </div>
+                            <h3 class="fw-black text-navy">Liquidación Generada</h3>
+                            <p class="text-muted">La transacción ha sido registrada correctamente.</p>
+                        </div>
+
+                        <div class="row justify-content-center">
+                            <div class="col-md-8">
+                                <div class="card border-0 shadow-sm rounded-4 h-100">
+                                    <div class="card-body p-4 d-flex flex-column text-center">
+                                        <h6 class="fw-black text-navy mb-4 fs-5">Documentos Listos para Impresión</h6>
+                                        <div class="alert alert-light border small text-muted mb-4 text-start">
+                                            <i data-lucide="printer" style="width:14px; vertical-align:text-bottom"></i> 
+                                            Las etiquetas de apostilla se generaron para los siguientes códigos:
+                                        </div>
+                                        <!-- AGREGADO ID liquidationList PARA ACTUALIZACIÓN DINÁMICA -->
+                                        <ul class="list-group list-group-flush mb-4 small fw-bold text-start" id="liquidationList">
+                                            <!-- Se llenará dinámicamente desde confirmPayment -->
+                                        </ul>
+
+                                        <div class="mt-auto d-grid gap-2 col-md-10 mx-auto">
+                                            <button class="btn btn-outline-dark fw-bold py-2" onclick="alert('Imprimiendo comprobante...')">
+                                                <i data-lucide="printer" style="width:16px; margin-right:5px"></i> Imprimir Comprobante
+                                            </button>
+                                            <button class="btn btn-main py-2" onclick="alert('Imprimiendo etiquetas...')">
+                                                <i data-lucide="qr-code" style="width:16px; margin-right:5px"></i> Imprimir Apostillas
+                                            </button>
+                                            <button class="btn btn-light text-muted fw-bold mt-2" onclick="backToDashboard()">
+                                                Finalizar y Volver
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FOOTER -->
+            <footer class="mre-footer">
+                <div class="footer-left small fw-bold text-muted">
+                    &copy; 2026 MRE - Sistema Integrado de Apostilla
+                </div>
+                <div class="footer-right">
+                    <span class="badge bg-light text-muted border">Versión 1.0 (Funcionario)</span>
+                </div>
+            </footer>
         </div>
-        <div class="footer-right">
-            <span class="badge bg-light text-muted border">Versión 1.0 (Funcionario)</span>
-        </div>
-    </footer>
+    </div>
 
     <!-- MODALES DE ACCIÓN -->
 
@@ -811,6 +868,31 @@
             <div class="d-flex gap-2 justify-content-end">
                 <button class="btn btn-light border fw-bold" onclick="document.getElementById('reconsiderModal').style.display='none'">Cancelar</button>
                 <button class="btn btn-outline-secondary fw-bold border-2 px-4" onclick="confirmReconsideration()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NUEVO MODAL: VERIFICACIÓN PREVIA (EXTERNO) -->
+    <div class="mre-popup-overlay" id="preVerificationModal">
+        <div class="mre-popup">
+            <h5 class="fw-black text-navy mb-3 d-flex align-items-center gap-2">
+                <span class="text-primary"><i data-lucide="scan-eye"></i></span> Verificación Previa
+            </h5>
+            <div class="alert alert-info border-info-subtle small mb-3">
+                <strong>Control Físico:</strong> Antes de procesar la solicitud, verifique visualmente que el documento físico coincida con los siguientes datos del sistema.
+            </div>
+            <div id="preVerifyContent" class="mb-4 p-3 bg-light border rounded small">
+                <!-- Content injected via JS -->
+            </div>
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="checkPreVerify">
+                <label class="form-check-label small fw-bold text-muted" for="checkPreVerify">
+                    Confirmo que tengo el documento físico y los datos coinciden.
+                </label>
+            </div>
+            <div class="d-flex gap-2 justify-content-end">
+                <button class="btn btn-light border fw-bold" onclick="document.getElementById('preVerificationModal').style.display='none'">Cancelar</button>
+                <button class="btn btn-main px-4" onclick="confirmPreVerification()">Confirmar y Procesar</button>
             </div>
         </div>
     </div>
@@ -1028,7 +1110,15 @@
             const btnDevuelto = document.getElementById('btn-devuelto');
             const btnFinalizados = document.getElementById('btn-finalizados');
             const btnCreate = document.getElementById('btn-create-request'); // Referencia al botón
+            const sidebar = document.getElementById('supervisorSidebar'); // Referencia a la barra lateral
             
+            // Lógica para mostrar/ocultar barra lateral de supervisor
+            if (currentProfile === 'supervisor') {
+                sidebar.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('hidden');
+            }
+
             // Restricciones para funcionario externo
             if (currentProfile === 'externo') {
                 btnDevuelto.classList.add('hidden');
@@ -1568,8 +1658,73 @@
 
         function takeRequestFromModal() {
             const req = requests.find(r => r.id === actionTargetId);
+            
+            // VERIFICAR SI ES SUPERVISOR, SI ROMPE LA COLA FIFO Y SI ES FIRMA ELECTRÓNICA
+            // Se agrega la condición (req.signature || '').includes('Electrónica')
+            if (currentProfile === 'supervisor' && (req.signature || '').includes('Electrónica')) {
+                // Obtener el siguiente turno lógico
+                let filtered = requests.filter(r => r.status === 'Análisis');
+                filtered.sort((a, b) => parseDateStr(a.date) - parseDateStr(b.date));
+                const next = filtered.find(r => !r.lockedBy || r.lockedBy === 'Me');
+                
+                // Si existe un siguiente y NO es el que intentamos tomar
+                if (next && next.id !== actionTargetId) {
+                    // Cerrar detalle y abrir modal de excepción
+                    document.getElementById('detailModal').style.display = 'none';
+                    document.getElementById('forceTakeObs').value = '';
+                    document.getElementById('forceTakeModal').style.display = 'flex';
+                    lucide.createIcons();
+                    return; // Detener flujo estándar
+                }
+            }
+
+            // LÓGICA 2: VERIFICACIÓN PREVIA PARA FUNCIONARIO EXTERNO
+            if (currentProfile === 'externo') {
+                document.getElementById('detailModal').style.display = 'none';
+                
+                // Poblar datos del modal previo
+                const content = document.getElementById('preVerifyContent');
+                content.innerHTML = `
+                    <div class="row g-2">
+                        <div class="col-12 border-bottom pb-2 mb-2">
+                            <span class="text-muted d-block" style="font-size:0.7rem">NRO. DOCUMENTO FÍSICO / CERTIFICADO</span>
+                            <strong class="fs-5 text-primary">${req.physicalNumber || 'N/A'}</strong>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted d-block" style="font-size:0.7rem">TITULAR</span>
+                            <strong class="text-dark text-uppercase">${req.name}</strong>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted d-block" style="font-size:0.7rem">TIPO DOCUMENTO</span>
+                            <strong class="text-dark">${req.doc}</strong>
+                        </div>
+                    </div>
+                `;
+                
+                // Resetear checkbox
+                document.getElementById('checkPreVerify').checked = false;
+                
+                document.getElementById('preVerificationModal').style.display = 'flex';
+                lucide.createIcons();
+                return; // Detener flujo para esperar confirmación
+            }
+
+            // Flujo estándar (para Ológrafas o toma en turno correcto)
             if (req.lockedBy !== 'Me') req.lockedBy = 'Me';
             document.getElementById('detailModal').style.display = 'none';
+            openVerification(req.id);
+        }
+
+        function confirmPreVerification() {
+            const isChecked = document.getElementById('checkPreVerify').checked;
+            if (!isChecked) {
+                alert("Debe confirmar que ha verificado el documento físico.");
+                return;
+            }
+
+            document.getElementById('preVerificationModal').style.display = 'none';
+            const req = requests.find(r => r.id === actionTargetId);
+            if (req.lockedBy !== 'Me') req.lockedBy = 'Me';
             openVerification(req.id);
         }
 
@@ -1997,6 +2152,37 @@
                     lucide.createIcons();
                     return; // Detener flujo estándar
                 }
+            }
+
+            // LÓGICA 2: VERIFICACIÓN PREVIA PARA FUNCIONARIO EXTERNO
+            if (currentProfile === 'externo') {
+                document.getElementById('detailModal').style.display = 'none';
+                
+                // Poblar datos del modal previo
+                const content = document.getElementById('preVerifyContent');
+                content.innerHTML = `
+                    <div class="row g-2">
+                        <div class="col-12 border-bottom pb-2 mb-2">
+                            <span class="text-muted d-block" style="font-size:0.7rem">NRO. DOCUMENTO FÍSICO / CERTIFICADO</span>
+                            <strong class="fs-5 text-primary">${req.physicalNumber || 'N/A'}</strong>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted d-block" style="font-size:0.7rem">TITULAR</span>
+                            <strong class="text-dark text-uppercase">${req.name}</strong>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted d-block" style="font-size:0.7rem">TIPO DOCUMENTO</span>
+                            <strong class="text-dark">${req.doc}</strong>
+                        </div>
+                    </div>
+                `;
+                
+                // Resetear checkbox
+                document.getElementById('checkPreVerify').checked = false;
+                
+                document.getElementById('preVerificationModal').style.display = 'flex';
+                lucide.createIcons();
+                return; // Detener flujo para esperar confirmación
             }
 
             // Flujo estándar (para Ológrafas o toma en turno correcto)
