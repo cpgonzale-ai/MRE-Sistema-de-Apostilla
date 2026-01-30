@@ -292,6 +292,9 @@
                 <a href="#" class="nav-link-mre"><i data-lucide="shield-check" style="width: 18px;"></i> <span>Grupos y Permisos</span></a>
                 <a href="#" class="nav-link-mre"><i data-lucide="settings-2" style="width: 18px;"></i> <span>Configuración de referencias</span></a>
                 <a href="#" class="nav-link-mre"><i data-lucide="layout-grid" style="width: 18px;"></i> <span>Configuración de campos</span></a>
+                <a href="#" class="nav-link-mre"><i data-lucide="file-cog" style="width: 18px;"></i> <span>Configuración de documentos</span></a>
+                <a href="#" class="nav-link-mre"><i data-lucide="scale" style="width: 18px;"></i> <span>Configuración de leyes</span></a>
+                <a href="#" class="nav-link-mre"><i data-lucide="sliders-horizontal" style="width: 18px;"></i> <span>Parámetros del sistema</span></a>
             </nav>
         </aside>
 
@@ -303,7 +306,7 @@
                     <p class="text-muted small mb-0">Sistema Integrado de Legalizaciones</p>
                 </div>
                 <button class="btn-main d-inline-flex align-items-center gap-2 shadow-sm" onclick="openOfficialModal('add')">
-                    <i data-lucide="plus-circle" style="width: 18px;"></i> Agregar Funcionario
+                    <i data-lucide="plus-circle" style="width: 18px;"></i> Agregar
                 </button>
             </header>
 
@@ -615,8 +618,15 @@
         let idToDelete = null;
 
         function renderOfficials() {
-            const tbody = document.getElementById('officialsTableBody');
-            tbody.innerHTML = mockOfficials.map(o => `
+            // DISPOSE TOOLTIPS EXISTENTES PARA EVITAR CONFLICTOS
+            const tableBody = document.getElementById('officialsTableBody');
+            const existingTooltips = tableBody.querySelectorAll('[data-bs-toggle="tooltip"]');
+            existingTooltips.forEach(el => {
+                const tooltip = bootstrap.Tooltip.getInstance(el);
+                if (tooltip) tooltip.dispose();
+            });
+
+            tableBody.innerHTML = mockOfficials.map(o => `
                 <tr data-id="${o.id}" class="${o.status === 'INAC' ? 'opacity-75 bg-light' : ''}">
                     <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()" ${o.status === 'INAC' ? 'disabled' : ''}></td>
                     <td>
@@ -659,9 +669,11 @@
             updateSelectionUI();
             lucide.createIcons();
             
+            // INICIALIZACIÓN SEGURA DE TOOLTIPS
             const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
             tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
+                // Usar getOrCreateInstance evita errores de re-inicialización
+                return bootstrap.Tooltip.getOrCreateInstance(tooltipTriggerEl);
             });
         }
 
@@ -798,7 +810,8 @@
                     if (mode === 'edit') {
                         title.innerText = 'Editar Funcionario';
                         auditSection.classList.add('d-none');
-                        userCreationSection.classList.add('d-none');
+                        userCreationSection.classList.remove('d-none'); // Mostrar usuario en editar
+                        generateUsername(); // Regenerar usuario basado en los datos cargados
                     } else if (mode === 'view') {
                         title.innerText = 'Detalle del Funcionario';
                         inputs.forEach(i => i.disabled = true);
