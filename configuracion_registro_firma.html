@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIA-PY | Registro de Firmas</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --mre-blue: #002855;
+            --mre-blue-light: #0038A8;
+            --mre-red: #D52B1E;
+            --mre-green: #10B981;
+            --mre-amber: #F59E0B;
+            --soft-bg: #f0f4f8; 
+            --border-color: #E2E8F0;
+            --input-bg: #F8FAFC;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            --card-shadow: 0 10px 15px -3px rgba(0, 40, 85, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-scale: 1; 
+            --base-font-size: 16px;
+        }
+
+        html { font-size: calc(var(--base-font-size) * var(--font-scale)); }
+
+        /* --- ESTILO TOOLTIP PERSONALIZADO --- */
+        .tooltip {
+            --bs-tooltip-bg: #ffffff;
+            --bs-tooltip-color: #000000;
+            --bs-tooltip-opacity: 1;
+            --bs-tooltip-padding-y: 0.5rem;
+            --bs-tooltip-padding-x: 1rem;
+            --bs-tooltip-border-radius: 8px;
+            --bs-tooltip-font-size: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .tooltip-inner {
+            border: 1px solid var(--border-color);
+            font-weight: 600;
+            text-align: center;
+        }
+
+        /* --- MODOS DE ACCESIBILIDAD --- */
+        body.high-contrast {
+            --mre-blue: #000000; --mre-blue-light: #000000; --mre-red: #D50000;
+            --soft-bg: #FFFFFF; --border-color: #000000; --input-bg: #FFFFFF;
+            --text-main: #000000; --text-muted: #000000; --card-shadow: none;
+        }
+        body.grayscale-mode { filter: grayscale(100%); }
+
+        body { 
+            font-family: 'Inter', sans-serif; margin: 0; background-color: var(--soft-bg); 
+            color: var(--text-main); overflow: hidden; display: flex; flex-direction: column; height: 100vh;
+        }
+
+        .elegant-background { 
+            position: fixed; inset: 0; z-index: -1; background-color: #f8fafc; 
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(0, 56, 168, 0.08) 0px, transparent 50%), 
+                radial-gradient(at 100% 0%, rgba(213, 43, 30, 0.05) 0px, transparent 50%);
+        }
+
+        /* --- CABECERA --- */
+        .portal-header { 
+            display: flex; justify-content: space-between; align-items: center; background: white; 
+            padding: 1.25rem 2.5rem; box-shadow: 0 4px 10px -1px rgba(0,0,0,0.05); 
+            border-bottom: 1px solid var(--border-color); position: relative; z-index: 2000;
+        }
+
+        .mobile-toggle-btn { background: transparent; border: none; color: var(--mre-blue); cursor: pointer; padding: 4px; display: none; border-radius: 8px; transition: var(--transition); }
+        
+        .a11y-container { position: relative; }
+        .btn-a11y-trigger {
+            background: #F8FAFC; border: 1px solid var(--border-color); color: var(--mre-blue);
+            border-radius: 12px; padding: 0.5rem 1rem; font-weight: 700; font-size: 0.8rem;
+            display: flex; align-items: center; gap: 8px; transition: var(--transition);
+        }
+        .a11y-dropdown-menu {
+            position: absolute; top: calc(100% + 10px); right: 0; 
+            background: white; border-radius: 16px; width: 280px;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.15); border: 1px solid var(--border-color);
+            display: none; z-index: 3000; padding: 1rem; animation: fadeIn 0.2s ease-out;
+        }
+        .a11y-dropdown-menu.show { display: block; }
+        .a11y-section-title { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem; }
+        .text-resize-controls { display: flex; align-items: center; justify-content: space-between; background: #F8FAFC; padding: 8px; border-radius: 12px; border: 1px solid var(--border-color); }
+        .btn-resize { background: white; border: 1px solid var(--border-color); border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .font-size-display { font-weight: 800; color: var(--mre-blue); font-size: 0.85rem; }
+        .switch-control { display: flex; align-items: center; justify-content: space-between; padding: 4px 0; }
+        .switch-label { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #CBD5E1; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--mre-blue-light); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        .dots-menu-trigger {
+            width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+            border-radius: 12px; cursor: pointer; transition: var(--transition); color: var(--text-muted);
+            background: #F8FAFC; border: 1px solid var(--border-color);
+        }
+        .dropdown-menu-mre { 
+            position: absolute; top: calc(100% + 10px); right: 0; background: white; border-radius: 12px; 
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); border: 1px solid var(--border-color); 
+            width: 180px; display: none; z-index: 3000; overflow: hidden; animation: fadeIn 0.2s ease-out;
+        }
+        .dropdown-menu-mre.show { display: block; }
+        .dropdown-item-mre { padding: 12px 16px; border: none; background: none; width: 100%; text-align: left; font-size: 0.9rem; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 10px; }
+        .dropdown-item-mre:hover { background: #F8FAFC; color: var(--mre-red); }
+
+        /* --- LAYOUT PRINCIPAL --- */
+        .app-container { display: flex; flex: 1; overflow: hidden; position: relative; }
+
+        .main-sidebar {
+            width: 280px; background: white; border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column; z-index: 1000;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.02); transition: var(--transition);
+            overflow-x: hidden;
+        }
+
+        .nav-menu { padding: 1.5rem 1rem; flex: 1; }
+        .nav-link-mre {
+            display: flex; align-items: center; gap: 12px; padding: 0.85rem 1rem;
+            color: var(--text-muted); text-decoration: none; border-radius: 12px;
+            font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; transition: var(--transition);
+            white-space: nowrap;
+        }
+        .nav-link-mre:hover { background: #F1F5F9; color: var(--mre-blue); }
+        .nav-link-mre.active { background: #f0f7ff; color: var(--mre-blue-light); box-shadow: 0 4px 6px -1px rgba(0, 40, 85, 0.05); }
+
+        .content-area { flex: 1; padding: 2rem 3rem; overflow-y: auto; position: relative; }
+        
+        /* --- GRILLA Y CARDS --- */
+        .grid-frame { 
+            background: white; border-radius: 20px; box-shadow: var(--card-shadow); 
+            border: 1px solid #E2E8F0; position: relative; overflow: hidden;
+            display: flex; flex-direction: column; margin-bottom: 2rem;
+            height: auto;
+        }
+        .grid-frame::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(to right, var(--mre-red), var(--mre-blue)); }
+        
+        .grid-header-frame { background-color: #FFFF; padding: 1.25rem 1.5rem; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; }
+        .grid-header-title { font-size: 1rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
+
+        .mre-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 1rem 1.5rem; border-bottom: 2px solid #E2E8F0; letter-spacing: 0.5px; }
+        .mre-table td { padding: 1.2rem 1.5rem; font-size: 0.85rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
+        .mre-table tr:hover td { background-color: #F8FAFC; }
+
+        .btn-main { background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); color: #ffffff; border: none; border-radius: 12px; padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.85rem; transition: var(--transition); }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 40, 85, 0.2); color: white; }
+
+        /* --- MODALES --- */
+        .mre-modal-overlay { position: fixed; inset: 0; background: rgba(0, 40, 85, 0.4); backdrop-filter: blur(4px); z-index: 4000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .mre-modal { background: white; border-radius: 24px; max-width: 800px; width: 100%; padding: 2.5rem; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.2); max-height: 95vh; overflow-y: auto; }
+        .section-title { font-size: 0.9rem; font-weight: 900; color: var(--mre-blue); text-transform: uppercase; display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem; }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: #E2E8F0; }
+        .selection-list { max-height: 150px; overflow-y: auto; border: 1px solid #E2E8F0; border-radius: 12px; padding: 0.5rem; background: #F8FAFC; }
+        .selection-item { padding: 0.5rem 0.75rem; border-bottom: 1px solid #E2E8F0; font-size: 0.8rem; font-weight: 600; display: flex; justify-content: space-between; }
+        .selection-item:last-child { border-bottom: none; }
+
+        /* --- AUDITORÍA --- */
+        .audit-table { width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; margin-top: 1rem; }
+        .audit-table th { background: #F8FAFC; color: #64748B; font-size: 0.65rem; font-weight: 800; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-color); text-transform: uppercase; }
+        .audit-table td { padding: 0.75rem 1rem; border-bottom: 1px solid #F1F5F9; font-size: 0.75rem; }
+        .badge-audit { padding: 3px 8px; border-radius: 5px; font-size: 0.65rem; font-weight: 800; }
+        .tag-create { background: #DCFCE7; color: #15803D; }
+        .tag-update { background: #E0F2FE; color: #0369A1; }
+
+        /* --- FORMULARIOS --- */
+        .form-label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.4rem; display: block; }
+        .form-control-mre { background-color: var(--input-bg); border: 1px solid #E2E8F0; border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.9rem; width: 100%; transition: var(--transition); color: var(--text-main); }
+        .form-control-mre:focus { outline: none; border-color: var(--mre-blue); box-shadow: 0 0 0 3px rgba(0, 40, 85, 0.1); background: white; }
+        .form-control-mre::placeholder { color: #94A3B8; }
+        .form-control-mre:disabled { background-color: #f1f5f9; cursor: not-allowed; opacity: 0.7; }
+        .form-control-mre[type="file"] { padding: 0.5rem 0.75rem; background: white; font-size: 0.8rem; }
+
+        /* --- AVATARES Y FIRMAS --- */
+        .avatar-circle {
+            width: 40px; height: 40px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.8rem;
+            color: var(--mre-blue); background-color: #E0F2FE;
+            border: 1px solid #BAE6FD;
+        }
+        .avatar-circle.rd { color: #0369A1; background-color: #F0F9FF; }
+        
+        .signature-box {
+            background-color: #fff;
+            border: 1px dashed #CBD5E1;
+            border-radius: 8px;
+            padding: 5px;
+            width: 120px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .signature-img { height: 40px; width: auto; opacity: 0.8; }
+        
+        /* --- FOOTER & PAGINADO --- */
+        .grid-footer { padding: 1rem 1.5rem; background-color: #F8FAFC; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .btn-pagination { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #E2E8F0; border-radius: 8px; color: #64748B; cursor: pointer; transition: var(--transition); }
+        .btn-pagination:hover:not(:disabled) { background: var(--mre-blue); color: white; border-color: var(--mre-blue); }
+        .page-indicator { font-size: 0.85rem; font-weight: 700; color: var(--mre-blue); padding: 0 8px; }
+
+        .mre-footer { background: white; padding: 1rem 2.5rem; border-top: 1px solid var(--border-color); font-size: 0.75rem; color: #64748B; display: flex; justify-content: space-between; margin-top: auto; }
+        .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Scrollbar personalizada */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+    </style>
+</head>
+<body>
+
+    <div class="elegant-background"></div>
+
+    <header class="portal-header animate-fade">
+        <div class="d-flex align-items-center gap-3">
+            <button class="mobile-toggle-btn" onclick="toggleSidebar()" aria-label="Abrir menú de navegación">
+                <i data-lucide="menu" style="width: 26px;"></i>
+            </button>
+            <div class="bg-white p-2 rounded-3 border d-none d-sm-block" style="box-shadow: 0 4px 8px rgba(0,0,0,0.08)">
+                <i data-lucide="globe" style="color: var(--mre-blue); width: 28px;"></i>
+            </div>
+            <div>
+                <h6 class="fw-black mb-0" style="color: var(--mre-blue); font-size: 1.4rem; letter-spacing: -0.5px;">SIA-PY</h6>
+                <p class="small mb-0 fw-bold uppercase" style="font-size: 0.75rem; letter-spacing: 1.5px; color: #000 !important;">SISTEMA INTEGRADO DE APOSTILLA ELECTRÓNICA</p>
+            </div>
+        </div>
+        
+        <div class="user-dropdown d-flex align-items-center gap-3">
+            <div class="a11y-container">
+                <button class="btn-a11y-trigger" id="a11yTrigger" onclick="toggleA11yMenu(event)">
+                    <i data-lucide="accessibility" style="width: 20px;"></i>
+                    <span class="d-none d-md-block">Accesibilidad</span>
+                    <i data-lucide="chevron-down" class="lucide-chevron-down" style="width: 14px; margin-left: 4px;"></i>
+                </button>
+                <div class="a11y-dropdown-menu" id="a11yMenu" onclick="event.stopPropagation()">
+                    <div class="a11y-section-title">Tamaño de Texto</div>
+                    <div class="text-resize-controls">
+                        <button class="btn-resize" onclick="changeFontSize(-0.1)"><i data-lucide="minus" style="width: 16px;"></i></button>
+                        <span class="font-size-display" id="fontSizeDisplay">100%</span>
+                        <button class="btn-resize" onclick="changeFontSize(0.1)"><i data-lucide="plus" style="width: 16px;"></i></button>
+                    </div>
+                    <div class="a11y-section-title mt-3">Visualización</div>
+                    <div class="switch-control">
+                        <div class="switch-label"><i data-lucide="eye-off" style="width: 16px;"></i> Escala de Grises</div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="switchGrayscale" onchange="toggleGrayscale()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="user-info-text d-none d-md-block text-end">
+                <div class="user-name fw-bold" style="font-size: 0.85rem;">Carlos González</div>
+                <div class="user-id text-muted" style="font-size: 0.7rem;">CI: 4.567.890</div>
+            </div>
+            <div class="dots-menu-trigger" id="profileTrigger" onclick="toggleUserMenu(event)">
+                <i data-lucide="user" style="width: 24px;"></i>
+            </div>
+            <div class="dropdown-menu-mre" id="userMenu">
+                <button class="dropdown-item-mre text-danger" onclick="handleLogout()">
+                    <i data-lucide="log-out" style="width: 14px;"></i> Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <aside class="main-sidebar animate-fade" id="mainSidebar">
+            <nav class="nav-menu p-3">
+                <p class="px-3 mb-2 text-muted fw-bold uppercase" style="font-size: 0.7rem; letter-spacing: 1.2px;">Gestión</p>
+                <a href="#" class="nav-link-mre active"><i data-lucide="pen-tool" style="width: 18px;"></i> <span>Registro de Firmas</span></a>
+                
+                <p class="px-3 mb-2 mt-4 text-muted fw-bold uppercase" style="font-size: 0.7rem; letter-spacing: 1.2px;">Administración</p>
+                <a href="#" class="nav-link-mre"><i data-lucide="file-text" style="width: 18px;"></i> <span>Tipos de documentos</span></a>
+                <a href="#" class="nav-link-mre"><i data-lucide="users" style="width: 18px;"></i> <span>Usuarios</span></a>
+                <a href="#" class="nav-link-mre"><i data-lucide="shield-check" style="width: 18px;"></i> <span>Grupos y Permisos</span></a>
+                <a href="#" class="nav-link-mre"><i data-lucide="settings-2" style="width: 18px;"></i> <span>Configuración de referencias</span></a>
+                <a href="#" class="nav-link-mre"><i data-lucide="layout-grid" style="width: 18px;"></i> <span>Configuración de campos</span></a>
+            </nav>
+        </aside>
+
+        <main class="content-area">
+            <!-- HEADER DE LA PÁGINA -->
+            <header class="d-flex justify-content-between align-items-end mb-4 animate-fade">
+                <div>
+                    <h2 class="fw-black text-navy m-0" style="color: var(--mre-blue);">Registro de Firmas</h2>
+                    <p class="text-muted small mb-0">Sistema Integrado de Legalizaciones</p>
+                </div>
+                <button class="btn-main d-inline-flex align-items-center gap-2 shadow-sm" onclick="openOfficialModal('add')">
+                    <i data-lucide="plus-circle" style="width: 18px;"></i> Agregar Funcionario
+                </button>
+            </header>
+
+            <div class="grid-frame animate-fade" style="animation-delay: 0.1s;">
+                <div class="grid-header-frame">
+                    <div class="grid-header-title">
+                        Listado de Funcionarios
+                    </div>
+                    <div class="position-relative" style="width: 300px;">
+                        <i data-lucide="search" class="position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:#94A3B8; width:16px;"></i>
+                        <input type="text" class="form-control-mre ps-5" placeholder="Buscar funcionario...">
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="mre-table">
+                        <thead>
+                            <tr>
+                                <th width="40" class="text-center"><input type="checkbox" id="selectAllItems" onchange="toggleSelectAllItems()" data-bs-toggle="tooltip" title="Marcar todos"></th>
+                                <th>Funcionario</th>
+                                <th>Documento</th>
+                                <th>Institución / Cargo</th>
+                                <th>Firma</th>
+                                <th>Estado</th>
+                                <th class="text-center" width="160">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="officialsTableBody">
+                            <!-- CONTENIDO GENERADO POR JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="grid-footer">
+                    <div><span class="text-muted small fw-bold" id="paginationInfo">Mostrando registros</span></div>
+                    
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-danger fw-bold d-flex align-items-center gap-2" id="btnInactivateItems" disabled onclick="handleInactivateSelection()" style="border-radius: 12px; border-width: 2px;" data-bs-toggle="tooltip" title="Inactivar seleccionados">
+                            <i data-lucide="power" style="width: 14px;"></i> Inactivar
+                        </button>
+                        <button class="btn btn-outline-secondary fw-bold d-flex align-items-center gap-2" id="btnCancelSelection" onclick="handleCancelSelection()" style="border-radius: 12px; border-width: 2px; display: none;" data-bs-toggle="tooltip" title="Limpiar selección">
+                            <i data-lucide="x" style="width: 14px;"></i> Cancelar
+                        </button>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-1">
+                        <button class="btn-pagination" title="Anterior"><i data-lucide="chevron-left" style="width: 16px;"></i></button>
+                        <span class="page-indicator">Pág 1</span>
+                        <button class="btn-pagination" title="Siguiente"><i data-lucide="chevron-right" style="width: 16px;"></i></button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <footer class="mre-footer">
+        <div>&copy; 2026 Ministerio de Relaciones Exteriores - Dirección de Informática</div>
+    </footer>
+
+    <!-- MODAL DE AGREGAR/EDITAR FUNCIONARIO -->
+    <div class="mre-modal-overlay" id="modalOfficial">
+        <div class="mre-modal animate-fade">
+            <div class="section-title" id="modalTitle">Nuevo Registro</div>
+            <form id="officialForm">
+                <div class="row g-4 mb-4">
+                    <!-- Sección de Datos Personales -->
+                    <div class="col-md-6">
+                        <label class="form-label">Nombre <span class="text-danger">*</span></label>
+                        <input type="text" id="inputNombre" class="form-control-mre" placeholder="Ej: Juan" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Apellido <span class="text-danger">*</span></label>
+                        <input type="text" id="inputApellido" class="form-control-mre" placeholder="Ej: Pérez" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Nro. de Documento <span class="text-danger">*</span></label>
+                        <input type="text" id="inputDocumento" class="form-control-mre" placeholder="Ej: 1.234.567" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Correo Electrónico <span class="text-danger">*</span></label>
+                        <input type="email" id="inputCorreo" class="form-control-mre" placeholder="correo@ejemplo.gov.py" required>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Cargo <span class="text-danger">*</span></label>
+                        <input type="text" id="inputCargo" class="form-control-mre" placeholder="Ej: Director General" required>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Institución <span class="text-danger">*</span></label>
+                        <select id="inputInstitucion" class="form-control-mre" required>
+                            <option value="" selected disabled>Seleccione una entidad...</option>
+                            <option value="ADMINISTRACIÓN NACIONAL DE ELECTRICIDAD">ADMINISTRACIÓN NACIONAL DE ELECTRICIDAD</option>
+                            <option value="ADMINISTRACIÓN NACIONAL DE NAVEGACIÓN Y PUERTOS">ADMINISTRACIÓN NACIONAL DE NAVEGACIÓN Y PUERTOS</option>
+                            <option value="AGENCIA FINANCIERA DE DESARROLLO">AGENCIA FINANCIERA DE DESARROLLO</option>
+                            <option value="AGENCIA NACIONAL DE EVALUACIÓN Y ACREDITACIÓN DE LA EDUCACIÓN SUPERIOR">AGENCIA NACIONAL DE EVALUACIÓN Y ACREDITACIÓN DE LA EDUCACIÓN SUPERIOR</option>
+                            <option value="AGENCIA NACIONAL DE TRÁNSITO Y SEGURIDAD VIAL">AGENCIA NACIONAL DE TRÁNSITO Y SEGURIDAD VIAL</option>
+                            <option value="AUTORIDAD REGULADORA RADIOLÓGICA Y NUCLEAR">AUTORIDAD REGULADORA RADIOLÓGICA Y NUCLEAR</option>
+                            <option value="BANCO CENTRAL DEL PARAGUAY">BANCO CENTRAL DEL PARAGUAY</option>
+                            <option value="BANCO NACIONAL DE FOMENTO">BANCO NACIONAL DE FOMENTO</option>
+                            <option value="MEC - MIN. DE EDUCACIÓN Y CIENCIAS">MEC - Min. de Educación y Ciencias</option>
+                            <option value="MSPYBS - MIN. DE SALUD PÚBLICA">MSPyBS - Min. de Salud Pública</option>
+                            <option value="MOPC - MIN. DE OBRAS PÚBLICAS">MOPC - Min. de Obras Públicas</option>
+                            <option value="MEF - MINISTERIO DE ECONOMÍA">MEF - Ministerio de Economía y Finanzas</option>
+                            <option value="PODER JUDICIAL">Poder Judicial (Corte Suprema)</option>
+                            <option value="MINISTERIO PÚBLICO">Ministerio Público (Fiscalía)</option>
+                            <option value="MITIC">MITIC</option>
+                            <option value="MRE - RELACIONES EXTERIORES">MRE - Relaciones Exteriores</option>
+                        </select>
+                    </div>
+
+                    <!-- SECCIÓN: USUARIO DE SISTEMA (Solo visible en AGREGAR) -->
+                    <div id="userCreationSection" class="col-12 mt-4">
+                        <div class="section-title mb-3" style="font-size: 0.8rem;">Crear Usuario de Sistema</div>
+                        <div class="p-4 border rounded-3 bg-light">
+                            <div class="row g-3">
+                                <div class="col-12 mb-2">
+                                    <label class="form-label">Nombre de Usuario (Autogenerado) <span class="text-danger">*</span></label>
+                                    <input type="text" id="inputUsuarioSystem" class="form-control-mre fw-bold text-navy" placeholder="jdoe" readonly style="background-color: #e2e8f0;">
+                                    <div class="form-text small">Formato: Inicial del nombre + Apellido</div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label class="form-label">Contraseña <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <input type="password" id="inputPassword" class="form-control-mre border-end-0" placeholder="••••••••" style="border-top-right-radius: 0; border-bottom-right-radius: 0;">
+                                        <button class="btn bg-white border border-start-0" type="button" onclick="togglePassword('inputPassword', 'iconPass1')" style="border-top-right-radius: 10px; border-bottom-right-radius: 10px; border-color: #E2E8F0;">
+                                            <i data-lucide="eye" id="iconPass1" style="width:18px; color:#64748B"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label class="form-label">Confirmar Contraseña <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <input type="password" id="inputConfirmPassword" class="form-control-mre border-end-0" placeholder="••••••••" style="border-top-right-radius: 0; border-bottom-right-radius: 0;">
+                                        <button class="btn bg-white border border-start-0" type="button" onclick="togglePassword('inputConfirmPassword', 'iconPass2')" style="border-top-right-radius: 10px; border-bottom-right-radius: 10px; border-color: #E2E8F0;">
+                                            <i data-lucide="eye" id="iconPass2" style="width:18px; color:#64748B"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="d-flex gap-2 align-items-start mt-2 p-2 rounded" style="background-color: rgba(0, 40, 85, 0.03);">
+                                        <i data-lucide="shield-check" style="width: 16px; color: var(--mre-blue); margin-top: 2px;"></i>
+                                        <div class="small text-muted" style="font-size: 0.75rem; line-height: 1.4;">
+                                            <strong style="color: var(--mre-blue);">Política de Seguridad:</strong> La contraseña debe tener al menos <strong>8 caracteres</strong>, incluir al menos una letra mayúscula, un número y un carácter especial.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Nueva Sección: Documentación Adjunta -->
+                    <div class="col-12 mt-4">
+                        <div class="section-title mb-3" style="font-size: 0.8rem;">Documentación Adjunta</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Fotocopia de Cédula <span class="text-danger">*</span></label>
+                        <input type="file" id="inputCedulaFile" class="form-control-mre" accept=".pdf,.jpg,.jpeg,.png">
+                        <div class="form-text small text-muted">Formatos: PDF, JPG (Máx. 5MB)</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Nota de Designación <span class="text-danger">*</span></label>
+                        <input type="file" id="inputNotaFile" class="form-control-mre" accept=".pdf">
+                        <div class="form-text small text-muted">Decreto o resolución de nombramiento (PDF)</div>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label">Registro de Firma <span class="text-danger">*</span></label>
+                        <div class="p-3 border rounded-3 bg-light" style="border-color: #E2E8F0 !important;">
+                            <div class="d-flex gap-4 mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipoFirma" id="firmaOlografa" value="olografa" checked onchange="toggleSignatureHint()">
+                                    <label class="form-check-label fw-bold small" for="firmaOlografa">Ológrafa (Digitalizada)</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipoFirma" id="firmaElectronica" value="electronica" onchange="toggleSignatureHint()">
+                                    <label class="form-check-label fw-bold small" for="firmaElectronica">Electrónica / Digital</label>
+                                </div>
+                            </div>
+                            
+                            <input type="file" id="inputFirmaFile" class="form-control-mre" accept=".png,.jpg,.jpeg,.svg,.p12,.cer">
+                            <div class="form-text small text-muted mt-2" id="signatureHint">
+                                <i data-lucide="info" style="width:12px; display:inline; vertical-align:middle"></i>
+                                Suba la imagen de la firma (PNG/JPG con fondo transparente)
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECCIÓN DE AUDITORÍA (Oculta por defecto, visible solo en 'view') -->
+                    <div id="auditSection" class="col-12 mt-4 pt-4 border-top d-none">
+                        <div class="section-title">Historial de Auditoría</div>
+                        <div class="table-responsive mt-3">
+                            <table class="audit-table">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Acción</th>
+                                        <th>Usuario</th>
+                                        <th>Descripción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="auditTimeline"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-light rounded-pill px-4 fw-bold border" onclick="closeModal('modalOfficial')">Cancelar</button>
+                    <button type="submit" id="btnSaveOfficial" class="btn-main px-4 shadow-sm">Guardar Registro</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL DE CONFIRMACIÓN ELIMINACIÓN -->
+    <div class="mre-modal-overlay" id="modalDeleteConfirm">
+        <div class="mre-modal shadow-lg" style="max-width: 480px;">
+            <div class="text-center mb-4">
+                <div class="bg-danger bg-opacity-10 text-danger d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 64px; height: 64px;">
+                    <i data-lucide="alert-triangle" style="width: 32px; height: 32px;"></i>
+                </div>
+                <h5 class="fw-800 text-navy mb-2">Confirmar Eliminación</h5>
+                <p class="text-muted small px-3">¿Está seguro que desea eliminar este registro? Esta acción es irreversible.</p>
+            </div>
+            <div id="deleteItemInfo" class="bg-light p-3 rounded-4 border mb-4 text-center fw-bold text-navy small"></div>
+            <div class="d-flex justify-content-center gap-3 mt-4 pt-3 border-top">
+                <button type="button" class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalDeleteConfirm')">Cancelar</button>
+                <button type="button" class="btn-main bg-danger border-danger px-4" onclick="confirmDelete()">Sí, eliminar registro</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CONFIRMACIÓN INACTIVACIÓN -->
+    <div class="mre-modal-overlay" id="modalInactivateConfirm">
+        <div class="mre-modal shadow-lg" style="max-width: 550px;">
+            <div class="text-center mb-4">
+                <div class="bg-warning bg-opacity-10 text-warning d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 64px; height: 64px;">
+                    <i data-lucide="power" style="width: 32px; height: 32px; color: var(--mre-amber);"></i>
+                </div>
+                <h5 class="fw-800 text-navy mb-2">Confirmar Inactivación Masiva</h5>
+                <p class="text-muted small px-3">Se inactivarán los siguientes funcionarios seleccionados.</p>
+            </div>
+            <div id="inactivateItemsList" class="selection-list mb-4"></div>
+            <div class="d-flex justify-content-center gap-3 mt-4 pt-3 border-top">
+                <button type="button" class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalInactivateConfirm')">Cancelar</button>
+                <button type="button" class="btn-main px-4 shadow-sm" style="background: var(--mre-amber); border-color: var(--mre-amber);" onclick="confirmLogicalInactivation()">Confirmar Inactivación</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Datos Mockeados
+        let mockOfficials = [
+            { 
+                id: 1, 
+                nombre: 'María',
+                apellido: 'González', 
+                email: 'mgonzalez@mec.gov.py', 
+                doc: '3.542.110', 
+                cargo: 'Secretaria General',
+                inst: 'MEC - MIN. DE EDUCACIÓN Y CIENCIAS',
+                status: 'ACTI',
+                initials: 'MG',
+                signaturePath: 'data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAwIDgwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMCw1MCBDMjAsMjAgNTAsMTAgNjAsMzAgQzcwLDUwIDgwLDYwIDkwLDQwIEMxMDAsMjAgMTMwLDMwIDE1MCw1MCBDMTYwLDYwIDE4MCw1NSAxOTAsNDU1IiBzdHJva2U9IiM0NzU1NjkiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==',
+                history: [
+                    { date: '15/01/2026 10:00', action: 'CREATE', user: 'admin', desc: 'Creación de registro' },
+                    { date: '20/01/2026 14:30', action: 'UPDATE', user: 'cgonzalez', desc: 'Actualización de cargo' }
+                ]
+            },
+            { 
+                id: 2, 
+                nombre: 'Ricardo',
+                apellido: 'Duarte', 
+                email: 'rduarte@msp.gov.py', 
+                doc: '4.100.250', 
+                cargo: 'Director de RRHH',
+                inst: 'MSPYBS - MIN. DE SALUD PÚBLICA',
+                status: 'ACTI',
+                initials: 'RD',
+                signaturePath: 'data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAwIDgwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0yMCw0MCBDMzAsMjAgNDAsNjAgNjAsNDAgQzgwLDIwIDEwMCwzMCAxMjAsNTAgQzE0MCw3MCAxNjAsMjAgMTgwLDMwIiBzdHJva2U9IiM0NzU1NjkiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==',
+                history: [
+                    { date: '18/01/2026 09:15', action: 'CREATE', user: 'admin', desc: 'Creación de registro' }
+                ]
+            },
+            { 
+                id: 3, 
+                nombre: 'Carlos',
+                apellido: 'Benítez', 
+                email: 'cbenitez@mitic.gov.py', 
+                doc: '2.890.123', 
+                cargo: 'Auditor Interno',
+                inst: 'MITIC',
+                status: 'INAC',
+                initials: 'CB',
+                signaturePath: 'data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAwIDgwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMCw0MCBDNDAsMTAgODAsMTAgMTIwLDQwIHM4MCwzMCA4MCwwIiBzdHJva2U9IiM5OUEzQjgiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==',
+                history: [
+                    { date: '10/01/2026 11:00', action: 'CREATE', user: 'system', desc: 'Importación masiva' },
+                    { date: '25/01/2026 16:45', action: 'UPDATE', user: 'admin', desc: 'Inactivación por cese de funciones' }
+                ]
+            }
+        ];
+
+        let idToDelete = null;
+
+        function renderOfficials() {
+            const tbody = document.getElementById('officialsTableBody');
+            tbody.innerHTML = mockOfficials.map(o => `
+                <tr data-id="${o.id}" class="${o.status === 'INAC' ? 'opacity-75 bg-light' : ''}">
+                    <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()" ${o.status === 'INAC' ? 'disabled' : ''}></td>
+                    <td>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="avatar-circle ${o.initials === 'RD' ? 'rd' : ''}">${o.initials}</div>
+                            <div>
+                                <div class="fw-bold text-navy" style="color: var(--mre-blue);">${o.nombre} ${o.apellido}</div>
+                                <div class="text-muted small" style="font-size: 0.75rem;">${o.email}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="fw-bold text-dark font-monospace">${o.doc}</td>
+                    <td>
+                        <div class="fw-bold text-dark" style="font-size: 0.85rem;">${o.cargo}</div>
+                        <div class="text-muted text-uppercase" style="font-size: 0.65rem; max-width: 180px; line-height: 1.2;">${o.inst}</div>
+                    </td>
+                    <td>
+                        <div class="signature-box">
+                            <img src="${o.signaturePath}" class="signature-img" alt="Firma">
+                        </div>
+                    </td>
+                    <td><span class="badge ${o.status === 'ACTI' ? 'bg-success bg-opacity-10 text-success' : 'bg-secondary bg-opacity-10 text-secondary'} border border-${o.status === 'ACTI' ? 'success' : 'secondary'} small">${o.status === 'ACTI' ? 'Activo' : 'Inactivo'}</span></td>
+                    <td class="text-center">
+                        <div class="d-flex justify-content-center gap-1">
+                            <button class="btn btn-sm btn-light border" onclick="openOfficialModal('view', ${o.id})" data-bs-toggle="tooltip" title="Visualizar">
+                                <i data-lucide="eye" style="width:14px"></i>
+                            </button>
+                            <button class="btn btn-sm btn-light border" onclick="openOfficialModal('edit', ${o.id})" data-bs-toggle="tooltip" title="Editar">
+                                <i data-lucide="edit-3" style="width:14px"></i>
+                            </button>
+                            <button class="btn btn-sm btn-light border text-danger" onclick="deleteItem(${o.id})" data-bs-toggle="tooltip" title="Eliminar">
+                                <i data-lucide="trash-2" style="width:14px"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+            
+            document.getElementById('paginationInfo').innerText = `Mostrando 1 a ${mockOfficials.length} de ${mockOfficials.length} registros`;
+            updateSelectionUI();
+            lucide.createIcons();
+            
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        }
+
+        // --- LÓGICA DE SELECCIÓN Y BOTONES ---
+        function updateSelectionUI() {
+            const checks = document.querySelectorAll('.record-check:checked');
+            const total = document.querySelectorAll('.record-check:not(:disabled)').length;
+            const btnInactivate = document.getElementById('btnInactivateItems');
+            const btnCancel = document.getElementById('btnCancelSelection');
+            const selectAll = document.getElementById('selectAllItems');
+
+            if(btnInactivate) btnInactivate.disabled = checks.length === 0;
+            if(btnCancel) btnCancel.style.display = checks.length > 0 ? 'flex' : 'none';
+            if(selectAll) selectAll.checked = (checks.length === total && total > 0);
+        }
+
+        function toggleSelectAllItems() {
+            const checked = document.getElementById('selectAllItems').checked;
+            document.querySelectorAll('.record-check:not(:disabled)').forEach(cb => cb.checked = checked);
+            updateSelectionUI();
+        }
+
+        function handleCancelSelection() {
+            document.getElementById('selectAllItems').checked = false;
+            document.querySelectorAll('.record-check').forEach(cb => cb.checked = false);
+            updateSelectionUI();
+        }
+
+        function handleInactivateSelection() {
+            const checks = document.querySelectorAll('.record-check:checked');
+            const list = document.getElementById('inactivateItemsList');
+            list.innerHTML = "";
+            checks.forEach(cb => {
+                const id = parseInt(cb.closest('tr').dataset.id);
+                const item = mockOfficials.find(o => o.id === id);
+                list.innerHTML += `<div class="selection-item"><span>${item.nombre} ${item.apellido}</span> <span class="badge bg-light text-muted border">CI: ${item.doc}</span></div>`;
+            });
+            document.getElementById('modalInactivateConfirm').style.display = 'flex';
+            lucide.createIcons();
+        }
+
+        function confirmLogicalInactivation() {
+            const checks = document.querySelectorAll('.record-check:checked');
+            checks.forEach(cb => {
+                const id = parseInt(cb.closest('tr').dataset.id);
+                const item = mockOfficials.find(o => o.id === id);
+                if(item) item.status = 'INAC';
+            });
+            renderOfficials();
+            closeModal('modalInactivateConfirm');
+            handleCancelSelection();
+        }
+
+        // --- LÓGICA DE USUARIO ---
+        function generateUsername() {
+            const nombre = document.getElementById('inputNombre').value.trim();
+            const apellido = document.getElementById('inputApellido').value.trim();
+            const userField = document.getElementById('inputUsuarioSystem');
+
+            if (nombre && apellido) {
+                // Obtener primera letra del nombre + apellido completo
+                let username = (nombre.charAt(0) + apellido).toLowerCase();
+                
+                // Remover acentos y caracteres especiales
+                username = username.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                
+                // Remover espacios si los hubiera (ej: apellido compuesto)
+                username = username.replace(/\s+/g, '');
+                
+                userField.value = username;
+            } else {
+                userField.value = '';
+            }
+        }
+
+        // --- LÓGICA DE CONTRASEÑA ---
+        function togglePassword(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            
+            if (input.type === "password") {
+                input.type = "text";
+                icon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                input.type = "password";
+                icon.setAttribute('data-lucide', 'eye');
+            }
+            lucide.createIcons();
+        }
+
+        // --- LÓGICA DE MODALES DE REGISTRO ---
+        function toggleSignatureHint() {
+            const isOlografa = document.getElementById('firmaOlografa').checked;
+            const hint = document.getElementById('signatureHint');
+            if(isOlografa) {
+                hint.innerHTML = '<i data-lucide="info" style="width:12px; display:inline; vertical-align:middle"></i> Suba la imagen de la firma (PNG/JPG con fondo transparente)';
+            } else {
+                hint.innerHTML = '<i data-lucide="info" style="width:12px; display:inline; vertical-align:middle"></i> Suba el certificado digital público (.cer, .crt) o archivo correspondiente.';
+            }
+            lucide.createIcons();
+        }
+
+        function openOfficialModal(mode, id) {
+            const modal = document.getElementById('modalOfficial');
+            const form = document.getElementById('officialForm');
+            const title = document.getElementById('modalTitle');
+            const btnSave = document.getElementById('btnSaveOfficial');
+            const inputs = form.querySelectorAll('input, select');
+            const auditSection = document.getElementById('auditSection');
+            const auditTimeline = document.getElementById('auditTimeline');
+            const userCreationSection = document.getElementById('userCreationSection');
+            
+            form.reset();
+            modal.style.display = 'flex';
+            inputs.forEach(i => i.disabled = false);
+            btnSave.style.display = 'block';
+            toggleSignatureHint();
+
+            if (mode === 'add') {
+                title.innerText = 'Nuevo Registro';
+                auditSection.classList.add('d-none');
+                userCreationSection.classList.remove('d-none');
+                document.getElementById('inputUsuarioSystem').readOnly = true; 
+            } else {
+                const official = mockOfficials.find(o => o.id === id);
+                if (official) {
+                    document.getElementById('inputNombre').value = official.nombre;
+                    document.getElementById('inputApellido').value = official.apellido;
+                    document.getElementById('inputDocumento').value = official.doc;
+                    document.getElementById('inputCorreo').value = official.email;
+                    document.getElementById('inputCargo').value = official.cargo;
+                    document.getElementById('inputInstitucion').value = official.inst;
+                    
+                    if (mode === 'edit') {
+                        title.innerText = 'Editar Funcionario';
+                        auditSection.classList.add('d-none');
+                        userCreationSection.classList.add('d-none');
+                    } else if (mode === 'view') {
+                        title.innerText = 'Detalle del Funcionario';
+                        inputs.forEach(i => i.disabled = true);
+                        btnSave.style.display = 'none';
+                        userCreationSection.classList.add('d-none');
+
+                        // MOSTRAR AUDITORÍA
+                        auditSection.classList.remove('d-none');
+                        if(official.history) {
+                           auditTimeline.innerHTML = official.history.map(h => `
+                                <tr>
+                                    <td>${h.date}</td>
+                                    <td><span class="badge-audit tag-${h.action.toLowerCase()}">${h.action}</span></td>
+                                    <td>${h.user}</td>
+                                    <td>${h.desc}</td>
+                                </tr>
+                            `).join('');
+                        } else {
+                            auditTimeline.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Sin historial disponible</td></tr>';
+                        }
+                    }
+                }
+            }
+            setTimeout(() => lucide.createIcons(), 100);
+        }
+
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        function deleteItem(id) {
+            const official = mockOfficials.find(o => o.id === id);
+            if(official) {
+                idToDelete = id;
+                document.getElementById('deleteItemInfo').innerText = `FUNCIONARIO: ${official.nombre} ${official.apellido}`;
+                document.getElementById('modalDeleteConfirm').style.display = 'flex';
+                lucide.createIcons();
+            }
+        }
+
+        function confirmDelete() {
+            if (idToDelete !== null) {
+                const index = mockOfficials.findIndex(o => o.id === idToDelete);
+                if (index > -1) {
+                    mockOfficials.splice(index, 1);
+                    renderOfficials();
+                }
+                closeModal('modalDeleteConfirm');
+                idToDelete = null;
+            }
+        }
+
+        // Header funcs
+        function toggleSidebar() { document.getElementById('mainSidebar').classList.toggle('show'); }
+        function toggleA11yMenu(e) { e.stopPropagation(); document.getElementById('a11yMenu').classList.toggle('show'); }
+        function toggleUserMenu(e) { e.stopPropagation(); document.getElementById('userMenu').classList.toggle('show'); }
+        function changeFontSize(delta) {
+            let current = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--font-scale')) || 1;
+            let newScale = Math.min(Math.max(current + delta, 0.8), 1.5);
+            document.documentElement.style.setProperty('--font-scale', newScale);
+            document.getElementById('fontSizeDisplay').innerText = Math.round(newScale * 100) + '%';
+        }
+        function toggleGrayscale() { document.body.classList.toggle('grayscale-mode'); }
+        function handleLogout() { if(confirm('¿Cerrar sesión?')) location.reload(); }
+
+        // Event Listeners
+        document.addEventListener('click', () => {
+            ['userMenu', 'a11yMenu'].forEach(id => document.getElementById(id)?.classList.remove('show'));
+        });
+        
+        document.getElementById('inputNombre').addEventListener('input', generateUsername);
+        document.getElementById('inputApellido').addEventListener('input', generateUsername);
+
+        document.addEventListener('DOMContentLoaded', () => { 
+            renderOfficials(); 
+        });
+    </script>
+</body>
+</html>
