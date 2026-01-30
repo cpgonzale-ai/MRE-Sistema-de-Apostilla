@@ -149,7 +149,7 @@
         .grid-header-frame { background-color: #F1F5F9; padding: 1rem 1.5rem; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; }
 
         .mre-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-        .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 0.85rem 1.5rem; border-bottom: 2px solid #E2E8F0; }
+        .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 0.85rem 1.5rem; border-bottom: 2px solid #E2E8F0; background: #F8FAFC; }
         .mre-table td { padding: 0.85rem 1.5rem; font-size: 0.8rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
 
         .btn-main { background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); color: #ffffff; border: none; border-radius: 12px; padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.85rem; transition: var(--transition); }
@@ -655,8 +655,33 @@
                                 <div class="list-content p-0"><table class="table-associated" id="tableAdj"><tbody></tbody></table></div>
                             </div>
                         </div>
-                        <div class="text-end" id="nextToAuditBtn">
+                        <div class="text-end">
                             <button type="button" class="btn btn-primary btn-sm fw-bold px-4 rounded-pill" onclick="toggleApartado(5)">Siguiente <i data-lucide="arrow-right" class="ms-1" style="width:14px"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- APARTADO 5: WEB SERVICES -->
+                <div class="apartado-container" id="apartado5">
+                    <div class="apartado-header" onclick="toggleApartado(5)">
+                        <div class="apartado-title"><span class="apartado-icon-step">5</span> Configuración de Web Services</div>
+                        <i data-lucide="chevron-down" class="text-muted" style="width: 16px;"></i>
+                    </div>
+                    <div class="apartado-content">
+                        <div class="row g-3 p-3 bg-light rounded-3 border mb-3">
+                            <div class="col-md-12">
+                                <label class="form-label">Endpoint</label>
+                                <input type="text" id="ws_endpoint" class="form-control-mre" placeholder="https://api.servicios.gov.py/v1/validar">
+                                <div class="form-text text-muted" style="font-size: 0.65rem;">* Debe ser una conexión segura (https)</div>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Token / API Key</label>
+                                <input type="password" id="ws_token_auth" class="form-control-mre" placeholder="••••••••••••••••">
+                            </div>
+                        </div>
+
+                        <div class="text-end" id="nextToAuditBtn">
+                            <button type="button" class="btn btn-primary btn-sm fw-bold px-4 rounded-pill" onclick="toggleApartado(6)">Siguiente <i data-lucide="arrow-right" class="ms-1" style="width:14px"></i></button>
                         </div>
                         <div class="d-flex justify-content-end gap-2 mt-4 mode-edit-only">
                             <button type="button" class="btn btn-light btn-sm rounded-pill px-4 border fw-bold" onclick="closeModal('modalDoc')">Cancelar</button>
@@ -665,10 +690,10 @@
                     </div>
                 </div>
 
-                <!-- APARTADO 5: AUDITORÍA (SOLO VISUALIZAR) -->
-                <div class="apartado-container" id="apartado5" style="display: none;">
-                    <div class="apartado-header" onclick="toggleApartado(5)">
-                        <div class="apartado-title"><span class="apartado-icon-step">5</span> Historial de Auditoría</div>
+                <!-- APARTADO 6: AUDITORÍA (SOLO VISUALIZAR) -->
+                <div class="apartado-container" id="apartado6" style="display: none;">
+                    <div class="apartado-header" onclick="toggleApartado(6)">
+                        <div class="apartado-title"><span class="apartado-icon-step">6</span> Historial de Auditoría</div>
                         <i data-lucide="chevron-down" class="text-muted" style="width: 16px;"></i>
                     </div>
                     <div class="apartado-content">
@@ -874,7 +899,7 @@
         function openDocModal(mode, id) {
             const modal = document.getElementById('modalDoc');
             const form = document.getElementById('formDoc');
-            const auditSection = document.getElementById('apartado5');
+            const auditSection = document.getElementById('apartado6');
             const nextToAudit = document.getElementById('nextToAuditBtn');
             modal.style.display = 'flex';
             toggleApartado(1);
@@ -883,6 +908,7 @@
             const elements = form.querySelectorAll('input, select, textarea, .btn-transfer');
             elements.forEach(el => el.disabled = isView);
             
+            // Lógica de visibilidad para secciones
             auditSection.style.display = isView ? 'block' : 'none';
             nextToAudit.style.display = isView ? 'block' : 'none';
 
@@ -1065,6 +1091,15 @@
             if (specificFieldsRows.length === 0) {
                 showToast('Error: Debe seleccionar al menos un dato específico en el apartado 3.');
                 toggleApartado(3);
+                return;
+            }
+
+            // Validar WS Endpoint Seguro (Apartado 5)
+            const wsEndpoint = document.getElementById('ws_endpoint').value.trim();
+            if (wsEndpoint && !wsEndpoint.startsWith('https://')) {
+                showToast('Error de Seguridad: El WS Endpoint debe utilizar protocolo seguro (https://).');
+                toggleApartado(5);
+                document.getElementById('ws_endpoint').focus();
                 return;
             }
 
