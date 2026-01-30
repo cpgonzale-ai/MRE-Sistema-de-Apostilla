@@ -18,13 +18,13 @@
             --mre-blue-light: #0038A8;
             --mre-red: #D52B1E;
             --mre-gold: #FFD700;
-            --glass: rgba(255, 255, 255, 0.85);
+            --glass: rgba(255, 255, 255, 0.9);
         }
 
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             margin: 0; 
-            background-color: #f4f7fa; 
+            background-color: #f8fafc; 
             color: #1a202c; 
             scroll-behavior: smooth;
             overflow-x: hidden;
@@ -32,16 +32,16 @@
 
         .hidden { display: none !important; }
 
-        /* --- Fondos Animados y Decoración --- */
+        /* --- Fondos Animados --- */
         .blob {
             position: absolute;
-            width: 500px;
-            height: 500px;
+            width: 700px;
+            height: 700px;
             background: linear-gradient(135deg, rgba(0, 56, 168, 0.1) 0%, rgba(213, 43, 30, 0.05) 100%);
-            filter: blur(80px);
+            filter: blur(120px);
             border-radius: 50%;
             z-index: -1;
-            animation: move 20s infinite alternate;
+            animation: move 30s infinite alternate;
         }
 
         @keyframes move {
@@ -49,358 +49,304 @@
             to { transform: translate(20%, 20%) scale(1.2); }
         }
 
-        /* --- Glassmorphism --- */
+        /* --- Estilo Glassmorphism --- */
         .glass-card {
             background: var(--glass);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 24px;
-            box-shadow: 0 10px 30px -10px rgba(0, 40, 85, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 32px;
+            box-shadow: 0 20px 40px -15px rgba(0, 40, 85, 0.08);
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .glass-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px -15px rgba(0, 40, 85, 0.2);
+        /* --- Hero Portada --- */
+        .hero-section {
+            padding: 140px 0 80px 0;
+            text-align: center;
         }
 
-        /* --- Hero Styling --- */
-        .hero-gradient {
-            background: radial-gradient(circle at top right, var(--mre-blue), #00152e);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero-pattern {
-            position: absolute;
-            inset: 0;
-            opacity: 0.1;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l15 30H15L30 0z' fill='%23ffffff' fill-opacity='1' fill-rule='evenodd'/%3E%3C/svg%3E");
-        }
-
-        /* --- Botones --- */
         .btn-modern {
-            border-radius: 16px;
-            font-weight: 700;
-            padding: 14px 28px;
+            border-radius: 20px;
+            font-weight: 800;
+            padding: 16px 36px;
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
         }
 
         .btn-mre-primary {
             background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%);
             color: white;
             border: none;
-            box-shadow: 0 8px 15px rgba(0, 40, 85, 0.2);
+            box-shadow: 0 10px 20px rgba(0, 40, 85, 0.2);
         }
 
-        .btn-mre-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 20px rgba(0, 40, 85, 0.3);
-            color: white;
+        /* Acordeones en dos columnas */
+        .accordion-item {
+            background: white !important;
+            border: 1px solid #edf2f7 !important;
+            border-radius: 20px !important;
+            margin-bottom: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+        .accordion-button {
+            padding: 18px 24px;
+            font-weight: 700;
+            color: var(--mre-blue);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+        .accordion-button:not(.collapsed) {
+            background-color: #f0f7ff;
+            color: var(--mre-blue-light);
+            box-shadow: none;
+        }
+        .step-pill {
+            background: #e2e8f0;
+            padding: 2px 10px;
+            border-radius: 6px;
+            font-weight: 800;
+            color: #475569;
+            font-size: 9px;
+            margin-right: 5px;
         }
 
-        /* --- SIA-PY Auth Styles --- */
-        .elegant-background { position: fixed; inset: 0; z-index: -1; background-color: #f8fafc; }
+        /* Video Wrapper */
+        .video-wrapper {
+            position: relative;
+            border-radius: 32px;
+            overflow: hidden;
+            box-shadow: 0 30px 70px -15px rgba(0, 0, 0, 0.3);
+            background: #000;
+            border: 8px solid white;
+        }
+
+        /* Auth SIA-PY */
         .auth-card { 
             background: #ffffff; 
-            border-radius: 40px; 
-            box-shadow: 0 25px 70px -15px rgba(0, 40, 85, 0.2);
-            width: 100%; 
-            max-width: 480px; 
-            padding: 3rem; 
+            border-radius: 48px; 
+            box-shadow: 0 40px 100px -20px rgba(0, 40, 85, 0.2);
+            width: 100%; max-width: 500px; padding: 4rem; 
             position: relative;
-            border: 1px solid rgba(0,0,0,0.05);
         }
         .tricolor-line { 
-            height: 6px; 
-            width: 150px; 
-            background: linear-gradient(to right, var(--mre-red) 33%, #eee 33%, #eee 66%, var(--mre-blue-light) 66%); 
+            height: 6px; width: 180px; 
+            background: linear-gradient(to right, var(--mre-red) 33%, #f1f1f1 33%, #f1f1f1 66%, var(--mre-blue-light) 66%); 
             position: absolute; top: 0; left: 50%; transform: translateX(-50%); 
-            border-radius: 0 0 10px 10px;
-        }
-
-        .form-control-mre {
-            background: #f8fafc;
-            border: 2px solid #edf2f7;
-            border-radius: 18px;
-            padding: 14px 14px 14px 50px;
-            transition: all 0.3s ease;
-        }
-
-        .form-control-mre:focus {
-            border-color: var(--mre-blue-light);
-            background: white;
-            box-shadow: 0 0 0 4px rgba(0, 56, 168, 0.1);
         }
     </style>
 </head>
 <body>
 
-    <!-- Blobs decorativos de fondo -->
-    <div class="blob" style="top: -10%; left: -10%;"></div>
-    <div class="blob" style="bottom: 10%; right: -5%; width: 600px; height: 600px;"></div>
+    <div class="blob" style="top: -100px; left: -100px;"></div>
+    <div class="blob" style="bottom: -100px; right: -100px; width: 800px; height: 800px;"></div>
 
-    <!-- VISTA 1: LANDING PAGE MODERNA -->
+    <!-- VISTA 1: PORTAL DE INFORMACIÓN -->
     <div id="view-landing" class="fade-in">
         
-        <!-- Navbar Estilo Glassmorphism -->
-        <nav class="sticky top-4 z-50 mx-auto max-w-6xl px-4 mt-4">
+        <!-- Navbar -->
+        <nav class="sticky top-6 z-50 mx-auto max-w-5xl px-4">
             <div class="glass-card px-6 py-3 flex justify-between items-center">
                 <div class="flex items-center space-x-3">
-                    <div class="bg-red-600 w-1 h-10 rounded-full"></div>
-                    <div class="flex flex-col">
+                    <div class="bg-red-600 w-1.5 h-10 rounded-full"></div>
+                    <div class="flex flex-col leading-tight">
                         <span class="text-[9px] font-black text-red-600 uppercase tracking-widest">Gobierno del Paraguay</span>
-                        <span class="text-lg font-extrabold text-[#002855]">MRE <span class="font-light text-gray-400">| SIA-PY</span></span>
+                        <span class="text-xl font-extrabold text-[#002855] tracking-tighter">MRE <span class="font-light text-gray-400">| SIA-PY</span></span>
                     </div>
                 </div>
-                <div class="hidden lg:flex space-x-8">
-                    <a href="#inicio" class="text-xs font-bold text-gray-600 hover:text-blue-900 transition uppercase tracking-tighter">Inicio</a>
-                    <a href="#requisitos" class="text-xs font-bold text-gray-600 hover:text-blue-900 transition uppercase tracking-tighter">Guía</a>
-                    <a href="#costos" class="text-xs font-bold text-gray-600 hover:text-blue-900 transition uppercase tracking-tighter">Precios</a>
+                <div class="hidden lg:flex space-x-10">
+                    <a href="#inicio" class="text-xs font-bold text-gray-600 hover:text-blue-900 transition uppercase tracking-widest">Inicio</a>
+                    <a href="#requisitos" class="text-xs font-bold text-gray-600 hover:text-blue-900 transition uppercase tracking-widest">Guía Trámites</a>
+                    <a href="#costos" class="text-xs font-bold text-gray-600 hover:text-blue-900 transition uppercase tracking-widest">Precios</a>
                 </div>
-                <button onclick="showControlAcceso()" class="btn-modern btn-mre-primary scale-90">
-                    Solicitar Apostilla
-                </button>
+                <button onclick="showControlAcceso()" class="btn-modern btn-mre-primary !py-2.5 !px-8 !text-[11px]">Acceder</button>
             </div>
         </nav>
 
-        <!-- Hero Section de Alto Impacto -->
-        <section id="inicio" class="pt-24 pb-32 px-4 text-center">
+        <!-- HERO SECTION -->
+        <section id="inicio" class="hero-section px-4">
             <div class="max-w-4xl mx-auto">
-                <div class="inline-flex items-center space-x-2 bg-blue-100/50 text-blue-900 px-4 py-2 rounded-full mb-8 border border-blue-200">
-                    <span class="relative flex h-3 w-3">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-600"></span>
-                    </span>
-                    <span class="text-[10px] font-black uppercase tracking-widest">Sistema 100% Digital Activo</span>
+                <div class="inline-block px-4 py-1.5 mb-6 bg-blue-100/50 rounded-full border border-blue-200">
+                    <span class="text-[10px] font-black text-blue-900 uppercase tracking-[2px]">Gestión de Legalizaciones & Apostilla</span>
                 </div>
-                <h1 class="text-5xl lg:text-7xl font-black text-[#002855] leading-tight mb-8">
-                    Certifica tus documentos <br>
-                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-red-600">con validez mundial.</span>
+                <h1 class="text-5xl lg:text-7xl font-black text-[#002855] leading-tight mb-8 uppercase tracking-tighter">
+                    Tus documentos <br><span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-red-600">con validez global.</span>
                 </h1>
-                <p class="text-xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed">
-                    Gestiona la Apostilla de La Haya y Legalizaciones de forma sencilla, rápida y segura desde cualquier parte del mundo.
-                </p>
-                <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
-                    <button onclick="showControlAcceso()" class="btn-modern btn-mre-primary w-full sm:w-auto text-base py-5 px-12">
-                        Iniciar Trámite SIA-PY
-                    </button>
-                    <a href="#tutorial" class="flex items-center space-x-3 text-blue-900 font-bold hover:translate-x-1 transition group px-6 py-4">
-                        <span class="w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-lg group-hover:bg-blue-900 group-hover:text-white transition">
-                            <i class="fa-solid fa-play"></i>
-                        </span>
-                        <span>Ver Tutorial</span>
+                <p class="text-xl text-gray-500 mb-12 max-w-2xl mx-auto font-medium">Plataforma oficial para la emisión de Apostillas Electrónicas y Legalizaciones de la República del Paraguay.</p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <button onclick="showControlAcceso()" class="btn-modern btn-mre-primary px-12 py-5 text-base shadow-xl">Iniciar Solicitud</button>
+                    <a href="#tutorial" class="btn-modern bg-white/50 border border-gray-200 text-gray-700 px-8 py-5 text-base hover:bg-white transition flex items-center justify-center">
+                        <i class="fa-solid fa-play-circle mr-2 text-red-600"></i> Ver Tutorial
                     </a>
                 </div>
             </div>
         </section>
 
-        <!-- Conceptos en Grid Dinámico -->
-        <section id="conceptos" class="py-20 relative">
-            <div class="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-8">
-                <div class="glass-card p-10 relative overflow-hidden group">
-                    <div class="absolute -top-10 -right-10 w-40 h-40 bg-blue-600/5 rounded-full group-hover:scale-150 transition duration-700"></div>
-                    <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-3xl mb-8 shadow-lg shadow-blue-200">
-                        <i class="fa-solid fa-stamp"></i>
-                    </div>
-                    <h2 class="text-3xl font-black text-blue-900 mb-4 uppercase">Apostilla de La Haya</h2>
-                    <p class="text-gray-600 leading-relaxed mb-6">
-                        Método simplificado para documentos en países miembros del Convenio de 1961. Un solo sello digital para validez internacional directa.
-                    </p>
-                    <div class="flex items-center text-red-600 font-black text-[10px] uppercase tracking-widest">
-                        <i class="fa-solid fa-circle-exclamation mr-2"></i> Solo para uso fuera del país
-                    </div>
-                </div>
-
-                <div class="glass-card p-10 relative overflow-hidden group border-l-4 border-l-red-600">
-                    <div class="absolute -top-10 -right-10 w-40 h-40 bg-red-600/5 rounded-full group-hover:scale-150 transition duration-700"></div>
-                    <div class="w-16 h-16 bg-red-600 rounded-2xl flex items-center justify-center text-white text-3xl mb-8 shadow-lg shadow-red-200">
-                        <i class="fa-solid fa-file-shield"></i>
-                    </div>
-                    <h2 class="text-3xl font-black text-gray-800 mb-4 uppercase">Legalización Ordinaria</h2>
-                    <p class="text-gray-600 leading-relaxed mb-6">
-                        Para países no miembros del convenio. Requiere certificación del MRE y posterior validación ante el consulado extranjero correspondiente.
-                    </p>
-                    <div class="flex items-center text-blue-900 font-black text-[10px] uppercase tracking-widest">
-                        <i class="fa-solid fa-info-circle mr-2"></i> Requiere paso consular adicional
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Tutorial interactivo -->
-        <section id="tutorial" class="py-24 bg-[#00152e] text-white">
+        <!-- VIDEO TUTORIAL -->
+        <section id="tutorial" class="py-20">
             <div class="max-w-5xl mx-auto px-4 text-center">
-                <h2 class="text-4xl font-black mb-4">¿Cómo funciona el sistema?</h2>
-                <p class="text-blue-300 mb-12 opacity-80">Aprende a crear tu Identidad Electrónica y gestionar tu apostilla en minutos.</p>
-                <div class="glass-card !bg-white/5 border-white/10 p-4 shadow-2xl">
-                    <div class="relative rounded-2xl overflow-hidden aspect-video group">
-                        <iframe class="w-full h-full" src="https://www.youtube.com/embed/WvGTcRQfyDY" title="Tutorial" frameborder="0" allowfullscreen></iframe>
-                    </div>
+                <h2 class="text-4xl font-black text-[#002855] mb-4 uppercase tracking-tighter">Guía Visual SIA-PY</h2>
+                <p class="text-gray-500 mb-12 max-w-2xl mx-auto">Siga los pasos del video para registrarse con su Identidad Electrónica y operar en el sistema.</p>
+                <div class="video-wrapper">
+                    <iframe class="w-full aspect-video" src="https://www.youtube.com/embed/WvGTcRQfyDY" title="Tutorial" frameborder="0" allowfullscreen></iframe>
                 </div>
             </div>
         </section>
 
-        <!-- Guía de Trámites (Sin espacios vacíos) -->
-        <section id="requisitos" class="py-24">
-            <div class="max-w-7xl mx-auto px-4">
-                <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
-                    <div class="text-left">
-                        <h2 class="text-4xl font-black text-blue-900 uppercase">Flujo de Trámites</h2>
-                        <p class="text-gray-500">Donde legalizar tu documento antes de la apostilla</p>
-                    </div>
-                    <div class="bg-blue-900 text-white px-6 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest">
-                        6 Categorías principales
-                    </div>
-                </div>
-                
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Cards de Trámites -->
-                    <div class="glass-card p-8 group">
-                        <div class="w-12 h-12 bg-blue-50 text-blue-900 rounded-xl flex items-center justify-center mb-6 group-hover:bg-blue-900 group-hover:text-white transition">
-                            <i class="fa-solid fa-user-group"></i>
-                        </div>
-                        <h4 class="font-black text-blue-900 mb-2 uppercase">Registro Civil</h4>
-                        <p class="text-xs text-gray-500 mb-4 leading-relaxed">Nacimientos, Matrimonios y Defunciones.</p>
-                        <div class="space-y-2">
-                            <div class="bg-gray-50 p-2 rounded-lg text-[11px] font-bold border border-gray-100 flex items-center">
-                                <span class="w-2 h-2 bg-red-600 rounded-full mr-2"></span> Registro Civil Central
-                            </div>
-                            <div class="bg-gray-50 p-2 rounded-lg text-[11px] font-bold border border-gray-100 flex items-center">
-                                <span class="w-2 h-2 bg-blue-600 rounded-full mr-2"></span> Ventanilla MRE Local
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="glass-card p-8 group">
-                        <div class="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center mb-6 group-hover:bg-red-600 group-hover:text-white transition">
-                            <i class="fa-solid fa-id-card"></i>
-                        </div>
-                        <h4 class="font-black text-blue-900 mb-2 uppercase">Identificaciones</h4>
-                        <p class="text-xs text-gray-500 mb-4 leading-relaxed">Antecedentes Policiales y Pasaportes.</p>
-                        <div class="space-y-2">
-                            <div class="bg-gray-50 p-2 rounded-lg text-[11px] font-bold border border-gray-100 flex items-center">
-                                <span class="w-2 h-2 bg-blue-900 rounded-full mr-2"></span> Ministerio del Interior
-                            </div>
-                            <div class="bg-gray-50 p-2 rounded-lg text-[11px] font-bold border border-gray-100 flex items-center">
-                                <span class="w-2 h-2 bg-blue-600 rounded-full mr-2"></span> Sede MRE Boggiani
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="glass-card p-8 group">
-                        <div class="w-12 h-12 bg-blue-50 text-blue-900 rounded-xl flex items-center justify-center mb-6 group-hover:bg-blue-900 group-hover:text-white transition">
-                            <i class="fa-solid fa-graduation-cap"></i>
-                        </div>
-                        <h4 class="font-black text-blue-900 mb-2 uppercase">Educación (MEC)</h4>
-                        <p class="text-xs text-gray-500 mb-4 leading-relaxed">Títulos, Certificados y Analíticos.</p>
-                        <div class="space-y-2">
-                            <div class="bg-gray-50 p-2 rounded-lg text-[11px] font-bold border border-gray-100 flex items-center">
-                                <span class="w-2 h-2 bg-red-600 rounded-full mr-2"></span> Legalizaciones MEC (Colón)
-                            </div>
-                            <div class="bg-gray-50 p-2 rounded-lg text-[11px] font-bold border border-gray-100 flex items-center">
-                                <span class="w-2 h-2 bg-blue-600 rounded-full mr-2"></span> Sede MRE Central
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Duplicamos estructura para evitar espacios en blanco -->
-                    <div class="glass-card p-8 group">
-                        <div class="w-12 h-12 bg-gray-50 text-gray-900 rounded-xl flex items-center justify-center mb-6 group-hover:bg-gray-900 group-hover:text-white transition">
-                            <i class="fa-solid fa-scale-balanced"></i>
-                        </div>
-                        <h4 class="font-black text-blue-900 mb-2 uppercase">Judicial / Escribanía</h4>
-                        <p class="text-xs text-gray-500 mb-4 leading-relaxed">Poderes, Permisos de Menor, Sentencias.</p>
-                        <div class="space-y-2">
-                            <div class="bg-gray-50 p-2 rounded-lg text-[11px] font-bold border border-gray-100 flex items-center">
-                                <span class="w-2 h-2 bg-red-600 rounded-full mr-2"></span> Secretaría General CSJ
-                            </div>
-                            <div class="bg-gray-50 p-2 rounded-lg text-[11px] font-bold border border-gray-100 flex items-center">
-                                <span class="w-2 h-2 bg-blue-600 rounded-full mr-2"></span> MRE Alberdi y Haedo
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="glass-card p-8 group">
-                        <div class="w-12 h-12 bg-blue-50 text-blue-900 rounded-xl flex items-center justify-center mb-6 group-hover:bg-blue-900 group-hover:text-white transition">
-                            <i class="fa-solid fa-briefcase-medical"></i>
-                        </div>
-                        <h4 class="font-black text-blue-900 mb-2 uppercase">Salud Pública</h4>
-                        <p class="text-xs text-gray-500 mb-4 leading-relaxed">Certificados Médicos y Vigilancia.</p>
-                        <div class="space-y-2">
-                            <div class="bg-gray-50 p-2 rounded-lg text-[11px] font-bold border border-gray-100 flex items-center">
-                                <span class="w-2 h-2 bg-red-600 rounded-full mr-2"></span> Control de Profesiones
-                            </div>
-                            <div class="bg-gray-50 p-2 rounded-lg text-[11px] font-bold border border-gray-100 flex items-center">
-                                <span class="w-2 h-2 bg-blue-600 rounded-full mr-2"></span> MRE Central
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="glass-card p-8 group bg-gradient-to-br from-blue-900 to-blue-800 text-white border-none shadow-xl shadow-blue-200">
-                        <h4 class="font-black mb-4 uppercase text-blue-100">¿Necesitas ayuda inmediata?</h4>
-                        <p class="text-xs opacity-70 mb-8 leading-relaxed">Si no encuentras tu institución en la lista, puedes contactar con nuestra guardia consular las 24hs.</p>
-                        <div class="flex items-center space-x-4 mb-4">
-                            <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                                <i class="fa-solid fa-phone-volume"></i>
-                            </div>
-                            <span class="font-bold">+595 994 263 060</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Costos Table con Diseño Moderno -->
-        <section id="costos" class="py-24 bg-white relative overflow-hidden">
-            <div class="max-w-7xl mx-auto px-4 relative z-10">
+        <!-- INSTITUCIONES EMISORAS (2 COLUMNAS) -->
+        <section id="requisitos" class="py-24 px-4 bg-white/50">
+            <div class="max-w-7xl mx-auto">
                 <div class="text-center mb-16">
-                    <h2 class="text-4xl font-black text-blue-900 uppercase">Tabla de Tasas Arancelarias</h2>
-                    <p class="text-gray-500">Montos fijados por Ley para el ejercicio fiscal 2025</p>
+                    <h2 class="text-4xl font-black text-blue-900 uppercase tracking-tighter">Guía de Trámites por Institución</h2>
+                    <p class="text-gray-500 mt-4 max-w-3xl mx-auto">Localice la institución emisora de su documento. Debe contar con la firma autorizada previa antes de subirlo al sistema SIA-PY.</p>
                 </div>
-                
-                <div class="grid lg:grid-cols-2 gap-12">
-                    <div class="bg-[#f8fafc] rounded-3xl p-10 border border-gray-200">
-                        <div class="flex items-center justify-between mb-8">
-                            <h3 class="font-black text-blue-900 uppercase">Documentos Nacionales</h3>
-                            <i class="fa-solid fa-map-location-dot text-gray-300 text-2xl"></i>
-                        </div>
-                        <div class="space-y-4">
-                            <div class="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm">
-                                <span class="text-sm font-bold text-gray-600">Apostilla (Tasa Única)</span>
-                                <span class="text-lg font-black text-red-600">223.000 Gs.</span>
+
+                <div class="row g-4">
+                    <!-- COLUMNA 1 (Categorías 1 a 11) -->
+                    <div class="col-lg-6">
+                        <div class="accordion" id="accCol1">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c1">01. Registro del Estado Civil</button></h2>
+                                <div id="c1" class="accordion-collapse collapse" data-bs-parent="#accCol1"><div class="accordion-body text-xs text-gray-600 leading-relaxed">
+                                    <p><strong>Docs:</strong> Nacimiento, Matrimonio, Soltería, Defunción.</p>
+                                    <p class="mt-2"><span class="step-pill">1</span> Registro Civil Central (Lapacho y Concepción).</p>
+                                    <p><span class="step-pill">2</span> MRE (Ventanilla Registro Civil).</p>
+                                </div></div>
                             </div>
-                            <div class="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm">
-                                <span class="text-sm font-bold text-gray-600">Nacimiento / Matrimonio</span>
-                                <span class="text-lg font-black text-blue-900">55.750 Gs.</span>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c2">02. Identificaciones (Policía)</button></h2>
+                                <div id="c2" class="accordion-collapse collapse" data-bs-parent="#accCol1"><div class="accordion-body text-xs text-gray-600">
+                                    <p><strong>Docs:</strong> Antecedentes, Pasaportes, Cédula.</p>
+                                    <p class="mt-2"><span class="step-pill">1</span> Identificaciones. <span class="step-pill">2</span> Ministerio del Interior. <span class="step-pill">3</span> MRE Sede Boggiani.</p>
+                                </div></div>
                             </div>
-                            <div class="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm">
-                                <span class="text-sm font-bold text-gray-600">Antecedentes Policiales</span>
-                                <span class="text-lg font-black text-blue-900">55.750 Gs.</span>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c3">03. Policía Nacional</button></h2>
+                                <div id="c3" class="accordion-collapse collapse" data-bs-parent="#accCol1"><div class="accordion-body text-xs text-gray-600">
+                                    <p><strong>Docs:</strong> Vida y Residencia, Interpol, Denuncias.</p>
+                                    <p class="mt-2"><span class="step-pill">1</span> Comandancia/Talento Humano. <span class="step-pill">2</span> Ministerio del Interior. <span class="step-pill">3</span> MRE Sede Boggiani.</p>
+                                </div></div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c4">04. Juzgados de Paz</button></h2>
+                                <div id="c4" class="accordion-collapse collapse" data-bs-parent="#accCol1"><div class="accordion-body text-xs text-gray-600">
+                                    <p><strong>Docs:</strong> Permiso de Menor, Capacidad Plena.</p>
+                                    <p class="mt-2"><span class="step-pill">1</span> Juzgado de Paz. <span class="step-pill">2</span> Secretaría CSJ. <span class="step-pill">3</span> MRE Central.</p>
+                                </div></div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c5">05. Migraciones</button></h2>
+                                <div id="c5" class="accordion-collapse collapse" data-bs-parent="#accCol1"><div class="accordion-body text-xs text-gray-600">
+                                    <p><strong>Docs:</strong> Entrada/Salida, Certificado Radicación.</p>
+                                    <p class="mt-2"><span class="step-pill">1</span> Ministerio del Interior. <span class="step-pill">2</span> MRE Sede Boggiani.</p>
+                                </div></div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c6">06. Ministerio de Educación (MEC)</button></h2>
+                                <div id="c6" class="accordion-collapse collapse" data-bs-parent="#accCol1"><div class="accordion-body text-xs text-gray-600">
+                                    <p><strong>Docs:</strong> Certificados Estudios, Diplomas, Tesis.</p>
+                                    <p class="mt-2"><span class="step-pill">1</span> Institución Enseñanza. <span class="step-pill">2</span> Legalizaciones MEC. <span class="step-pill">3</span> MRE Central.</p>
+                                </div></div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c7">07. Títulos Universitarios</button></h2>
+                                <div id="c7" class="accordion-collapse collapse" data-bs-parent="#accCol1"><div class="accordion-body text-xs text-gray-600">
+                                    <p><span class="step-pill">1</span> Universidad. <span class="step-pill">2</span> Reg. Títulos MEC. <span class="step-pill">3</span> MRE Central (Alberdi).</p>
+                                </div></div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c8">08. Contratos de Beca (BECAL)</button></h2>
+                                <div id="c8" class="accordion-collapse collapse" data-bs-parent="#accCol1"><div class="accordion-body text-xs text-gray-600">
+                                    <p><span class="step-pill">1</span> Becal. <span class="step-pill">2</span> Min. Hacienda (Secretaría Gral). <span class="step-pill">3</span> MRE Central.</p>
+                                </div></div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c9">09. Certificados Médicos</button></h2>
+                                <div id="c9" class="accordion-collapse collapse" data-bs-parent="#accCol1"><div class="accordion-body text-xs text-gray-600">
+                                    <p><span class="step-pill">1</span> Médico matriculado. <span class="step-pill">2</span> Profesiones MSPBS. <span class="step-pill">3</span> MRE Central.</p>
+                                </div></div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c10">10. Escribanía Pública</button></h2>
+                                <div id="c10" class="accordion-collapse collapse" data-bs-parent="#accCol1"><div class="accordion-body text-xs text-gray-600">
+                                    <p><strong>Docs:</strong> Poderes, Autorizaciones, Contratos.</p>
+                                    <p class="mt-2"><span class="step-pill">1</span> Escribanía. <span class="step-pill">2</span> Secretaría CSJ. <span class="step-pill">3</span> MRE Central.</p>
+                                </div></div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c11">11. Antecedentes Judiciales</button></h2>
+                                <div id="c11" class="accordion-collapse collapse" data-bs-parent="#accCol1"><div class="accordion-body text-xs text-gray-600">
+                                    <p><span class="step-pill">1</span> Secretaría General CSJ. <span class="step-pill">2</span> MRE (Alberdi y Haedo).</p>
+                                </div></div>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="bg-blue-900 rounded-3xl p-10 text-white shadow-2xl">
-                        <div class="flex items-center justify-between mb-8">
-                            <h3 class="font-black uppercase text-blue-100">Documentos Extranjeros</h3>
-                            <i class="fa-solid fa-earth-americas text-blue-700 text-2xl"></i>
-                        </div>
-                        <div class="space-y-4">
-                            <div class="flex justify-between items-center bg-white/10 p-4 rounded-2xl border border-white/10">
-                                <span class="text-sm font-bold text-blue-200">Certificados de Estudios</span>
-                                <span class="text-lg font-black text-white">223.000 Gs.</span>
+
+                    <!-- COLUMNA 2 (Categorías 12 a 21) -->
+                    <div class="col-lg-6">
+                        <div class="accordion" id="accCol2">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c12">12. Poder Judicial (Varios)</button></h2>
+                                <div id="c12" class="accordion-collapse collapse" data-bs-parent="#accCol2"><div class="accordion-body text-xs text-gray-600">
+                                    <p><strong>Docs:</strong> Sentencias, Manutención, Unión de Hecho.</p>
+                                    <p class="mt-2"><span class="step-pill">1</span> Juzgado. <span class="step-pill">2</span> Secretaría CSJ. <span class="step-pill">3</span> MRE Central.</p>
+                                </div></div>
                             </div>
-                            <div class="flex justify-between items-center bg-white/10 p-4 rounded-2xl border border-white/10">
-                                <span class="text-sm font-bold text-blue-200">Vida y Residencia</span>
-                                <span class="text-lg font-black text-white">334.500 Gs.</span>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c13">13. Traducciones</button></h2>
+                                <div id="c13" class="accordion-collapse collapse" data-bs-parent="#accCol2"><div class="accordion-body text-xs text-gray-600">
+                                    <p><span class="step-pill">1</span> Secretaría General CSJ. <span class="step-pill">2</span> MRE (Sede Central).</p>
+                                </div></div>
                             </div>
-                            <div class="flex justify-between items-center bg-white/10 p-4 rounded-2xl border border-white/10">
-                                <span class="text-sm font-bold text-blue-200">Sociedades y Contratos</span>
-                                <span class="text-lg font-black text-white">557.500 Gs.</span>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c14">14. Ministerio de Defensa</button></h2>
+                                <div id="c14" class="accordion-collapse collapse" data-bs-parent="#accCol2"><div class="accordion-body text-xs text-gray-600">
+                                    <p><span class="step-pill">1</span> Sec. General Min. Defensa. <span class="step-pill">2</span> MRE (Sede Central).</p>
+                                </div></div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c15">15. Productos Químicos</button></h2>
+                                <div id="c15" class="accordion-collapse collapse" data-bs-parent="#accCol2"><div class="accordion-body text-xs text-gray-600">
+                                    <p><span class="step-pill">1</span> Laboratorio. <span class="step-pill">2</span> Vigilancia Sanitaria MSPBS. <span class="step-pill">3</span> MRE.</p>
+                                </div></div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c16">16. Producto Farmacéutico</button></h2>
+                                <div id="c16" class="accordion-collapse collapse" data-bs-parent="#accCol2"><div class="accordion-body text-xs text-gray-600">
+                                    <p><span class="step-pill">1</span> Vigilancia Sanitaria (Brasil esq. Pettirossi). <span class="step-pill">2</span> MRE.</p>
+                                </div></div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c17">17. Títulos/Registros de Marca</button></h2>
+                                <div id="c17" class="accordion-collapse collapse" data-bs-parent="#accCol2"><div class="accordion-body text-xs text-gray-600">
+                                    <p><span class="step-pill">1</span> Sec. General MIC. <span class="step-pill">2</span> MRE (Sede Central).</p>
+                                </div></div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c18">18. Certificado SENACSA</button></h2>
+                                <div id="c18" class="accordion-collapse collapse" data-bs-parent="#accCol2"><div class="accordion-body text-xs text-gray-600">
+                                    <p><span class="step-pill">1</span> Certificación Sanitaria DIGESIT. <span class="step-pill">2</span> MRE Central.</p>
+                                </div></div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c19">19. INAN (Nutrición)</button></h2>
+                                <div id="c19" class="accordion-collapse collapse" data-bs-parent="#accCol2"><div class="accordion-body text-xs text-gray-600">
+                                    <p><span class="step-pill">1</span> Inst. Nac. Alimentación. <span class="step-pill">2</span> MRE Central.</p>
+                                </div></div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c20">20. Decretos y OEE Gral.</button></h2>
+                                <div id="c20" class="accordion-collapse collapse" data-bs-parent="#accCol2"><div class="accordion-body text-xs text-gray-600">
+                                    <p><span class="step-pill">1</span> Sec. General OEE correspondiente. <span class="step-pill">2</span> MRE Central.</p>
+                                </div></div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c21">21. Viceministerio de Culto</button></h2>
+                                <div id="c21" class="accordion-collapse collapse" data-bs-parent="#accCol2"><div class="accordion-body text-xs text-gray-600">
+                                    <p><span class="step-pill">1</span> Entidad Religiosa. <span class="step-pill">2</span> Viceministerio Culto. <span class="step-pill">3</span> MEC. <span class="step-pill">4</span> MRE.</p>
+                                </div></div>
                             </div>
                         </div>
                     </div>
@@ -408,91 +354,95 @@
             </div>
         </section>
 
-        <!-- Footer Final -->
-        <footer class="bg-[#000a16] text-white py-20 mt-12">
-            <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-4 gap-12">
+        <!-- COSTOS -->
+        <section id="costos" class="py-24 bg-[#00152e] text-white overflow-hidden relative">
+            <div class="max-w-6xl mx-auto px-4 relative z-10">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-black uppercase tracking-tighter">Tasas Arancelarias 2025</h2>
+                    <p class="text-blue-300 mt-3 opacity-80">Montos fijados por Ley para gestiones nacionales y extranjeras.</p>
+                </div>
+                <div class="grid lg:grid-cols-2 gap-10">
+                    <div class="glass-card !bg-white/5 border-white/10 p-10">
+                        <h3 class="text-xl font-bold mb-8 text-red-500">Documentos Nacionales</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center bg-white/5 p-4 rounded-2xl border border-white/5">
+                                <span class="text-sm font-bold">Apostilla (Tasa Única)</span>
+                                <span class="text-xl font-black text-red-500">223.000 Gs.</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 text-sm"><span>Nacimiento / Matrimonio</span><span class="font-bold">55.750 Gs.</span></div>
+                            <div class="flex justify-between items-center p-3 text-sm"><span>Defunción / Poderes</span><span class="font-bold">111.500 Gs.</span></div>
+                        </div>
+                    </div>
+                    <div class="glass-card !bg-white/5 border-white/10 p-10">
+                        <h3 class="text-xl font-bold mb-8 text-blue-400">Documentos Extranjeros</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center bg-white/5 p-4 rounded-2xl border border-white/5">
+                                <span class="text-sm font-bold">Títulos de Estudio</span>
+                                <span class="text-xl font-black text-blue-400">223.000 Gs.</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 text-sm"><span>Nacimiento / Antecedentes</span><span class="font-bold">334.500 Gs.</span></div>
+                            <div class="flex justify-between items-center p-3 text-sm"><span>Contratos / Sociedades</span><span class="font-bold">557.500 Gs.</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="bg-white border-t border-gray-100 py-20">
+            <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-4 gap-12 text-left">
                 <div class="col-span-2">
-                    <div class="text-2xl font-black mb-6">MRE <span class="text-blue-500 underline decoration-red-600">PARAGUAY</span></div>
-                    <p class="text-gray-500 text-sm max-w-md leading-relaxed">
-                        Ministerio de Relaciones Exteriores del Paraguay. Facilitando servicios consulares modernos y eficientes para el fortalecimiento de la imagen país ante el mundo.
-                    </p>
+                    <div class="text-3xl font-black mb-6 text-blue-900 tracking-tighter">MRE <span class="text-red-600 underline decoration-blue-900">PARAGUAY</span></div>
+                    <p class="text-gray-500 text-sm leading-relaxed max-w-sm">Ministerio de Relaciones Exteriores del Paraguay. Innovación y eficiencia digital.</p>
                 </div>
                 <div>
-                    <h5 class="text-xs font-black uppercase tracking-widest text-red-600 mb-6">Oficina Central</h5>
-                    <p class="text-sm text-gray-400">Palma y 14 de Mayo, Palacio Benigno López. Asunción - Paraguay.</p>
+                    <h4 class="font-black text-xs uppercase mb-6 tracking-widest text-gray-400">Emergencias</h4>
+                    <p class="text-sm font-black text-red-600">Guardia Consular: +595 994 263 060</p>
+                    <p class="text-xs text-gray-500 mt-2">Palma y 14 de Mayo, Asunción.</p>
                 </div>
-                <div>
-                    <h5 class="text-xs font-black uppercase tracking-widest text-blue-500 mb-6">Contacto Directo</h5>
-                    <p class="text-sm text-gray-400 italic">Tel: (+595 21) 414 8000</p>
-                    <p class="text-sm text-gray-400 italic">legalizaciones@mre.gov.py</p>
+                <div class="text-right">
+                    <button onclick="showControlAcceso()" class="btn-modern btn-mre-primary w-full md:w-auto">LOGIN SIA-PY</button>
+                    <p class="text-[9px] text-gray-400 mt-10 font-bold uppercase tracking-widest">© 2026 MRE Informática</p>
                 </div>
             </div>
         </footer>
     </div>
 
-    <!-- VISTA 2: SISTEMA SIA-PY (AUTH) -->
-    <div id="view-control-acceso" class="hidden min-h-screen relative flex items-center justify-center p-6">
-        <div class="elegant-background"></div>
-        <div class="bg-pattern opacity-10"></div>
-
-        <section id="authSection" class="w-full flex justify-center fade-in">
-            <div class="auth-card">
-                <div class="tricolor-line"></div>
-                
-                <div class="text-center mb-10">
-                    <div class="d-inline-flex align-items-center justify-content-center bg-white p-2 rounded-4 mb-4" style="box-shadow: 0 10px 30px rgba(0, 40, 85, 0.1); width: 80px; height: 80px; border: 1px solid #E2E8F0;">
-                        <i data-lucide="globe-2" class="text-blue-900" style="width: 40px; height: 40px;"></i>
-                    </div>
-                    <h1 class="system-title text-uppercase">SIA-PY</h1>
-                    <p class="system-subtitle tracking-[6px]">Apostilla Digital</p>
+    <!-- VISTA 2: SIA-PY (AUTH) -->
+    <div id="view-control-acceso" class="hidden min-h-screen flex items-center justify-center p-6 bg-gray-50 relative">
+        <div class="auth-card fade-in">
+            <div class="tricolor-line"></div>
+            <div class="text-center mb-12">
+                <div class="d-inline-flex align-items-center justify-content-center bg-white p-2 rounded-4 mb-4" style="box-shadow: 0 15px 35px rgba(0, 40, 85, 0.1); width: 90px; height: 90px; border: 1px solid #E2E8F0;">
+                    <i data-lucide="globe" class="text-blue-900" style="width: 45px; height: 45px;"></i>
                 </div>
-                
-                <form id="formLogin" class="space-y-5">
-                    <div class="relative">
-                        <label class="form-label-mre">Correo Electrónico <span class="required-star">*</span></label>
-                        <i data-lucide="mail" class="absolute left-4 top-[42px] text-gray-400 w-5 h-5"></i>
-                        <input type="email" class="form-control-mre w-full" placeholder="ejemplo@mre.gov.py" required>
-                    </div>
-
-                    <div class="relative">
-                        <label class="form-label-mre">Contraseña <span class="required-star">*</span></label>
-                        <i data-lucide="lock" class="absolute left-4 top-[42px] text-gray-400 w-5 h-5"></i>
-                        <input type="password" class="form-control-mre w-full" id="loginPass" placeholder="••••••••••••" required>
-                        <button type="button" class="btn-toggle-pass" onclick="togglePassword('loginPass', 'loginEye')">
-                            <i data-lucide="eye" id="loginEye" class="w-5 h-5"></i>
-                        </button>
-                    </div>
-
-                    <button type="submit" class="btn-main-mre py-4">
-                        Ingresar al Sistema
-                    </button>
-
-                    <div class="divider">Acceso Ciudadano</div>
-
-                    <button type="button" class="btn-idp-prominent border-2 hover:bg-gray-50">
-                        <div class="flex space-x-1 h-3">
-                            <div class="w-2 bg-red-600 rounded-full"></div>
-                            <div class="w-2 bg-gray-300 rounded-full"></div>
-                            <div class="w-2 bg-blue-900 rounded-full"></div>
-                        </div>
-                        <span>Identidad Electrónica</span>
-                    </button>
-
-                    <div class="text-center pt-6">
-                        <button type="button" onclick="showLanding()" class="text-[10px] font-black uppercase text-gray-400 hover:text-red-600 transition tracking-widest text-decoration-none">
-                            <i class="fa-solid fa-arrow-left mr-2"></i> Volver al Portal
-                        </button>
-                    </div>
-                </form>
+                <h1 class="text-3xl font-black text-blue-900 uppercase tracking-tighter mb-1">SIA-PY</h1>
+                <p class="text-[10px] font-black uppercase tracking-[6px] text-gray-300">Apostilla Digital</p>
             </div>
-        </section>
+            <form class="space-y-6">
+                <div class="relative text-left">
+                    <label class="text-[11px] font-black uppercase text-gray-400 mb-2 block tracking-wider">Correo</label>
+                    <input type="email" class="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl py-3.5 px-6 focus:border-blue-900 focus:bg-white outline-none transition text-sm font-medium" placeholder="ejemplo@mre.gov.py">
+                </div>
+                <div class="relative text-left">
+                    <label class="text-[11px] font-black uppercase text-gray-400 mb-2 block tracking-wider">Contraseña</label>
+                    <input type="password" class="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl py-3.5 px-6 focus:border-blue-900 focus:bg-white outline-none transition text-sm font-medium" placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn-modern btn-mre-primary w-full py-4 text-base tracking-widest">Ingresar</button>
+                <div class="text-center mt-8 pt-6 border-t border-gray-50">
+                    <button type="button" onclick="showLanding()" class="text-[10px] font-black uppercase text-gray-400 hover:text-red-600 transition tracking-[2px] flex items-center justify-center mx-auto">
+                        <i class="fa-solid fa-arrow-left-long mr-2"></i> Volver al Portal
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Inicializar Iconos Lucide
         lucide.createIcons();
 
-        // Control de Vistas
         function showControlAcceso() {
             document.getElementById('view-landing').classList.add('hidden');
             document.getElementById('view-control-acceso').classList.remove('hidden');
@@ -505,17 +455,7 @@
             window.scrollTo({ top: 0, behavior: 'instant' });
         }
 
-        // Toggle Contraseña
-        function togglePassword(inputId, eyeId) {
-            const input = document.getElementById(inputId); 
-            const eye = document.getElementById(eyeId);
-            const isPassword = input.getAttribute('type') === 'password';
-            input.setAttribute('type', isPassword ? 'text' : 'password');
-            eye.setAttribute('data-lucide', isPassword ? 'eye-off' : 'eye');
-            lucide.createIcons();
-        }
-
-        // Animación suave de scroll para anclas
+        // Animación suave de scroll
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
