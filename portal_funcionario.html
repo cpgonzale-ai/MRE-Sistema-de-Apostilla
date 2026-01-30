@@ -764,7 +764,9 @@
             <p class="small text-muted">La solicitud será devuelta al ciudadano para su corrección.</p>
             <div class="mb-3">
                 <label class="form-label small fw-bold text-uppercase">Observación <span class="text-danger">*</span></label>
-                <textarea class="form-control" id="returnObs" rows="4" placeholder="Ingrese el motivo de la devolución..."></textarea>
+                <!-- AGREGADO: oninput para limpiar error y div invalid-feedback -->
+                <textarea class="form-control" id="returnObs" rows="4" placeholder="Ingrese el motivo de la devolución..." oninput="this.classList.remove('is-invalid')"></textarea>
+                <div class="invalid-feedback fw-bold">Debe ingresar una observación para devolver el trámite.</div>
             </div>
             <div class="d-flex gap-2 justify-content-end">
                 <button class="btn btn-light border fw-bold" onclick="closePopup()">Cancelar</button>
@@ -783,7 +785,9 @@
             <p class="small text-muted">Esta acción es definitiva. El trámite finalizará.</p>
             <div class="mb-3">
                 <label class="form-label small fw-bold text-uppercase">Observación <span class="text-danger">*</span></label>
-                <textarea class="form-control" id="rejectObs" rows="3" placeholder="Ingrese el motivo del rechazo..."></textarea>
+                <!-- AGREGADO: oninput para limpiar error y div invalid-feedback -->
+                <textarea class="form-control" id="rejectObs" rows="3" placeholder="Ingrese el motivo del rechazo..." oninput="this.classList.remove('is-invalid')"></textarea>
+                <div class="invalid-feedback fw-bold">Debe ingresar el motivo del rechazo.</div>
             </div>
             <div class="d-flex gap-2 justify-content-end">
                 <button class="btn btn-light border fw-bold" onclick="closePopup()">Cancelar</button>
@@ -823,7 +827,9 @@
             </div>
             <div class="mb-3">
                 <label class="form-label small fw-bold text-uppercase">Justificación <span class="text-danger">*</span></label>
-                <textarea class="form-control" id="exonerationObs" rows="3" placeholder="Ingrese el motivo (Ej: Caso social, Decreto N° X/Y, Funcionario Diplomático)..."></textarea>
+                <!-- AGREGADO: oninput para limpiar error y div invalid-feedback -->
+                <textarea class="form-control" id="exonerationObs" rows="3" placeholder="Ingrese el motivo (Ej: Caso social, Decreto N° X/Y, Funcionario Diplomático)..." oninput="this.classList.remove('is-invalid')"></textarea>
+                <div class="invalid-feedback fw-bold">La justificación es obligatoria para exoneraciones.</div>
             </div>
             <div class="d-flex gap-2 justify-content-end">
                 <button class="btn btn-light border fw-bold" onclick="cancelExoneration()">Cancelar</button>
@@ -843,7 +849,9 @@
             </div>
             <div class="mb-3">
                 <label class="form-label small fw-bold text-uppercase">Motivo de la selección manual <span class="text-danger">*</span></label>
-                <textarea class="form-control" id="forceTakeObs" rows="3" placeholder="Ej: Urgencia humanitaria, orden judicial, etc..."></textarea>
+                <!-- AGREGADO: oninput para limpiar error y div invalid-feedback -->
+                <textarea class="form-control" id="forceTakeObs" rows="3" placeholder="Ej: Urgencia humanitaria, orden judicial, etc..." oninput="this.classList.remove('is-invalid')"></textarea>
+                <div class="invalid-feedback fw-bold">Debe justificar la toma fuera de turno.</div>
             </div>
             <div class="d-flex gap-2 justify-content-end">
                 <button class="btn btn-light border fw-bold" onclick="document.getElementById('forceTakeModal').style.display='none'">Cancelar</button>
@@ -863,7 +871,9 @@
             </div>
             <div class="mb-3">
                 <label class="form-label small fw-bold text-uppercase">Motivo de Reconsideración <span class="text-danger">*</span></label>
-                <textarea class="form-control" id="reconsiderObs" rows="3" placeholder="Ingrese el motivo por el cual se reconsidera el rechazo..."></textarea>
+                <!-- AGREGADO: oninput para limpiar error y div invalid-feedback -->
+                <textarea class="form-control" id="reconsiderObs" rows="3" placeholder="Ingrese el motivo por el cual se reconsidera el rechazo..." oninput="this.classList.remove('is-invalid')"></textarea>
+                <div class="invalid-feedback fw-bold">Debe ingresar el motivo de la reconsideración.</div>
             </div>
             <div class="d-flex gap-2 justify-content-end">
                 <button class="btn btn-light border fw-bold" onclick="document.getElementById('reconsiderModal').style.display='none'">Cancelar</button>
@@ -1884,18 +1894,24 @@
         // NUEVA FUNCIÓN PARA EL BOTÓN DE LA GRILLA (DASHBOARD)
         function exonerateRequest(id) {
             actionTargetId = id; // Guardamos el ID para usarlo en confirmExoneration
-            document.getElementById('exonerationObs').value = '';
+            const txt = document.getElementById('exonerationObs');
+            txt.value = '';
+            txt.classList.remove('is-invalid'); // Limpiar estado de error previo
             document.getElementById('exonerationModal').style.display = 'flex';
             lucide.createIcons();
         }
 
         // FUNCIÓN CONFIRMAR ACTUALIZADA (SOPORTA AMBOS CONTEXTOS)
         function confirmExoneration() {
-            const obs = document.getElementById('exonerationObs').value;
+            const obsInput = document.getElementById('exonerationObs');
+            const obs = obsInput.value;
+            
+            // VALIDACIÓN VISUAL
             if(!obs.trim()) {
-                alert("Debe ingresar un motivo para la exoneración.");
+                obsInput.classList.add('is-invalid');
                 return;
             }
+            obsInput.classList.remove('is-invalid');
 
             // Detectar contexto: ¿Estamos en Verificación o en Dashboard?
             const isVerificationContext = !document.getElementById('verificationView').classList.contains('hidden');
@@ -1928,6 +1944,7 @@
         // FUNCIÓN CANCELAR ACTUALIZADA
         function cancelExoneration() {
             document.getElementById('exonerationModal').style.display = 'none';
+            document.getElementById('exonerationObs').classList.remove('is-invalid'); // Limpiar error
             
             // Solo si estamos en verificación revertimos el select
             const isVerificationContext = !document.getElementById('verificationView').classList.contains('hidden');
@@ -1955,8 +1972,16 @@
         }
 
         function processReturn() {
-            const obs = document.getElementById('returnObs').value;
-            if(!obs) return alert("Ingrese el motivo.");
+            const obsInput = document.getElementById('returnObs');
+            const obs = obsInput.value;
+            
+            // VALIDACIÓN VISUAL
+            if(!obs.trim()) {
+                obsInput.classList.add('is-invalid');
+                return;
+            }
+            obsInput.classList.remove('is-invalid');
+
             const req = requests.find(r => r.id === actionTargetId || r.lockedBy === 'Me');
             req.status = 'Devuelto';
             req.lockedBy = null;
@@ -1965,8 +1990,16 @@
         }
 
         function processReject() {
-            const obs = document.getElementById('rejectObs').value;
-            if(!obs) return alert("Ingrese el motivo.");
+            const obsInput = document.getElementById('rejectObs');
+            const obs = obsInput.value;
+            
+            // VALIDACIÓN VISUAL
+            if(!obs.trim()) {
+                obsInput.classList.add('is-invalid');
+                return;
+            }
+            obsInput.classList.remove('is-invalid');
+
             const req = requests.find(r => r.id === actionTargetId || r.lockedBy === 'Me');
             req.status = 'Rechazado';
             req.lockedBy = null;
@@ -1976,17 +2009,23 @@
 
         function reconsiderRequest(id) {
             actionTargetId = id; // Guardamos el ID para usarlo en confirmReconsideration
-            document.getElementById('reconsiderObs').value = '';
+            const txt = document.getElementById('reconsiderObs');
+            txt.value = '';
+            txt.classList.remove('is-invalid'); // Limpiar estado de error previo
             document.getElementById('reconsiderModal').style.display = 'flex';
             lucide.createIcons();
         }
 
         function confirmReconsideration() {
-            const obs = document.getElementById('reconsiderObs').value;
+            const obsInput = document.getElementById('reconsiderObs');
+            const obs = obsInput.value;
+            
+            // VALIDACIÓN VISUAL
             if (!obs.trim()) {
-                alert("Debe ingresar un motivo para la reconsideración.");
+                obsInput.classList.add('is-invalid');
                 return;
             }
+            obsInput.classList.remove('is-invalid');
 
             const req = requests.find(r => r.id === actionTargetId);
             if (req) {
@@ -2063,12 +2102,21 @@
             lucide.createIcons();
         }
 
-        function closePopup() { document.querySelectorAll('.mre-popup-overlay').forEach(p => p.style.display = 'none'); }
+        function closePopup() { 
+            document.querySelectorAll('.mre-popup-overlay').forEach(p => p.style.display = 'none'); 
+            // Limpiar estados de error al cerrar
+            document.querySelectorAll('textarea').forEach(t => t.classList.remove('is-invalid'));
+        }
         
         function openReturnModal(id = null) { 
             if(id) actionTargetId = id;
             const req = requests.find(r => r.id === actionTargetId || r.lockedBy === 'Me');
             document.getElementById('returnModalContent').innerHTML = getRequestSummaryHTML(req);
+            
+            const txt = document.getElementById('returnObs');
+            txt.value = '';
+            txt.classList.remove('is-invalid');
+            
             document.getElementById('returnModal').style.display = 'flex'; 
         }
 
@@ -2076,6 +2124,11 @@
             if(id) actionTargetId = id;
             const req = requests.find(r => r.id === actionTargetId || r.lockedBy === 'Me');
             document.getElementById('rejectModalContent').innerHTML = getRequestSummaryHTML(req);
+            
+            const txt = document.getElementById('rejectObs');
+            txt.value = '';
+            txt.classList.remove('is-invalid');
+
             document.getElementById('rejectModal').style.display = 'flex'; 
         }
 
@@ -2121,11 +2174,15 @@
 
         // --- LÓGICA TOMA FORZOSA SUPERVISOR ---
         function confirmForceTake() {
-            const obs = document.getElementById('forceTakeObs').value;
+            const obsInput = document.getElementById('forceTakeObs');
+            const obs = obsInput.value;
+            
+            // VALIDACIÓN VISUAL
             if (!obs.trim()) {
-                alert("Debe ingresar un motivo para tomar la solicitud fuera de turno.");
+                obsInput.classList.add('is-invalid');
                 return;
             }
+            obsInput.classList.remove('is-invalid');
             
             document.getElementById('forceTakeModal').style.display = 'none';
             
@@ -2154,7 +2211,11 @@
                 if (next && next.id !== actionTargetId) {
                     // Cerrar detalle y abrir modal de excepción
                     document.getElementById('detailModal').style.display = 'none';
-                    document.getElementById('forceTakeObs').value = '';
+                    // Limpiar y resetear validación
+                    const txt = document.getElementById('forceTakeObs');
+                    txt.value = '';
+                    txt.classList.remove('is-invalid');
+                    
                     document.getElementById('forceTakeModal').style.display = 'flex';
                     lucide.createIcons();
                     return; // Detener flujo estándar
