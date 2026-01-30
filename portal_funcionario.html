@@ -190,8 +190,9 @@
 
         /* --- SPLIT SCREEN --- */
         .split-screen-container { display: flex; height: calc(100vh - 200px); min-height: 600px; gap: 0; }
-        .split-side-a { flex: 1; border-right: 1px solid var(--border-color); background: #333; position: relative; }
-        .split-side-b { flex: 1; background: white; overflow-y: auto; padding: 2rem; display: flex; flex-direction: column; }
+        /* Ajuste de proporciones: Visualizador más ancho (5.5) y Datos (4.5) */
+        .split-side-a { flex: 5.5; border-right: 1px solid var(--border-color); background: #333; position: relative; }
+        .split-side-b { flex: 4.5; background: white; overflow-y: auto; padding: 2rem; display: flex; flex-direction: column; }
         .pdf-viewer-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: white; flex-direction: column; }
         
         /* Highlighting Turn System */
@@ -1360,6 +1361,7 @@
             // Reset state
             isEditing = false;
             editingId = null;
+            electronicSigCount = 0; // RESET COUNTER FOR FRESH DEMO EXPERIENCE
             document.getElementById('formTitle').innerText = "Crear Solicitud Manual";
             document.getElementById('formBadge').innerText = "Nuevo Trámite";
             document.getElementById('btnSubmitForm').innerHTML = `<i data-lucide="plus-circle" style="width:16px;"></i> Añadir`;
@@ -1367,11 +1369,23 @@
             tempRequestsList = [];
             renderLoadedDocuments();
             document.getElementById('newRequestForm').reset();
+            
+            // LIMPIEZA EXPLÍCITA DE CAMPOS OCULTOS
+            document.getElementById('reqCountry').value = '';
+            document.getElementById('reqInstitution').value = '';
+            document.getElementById('reqType').value = '';
+            document.getElementById('reqSignature').value = '';
+            document.getElementById('reqDocType').value = '';
+            document.getElementById('reqOfficial').value = '';
+
             document.querySelectorAll('.selected-value').forEach(el => {
                 el.innerText = "Seleccione...";
                 el.classList.add('text-muted');
             });
             
+            // ASEGURAR QUE EL APARTADO DE DATOS ESTÉ OCULTO AL INICIO
+            document.getElementById('additionalDataTabs').classList.add('hidden');
+
             document.getElementById('requestFormContainer').classList.remove('hidden');
             document.getElementById('loadedDocsSection').classList.add('hidden');
             
@@ -1423,9 +1437,23 @@
 
         function initiateAddProcess() {
             const signature = document.getElementById('reqSignature').value;
+            
+            // LÓGICA:
+            // 1. Si es Firma Electrónica:
+            //    - Si el perfil es 'electronico' (Operador verificación previa): NO validar, guardar directo (Comportamiento Ológrafo).
+            //    - Cualquier otro perfil: Iniciar validación (Simulación).
+            // 2. Si es Firma Ológrafa: Guardar directo.
+            
             if (signature.includes('Electrónica')) {
-                startValidationProcess();
+                if (currentProfile === 'electronico') {
+                    // Perfil Verificación Previa: Salta validación (Mismo comportamiento que Ológrafo)
+                    addToGrid('Previa', null); 
+                } else {
+                    // Otros perfiles: Validación obligatoria para Electrónica
+                    startValidationProcess();
+                }
             } else {
+                // Ológrafa siempre va directo
                 addToGrid('Previa', null);
             }
         }
@@ -1516,19 +1544,36 @@
             const official = document.getElementById('officialField');
             const btnDoc = document.getElementById('btn_reqDocType');
             
+            // MODIFICADO: Resetear Tipo de Documento al cambiar Firma para ocultar Datos
+            document.getElementById('reqDocType').value = ""; // Clear value
+            const docDisplay = document.getElementById('div_reqDocType').querySelector('.selected-value');
+            if (docDisplay) {
+                docDisplay.innerText = "Seleccione primero el tipo de firma...";
+                docDisplay.classList.add('text-muted');
+            }
+            handleDocTypeChange(); // Force hide tabs
+
             attach.classList.add('hidden');
             official.classList.add('hidden');
             document.getElementById('reqFile').required = false;
             document.getElementById('reqOfficial').required = false;
 
             if (sig.includes('Electrónica')) {
+                // MODIFICADO: Se eliminó la restricción para el perfil 'electronico'.
+                // Ahora, si es Electrónica, SIEMPRE muestra el campo de adjuntar archivo,
+                // independientemente del perfil.
                 attach.classList.remove('hidden');
                 document.getElementById('reqFile').required = true;
+                
             } else if (sig.includes('Ológrafa')) {
                 official.classList.remove('hidden');
             }
 
             btnDoc.disabled = !sig;
+            // Update prompt text if sig is valid
+            if (sig && docDisplay) {
+                docDisplay.innerText = "Seleccione...";
+            }
         }
 
         function handleDocTypeChange() {
@@ -1622,10 +1667,26 @@
 
         function showRequestForm() {
             document.getElementById('newRequestForm').reset();
-            document.querySelectorAll('.selected-value').forEach(e => e.innerText = 'Seleccione...');
+            
+            // LIMPIEZA EXPLÍCITA
+            document.getElementById('reqCountry').value = '';
+            document.getElementById('reqInstitution').value = '';
+            document.getElementById('reqType').value = '';
+            document.getElementById('reqSignature').value = '';
+            document.getElementById('reqDocType').value = '';
+            document.getElementById('reqOfficial').value = '';
+
+            document.querySelectorAll('.selected-value').forEach(e => {
+                e.innerText = 'Seleccione...';
+                e.classList.add('text-muted');
+            });
+
             document.getElementById('requestFormContainer').classList.remove('hidden');
             document.getElementById('loadedDocsSection').classList.add('hidden');
+            // ASEGURAR QUE EL APARTADO DE DATOS ESTÉ OCULTO
             document.getElementById('additionalDataTabs').classList.add('hidden');
+            
+            handleSignatureChange();
         }
 
         function showCertHelp(e) {
@@ -1668,8 +1729,96 @@
 
         // AGREGADA: Función para mostrar detalles en la bandeja de Finalizados
         function showRequestDetails(id) {
-            // Reutiliza la misma lógica, o podrías hacer un modal solo de lectura
-            handleDetailClick(id);
+            const req = requests.find(r => r.id === id);
+            if (!req) return;
+
+            // Construcción del HTML con TODOS los datos disponibles
+            const detailsHTML = `
+                <div class="row g-3 text-start">
+                    <div class="col-12 border-bottom pb-2 mb-2">
+                        <h6 class="fw-bold text-primary mb-0">Información General</h6>
+                    </div>
+                    <div class="col-6">
+                        <span class="fw-bold text-muted small text-uppercase d-block">Nro. Solicitud</span>
+                        <strong class="text-navy">${req.id}</strong>
+                    </div>
+                    <div class="col-6">
+                        <span class="fw-bold text-muted small text-uppercase d-block">Fecha</span>
+                        <span class="text-dark">${req.date}</span>
+                    </div>
+                    <div class="col-6">
+                        <span class="fw-bold text-muted small text-uppercase d-block">Estado</span>
+                        <span class="badge bg-dark">${req.status}</span>
+                    </div>
+                    <div class="col-6">
+                        <span class="fw-bold text-muted small text-uppercase d-block">Origen</span>
+                        <span class="text-dark">${req.origin || 'Web'}</span>
+                    </div>
+
+                    <div class="col-12 border-bottom pb-2 mb-2 mt-3">
+                        <h6 class="fw-bold text-primary mb-0">Datos del Titular</h6>
+                    </div>
+                    <div class="col-8">
+                        <span class="fw-bold text-muted small text-uppercase d-block">Nombre Completo</span>
+                        <strong class="text-dark text-uppercase">${req.name}</strong>
+                    </div>
+                    <div class="col-4">
+                        <span class="fw-bold text-muted small text-uppercase d-block">C.I. / Documento</span>
+                        <span class="text-dark">${req.ci || 'N/A'}</span>
+                    </div>
+
+                    <div class="col-12 border-bottom pb-2 mb-2 mt-3">
+                        <h6 class="fw-bold text-primary mb-0">Detalles del Documento</h6>
+                    </div>
+                    <div class="col-6">
+                        <span class="fw-bold text-muted small text-uppercase d-block">País de Destino</span>
+                        <strong class="text-dark">${req.country || '-'}</strong>
+                    </div>
+                    <div class="col-6">
+                        <span class="fw-bold text-muted small text-uppercase d-block">Tipo de Trámite</span>
+                        <strong class="text-dark">${req.type || 'Apostilla'}</strong>
+                    </div>
+                    <div class="col-12">
+                        <span class="fw-bold text-muted small text-uppercase d-block">Institución Emisora</span>
+                        <span class="text-dark">${req.institution || '-'}</span>
+                    </div>
+                    <div class="col-12">
+                        <span class="fw-bold text-muted small text-uppercase d-block">Tipo de Documento</span>
+                        <strong class="text-navy">${req.doc}</strong>
+                    </div>
+                    <div class="col-6">
+                        <span class="fw-bold text-muted small text-uppercase d-block">Nro. Físico / Certificado</span>
+                        <strong class="text-primary">${req.physicalNumber || 'NO ASIGNADO'}</strong>
+                    </div>
+                    <div class="col-6">
+                        <span class="fw-bold text-muted small text-uppercase d-block">Tipo de Firma</span>
+                        <span class="badge bg-light text-dark border">${req.signature || req.signatureType || '-'}</span>
+                    </div>
+                    ${req.official ? `
+                    <div class="col-12">
+                        <span class="fw-bold text-muted small text-uppercase d-block">Funcionario Firmante</span>
+                        <span class="text-dark text-uppercase">${req.official}</span>
+                    </div>` : ''}
+
+                    <div class="col-12 border-top pt-2 mt-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold text-muted small text-uppercase">Importe</span>
+                            <strong class="text-success fs-5">Gs. ${(req.amount || 0).toLocaleString('es-PY')}</strong>
+                        </div>
+                        ${req.amount === 0 ? '<small class="text-info d-block text-end fst-italic">* Exonerado</small>' : ''}
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('detailModalContent').innerHTML = detailsHTML;
+            
+            const footer = document.getElementById('detailModalFooter');
+            // MODIFICADO: Solo mostrar botón Cerrar, ocultando Tomar y Cancelar
+            footer.innerHTML = `
+                <button class="btn btn-light border fw-bold w-100" onclick="closePopup()">Cerrar</button>
+            `;
+
+            document.getElementById('detailModal').style.display = 'flex';
         }
 
         function takeRequestFromModal() {
@@ -1687,7 +1836,11 @@
                 if (next && next.id !== actionTargetId) {
                     // Cerrar detalle y abrir modal de excepción
                     document.getElementById('detailModal').style.display = 'none';
-                    document.getElementById('forceTakeObs').value = '';
+                    // Limpiar y resetear validación
+                    const txt = document.getElementById('forceTakeObs');
+                    txt.value = '';
+                    txt.classList.remove('is-invalid');
+                    
                     document.getElementById('forceTakeModal').style.display = 'flex';
                     lucide.createIcons();
                     return; // Detener flujo estándar
@@ -1833,17 +1986,16 @@
             const viewerContainer = document.querySelector('.split-side-a');
             const physicalBanner = document.getElementById('physicalVerificationBanner');
 
-            // Reset classes
+            // 1. Limpiar estados previos
             splitContainer.classList.remove('single-mode');
             viewerContainer.classList.remove('hidden');
             physicalBanner.classList.add('hidden');
 
-            // MODIFICADO: Si es Ológrafa Y NO es Externo, se usa el modo físico (single-mode).
-            // Si es Externo (aunque sea Ológrafa), se muestra como Electrónica (split-screen con visor).
-            if (sig.includes('Ológrafa') && currentProfile !== 'externo') {
-                splitContainer.classList.add('single-mode');
-                physicalBanner.classList.remove('hidden');
-            } else {
+            // 2. Lógica de visualización
+            // MODIFICADO: Solo mostrar visualizador (split screen) si es Electrónica.
+            // Para todo lo demás (Ológrafa), usar Single Mode con banner físico.
+            if (sig.includes('Electrónica')) {
+                // Modo Pantalla Dividida con Visualizador PDF
                 viewerContainer.innerHTML = `
                     <div class="pdf-viewer-placeholder">
                         <i data-lucide="file-text" style="width: 64px; height: 64px; opacity: 0.5;"></i>
@@ -1852,6 +2004,10 @@
                         <button class="btn btn-sm btn-outline-light mt-3" onclick="alert('Simulando zoom...')"><i data-lucide="maximize"></i> Ampliar</button>
                     </div>
                 `;
+            } else {
+                // Modo Pantalla Única (Física) - Aplica para Ológrafa (cualquier perfil)
+                splitContainer.classList.add('single-mode');
+                physicalBanner.classList.remove('hidden');
             }
 
             document.getElementById('dashboardView').classList.add('hidden');
