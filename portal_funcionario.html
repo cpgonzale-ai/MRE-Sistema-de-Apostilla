@@ -1282,9 +1282,16 @@
                     let rowClass = '';
                     let isNext = false;
                     const isTakenByMe = req.lockedBy === 'Me';
+                    const isLockedByOther = req.lockedBy === 'OtroFuncionario';
                     
                     if (status === 'Análisis') {
-                        if (req.lockedBy === 'OtroFuncionario') rowClass = 'row-locked-other';
+                        if (isLockedByOther) {
+                            // MODIFICADO: Para Supervisor, NO aplicar estilo de bloqueo (opacidad)
+                            // para reflejar visualmente que tiene control administrativo ("no debe controlar").
+                            if (currentProfile !== 'supervisor') {
+                                rowClass = 'row-locked-other';
+                            }
+                        }
                         else if (isTakenByMe) { isNext = true; rowClass = 'taken-by-me-highlight'; }
                         else if (currentProfile === 'electronico' && req.id === nextAvailableId) { rowClass = 'next-turn-highlight'; isNext = true; }
                     }
@@ -1292,7 +1299,18 @@
                     let actionBtn = '';
                     if (status === 'Análisis') {
                         const hasOtherLocked = myLockedRequest && myLockedRequest.id !== req.id;
-                        const isDisabled = req.lockedBy === 'OtroFuncionario' || (currentProfile === 'electronico' && !isNext) || hasOtherLocked;
+                        let isDisabled = false;
+
+                        if (currentProfile === 'supervisor') {
+                            // LÓGICA DE CONTROL SUPERVISOR:
+                            // 1. "No debe controlar": Ignora si está bloqueado por otro (puede entrar y tomar).
+                            // 2. "Solo bloquear tomas... cuando ya tomó uno": hasOtherLocked bloquea el acceso.
+                            isDisabled = hasOtherLocked && !isTakenByMe;
+                        } else {
+                            // Lógica estándar para otros perfiles
+                            isDisabled = isLockedByOther || (currentProfile === 'electronico' && !isNext) || hasOtherLocked;
+                        }
+
                         const titleText = hasOtherLocked ? "Ya tiene una solicitud en curso" : "Ver Detalle";
                         const actionDisabled = !isTakenByMe;
                         
@@ -1302,12 +1320,21 @@
                             returnBtnHtml = `<button class="btn btn-sm btn-warning text-white" onclick="openReturnModal('${req.id}')" ${actionDisabled ? 'disabled' : ''} title="Devolver"><i data-lucide="rotate-ccw" style="width:14px"></i></button>`;
                         }
 
+                        // Lógica para botón de desbloqueo (Solo Supervisor y si está bloqueado por otro)
+                        // Este botón permite liberar la solicitud sin tomarla.
+                        let unlockBtnHtml = '';
+                        if (isTakenByMe) {
+                            unlockBtnHtml = `<button class="btn btn-sm btn-outline-secondary" onclick="unlockRequest('${req.id}')" title="Desbloquear Solicitud"><i data-lucide="unlock" style="width:14px"></i></button>`;
+                        } else if (currentProfile === 'supervisor' && isLockedByOther) {
+                            unlockBtnHtml = `<button class="btn btn-sm btn-outline-danger border-danger text-danger" onclick="unlockRequest('${req.id}')" title="Desbloquear (Admin)"><i data-lucide="lock-open" style="width:14px"></i></button>`;
+                        }
+
                         actionBtn = `<div class="d-flex gap-1 justify-content-center">
                             <button class="btn btn-sm btn-primary" onclick="handleDetailClick('${req.id}')" ${isDisabled ? 'disabled' : ''} title="${titleText}"><i data-lucide="eye" style="width:14px"></i></button>
                             <button class="btn btn-sm btn-success" onclick="openApproveModal('${req.id}')" ${actionDisabled ? 'disabled' : ''} title="Aprobar"><i data-lucide="check" style="width:14px"></i></button>
                             ${returnBtnHtml}
                             <button class="btn btn-sm btn-danger" onclick="openRejectModal('${req.id}')" ${actionDisabled ? 'disabled' : ''} title="Rechazar"><i data-lucide="x" style="width:14px"></i></button>
-                            ${isTakenByMe ? `<button class="btn btn-sm btn-outline-secondary" onclick="unlockRequest('${req.id}')" title="Desbloquear Solicitud"><i data-lucide="unlock" style="width:14px"></i></button>` : ''}
+                            ${unlockBtnHtml}
                         </div>`;
                     } else if (status === 'Aprobado') {
                          // ACTUALIZADO: Ocultar botón exonerar si el importe es 0
@@ -1648,6 +1675,14 @@
 
         function submitFinalRequest() {
             tempRequestsList.forEach(item => {
+                // Determinar estado: Por defecto 'Aprobado' si es Auto, 'Análisis' si no.
+                let initialStatus = item.validationType === 'Automática' ? 'Aprobado' : 'Análisis';
+                
+                // MODIFICADO: Para el perfil Supervisor (Administrador), siempre enviar a 'Análisis'
+                if (currentProfile === 'supervisor') {
+                    initialStatus = 'Análisis';
+                }
+
                 requests.push({ 
                     id: `2026-${Math.floor(Math.random()*90000)}`, 
                     date: '28/01/2026 20:30', 
@@ -1657,11 +1692,17 @@
                     doc: item.docType, 
                     physicalNumber: item.titularDocNum, // MAPEO CORRECTO
                     signatureType: item.signature,
-                    status: item.validationType === 'Automática' ? 'Aprobado' : 'Análisis', 
+                    status: initialStatus, 
                     lockedBy: null,
                     origin: 'Funcionario' 
                 });
             });
+
+            // Si es Supervisor, forzar la vista a Análisis para ver el nuevo registro
+            if (currentProfile === 'supervisor') {
+                currentStatus = 'Análisis';
+            }
+
             backToDashboard();
         }
 
@@ -2044,6 +2085,177 @@
                     req.exonerationReason = null;
                     document.getElementById('verifyAmountDisplay').innerText = `Gs. ${req.amount.toLocaleString('es-PY')}`;
                 }
+            }
+        }
+
+        // NUEVA FUNCIÓN PARA EL BOTÓN DE LA GRILLA (DASHBOARD)
+        function exonerateRequest(id) {
+            actionTargetId = id; // Guardamos el ID para usarlo en confirmExoneration
+            const txt = document.getElementById('exonerationObs');
+            txt.value = '';
+            txt.classList.remove('is-invalid'); // Limpiar estado de error previo
+            document.getElementById('exonerationModal').style.display = 'flex';
+            lucide.createIcons();
+        }
+
+        // FUNCIÓN CONFIRMAR ACTUALIZADA (SOPORTA AMBOS CONTEXTOS)
+        function confirmExoneration() {
+            const obsInput = document.getElementById('exonerationObs');
+            const obs = obsInput.value;
+            
+            // VALIDACIÓN VISUAL
+            if(!obs.trim()) {
+                obsInput.classList.add('is-invalid');
+                return;
+            }
+            obsInput.classList.remove('is-invalid');
+
+            // Detectar contexto: ¿Estamos en Verificación o en Dashboard?
+            const isVerificationContext = !document.getElementById('verificationView').classList.contains('hidden');
+            
+            // Determinar ID objetivo
+            const targetId = isVerificationContext ? currentVerificationId : actionTargetId;
+            const req = requests.find(r => r.id === targetId);
+
+            if(req) {
+                // --- ACCIÓN PRINCIPAL: CERAR EL IMPORTE ---
+                req.amount = 0; 
+                req.exonerationReason = obs;
+                
+                // MODIFICADO: Ya NO cambia el estado a 'Finalizados' automáticamente.
+                // Se mantiene en el estado actual para que el funcionario continúe el flujo (Aprobar).
+                
+                if (isVerificationContext) {
+                    // Lógica para pantalla de verificación (Solo actualiza visualmente el monto)
+                    const display = document.getElementById('verifyAmountDisplay');
+                    if(display) display.innerText = "Gs. 0";
+                } else {
+                    // Lógica para pantalla dashboard (Si se usara desde allí)
+                    filterTable(currentStatus); 
+                }
+            }
+            
+            document.getElementById('exonerationModal').style.display = 'none';
+        }
+
+        // FUNCIÓN CANCELAR ACTUALIZADA
+        function cancelExoneration() {
+            document.getElementById('exonerationModal').style.display = 'none';
+            document.getElementById('exonerationObs').classList.remove('is-invalid'); // Limpiar error
+            
+            // Solo si estamos en verificación revertimos el select
+            const isVerificationContext = !document.getElementById('verificationView').classList.contains('hidden');
+            if (isVerificationContext) {
+                const select = document.getElementById('verifyExonerateSelect');
+                if(select) select.value = 'No';
+            }
+            // En dashboard no hace falta revertir nada visual extra
+        }
+
+        function backToDashboard() {
+            document.getElementById('verificationView').classList.add('hidden');
+            document.getElementById('liquidationView').classList.add('hidden');
+            document.getElementById('newRequestView').classList.add('hidden');
+            document.getElementById('dashboardView').classList.remove('hidden');
+            
+            // MODIFICADO: Asegurar que el tab correcto esté activo visualmente
+            let btnId = '';
+            if (currentStatus === 'Análisis') btnId = 'btn-analisis';
+            else if (currentStatus === 'Aprobado') btnId = 'btn-aprobado';
+            else if (currentStatus === 'Devuelto') btnId = 'btn-devuelto';
+            else if (currentStatus === 'Rechazado') btnId = 'btn-rechazado';
+            else if (currentStatus === 'Finalizados') btnId = 'btn-finalizados';
+            
+            const btn = document.getElementById(btnId);
+            filterTable(currentStatus, btn);
+        }
+
+        function processApprove() {
+            const req = requests.find(r => r.id === actionTargetId || r.lockedBy === 'Me');
+            req.status = 'Aprobado';
+            req.lockedBy = null;
+            closePopup();
+            backToDashboard();
+        }
+
+        function processReturn() {
+            const obsInput = document.getElementById('returnObs');
+            const obs = obsInput.value;
+            
+            // VALIDACIÓN VISUAL
+            if(!obs.trim()) {
+                obsInput.classList.add('is-invalid');
+                return;
+            }
+            obsInput.classList.remove('is-invalid');
+
+            const req = requests.find(r => r.id === actionTargetId || r.lockedBy === 'Me');
+            req.status = 'Devuelto';
+            req.lockedBy = null;
+            closePopup();
+            backToDashboard();
+        }
+
+        function processReject() {
+            const obsInput = document.getElementById('rejectObs');
+            const obs = obsInput.value;
+            
+            // VALIDACIÓN VISUAL
+            if(!obs.trim()) {
+                obsInput.classList.add('is-invalid');
+                return;
+            }
+            obsInput.classList.remove('is-invalid');
+
+            const req = requests.find(r => r.id === actionTargetId || r.lockedBy === 'Me');
+            req.status = 'Rechazado';
+            req.lockedBy = null;
+            closePopup();
+            backToDashboard();
+        }
+
+        function reconsiderRequest(id) {
+            actionTargetId = id; // Guardamos el ID para usarlo en confirmReconsideration
+            const txt = document.getElementById('reconsiderObs');
+            txt.value = '';
+            txt.classList.remove('is-invalid'); // Limpiar estado de error previo
+            document.getElementById('reconsiderModal').style.display = 'flex';
+            lucide.createIcons();
+        }
+
+        function confirmReconsideration() {
+            const obsInput = document.getElementById('reconsiderObs');
+            const obs = obsInput.value;
+            
+            // VALIDACIÓN VISUAL
+            if (!obs.trim()) {
+                obsInput.classList.add('is-invalid');
+                return;
+            }
+            obsInput.classList.remove('is-invalid');
+
+            const req = requests.find(r => r.id === actionTargetId);
+            if (req) {
+                req.status = 'Análisis';
+                req.lockedBy = null; // Se libera el bloqueo para que cualquiera pueda tomarla
+                // Aquí se podría guardar 'obs' en el historial de la solicitud
+                console.log(`Solicitud #${req.id} reconsiderada. Motivo: ${obs}`);
+                filterTable(currentStatus); // Se refresca la tabla actual (el item desaparecerá de Rechazados)
+            }
+            document.getElementById('reconsiderModal').style.display = 'none';
+        }
+
+        function unlockRequest(id) {
+            if (currentProfile === 'supervisor') {
+                if(confirm('¿Está seguro de desbloquear esta solicitud asignada a otro funcionario?')) {
+                    const req = requests.find(r => r.id === id);
+                    req.lockedBy = null;
+                    filterTable(currentStatus);
+                }
+            } else {
+                const req = requests.find(r => r.id === id);
+                req.lockedBy = null;
+                filterTable(currentStatus);
             }
         }
 
