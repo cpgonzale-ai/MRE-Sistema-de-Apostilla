@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIA-PY | Sistema de Apostilla Electrónica</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --mre-blue: #002855;
+            --mre-blue-light: #0038A8;
+            --mre-red: #D52B1E;
+            --soft-bg: #f0f4f8; 
+            --border-color: #E2E8F0;
+            --input-bg: #F8FAFC;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 40, 85, 0.05);
+        }
+
+        body { font-family: 'Inter', sans-serif; margin: 0; background-color: var(--soft-bg); color: #1E293B; scroll-behavior: smooth; }
+        .hidden { display: none !important; }
+
+        /* Estilos Landing */
+        .landing-blue { color: #003366; }
+        .bg-landing-mre { background-color: #003366; }
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- ESTILOS SIA-PY (IDÉNTICOS) --- */
+        .elegant-background { position: fixed; inset: 0; z-index: -1; background-color: #f8fafc; background-image: radial-gradient(at 0% 0%, rgba(0, 56, 168, 0.08) 0px, transparent 50%), radial-gradient(at 100% 0%, rgba(213, 43, 30, 0.05) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(0, 40, 85, 0.06) 0px, transparent 50%), radial-gradient(at 50% 50%, rgba(255, 255, 255, 0.8) 0px, transparent 100%); }
+        .bg-pattern { position: absolute; width: 100%; height: 100%; opacity: 0.5; background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23002855' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+        #authSection { min-height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; overflow-x: hidden; }
+        .auth-card { background: #ffffff; border-radius: 32px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 25px 50px -12px rgba(0, 40, 85, 0.15), 0 0 0 1px rgba(0, 40, 85, 0.05); width: 100%; max-width: 440px; padding: 2.2rem 2.5rem; position: relative; z-index: 10; transition: all 0.3s ease; }
+        .auth-card.wide-mode { max-width: 650px; }
+        .tricolor-line { height: 5px; width: 120px; background: linear-gradient(to right, var(--mre-red) 33.3%, #ffffff 33.3%, #ffffff 66.6%, var(--mre-blue-light) 66.6%); position: absolute; top: 0; left: 50%; transform: translateX(-50%); border-bottom-left-radius: 6px; border-bottom-right-radius: 6px; }
+        .system-title { color: var(--mre-blue); font-weight: 900; letter-spacing: -1.5px; font-size: 1.8rem; margin-bottom: 0.1rem; }
+        .system-subtitle { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 4px; color: #94A3B8; font-weight: 800; }
+        .form-label-mre { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #64748B; margin-bottom: 0.3rem; display: block; letter-spacing: 0.8px; text-align: left; }
+        .required-star { color: var(--mre-red); margin-left: 2px; font-weight: bold; }
+        .input-wrapper { position: relative; margin-bottom: 0.4rem; }
+        .input-icon-mre { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #94A3B8; }
+        .form-control-mre { background-color: var(--input-bg); border: 1px solid #E2E8F0; border-radius: 14px; padding: 0.8rem 1rem 0.8rem 3rem; font-size: 0.85rem; width: 100%; transition: all 0.25s ease; color: var(--mre-blue); font-weight: 500; }
+        .form-control-mre:focus { background-color: #ffffff; border-color: var(--mre-blue-light); box-shadow: 0 0 0 4px rgba(0, 56, 168, 0.08); outline: none; }
+        .btn-toggle-pass { position: absolute; right: 0.8rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94A3B8; padding: 5px; display: flex; align-items: center; cursor: pointer; }
+        .recovery-link { font-size: 0.65rem; color: var(--mre-blue-light); text-decoration: none; font-weight: 700; transition: color 0.2s; display: inline-block; margin-top: 4px; }
+        .btn-main-mre { background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); color: #ffffff; border: none; border-radius: 14px; padding: 0.95rem; font-weight: 800; width: 100%; margin-top: 1rem; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.2px; box-shadow: 0 10px 15px -3px rgba(0, 40, 85, 0.15); transition: all 0.3s ease; cursor: pointer; }
+        .btn-idp-prominent { background: #ffffff; border: 2px solid var(--mre-blue); color: var(--mre-blue); border-radius: 14px; padding: 0.95rem; font-weight: 800; width: 100%; display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s ease; cursor: pointer; }
+        .divider { display: flex; align-items: center; text-align: center; margin: 1.5rem 0; color: #CBD5E1; font-size: 0.6rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }
+        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #E2E8F0; }
+        .divider:not(:empty)::before { margin-right: 1rem; }
+        .divider:not(:empty)::after { margin-left: 1rem; }
+        .mre-modal-overlay { position: fixed; inset: 0; background: rgba(0, 40, 85, 0.2); backdrop-filter: blur(8px); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .mre-modal { background: white; border-radius: 24px; max-width: 500px; width: 100%; padding: 2.5rem; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.2); border: 1px solid rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- VISTA 1: PORTAL INFORMATIVO COMPLETO -->
+    <div id="view-landing" class="fade-in">
+        <!-- Navbar -->
+        <nav class="bg-white shadow-md sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-20 items-center">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex flex-col text-left">
+                            <span class="text-[10px] font-bold text-red-600 tracking-widest uppercase leading-none">Gobierno del Paraguay</span>
+                            <span class="text-lg font-extrabold landing-blue leading-tight">MRE | Relaciones Exteriores</span>
+                        </div>
+                    </div>
+                    <div class="hidden lg:flex space-x-6 font-medium text-xs uppercase tracking-wider">
+                        <a href="#inicio" class="landing-blue hover:text-red-600 transition">Inicio</a>
+                        <a href="#conceptos" class="text-gray-600 hover:text-mre transition">Conceptos</a>
+                        <a href="#requisitos" class="text-gray-600 hover:text-mre transition">Trámites</a>
+                        <a href="#costos" class="text-gray-600 hover:text-mre transition">Costos</a>
+                        <a href="#paises" class="text-gray-600 hover:text-mre transition">Países</a>
+                    </div>
+                    <div>
+                        <button onclick="showControlAcceso()" class="bg-landing-mre text-white px-6 py-2 rounded-full font-bold shadow-lg transition transform hover:scale-105 text-xs uppercase">
+                            Iniciar Solicitud Online
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <header id="inicio" class="relative bg-landing-mre text-white py-20 overflow-hidden">
+            <div class="absolute inset-0 opacity-10">
+                <svg class="h-full w-full" fill="currentColor" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <path d="M0 100 C 20 0 50 0 100 100 Z"></path>
+                </svg>
+            </div>
+            <div class="max-w-7xl mx-auto px-4 relative z-10 grid md:grid-cols-2 gap-12 items-center text-left">
+                <div class="fade-in">
+                    <h1 class="text-4xl lg:text-6xl font-black mb-6 leading-tight">
+                        Apostilla y Legalización <br><span class="text-blue-300 underline decoration-red-500">Electrónica.</span>
+                    </h1>
+                    <p class="text-lg mb-8 text-blue-100 max-w-lg">
+                        Todo documento que deba surtir un efecto jurídico en el extranjero puede ser legalizado o apostillado, dependiendo del país donde será utilizado.
+                    </p>
+                    <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                        <button onclick="showControlAcceso()" class="bg-white text-blue-900 px-8 py-4 rounded-xl font-bold text-lg shadow-2xl hover:bg-blue-50 transition text-center">
+                            <i class="fa-solid fa-file-signature mr-2"></i> Solicitar Ahora
+                        </button>
+                        <a href="https://www.mre.gov.py/" target="_blank" class="border-2 border-white/30 hover:border-white px-8 py-4 rounded-xl font-bold text-lg transition text-center">
+                            Verificar Validez
+                        </a>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="bg-white/10 p-6 rounded-3xl backdrop-blur-sm border border-white/20 text-center">
+                        <i class="fa-solid fa-stamp text-7xl mb-4 text-blue-200"></i>
+                        <p class="font-bold text-sm uppercase opacity-50">Validez Internacional</p>
+                        <p class="text-xs mt-2 italic">Simplificando trámites para el ciudadano en el mundo.</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Conceptos Section -->
+        <section id="conceptos" class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-blue-900">¿Cómo sé si necesito apostilla o legalización?</h2>
+                    <div class="h-1 w-20 bg-red-600 mx-auto mt-4 rounded-full"></div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-12">
+                    <div class="bg-blue-50 p-8 rounded-3xl border border-blue-100 text-left">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-blue-900 rounded-xl flex items-center justify-center mr-4">
+                                <i class="fa-solid fa-file-contract text-white text-xl"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold text-blue-900">Apostilla</h2>
+                        </div>
+                        <p class="text-gray-700 leading-relaxed text-sm mb-4">
+                            El Convenio de La Haya (1961) facilita la circulación de documentos públicos entre los Estados parte. 
+                            <strong>No requiere actuación consular extranjera.</strong> Es una legalización simplificada que permite usar un mismo documento en varios países miembros.
+                        </p>
+                        <ul class="text-xs space-y-2 text-blue-800 font-medium">
+                            <li><i class="fa-solid fa-check mr-2"></i> Trámite único y definitivo.</li>
+                            <li><i class="fa-solid fa-check mr-2"></i> Sin pasos posteriores en consulados.</li>
+                            <li class="text-red-600 italic">Exclusivo para el extranjero, sin validez nacional.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-gray-50 p-8 rounded-3xl border border-gray-200 text-left">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-gray-400 rounded-xl flex items-center justify-center mr-4">
+                                <i class="fa-solid fa-signature text-white text-xl"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-700">Legalización</h2>
+                        </div>
+                        <p class="text-gray-700 leading-relaxed text-sm mb-4">
+                            Se realiza cuando el país de destino no es parte del Convenio de La Haya. El MRE certifica la firma y luego el documento <strong>debe presentarse ante el consulado extranjero</strong> acreditado en Paraguay.
+                        </p>
+                        <ul class="text-xs space-y-2 text-gray-600">
+                            <li><i class="fa-solid fa-arrow-right mr-2"></i> Requiere trámite consular posterior.</li>
+                            <li><i class="fa-solid fa-arrow-right mr-2"></i> Para países fuera del convenio (ej. Taiwán tiene acuerdo especial).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tutorial Section -->
+        <section class="py-16 bg-gray-100 border-y border-gray-200">
+            <div class="max-w-4xl mx-auto px-4 text-center">
+                <h2 class="text-3xl font-bold text-blue-900 mb-8">Video Tutorial de Gestión</h2>
+                <div class="relative rounded-3xl shadow-2xl bg-black aspect-video overflow-hidden">
+                    <iframe class="w-full h-full" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Tutorial" frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>
+        </section>
+
+        <!-- Requisitos por Institución Section -->
+        <section id="requisitos" class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-blue-900">Guía de Trámites por Institución</h2>
+                    <p class="text-gray-500 mt-2">Pasos previos antes de solicitar la apostilla en el MRE</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Registro Civil -->
+                    <div class="border border-gray-100 rounded-2xl p-6 bg-white hover:shadow-xl transition text-left group">
+                        <span class="text-blue-900 font-black text-xs opacity-30 group-hover:opacity-100">01</span>
+                        <h3 class="font-bold text-lg mb-3">Registro Civil</h3>
+                        <p class="text-xs text-gray-500 mb-4">Nacimiento, Matrimonio, Defunción.</p>
+                        <div class="text-xs space-y-1">
+                            <p>1. Registro Civil Central (Lapacho)</p>
+                            <p>2. MRE (Ventanilla en Registro Civil)</p>
+                        </div>
+                    </div>
+                    <!-- Identificaciones -->
+                    <div class="border border-gray-100 rounded-2xl p-6 bg-white hover:shadow-xl transition text-left group">
+                        <span class="text-blue-900 font-black text-xs opacity-30 group-hover:opacity-100">02</span>
+                        <h3 class="font-bold text-lg mb-3">Identificaciones</h3>
+                        <p class="text-xs text-gray-500 mb-4">Antecedentes, Pasaportes, Vida/Residencia.</p>
+                        <div class="text-xs space-y-1">
+                            <p>1. Identificaciones / Ministerio del Interior</p>
+                            <p>2. MRE (Sede Boggiani)</p>
+                        </div>
+                    </div>
+                    <!-- MEC -->
+                    <div class="border border-gray-100 rounded-2xl p-6 bg-white hover:shadow-xl transition text-left group">
+                        <span class="text-blue-900 font-black text-xs opacity-30 group-hover:opacity-100">03</span>
+                        <h3 class="font-bold text-lg mb-3">Educación (MEC)</h3>
+                        <p class="text-xs text-gray-500 mb-4">Certificados, Títulos, Analíticos.</p>
+                        <div class="text-xs space-y-1">
+                            <p>1. Institución Educativa</p>
+                            <p>2. Legalizaciones MEC (Pte. Franco y Colón)</p>
+                            <p>3. MRE (Sede Central)</p>
+                        </div>
+                    </div>
+                    <!-- Judicial -->
+                    <div class="border border-gray-100 rounded-2xl p-6 bg-white hover:shadow-xl transition text-left group">
+                        <span class="text-blue-900 font-black text-xs opacity-30 group-hover:opacity-100">04</span>
+                        <h3 class="font-bold text-lg mb-3">Poder Judicial</h3>
+                        <p class="text-xs text-gray-500 mb-4">Permiso Menor, Poderes, Sentencias.</p>
+                        <div class="text-xs space-y-1">
+                            <p>1. Juzgado / Escribanía</p>
+                            <p>2. Secretaría General CSJ</p>
+                            <p>3. MRE (Sede Central)</p>
+                        </div>
+                    </div>
+                    <!-- Otros OEE -->
+                    <div class="border border-gray-100 rounded-2xl p-6 bg-white hover:shadow-xl transition text-left group">
+                        <span class="text-blue-900 font-black text-xs opacity-30 group-hover:opacity-100">05</span>
+                        <h3 class="font-bold text-lg mb-3">Otras Entidades</h3>
+                        <p class="text-xs text-gray-500 mb-4">Migraciones, Becal, Marcas, SENACSA.</p>
+                        <div class="text-xs space-y-1">
+                            <p>1. Secretaría General de la OEE correspondiente</p>
+                            <p>2. MRE (Sede Central)</p>
+                        </div>
+                    </div>
+                    <!-- Salud -->
+                    <div class="border border-gray-100 rounded-2xl p-6 bg-white hover:shadow-xl transition text-left group">
+                        <span class="text-blue-900 font-black text-xs opacity-30 group-hover:opacity-100">06</span>
+                        <h3 class="font-bold text-lg mb-3">Salud Pública</h3>
+                        <p class="text-xs text-gray-500 mb-4">Certificados Médicos, Vigilancia Sanitaria.</p>
+                        <div class="text-xs space-y-1">
+                            <p>1. MSPBS (Control de Profesiones)</p>
+                            <p>2. MRE (Sede Central)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Costos Section -->
+        <section id="costos" class="py-20 bg-blue-900 text-white">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="text-center mb-10 text-left md:text-center">
+                    <h2 class="text-3xl font-bold">Costos Vigentes (Ley 1030/97)</h2>
+                    <p class="text-blue-300 mt-2">Tasas por documento para trámites nacionales y extranjeros</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8 text-left">
+                    <div class="bg-white/5 rounded-3xl p-8 border border-white/10">
+                        <h3 class="text-xl font-bold mb-6 flex items-center"><i class="fa-solid fa-flag mr-3 text-red-400"></i> Documentos Nacionales</h3>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between border-b border-white/10 pb-2"><span>Apostilla (Cualquier doc.)</span><span class="font-bold text-red-400">223.000 Gs.</span></div>
+                            <div class="flex justify-between border-b border-white/10 pb-2"><span>Nacimiento / Matrimonio</span><span>55.750 Gs.</span></div>
+                            <div class="flex justify-between border-b border-white/10 pb-2"><span>Defunción / Poderes</span><span>111.500 Gs.</span></div>
+                            <div class="flex justify-between border-b border-white/10 pb-2"><span>Antecedentes / Permiso Menor</span><span>55.750 Gs.</span></div>
+                            <div class="flex justify-between"><span>Sentencias / Exhortos</span><span>334.500 Gs.</span></div>
+                        </div>
+                    </div>
+                    <div class="bg-white/5 rounded-3xl p-8 border border-white/10">
+                        <h3 class="text-xl font-bold mb-6 flex items-center"><i class="fa-solid fa-earth-americas mr-3 text-blue-400"></i> Documentos Extranjeros</h3>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between border-b border-white/10 pb-2"><span>Estudios (Colegio/Univ.)</span><span class="font-bold text-blue-400">223.000 Gs.</span></div>
+                            <div class="flex justify-between border-b border-white/10 pb-2"><span>Nacimiento / Antecedentes</span><span>334.500 Gs.</span></div>
+                            <div class="flex justify-between border-b border-white/10 pb-2"><span>Sociedades / Contratos</span><span>557.500 Gs.</span></div>
+                            <div class="flex justify-between"><span>Adopción Internacional</span><span>1.115.000 Gs.</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Paises Section -->
+        <section id="paises" class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 text-center">
+                <h2 class="text-3xl font-bold text-blue-900 mb-8">Países Partes del Convenio</h2>
+                <div class="bg-gray-50 rounded-3xl p-8 h-60 overflow-y-auto border border-gray-200">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 text-[10px] font-bold text-gray-600 uppercase">
+                        <span>Albania</span><span>Alemania</span><span>Argentina</span><span>Australia</span><span>Austria</span>
+                        <span>Bahamas</span><span>Bélgica</span><span>Bolivia</span><span>Brasil</span><span>Canadá</span>
+                        <span>Chile</span><span>China (HK)</span><span>Colombia</span><span>Costa Rica</span><span>Dinamarca</span>
+                        <span>Ecuador</span><span>El Salvador</span><span>España</span><span>Estados Unidos</span><span>Francia</span>
+                        <span>Grecia</span><span>Guatemala</span><span>Honduras</span><span>Italia</span><span>Japón</span>
+                        <span>México</span><span>Nicaragua</span><span>Panamá</span><span>Perú</span><span>Uruguay</span>
+                    </div>
+                    <p class="mt-6 text-xs text-blue-900 italic font-bold">...y más de 120 estados miembros de la HCCH.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final Footer -->
+        <footer class="bg-gray-900 text-white py-16 text-left">
+            <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-3 gap-12">
+                <div>
+                    <h4 class="font-bold mb-4 uppercase tracking-widest text-red-500">MRE Paraguay</h4>
+                    <p class="text-sm text-gray-400">Palma y 14 de Mayo, Palacio Benigno López. Asunción, Paraguay.</p>
+                    <div class="mt-6 flex space-x-4">
+                        <a href="#" class="text-gray-500 hover:text-white"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" class="text-gray-500 hover:text-white"><i class="fa-brands fa-x"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4 uppercase tracking-widest text-blue-400">Atención</h4>
+                    <ul class="text-sm text-gray-400 space-y-2">
+                        <li><i class="fa-solid fa-phone mr-2"></i> (+595 21) 414 8000</li>
+                        <li><i class="fa-solid fa-mobile-button mr-2"></i> Guardia: +595-994-263-060</li>
+                        <li><i class="fa-solid fa-clock mr-2"></i> Lunes a Viernes 07:30 - 15:00 hs</li>
+                    </ul>
+                </div>
+                <div class="text-center md:text-right">
+                    <button onclick="showControlAcceso()" class="bg-red-600 text-white px-10 py-4 rounded-xl font-black text-xl hover:bg-red-700 shadow-xl transition transform hover:-translate-y-1 mb-4">
+                        INICIAR TRÁMITE ONLINE
+                    </button>
+                    <p class="text-[10px] text-gray-600">© 2025 Ministerio de Relaciones Exteriores del Paraguay.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- VISTA 2: SISTEMA SIA-PY (IDÉNTICO AL CÓDIGO PROPORCIONADO) -->
+    <div id="view-control-acceso" class="hidden">
+        <div class="elegant-background"></div>
+        <div class="bg-pattern"></div>
+
+        <section id="authSection">
+            <!-- Modal Ayuda -->
+            <div class="mre-modal-overlay" id="helpModal">
+                <div class="mre-modal text-center">
+                    <button class="btn-close position-absolute top-0 end-0 m-4" onclick="closeHelp()"></button>
+                    <h5 class="fw-black text-uppercase mb-3" style="color: var(--mre-blue)">Ayuda: Número de Documento</h5>
+                    <p class="text-muted small">Por favor, ingrese el número resaltado en el recuadro rojo de su documento original.</p>
+                    <div style="background: #F8FAFC; border: 2px dashed #E2E8F0; border-radius: 16px; padding: 25px; margin: 20px 0;">
+                        <div class="d-flex justify-content-between mb-3 text-left">
+                            <span class="small fw-bold text-muted text-uppercase">Pasaporte / DNI Extranjero</span>
+                            <span style="border: 2px solid var(--mre-red); padding: 4px 8px; color: var(--mre-red); font-weight: 900; border-radius: 4px;">N° 12345678</span>
+                        </div>
+                        <div style="height: 100px; background: #EDF2F7; border-radius: 8px; display:flex; align-items:center; justify-content:center; color: #A0AEC0;">
+                            [Imagen con Recuadro Rojo]
+                        </div>
+                    </div>
+                    <button class="btn btn-primary w-100 rounded-pill fw-bold py-2" style="background: var(--mre-blue); border: none;" onclick="closeHelp()">Entendido</button>
+                </div>
+            </div>
+
+            <!-- Login Screen SIA-PY -->
+            <div class="auth-card text-center" id="loginScreen">
+                <div class="tricolor-line"></div>
+                <div class="logo-section">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-white p-2 rounded-4 mb-3" style="box-shadow: 0 8px 16px rgba(0, 40, 85, 0.08); width: 64px; height: 64px; border: 1px solid #E2E8F0;">
+                        <i data-lucide="globe" class="text-primary" style="width: 32px; height: 32px; color: var(--mre-blue) !important;"></i>
+                    </div>
+                    <h1 class="system-title text-uppercase">SIA-PY</h1>
+                    <p class="system-subtitle">Apostilla Electrónica</p>
+                </div>
+                
+                <form class="text-start mt-4" id="formLogin">
+                    <div class="mb-3">
+                        <label class="form-label-mre">Correo Electrónico <span class="required-star">*</span></label>
+                        <div class="input-wrapper">
+                            <i data-lucide="mail" class="input-icon-mre" style="width: 16px;"></i>
+                            <input type="email" class="form-control-mre" placeholder="ejemplo@correo.com.py" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-mre">Contraseña <span class="required-star">*</span></label>
+                        <div class="input-wrapper">
+                            <i data-lucide="lock" class="input-icon-mre" style="width: 16px;"></i>
+                            <input type="password" class="form-control-mre" placeholder="••••••••••••" id="loginPass" required>
+                            <button type="button" class="btn-toggle-pass" onclick="togglePassword('loginPass', 'loginEye')">
+                                <i data-lucide="eye" id="loginEye" style="width: 18px;"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-main-mre">Ingresar al Sistema</button>
+                    <div class="divider">O acceder mediante</div>
+                    <button type="button" class="btn-idp-prominent mb-2" onclick="alert('Redirigiendo a Identidad Electrónica...')">
+                        <div class="d-flex" style="height: 14px; width: 22px; border-radius: 2px; overflow: hidden; border: 1px solid rgba(0,0,0,0.1);">
+                            <div class="h-100" style="width: 33.3%; background: var(--mre-red);"></div>
+                            <div class="h-100" style="width: 33.3%; background: #ffffff;"></div>
+                            <div class="h-100" style="width: 33.3%; background: var(--mre-blue-light);"></div>
+                        </div>
+                        Identidad Electrónica
+                    </button>
+                    <div class="text-center mt-4">
+                        <p style="font-size: 0.75rem; font-weight: 700; color: #64748B;">¿No tienes cuenta? <a href="#" style="color: var(--mre-blue);">Regístrate ahora</a></p>
+                        <button type="button" onclick="showLanding()" class="btn btn-link text-muted small mt-2 uppercase tracking-tighter text-decoration-none font-bold">Volver al portal informativo</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Inicializar Iconos Lucide
+        lucide.createIcons();
+
+        // NAVEGACIÓN
+        function showControlAcceso() {
+            document.getElementById('view-landing').classList.add('hidden');
+            document.getElementById('view-control-acceso').classList.remove('hidden');
+            window.scrollTo(0,0);
+        }
+
+        function showLanding() {
+            document.getElementById('view-control-acceso').classList.add('hidden');
+            document.getElementById('view-landing').classList.remove('hidden');
+            window.scrollTo(0,0);
+        }
+
+        function togglePassword(inputId, eyeId) {
+            const input = document.getElementById(inputId); 
+            const eye = document.getElementById(eyeId);
+            const isPassword = input.getAttribute('type') === 'password';
+            input.setAttribute('type', isPassword ? 'text' : 'password');
+            eye.setAttribute('data-lucide', isPassword ? 'eye-off' : 'eye');
+            lucide.createIcons();
+        }
+
+        function openHelp() { document.getElementById('helpModal').style.display = 'flex'; lucide.createIcons(); }
+        function closeHelp() { document.getElementById('helpModal').style.display = 'none'; }
+
+        // Navegación suave para anclas del landing
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if(target) target.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>
