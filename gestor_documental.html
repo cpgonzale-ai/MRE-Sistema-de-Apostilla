@@ -26,7 +26,8 @@ import {
   Home,
   Shield,
   CheckSquare,
-  Square
+  Square,
+  ArrowLeft
 } from 'lucide-react';
 
 // --- COMPONENTES AUXILIARES (Definidos fuera para evitar re-renderizados innecesarios) ---
@@ -292,12 +293,6 @@ const ValidateDocumentView = () => {
 };
 
 const CreateDocumentView = ({ setActiveTab, documents, setDocuments }) => {
-  // ... (El código de CreateDocumentView se mantiene igual, no lo modifico para enfocarme en IntegrationView)
-  // ... (Se asume que este componente sigue aquí como en la versión anterior)
-  // Por brevedad, solo incluyo el contenido si es necesario modificarlo, pero la solicitud es sobre IntegrationView.
-  // Para que el código compile, necesito incluirlo o al menos la firma.
-  // Voy a mantener el código original de CreateDocumentView para asegurar que no se pierda funcionalidad.
-  
   const [step, setStep] = useState(1);
   const [creationMode, setCreationMode] = useState('word');
   const [uploading, setUploading] = useState(false);
@@ -389,14 +384,10 @@ const CreateDocumentView = ({ setActiveTab, documents, setDocuments }) => {
       setStep(4);
   };
 
-  // Rendering del componente CreateDocumentView
   return (
     <div className="max-w-4xl mx-auto space-y-8 relative animate-fadeIn">
-        {/* ... (Contenido idéntico al anterior para CreateDocumentView) ... */}
-        {/* Simplificado para enfocarse en IntegrationView, pero manteniendo estructura */}
         {step < 4 && (
             <div className="flex items-center justify-between px-10 relative">
-                {/* Stepper simulado */}
                 {[1, 2, 3].map(s => (
                     <div key={s} className={`flex flex-col items-center px-2 ${step >= s ? 'text-blue-900' : 'text-slate-400'}`}>
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold border-2 ${step >= s ? 'bg-blue-900 text-white' : 'bg-white'}`}>{s}</div>
@@ -464,12 +455,15 @@ const IntegrationView = ({ documents }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [selectedExpediente, setSelectedExpediente] = useState(null);
-  const [selectedDocs, setSelectedDocs] = useState([]); // Array de IDs de documentos seleccionados
+  const [selectedDocs, setSelectedDocs] = useState([]); 
+  
+  // Nuevos estados para el buscador de documentos y la vista de resumen
+  const [docSearchTerm, setDocSearchTerm] = useState('');
+  const [showSummary, setShowSummary] = useState(false);
 
   // Simular búsqueda de expedientes
   const handleSearch = () => {
     if (searchTerm.length > 3) {
-        // Simulación de resultados de API
         setSearchResults([
             { id: 'EXP-2026-8812', title: 'Solicitud de Insumos - Dpto. IT', area: 'Tecnología' },
             { id: 'EXP-2026-9923', title: 'Auditoría Financiera Q1', area: 'Finanzas' },
@@ -482,13 +476,14 @@ const IntegrationView = ({ documents }) => {
 
   const handleSelectExpediente = (exp) => {
       setSelectedExpediente(exp);
-      setSearchResults([]); // Limpiar resultados para "enfocar" la selección
-      setSearchTerm(''); // Limpiar término
+      setSearchResults([]); 
+      setSearchTerm(''); 
   };
 
   const handleClearExpediente = () => {
       setSelectedExpediente(null);
-      setSelectedDocs([]); // Reiniciar selección de documentos al cambiar expediente
+      setSelectedDocs([]); 
+      setDocSearchTerm('');
   };
 
   const toggleDocSelection = (docId) => {
@@ -501,12 +496,83 @@ const IntegrationView = ({ documents }) => {
 
   const handleConfirmLink = () => {
       if (selectedDocs.length > 0 && selectedExpediente) {
-          alert(`Se han vinculado exitosamente ${selectedDocs.length} documentos al expediente ${selectedExpediente.id}.`);
-          // Resetear estado
-          handleClearExpediente();
+          setShowSummary(true); // Cambiar a la vista de resumen
       }
   };
 
+  const handleFinish = () => {
+      setShowSummary(false);
+      handleClearExpediente();
+  };
+
+  // Filtrado de documentos del repositorio
+  const filteredDocs = documents.filter(doc => 
+      doc.title.toLowerCase().includes(docSearchTerm.toLowerCase()) || 
+      doc.id.toLowerCase().includes(docSearchTerm.toLowerCase())
+  );
+
+  // Vista de Resumen (Confirmación)
+  if (showSummary) {
+      return (
+          <div className="space-y-6 animate-fadeIn">
+              <div className="bg-green-50 border border-green-200 p-6 rounded-xl flex items-center space-x-4">
+                  <div className="bg-green-100 p-3 rounded-full text-green-700">
+                      <CheckCircle size={32} />
+                  </div>
+                  <div>
+                      <h3 className="text-xl font-bold text-green-900">¡Vinculación Exitosa!</h3>
+                      <p className="text-green-700">Se han asociado correctamente los documentos seleccionados al expediente.</p>
+                  </div>
+              </div>
+
+              <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
+                  <h4 className="font-bold text-slate-800 mb-4 pb-2 border-b border-slate-100">Resumen de Operación</h4>
+                  
+                  <div className="grid grid-cols-2 gap-8 mb-6">
+                      <div>
+                          <p className="text-xs text-slate-500 uppercase font-semibold mb-1">Expediente Destino</p>
+                          <div className="bg-indigo-50 p-3 rounded-lg border border-indigo-100">
+                              <p className="font-bold text-indigo-900">{selectedExpediente.id}</p>
+                              <p className="text-sm text-indigo-800">{selectedExpediente.title}</p>
+                          </div>
+                      </div>
+                      <div>
+                          <p className="text-xs text-slate-500 uppercase font-semibold mb-1">Total Documentos</p>
+                          <p className="text-2xl font-bold text-slate-800">{selectedDocs.length}</p>
+                      </div>
+                  </div>
+
+                  <div>
+                      <p className="text-xs text-slate-500 uppercase font-semibold mb-2">Documentos Vinculados</p>
+                      <div className="border border-slate-200 rounded-lg overflow-hidden">
+                          {selectedDocs.map(docId => {
+                              const doc = documents.find(d => d.id === docId);
+                              return (
+                                  <div key={docId} className="flex items-center space-x-3 p-3 border-b border-slate-100 last:border-0 hover:bg-slate-50">
+                                      <FileText size={16} className="text-slate-400" />
+                                      <span className="text-sm font-medium text-slate-700">{doc?.title}</span>
+                                      <span className="text-xs text-slate-400">({docId})</span>
+                                  </div>
+                              );
+                          })}
+                      </div>
+                  </div>
+              </div>
+
+              <div className="flex justify-end space-x-4">
+                  <button 
+                      onClick={handleFinish}
+                      className="bg-blue-900 text-white px-6 py-3 rounded-lg hover:bg-blue-800 flex items-center space-x-2"
+                  >
+                      <span>Nueva Vinculación</span>
+                      <ArrowRight size={18} />
+                  </button>
+              </div>
+          </div>
+      );
+  }
+
+  // Vista de Selección Normal
   return (
     <div className="space-y-6 animate-fadeIn">
         <div className="mb-6">
@@ -614,36 +680,54 @@ const IntegrationView = ({ documents }) => {
                                     {selectedDocs.length} seleccionados
                                 </span>
                             </div>
+
+                            {/* Nuevo Buscador de Documentos */}
+                            <div className="mb-3 relative">
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" size={16} />
+                                <input 
+                                    type="text" 
+                                    placeholder="Filtrar documentos por nombre o ID..." 
+                                    className="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+                                    value={docSearchTerm}
+                                    onChange={(e) => setDocSearchTerm(e.target.value)}
+                                />
+                            </div>
                             
                             <div className="border border-slate-200 rounded-lg flex-1 overflow-y-auto max-h-64">
                                 <div className="divide-y divide-slate-100">
-                                    {documents.map((doc) => {
-                                        const isSelected = selectedDocs.includes(doc.id);
-                                        return (
-                                            <div 
-                                                key={doc.id} 
-                                                onClick={() => toggleDocSelection(doc.id)}
-                                                className={`px-4 py-3 flex items-center space-x-4 cursor-pointer transition-colors ${isSelected ? 'bg-blue-50' : 'hover:bg-slate-50'}`}
-                                            >
-                                                <div className={`text-slate-400 ${isSelected ? 'text-blue-600' : ''}`}>
-                                                    {isSelected ? <CheckSquare size={20} /> : <Square size={20} />}
-                                                </div>
-                                                <div className="flex-1">
-                                                    <p className={`font-medium text-sm ${isSelected ? 'text-blue-900' : 'text-slate-700'}`}>{doc.title}</p>
-                                                    <div className="flex items-center space-x-2 text-xs text-slate-500 mt-0.5">
-                                                        <span>{doc.id}</span>
-                                                        <span>•</span>
-                                                        <span>{doc.date}</span>
+                                    {filteredDocs.length > 0 ? (
+                                        filteredDocs.map((doc) => {
+                                            const isSelected = selectedDocs.includes(doc.id);
+                                            return (
+                                                <div 
+                                                    key={doc.id} 
+                                                    onClick={() => toggleDocSelection(doc.id)}
+                                                    className={`px-4 py-3 flex items-center space-x-4 cursor-pointer transition-colors ${isSelected ? 'bg-blue-50' : 'hover:bg-slate-50'}`}
+                                                >
+                                                    <div className={`text-slate-400 ${isSelected ? 'text-blue-600' : ''}`}>
+                                                        {isSelected ? <CheckSquare size={20} /> : <Square size={20} />}
                                                     </div>
+                                                    <div className="flex-1">
+                                                        <p className={`font-medium text-sm ${isSelected ? 'text-blue-900' : 'text-slate-700'}`}>{doc.title}</p>
+                                                        <div className="flex items-center space-x-2 text-xs text-slate-500 mt-0.5">
+                                                            <span>{doc.id}</span>
+                                                            <span>•</span>
+                                                            <span>{doc.date}</span>
+                                                        </div>
+                                                    </div>
+                                                    {isSelected && (
+                                                        <span className="text-xs font-bold text-blue-600 bg-white px-2 py-1 rounded border border-blue-200">
+                                                            Vincular
+                                                        </span>
+                                                    )}
                                                 </div>
-                                                {isSelected && (
-                                                    <span className="text-xs font-bold text-blue-600 bg-white px-2 py-1 rounded border border-blue-200">
-                                                        Vincular
-                                                    </span>
-                                                )}
-                                            </div>
-                                        );
-                                    })}
+                                            );
+                                        })
+                                    ) : (
+                                        <div className="p-4 text-center text-sm text-slate-400">
+                                            No se encontraron documentos que coincidan con la búsqueda.
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
