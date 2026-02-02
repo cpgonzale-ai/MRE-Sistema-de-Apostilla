@@ -1,0 +1,538 @@
+import React, { useState } from 'react';
+import { 
+  Menu, 
+  Search, 
+  Bell, 
+  Mail, 
+  HelpCircle, 
+  Settings, 
+  ChevronLeft, 
+  User, 
+  Plus, 
+  Filter, 
+  X, 
+  FileText, 
+  CheckCircle, 
+  Link as LinkIcon, 
+  Download, 
+  Eye,
+  MoreVertical,
+  Clock,
+  ShieldCheck,
+  FolderOpen,
+  LayoutDashboard,
+  FileInput,
+  Files,
+  Users,
+  BarChart,
+  Database,
+  Save,
+  AlertCircle
+} from 'lucide-react';
+
+// --- MOCK DATA FROM YOUR GDL SYSTEM ---
+const GDL_SOURCE_DOCUMENTS = [
+  {
+    id: 'DOC-2026-001',
+    title: 'Resolución Ministerial 45/2026',
+    type: 'Resolución',
+    author: 'Rodrigo Antola',
+    date: '2026-02-02',
+    status: 'Firmado',
+    size: '2.4 MB'
+  },
+  {
+    id: 'DOC-2026-002',
+    title: 'Informe Técnico Auditoría Interna',
+    type: 'Informe Técnico',
+    author: 'Cynthia Gonzalez',
+    date: '2026-02-01',
+    status: 'Borrador',
+    size: '4.1 MB'
+  },
+  {
+    id: 'DOC-2026-003',
+    title: 'Dictamen Financiero Proyecto GDL',
+    type: 'Dictamen',
+    author: 'Fernando Mancia',
+    date: '2026-01-28',
+    status: 'Firmado',
+    size: '1.2 MB'
+  }
+];
+
+// --- MAIN APPLICATION COMPONENT ---
+const App = () => {
+  const [showGDLModal, setShowGDLModal] = useState(false);
+  const [linkedDocuments, setLinkedDocuments] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isSaved, setIsSaved] = useState(false);
+  
+  // State for the main form to make it interactive
+  const [expedienteData, setExpedienteData] = useState({
+    nroPadre: '',
+    recurrente: 'Mara Rebeca Peralta Casartelli',
+    nroDoc: '3341865',
+    duracion: '10',
+    diasTranscurridos: '0',
+    diasRestantes: '10'
+  });
+
+  const hasUnsavedDocs = linkedDocuments.length > 0 && !isSaved;
+
+  const handleLinkDocument = (doc) => {
+    if (!linkedDocuments.find(d => d.id === doc.id)) {
+      setLinkedDocuments([...linkedDocuments, doc]);
+      setIsSaved(false); // Habilita el botón de guardar inmediatamente
+    }
+    setShowGDLModal(false);
+  };
+
+  const removeLinkedDocument = (id) => {
+    const newDocs = linkedDocuments.filter(d => d.id !== id);
+    setLinkedDocuments(newDocs);
+    // Si quitamos todos los documentos, podriamos considerar el estado como "guardado" o "neutro"
+    // Pero para consistencia, cualquier cambio habilita el botón de nuevo.
+    setIsSaved(false); 
+  };
+
+  const handleSave = () => {
+    // Aquí se simula el registro en base de datos
+    setIsSaved(true);
+  };
+
+  // --- SUB-COMPONENTS ---
+
+  const SidebarItem = ({ icon: Icon, label, active, indent = false }) => (
+    <div className={`
+      flex items-center px-4 py-3 cursor-pointer text-sm font-medium transition-colors border-l-4
+      ${active 
+        ? 'bg-slate-100 text-blue-800 border-blue-600' 
+        : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800 border-transparent'}
+      ${indent ? 'pl-10' : ''}
+    `}>
+      <Icon size={18} className="mr-3" />
+      <span>{label}</span>
+    </div>
+  );
+
+  const ActionButton = ({ colorClass, icon: Icon, label, onClick, disabled = false, className = "" }) => (
+    <button 
+      onClick={onClick}
+      disabled={disabled}
+      className={`${colorClass} ${className} text-white px-4 py-2 rounded shadow-sm text-sm font-medium flex items-center space-x-2 hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed`}
+    >
+      {Icon && <Icon size={16} />}
+      <span>{label}</span>
+    </button>
+  );
+
+  return (
+    <div className="flex h-screen bg-slate-100 font-sans">
+      {/* SIDEBAR */}
+      <aside className="w-72 bg-white border-r border-slate-200 flex flex-col hidden md:flex shadow-sm z-10">
+        <div className="p-4 border-b border-slate-100">
+           <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Menú Principal</span>
+        </div>
+        
+        <div className="flex-1 overflow-y-auto py-2">
+          <div className="mb-4">
+            <h3 className="px-4 text-xs font-bold text-slate-400 uppercase mb-2">Expedientes</h3>
+            <SidebarItem icon={LayoutDashboard} label="Tablero Principal" />
+            <SidebarItem icon={FileInput} label="Bandeja de Expedientes" />
+            <SidebarItem icon={Clock} label="Bandeja en Espera" />
+            <SidebarItem icon={Bell} label="Notificaciones" />
+            <SidebarItem icon={Plus} label="Crear Expediente" active={true} />
+            <SidebarItem icon={CheckCircle} label="Validar Expediente" />
+          </div>
+
+          <div className="mb-4">
+            <h3 className="px-4 text-xs font-bold text-slate-400 uppercase mb-2">Administración</h3>
+            <SidebarItem icon={Users} label="Personas" />
+          </div>
+
+          <div className="mb-4">
+            <h3 className="px-4 text-xs font-bold text-slate-400 uppercase mb-2">Reportes</h3>
+            <SidebarItem icon={Files} label="Listado Generados" />
+            <SidebarItem icon={BarChart} label="Estadísticas" />
+          </div>
+
+          <div className="mb-4">
+            <h3 className="px-4 text-xs font-bold text-slate-400 uppercase mb-2">Consultas</h3>
+            <SidebarItem icon={Search} label="Consultar Expedientes" />
+            <SidebarItem icon={Database} label="Auditoría" />
+          </div>
+        </div>
+      </aside>
+
+      {/* MAIN CONTENT */}
+      <div className="flex-1 flex flex-col h-screen overflow-hidden">
+        
+        {/* HEADER */}
+        <header className="bg-[#0056b3] text-white h-14 flex items-center justify-between px-4 shadow-md z-20">
+          <div className="flex items-center space-x-4">
+            <div className="bg-green-500 rounded-full p-1 cursor-pointer hover:bg-green-600 transition">
+               <ChevronLeft size={20} />
+            </div>
+            <div>
+              <h1 className="font-bold text-sm md:text-base leading-tight">Expedientes Electrónicos</h1>
+              <p className="text-[10px] opacity-80">SMX (Versión 1.0.0)</p>
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-4">
+            <div className="text-right hidden sm:block">
+              <p className="text-sm font-semibold">Maria Amarillo</p>
+              <p className="text-[10px] opacity-80">AGPE</p>
+            </div>
+            <div className="flex items-center space-x-3 text-white/80">
+              <Settings size={18} className="cursor-pointer hover:text-white" />
+              <Bell size={18} className="cursor-pointer hover:text-white" />
+              <Mail size={18} className="cursor-pointer hover:text-white" />
+              <HelpCircle size={18} className="cursor-pointer hover:text-white" />
+            </div>
+          </div>
+        </header>
+
+        {/* WORKSPACE */}
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+          
+          {/* TOP FORM SECTION */}
+          <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6 space-y-6">
+            
+            {/* First Row */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-600 uppercase">Elemento Físico</label>
+                <select className="w-full border border-slate-300 rounded p-2 text-sm bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none">
+                  <option>No</option>
+                  <option>Si</option>
+                </select>
+              </div>
+              
+              <div className="space-y-1 md:col-span-2">
+                 <label className="text-xs font-bold text-slate-600 uppercase">Nro. Expediente Padre</label>
+                 <input 
+                    type="text" 
+                    className="w-full border border-slate-300 rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                    placeholder="---"
+                    value={expedienteData.nroPadre}
+                    onChange={(e) => setExpedienteData({...expedienteData, nroPadre: e.target.value})}
+                 />
+              </div>
+
+              <div className="space-y-1">
+                 <label className="text-xs font-bold text-slate-600 uppercase">Es Externo</label>
+                 <input type="text" value="NO" readOnly className="w-full border border-slate-300 rounded p-2 text-sm bg-slate-100 text-slate-500" />
+              </div>
+            </div>
+
+            {/* Second Row */}
+            <div className="grid grid-cols-3 md:grid-cols-6 gap-4 border-t border-slate-100 pt-4">
+               <div className="space-y-1">
+                 <label className="text-[10px] font-bold text-orange-600 uppercase">Duración</label>
+                 <input type="text" value={expedienteData.duracion} readOnly className="w-full border border-orange-200 bg-orange-50 rounded p-1 text-sm text-center font-bold text-orange-800" />
+               </div>
+               <div className="space-y-1">
+                 <label className="text-[10px] font-bold text-slate-500 uppercase">Días Transcurridos</label>
+                 <input type="text" value={expedienteData.diasTranscurridos} readOnly className="w-full border border-slate-300 bg-slate-50 rounded p-1 text-sm text-center text-slate-600" />
+               </div>
+               <div className="space-y-1">
+                 <label className="text-[10px] font-bold text-slate-500 uppercase">Días Restantes</label>
+                 <input type="text" value={expedienteData.diasRestantes} readOnly className="w-full border border-slate-300 bg-slate-50 rounded p-1 text-sm text-center text-slate-600" />
+               </div>
+            </div>
+
+            {/* Third Section - Datos del Recurrente */}
+            <div className="border rounded-lg p-4 bg-slate-50/50">
+               <h3 className="text-xs font-bold text-slate-800 uppercase mb-3">Datos del Recurrente</h3>
+               <div className="flex flex-col md:flex-row gap-4">
+                  <div className="flex-1 relative">
+                    <label className="text-[10px] font-bold text-slate-500 mb-1 block">Recurrente</label>
+                    <div className="flex">
+                       <input 
+                          type="text" 
+                          className="flex-1 border border-slate-300 rounded-l p-2 text-sm outline-none" 
+                          value={expedienteData.recurrente}
+                          onChange={(e) => setExpedienteData({...expedienteData, recurrente: e.target.value})}
+                       />
+                       <button className="bg-[#2e59d9] text-white px-3 rounded-none hover:bg-blue-800"><Search size={16} /></button>
+                       <button className="bg-[#2e59d9] text-white px-3 text-xs font-medium hover:bg-blue-800">+ Agregar Persona</button>
+                       <button className="bg-[#2e59d9] text-white px-3 rounded-r text-xs font-medium hover:bg-blue-800 flex items-center"><Filter size={12} className="mr-1"/> Limpiar</button>
+                    </div>
+                  </div>
+                  <div className="w-full md:w-48">
+                    <label className="text-[10px] font-bold text-slate-500 mb-1 block">Nro. Documento Identidad</label>
+                    <div className="flex">
+                       <input 
+                          type="text" 
+                          className="w-full border border-slate-300 rounded-l p-2 text-sm outline-none bg-white"
+                          value={expedienteData.nroDoc}
+                          readOnly
+                       />
+                       <div className="bg-slate-200 px-3 flex items-center justify-center rounded-r border border-l-0 border-slate-300 text-slate-500">
+                          <User size={16} />
+                       </div>
+                    </div>
+                  </div>
+               </div>
+            </div>
+
+            {/* INTEGRATION SECTION */}
+            {linkedDocuments.length > 0 && (
+              <div className={`border rounded-lg p-4 animate-fadeIn transition-colors duration-500 ${isSaved ? 'bg-green-50 border-green-200' : 'bg-blue-50 border-blue-200 ring-2 ring-blue-100'}`}>
+                 <div className="flex justify-between items-center mb-3">
+                    <h3 className={`text-xs font-bold uppercase flex items-center ${isSaved ? 'text-green-800' : 'text-blue-800'}`}>
+                      {isSaved ? <CheckCircle size={14} className="mr-2"/> : <AlertCircle size={14} className="mr-2 animate-pulse"/>}
+                      {isSaved ? 'Documentos Vinculados (Modo Solo Lectura)' : 'Documentos Vinculados Pendientes de Registro'}
+                    </h3>
+                    {isSaved ? (
+                       <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full border border-green-200 font-bold">REGISTRADO</span>
+                    ) : (
+                       <span className="text-[10px] bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full border border-yellow-200 font-bold animate-pulse">PENDIENTE DE GUARDADO</span>
+                    )}
+                 </div>
+                 
+                 <div className="space-y-2">
+                    {linkedDocuments.map(doc => (
+                      <div key={doc.id} className={`flex items-center justify-between bg-white p-3 rounded border shadow-sm transition-all ${isSaved ? 'border-green-100' : 'border-blue-100 hover:shadow-md'}`}>
+                         <div className="flex items-center space-x-3">
+                            <div className={`p-2 rounded ${isSaved ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
+                               <FileText size={18} />
+                            </div>
+                            <div>
+                               <p className={`text-sm font-bold ${isSaved ? 'text-blue-600 underline cursor-pointer hover:text-blue-800' : 'text-slate-800'}`}>
+                                  {doc.title}
+                               </p>
+                               <div className="flex items-center space-x-2">
+                                  <p className="text-xs text-slate-500">{doc.id} • {doc.size}</p>
+                                  {isSaved && <span className="text-[10px] text-green-600 font-semibold">• Listo para descarga</span>}
+                               </div>
+                            </div>
+                         </div>
+                         
+                         <div className="flex items-center space-x-2">
+                            {isSaved ? (
+                                <button className="flex items-center space-x-1 text-slate-600 hover:text-blue-700 bg-slate-50 hover:bg-blue-50 px-3 py-1.5 rounded-md border border-slate-200 transition-colors">
+                                   <Download size={14} />
+                                   <span className="text-xs font-bold">Descargar</span>
+                                </button>
+                            ) : (
+                                <>
+                                   <span className="text-[10px] px-2 py-1 bg-green-100 text-green-700 rounded-full font-bold">{doc.status}</span>
+                                   <button 
+                                      onClick={() => removeLinkedDocument(doc.id)} 
+                                      className="text-red-400 hover:text-red-600 p-1.5 hover:bg-red-50 rounded transition-colors"
+                                      title="Desvincular documento"
+                                   >
+                                      <X size={16} />
+                                   </button>
+                                </>
+                            )}
+                         </div>
+                      </div>
+                    ))}
+                 </div>
+              </div>
+            )}
+
+            {/* ACTION BUTTONS ROW */}
+            <div className="flex flex-wrap gap-2 pt-2">
+               {/* BOTÓN GUARDAR MEJORADO */}
+               <ActionButton 
+                  colorClass={`transition-all duration-300 ${isSaved 
+                     ? 'bg-green-600 ring-2 ring-green-200' 
+                     : (hasUnsavedDocs ? 'bg-orange-500 ring-4 ring-orange-200 animate-pulse' : 'bg-yellow-500')}`} 
+                  label={isSaved ? "Guardado Exitosamente" : (hasUnsavedDocs ? "Guardar y Registrar" : "Guardar")} 
+                  icon={isSaved ? CheckCircle : Save} 
+                  onClick={handleSave}
+                  disabled={isSaved} 
+                  className={hasUnsavedDocs ? "font-bold shadow-lg transform scale-105" : ""}
+               />
+
+               <ActionButton colorClass="bg-red-500" label="Incorporar Actuación" />
+               
+               {/* INTEGRATION BUTTON */}
+               <button 
+                  onClick={() => setShowGDLModal(true)}
+                  className="bg-indigo-600 text-white px-4 py-2 rounded shadow-sm text-sm font-medium flex items-center space-x-2 hover:bg-indigo-700 transition-colors ring-2 ring-indigo-200"
+               >
+                  <LinkIcon size={16} />
+                  <span>Vincular al sistema de gestion Documental</span>
+               </button>
+
+               <ActionButton colorClass="bg-yellow-500" label="Realizar Actuación" />
+               <ActionButton colorClass="bg-teal-500" label="Continuar" />
+               <ActionButton colorClass="bg-purple-600" label="Ver Expediente" icon={Eye} />
+               <ActionButton colorClass="bg-green-600" label="Ver Árbol de Contenido" />
+            </div>
+
+          </div>
+
+          {/* TABLE SECTION */}
+          <div className="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+             <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <h3 className="text-xs font-bold text-slate-600 uppercase">Historial de Tramos del Expediente dentro de la Institución</h3>
+                <div className="flex items-center space-x-3 text-[10px] font-bold">
+                   <span className="flex items-center"><span className="w-2 h-2 rounded-full bg-red-500 mr-1"></span> Tramo Actual</span>
+                   <span className="flex items-center"><span className="w-2 h-2 rounded-full bg-green-500 mr-1"></span> Tramo Finalizado</span>
+                </div>
+             </div>
+             
+             <div className="overflow-x-auto">
+               <table className="w-full text-left">
+                  <thead className="text-[10px] uppercase text-slate-500 bg-white border-b border-slate-200">
+                     <tr>
+                        <th className="px-4 py-3 font-bold">Responsable</th>
+                        <th className="px-4 py-3 font-bold">Orden</th>
+                        <th className="px-4 py-3 font-bold">Inst. Origen</th>
+                        <th className="px-4 py-3 font-bold">Dependencia Origen</th>
+                        <th className="px-4 py-3 font-bold">Desde</th>
+                        <th className="px-4 py-3 font-bold">Contenido Actuación</th>
+                        <th className="px-4 py-3 font-bold text-center">Ver Más</th>
+                     </tr>
+                  </thead>
+                  <tbody className="text-xs text-slate-700 divide-y divide-slate-100">
+                     <tr className="hover:bg-slate-50">
+                        <td className="px-4 py-3 text-red-600">mamarilla@mitic.gov.py</td>
+                        <td className="px-4 py-3">3</td>
+                        <td className="px-4 py-3">AGPE</td>
+                        <td className="px-4 py-3 font-medium text-red-500">DIRECCION GENERAL DE TECNOLOGIA...</td>
+                        <td className="px-4 py-3">24/06/2024 14:19</td>
+                        <td className="px-4 py-3 font-bold text-red-500 uppercase">Prueba de Validaciones</td>
+                        <td className="px-4 py-3 text-center"><MoreVertical size={16} className="mx-auto text-slate-400"/></td>
+                     </tr>
+                     <tr className="hover:bg-slate-50">
+                        <td className="px-4 py-3 text-slate-500">mamarilla@mitic.gov.py</td>
+                        <td className="px-4 py-3">2</td>
+                        <td className="px-4 py-3">AGPE</td>
+                        <td className="px-4 py-3 text-green-600">DIRECCION GENERAL DE TECNOLOGIA...</td>
+                        <td className="px-4 py-3">24/06/2024 14:11</td>
+                        <td className="px-4 py-3 uppercase text-green-600">Segunda Actuacion de la AGPE</td>
+                        <td className="px-4 py-3 text-center"><MoreVertical size={16} className="mx-auto text-slate-400"/></td>
+                     </tr>
+                      <tr className="hover:bg-slate-50">
+                        <td className="px-4 py-3 text-slate-500">mamarilla@mitic.gov.py</td>
+                        <td className="px-4 py-3">1</td>
+                        <td className="px-4 py-3">AGPE</td>
+                        <td className="px-4 py-3 text-green-600">DIRECCION GENERAL DE TECNOLOGIA...</td>
+                        <td className="px-4 py-3">24/06/2024 14:02</td>
+                        <td className="px-4 py-3 uppercase text-green-600">Este es el primer expediente gen...</td>
+                        <td className="px-4 py-3 text-center"><MoreVertical size={16} className="mx-auto text-slate-400"/></td>
+                     </tr>
+                  </tbody>
+               </table>
+             </div>
+             
+             {/* Pagination simulation */}
+             <div className="bg-slate-50 p-3 border-t border-slate-200 flex justify-center">
+                <div className="flex space-x-1">
+                   <button className="w-6 h-6 rounded flex items-center justify-center text-xs text-slate-500 hover:bg-slate-200">&lt;</button>
+                   <button className="w-6 h-6 rounded-full bg-[#5e72e4] text-white flex items-center justify-center text-xs font-bold shadow-md">1</button>
+                   <button className="w-6 h-6 rounded flex items-center justify-center text-xs text-slate-500 hover:bg-slate-200">2</button>
+                   <button className="w-6 h-6 rounded flex items-center justify-center text-xs text-slate-500 hover:bg-slate-200">&gt;</button>
+                </div>
+             </div>
+          </div>
+        </main>
+      </div>
+
+      {/* --- INTEGRATION MODAL: CONNECTING TO GDL --- */}
+      {showGDLModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-2xl rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            
+            {/* Modal Header */}
+            <div className="bg-indigo-900 text-white p-6 flex justify-between items-center">
+              <div>
+                 <h2 className="text-xl font-bold flex items-center gap-2">
+                    <FolderOpen size={24} className="text-blue-300" />
+                    Sistema de Gestión Documental
+                 </h2>
+                 <p className="text-indigo-200 text-sm mt-1">Seleccione documentos del repositorio GDL para vincular a este expediente.</p>
+              </div>
+              <button onClick={() => setShowGDLModal(false)} className="text-white/70 hover:text-white transition">
+                 <X size={24} />
+              </button>
+            </div>
+
+            {/* Modal Search */}
+            <div className="p-4 border-b border-slate-100 bg-slate-50 flex gap-3">
+              <div className="relative flex-1">
+                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" size={18} />
+                 <input 
+                    type="text" 
+                    placeholder="Buscar por título, nro resolución o autor..." 
+                    className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                 />
+              </div>
+              <button className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-slate-600 hover:bg-slate-50 flex items-center gap-2">
+                 <Filter size={18} />
+                 <span>Filtros</span>
+              </button>
+            </div>
+
+            {/* Modal List (Mocked from User Code) */}
+            <div className="flex-1 overflow-y-auto p-2 bg-slate-100">
+               {GDL_SOURCE_DOCUMENTS
+                  .filter(doc => doc.title.toLowerCase().includes(searchTerm.toLowerCase()))
+                  .map((doc) => {
+                    const isLinked = linkedDocuments.find(d => d.id === doc.id);
+                    return (
+                      <div 
+                        key={doc.id} 
+                        onClick={() => !isLinked && handleLinkDocument(doc)}
+                        className={`
+                           m-2 p-4 bg-white rounded-lg border shadow-sm flex items-center justify-between transition-all group
+                           ${isLinked ? 'opacity-50 border-slate-200 cursor-default' : 'hover:border-indigo-500 hover:shadow-md cursor-pointer border-slate-200'}
+                        `}
+                      >
+                         <div className="flex items-start gap-4">
+                            <div className={`p-3 rounded-lg ${doc.type === 'Resolución' ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700'}`}>
+                               <FileText size={24} />
+                            </div>
+                            <div>
+                               <h4 className="font-bold text-slate-800">{doc.title}</h4>
+                               <div className="flex items-center text-xs text-slate-500 gap-3 mt-1">
+                                  <span className="bg-slate-100 px-2 py-0.5 rounded text-slate-600 border border-slate-200">{doc.id}</span>
+                                  <span className="flex items-center gap-1"><User size={12}/> {doc.author}</span>
+                                  <span className="flex items-center gap-1"><Clock size={12}/> {doc.date}</span>
+                               </div>
+                            </div>
+                         </div>
+                         
+                         <div>
+                            {isLinked ? (
+                               <span className="flex items-center gap-1 text-green-600 font-bold text-sm bg-green-50 px-3 py-1 rounded-full border border-green-100">
+                                  <CheckCircle size={16} /> Vinculado
+                               </span>
+                            ) : (
+                               <button className="flex items-center gap-2 text-indigo-600 bg-indigo-50 px-4 py-2 rounded-lg font-medium group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                                  <LinkIcon size={16} />
+                                  <span>Vincular</span>
+                               </button>
+                            )}
+                         </div>
+                      </div>
+                    );
+               })}
+            </div>
+            
+            <div className="p-4 bg-white border-t border-slate-200 flex justify-between items-center text-xs text-slate-500">
+               <div className="flex items-center gap-2">
+                  <ShieldCheck size={14} className="text-green-600"/>
+                  <span>Conexión segura establecida con GDL v2.4</span>
+               </div>
+               <span>Mostrando {GDL_SOURCE_DOCUMENTS.length} documentos disponibles</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+    </div>
+  );
+};
+
+export default App;
