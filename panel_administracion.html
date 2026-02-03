@@ -118,7 +118,6 @@
         
         .mre-footer { background: white; padding: 1rem 2.5rem; border-top: 1px solid var(--border-color); font-size: 0.75rem; color: #64748B; display: flex; justify-content: space-between; margin-top: auto; }
         .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -168,10 +167,8 @@
     <div class="app-container">
         <aside class="main-sidebar animate-fade" id="mainSidebar">
             <nav class="nav-menu p-3">
-                <a href="https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/pantalla_principal.html" class="nav-link-mre">
-                    <i data-lucide="home" style="width: 18px;"></i> <span>Página Principal</span>
-                </a>
-                <a href="https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/portal_ciudadano.html" class="nav-link-mre mb-4">
+                <!-- Redirección del Portal Ciudadano RAC a Pantalla Principal -->
+                <a href="https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/pantalla_principal.html" class="nav-link-mre mb-4">
                     <i data-lucide="user-round" style="width: 18px;"></i> <span>Portal del Ciudadano (RAC)</span>
                 </a>
                 
@@ -220,7 +217,7 @@
         </aside>
 
         <main class="content-area">
-            <!-- El contenido se inyecta dinámicamente -->
+            <!-- Capa de contenido inyectable -->
         </main>
     </div>
 
