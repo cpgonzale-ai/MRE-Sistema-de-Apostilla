@@ -618,6 +618,7 @@
             f.reset();
             inputs.forEach(i => i.disabled = false);
             document.getElementById('btnSaveField').style.display = 'block';
+            statusContainer.style.display = (mode === 'add') ? 'none' : 'block';
             auditSection.classList.add('d-none');
 
             if (mode !== 'add') {
