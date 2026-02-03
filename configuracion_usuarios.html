@@ -157,7 +157,7 @@
         .btn-action-icon:hover { background: #F1F5F9; color: var(--mre-blue); border-color: var(--mre-blue); }
         .btn-action-delete:hover { color: var(--mre-red); border-color: var(--mre-red); }
 
-        .actions-cell-container { display: flex; justify-content: flex-end; align-items: center; gap: 8px; min-width: 140px; }
+        .actions-cell-container { display: flex; justify-content: flex-end; align-items: center; gap: 8px; min-width: 120px; }
 
         .badge-status { padding: 0.4rem 0.8rem; border-radius: 8px; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; }
         .status-active { background-color: #DCFCE7; color: #15803D; }
@@ -203,7 +203,7 @@
         .btn-main { background: var(--mre-blue); color: #ffffff; border: none; border-radius: 12px; padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.85rem; transition: var(--transition); text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
         .btn-main:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 40, 85, 0.2); color: #fff; }
         
-        /* BOTONES HERRAMIENTAS (Restaurados) */
+        /* BOTONES HERRAMIENTAS */
         .btn-tool-generic { 
             background: white; 
             color: var(--mre-blue); 
@@ -277,10 +277,10 @@
     <!-- HEADER INSTITUCIONAL -->
     <header class="portal-header animate-fade">
         <div class="d-flex align-items-center gap-3">
-            <button class="mobile-toggle-btn d-lg-none" onclick="toggleSidebar()" title="Menú móvil">
+            <button class="mobile-toggle-btn d-lg-none" onclick="toggleSidebar()" title="Alternar menú lateral">
                 <i data-lucide="menu" style="width: 26px;"></i>
             </button>
-            <div class="bg-white p-2 rounded-3 border d-none d-sm-block">
+            <div class="bg-white p-2 rounded-3 border d-none d-sm-block" title="Portal Institucional">
                 <i data-lucide="globe" style="color: var(--mre-blue); width: 28px;"></i>
             </div>
             <div>
@@ -291,7 +291,7 @@
         
         <div class="user-dropdown d-flex align-items-center gap-3">
             <div class="a11y-container">
-                <button class="btn-a11y-trigger" id="a11yTrigger" onclick="toggleA11yMenu(event)" title="Accesibilidad">
+                <button class="btn-a11y-trigger" id="a11yTrigger" onclick="toggleA11yMenu(event)" title="Opciones de accesibilidad visual">
                     <i data-lucide="accessibility" style="width: 20px;"></i>
                     <span>Accesibilidad</span>
                     <i data-lucide="chevron-down" style="width: 14px; margin-left: 4px;"></i>
@@ -299,12 +299,12 @@
                 <div class="a11y-dropdown-menu" id="a11yMenu" onclick="event.stopPropagation()">
                     <div class="a11y-section-title">Tamaño de Texto</div>
                     <div class="text-resize-controls">
-                        <button class="btn-resize" onclick="changeFontSize(-0.1)"><i data-lucide="minus" style="width: 16px;"></i></button>
+                        <button class="btn-resize" onclick="changeFontSize(-0.1)" title="Disminuir escala de fuente"><i data-lucide="minus" style="width: 16px;"></i></button>
                         <span class="font-size-display" id="fontSizeDisplay">100%</span>
-                        <button class="btn-resize" onclick="changeFontSize(0.1)"><i data-lucide="plus" style="width: 16px;"></i></button>
+                        <button class="btn-resize" onclick="changeFontSize(0.1)" title="Aumentar escala de fuente"><i data-lucide="plus" style="width: 16px;"></i></button>
                     </div>
                     <div class="a11y-section-title mt-3">Visualización</div>
-                    <div class="switch-control">
+                    <div class="switch-control" title="Habilitar filtro monocromático">
                         <div class="switch-label fw-bold small">Grises</div>
                         <label class="toggle-switch">
                             <input type="checkbox" onchange="toggleGrayscale()">
@@ -318,11 +318,11 @@
                 <div class="user-name fw-bold" style="font-size: 0.85rem;">Carlos González</div>
                 <div class="user-id text-muted" style="font-size: 0.7rem;">CI: 4.567.890</div>
             </div>
-            <div class="dots-menu-trigger" onclick="toggleUserMenu(event)">
+            <div class="dots-menu-trigger" onclick="toggleUserMenu(event)" title="Opciones de cuenta">
                 <i data-lucide="user" style="width: 24px;"></i>
             </div>
             <div class="dropdown-menu-mre" id="userMenu">
-                <button class="dropdown-item-mre text-danger" onclick="location.reload()">
+                <button class="dropdown-item-mre text-danger" onclick="location.reload()" title="Finalizar sesión actual">
                     <i data-lucide="log-out" style="width: 14px;"></i> Cerrar Sesión
                 </button>
             </div>
@@ -330,11 +330,10 @@
     </header>
 
     <div class="app-container">
-        <!-- BARRA LATERAL SIMPLIFICADA: SÓLO GESTIÓN DE USUARIOS -->
         <aside class="main-sidebar animate-fade">
             <nav class="nav-menu">
                 <p class="px-3 mb-2 text-muted fw-bold uppercase" style="font-size: 0.7rem; letter-spacing: 1.2px;">Administración</p>
-                <a href="javascript:void(0)" onclick="showListView()" class="nav-link-mre active" title="Gestión de Usuarios" data-popup="Módulo de control de Usuarios">
+                <a href="javascript:void(0)" onclick="showListView()" class="nav-link-mre active" title="Módulo principal de gestión de cuentas">
                     <i data-lucide="users" style="width: 18px;"></i> <span>Gestión de usuarios</span>
                 </a>
             </nav>
@@ -348,21 +347,21 @@
                         <h2 class="fw-black text-navy m-0">Gestión de Usuarios</h2>
                         <p class="text-muted small mb-0">Administre el acceso y perfiles de los usuarios del sistema</p>
                     </div>
-                    <button class="btn-main d-flex align-items-center gap-2 shadow-sm" onclick="showFormView('add')" title="Registrar un nuevo usuario">
+                    <button class="btn-main d-flex align-items-center gap-2 shadow-sm" onclick="showFormView('add')" title="Crear un nuevo registro de usuario">
                         <i data-lucide="plus-circle" style="width: 18px;"></i> Agregar Usuario
                     </button>
                 </header>
 
                 <div class="grid-frame animate-fade">
                     <div class="grid-header-frame">
-                        <h4 class="fw-black text-uppercase m-0" style="color: var(--mre-blue); font-size: 0.85rem;" title="Listado de Usuarios registrados">Listado de Usuarios</h4>
+                        <h4 class="fw-black text-uppercase m-0" style="color: var(--mre-blue); font-size: 0.85rem;">Listado de Usuarios</h4>
                         <div class="d-flex align-items-center gap-2">
-                            <button class="btn-tool-generic" onclick="alert('Configurando columnas...')" title="Excel"><i data-lucide="layout-columns" style="width: 16px;"></i> Columnas</button>
-                            <button class="btn-tool-generic" onclick="alert('Exportando a Excel...')" title="Excel"><i data-lucide="file-spreadsheet" style="width: 16px;"></i> Excel</button>
-                            <button class="btn-tool-generic" onclick="alert('Exportando a PDF...')" title="PDF"><i data-lucide="file-text" style="width: 16px;"></i> PDF</button>
+                            <button class="btn-tool-generic" onclick="alert('Configurando columnas...')" title="Personalizar columnas visibles"><i data-lucide="layout-columns" style="width: 16px;"></i> Columnas</button>
+                            <button class="btn-tool-generic" onclick="alert('Exportando a Excel...')" title="Descargar reporte en formato XLSX"><i data-lucide="file-spreadsheet" style="width: 16px;"></i> Excel</button>
+                            <button class="btn-tool-generic" onclick="alert('Exportando a PDF...')" title="Descargar reporte en formato PDF"><i data-lucide="file-text" style="width: 16px;"></i> PDF</button>
                             <div class="position-relative" style="width: 250px;">
                                 <i data-lucide="search" class="position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:#94A3B8; width:16px;"></i>
-                                <input type="text" class="form-control-mre ps-5" placeholder="Filtrar usuario...">
+                                <input type="text" class="form-control-mre ps-5" placeholder="Filtrar por nombre o cuenta..." title="Criterio de búsqueda rápida">
                             </div>
                         </div>
                     </div>
@@ -371,7 +370,7 @@
                         <table class="mre-table">
                             <thead>
                                 <tr>
-                                    <th width="40" class="text-center"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
+                                    <th width="40" class="text-center"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()" title="Marcar todos los registros"></th>
                                     <th width="70" class="text-center">ID</th>
                                     <th>Usuario</th>
                                     <th>Nombre Completo</th>
@@ -384,7 +383,7 @@
                             </thead>
                             <tbody id="userTableBody">
                                 <tr data-associated="true" data-group="Administrador de sistema" data-status="Activo">
-                                    <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()"></td>
+                                    <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()" title="Seleccionar registro"></td>
                                     <td class="text-center fw-bold text-navy">1001</td>
                                     <td><code class="fw-bold">cgonzalez</code></td>
                                     <td class="fw-bold text-navy">Carlos González</td>
@@ -394,14 +393,14 @@
                                     <td>31/12/2026</td>
                                     <td class="text-end">
                                         <div class="actions-cell-container">
-                                            <button class="btn-action-icon" title="Visualizar" onclick="showFormView('view', 1001)"><i data-lucide="eye" style="width:18px"></i></button>
-                                            <button class="btn-action-icon" title="Editar" onclick="showFormView('edit', 1001)"><i data-lucide="edit-3" style="width:18px"></i></button>
+                                            <button class="btn-action-icon" title="Consultar información detallada y auditoría" onclick="showFormView('view', 1001)"><i data-lucide="eye" style="width:18px"></i></button>
+                                            <button class="btn-action-icon" title="Modificar parámetros del usuario" onclick="showFormView('edit', 1001)"><i data-lucide="edit-3" style="width:18px"></i></button>
                                             <div style="width:38px"></div> 
                                         </div>
                                     </td>
                                 </tr>
                                 <tr data-associated="false" data-group="Operador ológrafo" data-status="Activo">
-                                    <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()"></td>
+                                    <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()" title="Seleccionar registro"></td>
                                     <td class="text-center fw-bold text-navy">1002</td>
                                     <td><code class="fw-bold">mriquelme</code></td>
                                     <td class="fw-bold text-navy">Marta Riquelme</td>
@@ -411,14 +410,14 @@
                                     <td>15/08/2026</td>
                                     <td class="text-end">
                                         <div class="actions-cell-container">
-                                            <button class="btn-action-icon" title="Visualizar" onclick="showFormView('view', 1002)"><i data-lucide="eye" style="width:18px"></i></button>
-                                            <button class="btn-action-icon" title="Editar" onclick="showFormView('edit', 1002)"><i data-lucide="edit-3" style="width:18px"></i></button>
-                                            <button class="btn-action-icon btn-action-delete" title="Eliminar" onclick="requestDeletion(1002, 'Marta Riquelme')"><i data-lucide="trash-2" style="width:18px"></i></button>
+                                            <button class="btn-action-icon" title="Consultar información detallada" onclick="showFormView('view', 1002)"><i data-lucide="eye" style="width:18px"></i></button>
+                                            <button class="btn-action-icon" title="Modificar parámetros del usuario" onclick="showFormView('edit', 1002)"><i data-lucide="edit-3" style="width:18px"></i></button>
+                                            <button class="btn-action-icon btn-action-delete" title="Eliminar registro permanentemente" onclick="requestDeletion(1002, 'Marta Riquelme')"><i data-lucide="trash-2" style="width:18px"></i></button>
                                         </div>
                                     </td>
                                 </tr>
                                 <tr data-associated="true" data-group="Operador Verificación previa" data-status="Inactivo">
-                                    <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()"></td>
+                                    <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()" title="Seleccionar registro"></td>
                                     <td class="text-center fw-bold text-navy">1003</td>
                                     <td><code class="fw-bold">jsalinas</code></td>
                                     <td class="fw-bold text-navy">Jorge Salinas</td>
@@ -428,14 +427,14 @@
                                     <td>20/12/2026</td>
                                     <td class="text-end">
                                         <div class="actions-cell-container">
-                                            <button class="btn-action-icon" title="Visualizar" onclick="showFormView('view', 1003)"><i data-lucide="eye" style="width:18px"></i></button>
-                                            <button class="btn-action-icon" title="Editar" onclick="showFormView('edit', 1003)"><i data-lucide="edit-3" style="width:18px"></i></button>
+                                            <button class="btn-action-icon" title="Consultar información detallada" onclick="showFormView('view', 1003)"><i data-lucide="eye" style="width:18px"></i></button>
+                                            <button class="btn-action-icon" title="Modificar parámetros del usuario" onclick="showFormView('edit', 1003)"><i data-lucide="edit-3" style="width:18px"></i></button>
                                             <div style="width:38px"></div>
                                         </div>
                                     </td>
                                 </tr>
                                 <tr data-associated="true" data-group="Ciudadano" data-status="Activo">
-                                    <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()"></td>
+                                    <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()" title="Seleccionar registro"></td>
                                     <td class="text-center fw-bold text-navy">1005</td>
                                     <td><code class="fw-bold">amartinez</code></td>
                                     <td class="fw-bold text-navy">Alberto Martínez</td>
@@ -445,14 +444,14 @@
                                     <td>01/01/2027</td>
                                     <td class="text-end">
                                         <div class="actions-cell-container">
-                                            <button class="btn-action-icon" title="Visualizar" onclick="showFormView('view', 1005)"><i data-lucide="eye" style="width:18px"></i></button>
-                                            <button class="btn-action-icon" title="Editar" onclick="showFormView('edit', 1005)"><i data-lucide="edit-3" style="width:18px"></i></button>
+                                            <button class="btn-action-icon" title="Consultar información detallada" onclick="showFormView('view', 1005)"><i data-lucide="eye" style="width:18px"></i></button>
+                                            <button class="btn-action-icon" title="Modificar parámetros del usuario" onclick="showFormView('edit', 1005)"><i data-lucide="edit-3" style="width:18px"></i></button>
                                             <div style="width:38px"></div>
                                         </div>
                                     </td>
                                 </tr>
                                 <tr data-associated="false" data-group="Ciudadano" data-status="Activo">
-                                    <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()"></td>
+                                    <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()" title="Seleccionar registro"></td>
                                     <td class="text-center fw-bold text-navy">1006</td>
                                     <td><code class="fw-bold">lperon</code></td>
                                     <td class="fw-bold text-navy">Lucía Perón</td>
@@ -462,9 +461,9 @@
                                     <td>15/12/2026</td>
                                     <td class="text-end">
                                         <div class="actions-cell-container">
-                                            <button class="btn-action-icon" title="Visualizar" onclick="showFormView('view', 1006)"><i data-lucide="eye" style="width:18px"></i></button>
-                                            <button class="btn-action-icon" title="Editar" onclick="showFormView('edit', 1006)"><i data-lucide="edit-3" style="width:18px"></i></button>
-                                            <button class="btn-action-icon btn-action-delete" title="Eliminar" onclick="requestDeletion(1006, 'Lucía Perón')"><i data-lucide="trash-2" style="width:18px"></i></button>
+                                            <button class="btn-action-icon" title="Consultar información detallada" onclick="showFormView('view', 1006)"><i data-lucide="eye" style="width:18px"></i></button>
+                                            <button class="btn-action-icon" title="Modificar parámetros del usuario" onclick="showFormView('edit', 1006)"><i data-lucide="edit-3" style="width:18px"></i></button>
+                                            <button class="btn-action-icon btn-action-delete" title="Eliminar registro permanentemente" onclick="requestDeletion(1006, 'Lucía Perón')"><i data-lucide="trash-2" style="width:18px"></i></button>
                                         </div>
                                     </td>
                                 </tr>
@@ -475,22 +474,22 @@
                     <div class="grid-footer">
                         <div><span class="text-muted small fw-bold" id="paginationInfo">Mostrando 1 a 5 de 5 registros</span></div>
                         <div class="d-flex gap-2">
-                            <button class="btn-outline-mre-danger" id="btnMassAction" disabled onclick="showModalInactivateMass()" title="Inactivar masivamente (Solo activos)">
+                            <button class="btn-outline-mre-danger" id="btnMassAction" disabled onclick="showModalInactivateMass()" title="Inactivar registros seleccionados (Requisito: estado Activo)">
                                 <i data-lucide="power" style="width: 14px;"></i> Inactivar
                             </button>
-                            <button class="btn-outline-mre-primary" id="btnForcePass" disabled onclick="showModalForcePass()" title="Forzar cambio de contraseña (Ciudadanos)">
+                            <button class="btn-outline-mre-primary" id="btnForcePass" disabled onclick="showModalForcePass()" title="Forzar reseteo de claves (Requisito: grupo Ciudadano)">
                                 <i data-lucide="key" style="width: 14px;"></i> Forzar cambio de contraseña
                             </button>
-                            <button class="btn-outline-mre-secondary" onclick="cancelSelection()" title="Cancelar selección">
+                            <button class="btn-outline-mre-secondary" onclick="cancelSelection()" title="Deseleccionar todos los elementos">
                                 <i data-lucide="x" style="width: 14px;"></i> Cancelar
                             </button>
                         </div>
                         <div class="d-flex align-items-center gap-1">
-                            <button class="btn-pagination" disabled title="Primero"><i data-lucide="chevrons-left" style="width: 16px;"></i></button>
-                            <button class="btn-pagination" disabled title="Anterior"><i data-lucide="chevron-left" style="width: 16px;"></i></button>
+                            <button class="btn-pagination" disabled title="Ir al inicio"><i data-lucide="chevrons-left" style="width: 16px;"></i></button>
+                            <button class="btn-pagination" disabled title="Página anterior"><i data-lucide="chevron-left" style="width: 16px;"></i></button>
                             <span class="page-indicator">Pág 1 de 1</span>
-                            <button class="btn-pagination" disabled title="Siguiente"><i data-lucide="chevron-right" style="width: 16px;"></i></button>
-                            <button class="btn-pagination" disabled title="Último"><i data-lucide="chevrons-right" style="width: 16px;"></i></button>
+                            <button class="btn-pagination" disabled title="Página siguiente"><i data-lucide="chevron-right" style="width: 16px;"></i></button>
+                            <button class="btn-pagination" disabled title="Ir al final"><i data-lucide="chevrons-right" style="width: 16px;"></i></button>
                         </div>
                     </div>
                 </div>
@@ -505,35 +504,57 @@
 
                 <div class="grid-frame p-5 animate-fade">
                     <form id="userFormDetail">
-                        <div class="section-title" title="Datos MRE">Datos del Usuario (Sistema MRE)</div>
+                        <div class="section-title">Datos del Usuario (Sistema MRE)</div>
                         <div class="row g-4 mb-4">
                             <div class="col-md-4">
                                 <label class="form-label">Nombre de usuario (MRE) <span class="text-danger" id="reqUser">*</span></label>
                                 <div class="d-flex">
-                                    <input type="text" id="u_search_detail" class="form-control-mre" placeholder="Ej: jperon" style="border-radius: 10px 0 0 10px;" oninput="hideSearchError()">
-                                    <button type="button" id="btnSearchDetail" class="btn btn-primary px-3" style="border-radius: 0 10px 10px 0; background-color: var(--mre-blue-light);" onclick="simulateSearchDetail()">
+                                    <input type="text" id="u_search_detail" class="form-control-mre" placeholder="Ej: jperon" title="Nombre de usuario institucional" oninput="hideSearchError()">
+                                    <button type="button" id="btnSearchDetail" class="btn btn-primary px-3" style="border-radius: 0 10px 10px 0; background-color: var(--mre-blue-light);" onclick="simulateSearchDetail()" title="Sincronizar datos con sistema MRE">
                                         <i data-lucide="search" style="width: 18px;"></i>
                                     </button>
                                 </div>
                                 <div id="searchErrorMsg" class="error-feedback">No existe creado el usuario en el sistema MRE favor verifique</div>
                             </div>
-                            <div class="col-md-4"><label class="form-label">Nombre</label><input type="text" id="f_name_detail" class="form-control-mre" readonly></div>
-                            <div class="col-md-4"><label class="form-label">Apellido</label><input type="text" id="f_last_detail" class="form-control-mre" readonly></div>
+                            <div class="col-md-4">
+                                <label class="form-label">Nombre</label>
+                                <input type="text" id="f_name_detail" class="form-control-mre" readonly placeholder="Sincronizado de MRE..." title="Nombre del funcionario">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Apellido</label>
+                                <input type="text" id="f_last_detail" class="form-control-mre" readonly placeholder="Sincronizado de MRE..." title="Apellido del funcionario">
+                            </div>
                         </div>
 
                         <div class="row g-4 mb-4">
-                            <div class="col-md-4"><label class="form-label">Tipo de Documento</label><select id="f_type_detail" class="form-control-mre" disabled><option value="CI">Cédula de Identidad</option></select></div>
-                            <div class="col-md-4"><label class="form-label">Nro. de Documento</label><input type="text" id="f_doc_detail" class="form-control-mre" readonly></div>
-                            <div class="col-md-4"><label class="form-label">Email</label><input type="email" id="f_email_detail" class="form-control-mre" readonly></div>
+                            <div class="col-md-4">
+                                <label class="form-label">Tipo de Documento</label>
+                                <select id="f_type_detail" class="form-control-mre" disabled title="Tipo de identificación">
+                                    <option value="CI">Cédula de Identidad</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Nro. de Documento</label>
+                                <input type="text" id="f_doc_detail" class="form-control-mre" readonly placeholder="Sincronizado de MRE..." title="Número de identificación fiscal o civil">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Email</label>
+                                <input type="email" id="f_email_detail" class="form-control-mre" readonly placeholder="ejemplo@mre.gov.py" title="Dirección de correo institucional">
+                            </div>
                         </div>
 
                         <div class="row g-4 mb-5">
-                            <div class="col-md-4"><label class="form-label">Teléfono</label><input type="text" id="f_phone_detail" class="form-control-mre" readonly></div>
-                            <div class="col-md-4"><label class="form-label">Fecha de Expiración</label><input type="date" id="f_exp_detail" class="form-control-mre"></div>
-                            
+                            <div class="col-md-4">
+                                <label class="form-label">Teléfono</label>
+                                <input type="text" id="f_phone_detail" class="form-control-mre" readonly placeholder="021 414..." title="Número de contacto">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Fecha de Expiración</label>
+                                <input type="date" id="f_exp_detail" class="form-control-mre" title="Vencimiento de la vigencia de la cuenta">
+                            </div>
                             <div class="col-md-4">
                                 <label class="form-label">Estado <span class="text-danger">*</span></label>
-                                <select id="f_status_detail" class="form-control-mre">
+                                <select id="f_status_detail" class="form-control-mre" title="Estado de acceso al sistema">
                                     <option value="Activo">Activo</option>
                                     <option value="Inactivo">Inactivo</option>
                                 </select>
@@ -541,23 +562,29 @@
                         </div>
 
                         <div class="section-title">Asignación de Grupos</div>
-                        <div class="dual-list-container mb-5" id="groupSelector">
+                        <div class="dual-list-container mb-5">
                             <div class="w-100">
                                 <div class="list-title">Grupos Disponibles</div>
-                                <div class="dual-list-box" id="availGroupsBox">
+                                <div class="dual-list-box" id="availGroupsBox" title="Haga clic para asociar grupo">
                                     <div class="list-item" onclick="moveGroup(this, 'assignedGroupsDetail')">Administrador de sistema</div>
                                     <div class="list-item" onclick="moveGroup(this, 'assignedGroupsDetail')">Operador ológrafo</div>
                                     <div class="list-item" onclick="moveGroup(this, 'assignedGroupsDetail')">Ciudadano</div>
                                 </div>
                             </div>
-                            <div class="d-flex flex-column gap-2"><button type="button" class="btn btn-sm btn-light border"><i data-lucide="chevrons-right"></i></button><button type="button" class="btn btn-sm btn-light border"><i data-lucide="chevrons-left"></i></button></div>
-                            <div class="w-100"><div class="list-title">Grupos Asociados</div><div class="dual-list-box" id="assignedGroupsDetail"></div></div>
+                            <div class="d-flex flex-column gap-2">
+                                <button type="button" class="btn btn-sm btn-light border" title="Asociar todo"><i data-lucide="chevrons-right"></i></button>
+                                <button type="button" class="btn btn-sm btn-light border" title="Remover todo"><i data-lucide="chevrons-left"></i></button>
+                            </div>
+                            <div class="w-100">
+                                <div class="list-title">Grupos Asociados</div>
+                                <div class="dual-list-box" id="assignedGroupsDetail" title="Haga clic para remover grupo"></div>
+                            </div>
                         </div>
 
                         <div id="credentialsSectionDetail" class="d-none">
                             <div class="section-title">Credenciales</div>
                             <div class="p-3 rounded-3 border bg-light mb-5 d-flex align-items-center gap-3">
-                                <input type="checkbox" id="f_force_pass" style="width: 20px; height: 20px;">
+                                <input type="checkbox" id="f_force_pass" style="width: 20px; height: 20px;" title="Activar forzado de clave">
                                 <label for="f_force_pass" class="fw-bold text-muted small uppercase m-0 cursor-pointer">Forzar cambio de contraseña al iniciar sesión</label>
                             </div>
                         </div>
@@ -577,8 +604,8 @@
                         </div>
 
                         <div class="pt-4 border-top d-flex justify-content-end gap-3">
-                            <button type="button" class="btn-tool-generic px-4 py-2" onclick="showListView()" style="background: #94A3B8; color: white; border: none;">Cancelar</button>
-                            <button type="button" id="btnSubmitForm" class="btn-main px-5 py-2" onclick="alert('Operación exitosa')">Guardar Cambios</button>
+                            <button type="button" class="btn-tool-generic px-4 py-2" onclick="showListView()" style="background: #94A3B8; color: white; border: none;" title="Cancelar cambios y volver al listado">Cancelar</button>
+                            <button type="button" id="btnSubmitForm" class="btn-main px-5 py-2" onclick="alert('Operación exitosa')" title="Guardar todos los cambios realizados">Guardar Cambios</button>
                         </div>
                     </form>
                 </div>
@@ -599,8 +626,8 @@
             <h5 class="fw-800 text-navy mb-2">Confirmar Eliminación</h5>
             <p class="text-muted small px-4">¿Desea eliminar definitivamente al usuario <strong id="deleteUserName"></strong>? Esta acción es irreversible.</p>
             <div class="d-flex justify-content-center gap-3 mt-4 pt-3 border-top">
-                <button class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalDelete')">Cancelar</button>
-                <button class="btn btn-danger rounded-pill px-4 fw-800" onclick="alert('Satisfactoriamente eliminado.'); closeModal('modalDelete');">Sí, eliminar</button>
+                <button class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalDelete')" title="No eliminar">Cancelar</button>
+                <button class="btn btn-danger rounded-pill px-4 fw-800" onclick="alert('Satisfactoriamente eliminado.'); closeModal('modalDelete');" title="Confirmar eliminación permanente">Sí, eliminar</button>
             </div>
         </div>
     </div>
@@ -613,8 +640,8 @@
             <h5 class="fw-800 text-navy mb-2">Confirmar Inactivación</h5>
             <p class="text-muted small px-4">¿Desea inactivar de forma masiva los usuarios seleccionados de forma simultánea?</p>
             <div class="d-flex justify-content-center gap-3 mt-4 pt-3 border-top">
-                <button class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalInactivateMass')">Cancelar</button>
-                <button class="btn-main px-5 py-2" onclick="alert('Registros inactivados correctamente.'); closeModal('modalInactivateMass'); cancelSelection();">Sí, inactivar</button>
+                <button class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalInactivateMass')" title="Mantener estados">Cancelar</button>
+                <button class="btn-main px-5 py-2" onclick="alert('Registros inactivados correctamente.'); closeModal('modalInactivateMass'); cancelSelection();" title="Confirmar inactivación masiva">Sí, inactivar</button>
             </div>
         </div>
     </div>
@@ -627,8 +654,8 @@
             <h5 class="fw-800 text-navy mb-2">Forzar Cambio de Contraseña</h5>
             <p class="text-muted small px-4">Se ha solicitado forzar el cambio de contraseña para <strong id="forcePassCount"></strong> ciudadanos.</p>
             <div class="d-flex justify-content-center gap-3 mt-4 pt-3 border-top">
-                <button class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalForcePassConfirm')">Cancelar</button>
-                <button class="btn-main rounded-pill px-4 fw-800" onclick="alert('Solicitud enviada con éxito.'); closeModal('modalForcePassConfirm'); cancelSelection();">Confirmar Acción</button>
+                <button class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalForcePassConfirm')" title="Cancelar acción">Cancelar</button>
+                <button class="btn-main rounded-pill px-4 fw-800" onclick="alert('Solicitud enviada con éxito.'); closeModal('modalForcePassConfirm'); cancelSelection();" title="Ejecutar forzado de clave">Confirmar Acción</button>
             </div>
         </div>
     </div>
@@ -641,7 +668,7 @@
             <h5 class="fw-800 text-navy mb-2">No es posible eliminar</h5>
             <p class="text-muted small px-4">El usuario posee gestiones asociadas en el sistema. No puede ser borrado por razones de integridad histórica.</p>
             <div class="d-flex justify-content-center mt-4 pt-3 border-top">
-                <button class="btn-main px-5 py-2" onclick="closeModal('modalDeleteError')">Entendido</button>
+                <button class="btn-main px-5 py-2" onclick="closeModal('modalDeleteError')" title="Cerrar aviso">Entendido</button>
             </div>
         </div>
     </div>
@@ -652,6 +679,7 @@
             initSidebarPopups();
         });
 
+        // NAVEGACIÓN
         function showListView() {
             document.getElementById('viewForm').style.display = 'none';
             document.getElementById('viewList').style.display = 'block';
