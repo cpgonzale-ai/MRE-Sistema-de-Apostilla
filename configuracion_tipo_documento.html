@@ -10,7 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* --- ESTILOS DEL CÓDIGO PROPORCIONADO (BASE) --- */
         :root {
             --mre-blue: #002855;
             --mre-blue-light: #0038A8;
@@ -155,17 +154,19 @@
         .btn-main { background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); color: #ffffff; border: none; border-radius: 12px; padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.85rem; transition: var(--transition); }
         .btn-main:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 40, 85, 0.2); color: white; }
 
-        .btn-action-table { 
-            padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border-color); 
-            background: white; color: var(--text-muted); transition: var(--transition);
-            display: inline-flex; align-items: center; justify-content: center;
+        /* Estilo actualizado según referencia */
+        .btn-action-icon {
+            width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 10px; border: 1px solid var(--border-color); background: white; color: var(--text-muted);
+            transition: var(--transition); cursor: pointer;
         }
-        .btn-action-table:hover { background: var(--input-bg); color: var(--mre-blue); border-color: var(--mre-blue-light); }
+        .btn-action-icon:hover { background: #F1F5F9; color: var(--mre-blue); border-color: var(--mre-blue); }
 
-        /* --- FOOTER & PAGINADO (DEL CÓDIGO NUEVO) --- */
+        /* --- FOOTER & PAGINADO --- */
         .grid-footer { padding: 1rem 1.5rem; background-color: #F8FAFC; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .btn-pagination { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #E2E8F0; border-radius: 8px; color: #64748B; cursor: pointer; transition: var(--transition); }
         .btn-pagination:hover:not(:disabled) { background: var(--mre-blue); color: white; border-color: var(--mre-blue); }
+        .btn-pagination:disabled { opacity: 0.5; cursor: not-allowed; background: #F1F5F9; }
         .page-indicator { font-size: 0.85rem; font-weight: 700; color: var(--mre-blue); padding: 0 8px; }
 
         .mre-footer { background: white; padding: 1rem 2.5rem; border-top: 1px solid var(--border-color); font-size: 0.75rem; color: #64748B; display: flex; justify-content: space-between; margin-top: auto; }
@@ -354,9 +355,9 @@
                         </button>
                     </div>
                     <div class="d-flex align-items-center gap-1">
-                        <button class="btn-pagination" title="Anterior"><i data-lucide="chevron-left" style="width: 16px;"></i></button>
+                        <button class="btn-pagination" disabled title="Anterior"><i data-lucide="chevron-left" style="width: 16px;"></i></button>
                         <span class="page-indicator">Pág 1</span>
-                        <button class="btn-pagination" title="Siguiente"><i data-lucide="chevron-right" style="width: 16px;"></i></button>
+                        <button class="btn-pagination" disabled title="Siguiente"><i data-lucide="chevron-right" style="width: 16px;"></i></button>
                     </div>
                 </div>
             </div>
@@ -1062,10 +1063,10 @@
                     <td><span class="text-muted small">${d.firma}</span></td>
                     <td><span class="badge-status status-active ${d.estado === 'INACTIVO' ? 'bg-secondary text-white' : ''}">${d.estado}</span></td>
                     <td class="text-center">
-                        <div class="d-flex justify-content-center gap-1">
-                            <button class="btn-action-table" onclick="openDocModal('view', ${d.id})" title="Visualizar"><i data-lucide="eye" style="width:14px"></i></button>
-                            <button class="btn-action-table" onclick="openDocModal('edit', ${d.id})" title="Editar"><i data-lucide="edit-3" style="width:14px"></i></button>
-                            <button class="btn-action-table text-danger" onclick="openDeleteModal(${d.id}, '${d.name}')" title="Eliminar"><i data-lucide="trash-2" style="width:14px"></i></button>
+                        <div class="d-flex justify-content-center gap-2">
+                            <button class="btn-action-icon" onclick="openDocModal('view', ${d.id})" title="Visualizar"><i data-lucide="eye" style="width:18px"></i></button>
+                            <button class="btn-action-icon" onclick="openDocModal('edit', ${d.id})" title="Editar"><i data-lucide="edit-3" style="width:18px"></i></button>
+                            <button class="btn-action-icon" onclick="openDeleteModal(${d.id}, '${d.name}')" title="Eliminar"><i data-lucide="trash-2" style="width:18px"></i></button>
                         </div>
                     </td>
                 </tr>
