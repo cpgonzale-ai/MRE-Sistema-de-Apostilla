@@ -16,7 +16,7 @@
             --mre-red: #D52B1E;
             --mre-green: #10B981;
             --mre-amber: #F59E0B;
-            --soft-bg: #f8fafc; /* Ajustado al código de referencia */
+            --soft-bg: #f0f4f8; 
             --border-color: #E2E8F0;
             --input-bg: #F8FAFC;
             --text-main: #1E293B;
@@ -52,7 +52,7 @@
         .portal-header { 
             display: flex; justify-content: space-between; align-items: center; background: white; 
             padding: 1.25rem 2.5rem; box-shadow: 0 4px 10px -1px rgba(0,0,0,0.05); 
-            border-bottom: 2px solid var(--border-color); /* Ajustado a 2px según referencia */
+            border-bottom: 2px solid var(--border-color); 
             position: relative; z-index: 2000;
         }
 
@@ -112,18 +112,34 @@
             background: #FFFFFF; color: var(--mre-blue); border: 1px solid var(--border-color);
             padding: 0.5rem 1rem; border-radius: 10px; font-size: 0.75rem; font-weight: 700;
             display: flex; align-items: center; gap: 8px; transition: var(--transition);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
         }
-        .btn-tool-generic:hover { background: #F8FAFC; border-color: var(--mre-blue); }
+        .btn-tool-generic:hover { background: #F1F5F9; border-color: var(--mre-blue); transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 
         .btn-action-icon {
-            width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;
-            border-radius: 8px; border: 1px solid var(--border-color); background: white; color: var(--text-muted);
+            width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 10px; border: 1px solid var(--border-color); background: white; color: var(--text-muted);
             transition: var(--transition); cursor: pointer; flex-shrink: 0;
         }
         .btn-action-icon:hover { background: #F1F5F9; color: var(--mre-blue); border-color: var(--mre-blue); }
 
+        .btn-outline-mre-danger { 
+            border: 2px solid var(--mre-red); color: var(--mre-red); font-weight: 800; border-radius: 12px;
+            padding: 0.5rem 1.2rem; font-size: 0.75rem; background: transparent; transition: var(--transition);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .btn-outline-mre-danger:hover:not(:disabled) { background: var(--mre-red); color: white; }
+        .btn-outline-mre-danger:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .btn-outline-mre-secondary {
+            border: 2px solid #94A3B8; color: #475569; font-weight: 800; border-radius: 12px;
+            padding: 0.5rem 1.2rem; font-size: 0.75rem; background: transparent; transition: var(--transition);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .btn-outline-mre-secondary:hover { background: #94A3B8; color: white; }
+
         /* --- FOOTER & PAGINADO --- */
-        .grid-footer { padding: 1rem 1.5rem; background-color: #F8FAFC; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .grid-footer { padding: 1.25rem 1.5rem; background-color: #F8FAFC; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .btn-pagination { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #E2E8F0; border-radius: 8px; color: #64748B; cursor: pointer; transition: var(--transition); }
         .btn-pagination:hover:not(:disabled) { background: var(--mre-blue); color: white; border-color: var(--mre-blue); }
         .page-indicator { font-size: 0.85rem; font-weight: 700; color: var(--mre-blue); padding: 0 8px; }
@@ -145,6 +161,7 @@
 
         .form-label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem; display: block; }
         .form-control-mre { background-color: var(--input-bg); border: 1px solid #E2E8F0; border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.9rem; width: 100%; transition: var(--transition); }
+        .form-control-mre:focus { outline: none; border-color: var(--mre-blue-light); box-shadow: 0 0 0 3px rgba(0, 56, 168, 0.1); }
 
         .selection-list { max-height: 150px; overflow-y: auto; border: 1px solid #E2E8F0; border-radius: 12px; padding: 0.5rem; background: #F8FAFC; }
         .selection-item { padding: 0.5rem 0.75rem; border-bottom: 1px solid #E2E8F0; font-size: 0.8rem; font-weight: 600; display: flex; justify-content: space-between; }
@@ -269,10 +286,10 @@
                 <div class="grid-footer">
                     <div><span class="text-muted small fw-bold" id="paginationInfo">Mostrando registros</span></div>
                     <div class="d-flex gap-2">
-                        <button class="btn btn-outline-danger fw-bold d-flex align-items-center gap-2" id="btnInactivateParams" disabled onclick="handleInactivateSelection()" style="border-radius: 12px; border-width: 2px;">
+                        <button class="btn-outline-mre-danger" id="btnInactivateParams" disabled onclick="handleInactivateSelection()" data-bs-toggle="tooltip" title="Inactivar selección">
                             <i data-lucide="power" style="width: 14px;"></i> Inactivar
                         </button>
-                        <button class="btn btn-outline-secondary fw-bold d-flex align-items-center gap-2" id="btnCancelSelection" onclick="handleCancelSelection()" style="border-radius: 12px; border-width: 2px; display: none;">
+                        <button class="btn-outline-mre-secondary" id="btnCancelSelection" onclick="handleCancelSelection()" style="display: none;" data-bs-toggle="tooltip" title="Cancelar">
                             <i data-lucide="x" style="width: 14px;"></i> Cancelar
                         </button>
                     </div>
