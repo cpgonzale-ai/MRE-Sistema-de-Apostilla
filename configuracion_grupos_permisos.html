@@ -154,7 +154,6 @@
         .btn-main { background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); color: #ffffff; border: none; border-radius: 12px; padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.85rem; transition: var(--transition); }
         .btn-main:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 40, 85, 0.2); color: white; }
 
-        /* BOTONES DE HERRAMIENTAS Y ACCIONES (NUEVOS ESTILOS) */
         .btn-tool-generic {
             background: #FFFFFF; color: var(--mre-blue); border: 1px solid var(--border-color);
             padding: 0.5rem 1rem; border-radius: 10px; font-size: 0.75rem; font-weight: 700;
@@ -192,7 +191,7 @@
         .btn-pagination:disabled { opacity: 0.5; cursor: not-allowed; background: #F1F5F9; }
         .page-indicator { font-size: 0.85rem; font-weight: 700; color: var(--mre-blue); padding: 0 8px; }
 
-        /* --- DUAL LIST BOX (ESTILO ACTUALIZADO) --- */
+        /* --- DUAL LIST BOX --- */
         .dual-list-container { display: flex; gap: 1.5rem; align-items: center; }
         .dual-list-box { flex: 1; border: 1px solid var(--border-color); border-radius: 15px; height: 250px; overflow-y: auto; background: var(--input-bg); padding: 5px; }
         .list-title { font-size: 0.7rem; font-weight: 800; text-align: center; color: var(--text-muted); text-transform: uppercase; padding: 8px; border-bottom: 1px solid var(--border-color); background: white; margin-bottom: 5px; border-radius: 10px 10px 0 0; }
@@ -200,7 +199,7 @@
         .list-item:hover { background: #F1F7FF; color: var(--mre-blue); }
         .list-item i { transition: var(--transition); }
 
-        /* --- AUDITORÍA (ESTILO ACTUALIZADO) --- */
+        /* --- AUDITORÍA --- */
         .audit-grid-table { width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; margin-top: 1rem; }
         .audit-grid-table th { background: #F8FAFC; color: #64748B; font-size: 0.65rem; font-weight: 800; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-color); text-transform: uppercase; }
         .audit-grid-table td { padding: 0.75rem 1rem; border-bottom: 1px solid #F1F5F9; font-size: 0.75rem; }
@@ -372,7 +371,7 @@
     <div class="mre-modal-overlay" id="modalGroup">
         <div class="mre-modal animate-fade">
             <div class="section-title" id="modalTitle">Configuración de Grupo</div>
-            <form id="formGroup">
+            <form id="formGroup" onsubmit="handleSaveGroup(event)">
                 <div class="row g-4 mb-5">
                     <div class="col-md-8" id="containerGroupName">
                         <label class="form-label">Nombre del Grupo <span class="text-danger">*</span></label>
@@ -397,19 +396,19 @@
                     <div class="w-100">
                         <div class="list-title">Disponibles</div>
                         <div class="dual-list-box" id="listAvailable">
-                            <div class="list-item" onclick="toggleItem(this)"><span>MODULO_USUARIOS_CREAR</span> <i data-lucide="plus" style="width:14px" class="text-muted"></i></div>
-                            <div class="list-item" onclick="toggleItem(this)"><span>MODULO_USUARIOS_ELIMINAR</span> <i data-lucide="plus" style="width:14px" class="text-muted"></i></div>
-                            <div class="list-item" onclick="toggleItem(this)"><span>CONFIG_CAMPOS_MAESTROS</span> <i data-lucide="plus" style="width:14px" class="text-muted"></i></div>
+                            <div class="list-item" onclick="moveItemOnClick(this)"><span>MODULO_USUARIOS_CREAR</span> <i data-lucide="plus" style="width:14px" class="text-muted"></i></div>
+                            <div class="list-item" onclick="moveItemOnClick(this)"><span>MODULO_USUARIOS_ELIMINAR</span> <i data-lucide="plus" style="width:14px" class="text-muted"></i></div>
+                            <div class="list-item" onclick="moveItemOnClick(this)"><span>CONFIG_CAMPOS_MAESTROS</span> <i data-lucide="plus" style="width:14px" class="text-muted"></i></div>
                         </div>
                     </div>
                     <div class="d-flex flex-column gap-2">
-                        <button type="button" class="btn btn-sm btn-light border" id="btnToAssigned" onclick="transferItems('toAssigned')"><i data-lucide="chevrons-right"></i></button>
-                        <button type="button" class="btn btn-sm btn-light border" id="btnToAvailable" onclick="transferItems('toAvailable')"><i data-lucide="chevrons-left"></i></button>
+                        <button type="button" class="btn btn-sm btn-light border" id="btnToAssigned" onclick="moveAllItems('toAssigned')" title="Mover todos a Seleccionados"><i data-lucide="chevrons-right"></i></button>
+                        <button type="button" class="btn btn-sm btn-light border" id="btnToAvailable" onclick="moveAllItems('toAvailable')" title="Mover todos a Disponibles"><i data-lucide="chevrons-left"></i></button>
                     </div>
                     <div class="w-100">
                         <div class="list-title">Seleccionados</div>
                         <div class="dual-list-box" id="listAssigned">
-                            <div class="list-item" onclick="toggleItem(this)"><span>MODULO_ACCESO_BASIC</span> <i data-lucide="check" style="width:14px" class="text-success"></i></div>
+                            <div class="list-item" onclick="moveItemOnClick(this)"><span>MODULO_ACCESO_BASIC</span> <i data-lucide="check" style="width:14px" class="text-success"></i></div>
                         </div>
                     </div>
                 </div>
@@ -467,10 +466,56 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+        let editingId = null;
         let mockGroups = [
-            { id: 1, name: 'Administradores', desc: 'Control total de la plataforma.', status: 'ACTI', perms: 45, history: [{ date: '10/01/2026 08:30', action: 'CREATE', user: 'cgonzalez', desc: 'Registro inicial.' }] },
-            { id: 2, name: 'Funcionarios Operativos', desc: 'Gestión de trámites.', status: 'ACTI', perms: 12, history: [{ date: '12/01/2026 09:15', action: 'CREATE', user: 'cgonzalez', desc: 'Registro inicial.' }] },
-            { id: 3, name: 'Auditores MRE', desc: 'Solo lectura y reportes.', status: 'INAC', perms: 5, history: [{ date: '05/01/2026 11:00', action: 'CREATE', user: 'cgonzalez', desc: 'Registro inicial.' }] }
+            { 
+                id: 1, 
+                name: 'Administradores del Sistema', 
+                desc: 'Control total de la plataforma y configuración de seguridad.', 
+                status: 'ACTI', 
+                perms: 52, 
+                history: [{ date: '10/01/2026 08:30', action: 'CREATE', user: 'system', desc: 'Inicialización del sistema.' }] 
+            },
+            { 
+                id: 2, 
+                name: 'Operador Ológrafo', 
+                desc: 'Gestión de firmas y validaciones ológrafas.', 
+                status: 'ACTI', 
+                perms: 15, 
+                history: [{ date: '12/01/2026 09:15', action: 'CREATE', user: 'cgonzalez', desc: 'Creación de rol operativo.' }] 
+            },
+            { 
+                id: 3, 
+                name: 'Operador Verificación Previa', 
+                desc: 'Revisión preliminar de solicitudes entrantes.', 
+                status: 'ACTI', 
+                perms: 8, 
+                history: [{ date: '15/01/2026 10:00', action: 'CREATE', user: 'cgonzalez', desc: 'Registro inicial.' }] 
+            },
+            { 
+                id: 4, 
+                name: 'Administrador de Supervisores', 
+                desc: 'Gestión de equipos y asignación de carga de trabajo.', 
+                status: 'ACTI', 
+                perms: 20, 
+                history: [{ date: '20/01/2026 14:30', action: 'CREATE', user: 'admin_sys', desc: 'Nuevo perfil jerárquico.' }] 
+            },
+            { 
+                id: 5, 
+                name: 'Funcionario Externo', 
+                desc: 'Acceso limitado para consultas de entes externos.', 
+                status: 'INAC', 
+                perms: 3, 
+                history: [{ date: '25/01/2026 11:45', action: 'CREATE', user: 'cgonzalez', desc: 'Perfil para auditoría externa.' }] 
+            },
+            { 
+                id: 6, 
+                name: 'Ciudadano', 
+                desc: 'Perfil base para usuarios solicitantes.', 
+                status: 'ACTI', 
+                perms: 5, 
+                history: [{ date: '01/01/2026 00:00', action: 'CREATE', user: 'system', desc: 'Rol por defecto.' }] 
+            }
         ];
 
         let idToDelete = null;
@@ -495,7 +540,7 @@
                 </tr>
             `).join('');
             lucide.createIcons();
-            document.getElementById('paginationInfo').innerText = `Mostrando 1 a ${mockGroups.length} de ${mockGroups.length} registros`;
+            document.getElementById('paginationInfo').innerText = `Mostrando ${mockGroups.length} registros`;
             updateSelectionUI();
         }
 
@@ -562,6 +607,51 @@
             handleCancelSelection();
         }
 
+        function handleSaveGroup(event) {
+            event.preventDefault();
+            const name = document.getElementById('groupName').value;
+            const desc = document.getElementById('groupDesc').value;
+            const statusSelect = document.getElementById('groupStatus');
+            const status = editingId ? statusSelect.value : 'ACTI';
+            const assignedCount = document.getElementById('listAssigned').children.length;
+            const now = new Date();
+            const dateStr = `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getFullYear()} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+
+            if (editingId) {
+                const index = mockGroups.findIndex(g => g.id === editingId);
+                if (index !== -1) {
+                    mockGroups[index].name = name;
+                    mockGroups[index].desc = desc;
+                    mockGroups[index].status = status;
+                    mockGroups[index].perms = assignedCount;
+                    mockGroups[index].history.push({
+                        date: dateStr,
+                        action: 'UPDATE',
+                        user: 'cgonzalez',
+                        desc: 'Actualización de datos del grupo.'
+                    });
+                }
+            } else {
+                const newId = mockGroups.length > 0 ? Math.max(...mockGroups.map(g => g.id)) + 1 : 1;
+                const newGroup = {
+                    id: newId,
+                    name: name,
+                    desc: desc,
+                    status: 'ACTI',
+                    perms: assignedCount,
+                    history: [{
+                        date: dateStr,
+                        action: 'CREATE',
+                        user: 'cgonzalez',
+                        desc: 'Registro inicial.'
+                    }]
+                };
+                mockGroups.push(newGroup);
+            }
+            renderGroups();
+            closeModal('modalGroup');
+        }
+
         function openGroupModal(mode, id) {
             document.getElementById('modalGroup').style.display = 'flex';
             const form = document.getElementById('formGroup');
@@ -569,18 +659,19 @@
             const submitBtn = document.getElementById('btnSubmitGroup');
             const transferBtns = [document.getElementById('btnToAssigned'), document.getElementById('btnToAvailable')];
             const auditSection = document.getElementById('auditSection');
-            
             const containerStatus = document.getElementById('containerGroupStatus');
             const containerName = document.getElementById('containerGroupName');
+            const listItems = document.querySelectorAll('.list-item'); // Get all permission items
 
-            // Resetear estados comunes
+            // Enable inputs/buttons for add/edit
             inputs.forEach(i => i.disabled = false);
             submitBtn.style.display = 'block';
             transferBtns.forEach(b => b.disabled = false);
+            listItems.forEach(item => item.style.pointerEvents = 'auto'); // Enable clicks
             auditSection.classList.add('d-none');
 
             if (mode !== 'add') {
-                // MODO EDITAR O VISUALIZAR: Mostrar Estado
+                editingId = id;
                 const group = mockGroups.find(g => g.id === id);
                 document.getElementById('modalTitle').innerText = (mode === 'view' ? 'Visualizar' : 'Editar') + ' Grupo: ' + group.name;
                 document.getElementById('groupName').value = group.name;
@@ -591,9 +682,11 @@
                 containerName.className = 'col-md-8';
 
                 if (mode === 'view') {
+                    // Disable inputs/buttons for view
                     inputs.forEach(i => i.disabled = true);
                     submitBtn.style.display = 'none';
                     transferBtns.forEach(b => b.disabled = true);
+                    listItems.forEach(item => item.style.pointerEvents = 'none'); // Disable clicks
                     auditSection.classList.remove('d-none');
                     document.getElementById('auditTimeline').innerHTML = `
                         <thead><tr><th>Fecha</th><th>Acción</th><th>Usuario</th><th>Descripción</th></tr></thead>
@@ -601,44 +694,68 @@
                     `;
                 }
             } else {
-                // MODO AGREGAR: Ocultar Estado
+                editingId = null;
                 document.getElementById('modalTitle').innerText = 'Nuevo Grupo de Usuarios';
                 form.reset();
                 containerStatus.classList.add('d-none');
                 containerName.className = 'col-md-12';
+                // Move everything from Assigned to Available on new group
+                moveAllItems('toAvailable');
             }
             lucide.createIcons();
         }
 
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        function toggleItem(el) { el.classList.toggle('selected'); }
 
-        function transferItems(direction) {
+        // Nueva función para mover directamente al hacer clic (Reemplaza toggleItem)
+        function moveItemOnClick(el) {
+            const parentId = el.parentElement.id;
+            const isAvailable = parentId === 'listAvailable';
+            const targetId = isAvailable ? 'listAssigned' : 'listAvailable';
+            const targetList = document.getElementById(targetId);
+            
+            // Remove selection class if present
+            el.classList.remove('selected');
+            
+            // Update icon and style
+            const currentIcon = el.querySelector('i, svg');
+            const newIcon = document.createElement('i');
+            newIcon.style.width = '14px';
+            
+            if (isAvailable) {
+                // Moving to Assigned -> Green Check
+                newIcon.setAttribute('data-lucide', 'check');
+                newIcon.className = 'text-success';
+            } else {
+                // Moving to Available -> Gray Plus
+                newIcon.setAttribute('data-lucide', 'plus');
+                newIcon.className = 'text-muted';
+            }
+            
+            if (currentIcon) el.replaceChild(newIcon, currentIcon);
+            else el.appendChild(newIcon);
+            
+            // Move element
+            targetList.appendChild(el);
+            
+            // Refresh icons
+            lucide.createIcons();
+        }
+
+        // Renombrado transferItems a moveAllItems para reflejar la nueva funcionalidad de los botones
+        function moveAllItems(direction) {
             const sourceId = direction === 'toAssigned' ? 'listAvailable' : 'listAssigned';
             const targetId = direction === 'toAssigned' ? 'listAssigned' : 'listAvailable';
             const source = document.getElementById(sourceId);
             const target = document.getElementById(targetId);
-            const selectedItems = source.querySelectorAll('.list-item.selected');
-            selectedItems.forEach(item => {
-                item.classList.remove('selected');
-                const currentIcon = item.querySelector('i, svg');
-                const newIcon = document.createElement('i');
-                newIcon.style.width = '14px';
-                if (direction === 'toAssigned') {
-                    newIcon.setAttribute('data-lucide', 'check');
-                    newIcon.className = 'text-success';
-                } else {
-                    newIcon.setAttribute('data-lucide', 'plus');
-                    newIcon.className = 'text-muted';
-                }
-                if (currentIcon) item.replaceChild(newIcon, currentIcon);
-                else item.appendChild(newIcon);
-                target.appendChild(item);
+            // Select ALL items in source container
+            const allItems = Array.from(source.children);
+            
+            allItems.forEach(item => {
+                moveItemOnClick(item);
             });
-            lucide.createIcons();
         }
 
-        // Header funcs
         function toggleSidebar() { document.getElementById('mainSidebar').classList.toggle('show'); }
         function toggleA11yMenu(e) { e.stopPropagation(); document.getElementById('a11yMenu').classList.toggle('show'); }
         function toggleUserMenu(e) { e.stopPropagation(); document.getElementById('userMenu').classList.toggle('show'); }
