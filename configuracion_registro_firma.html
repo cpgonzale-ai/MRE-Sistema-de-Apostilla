@@ -29,7 +29,6 @@
 
         html { font-size: calc(var(--base-font-size) * var(--font-scale)); }
 
-        /* --- ESTILO TOOLTIP PERSONALIZADO --- */
         .tooltip {
             --bs-tooltip-bg: #ffffff;
             --bs-tooltip-color: #000000;
@@ -46,7 +45,6 @@
             text-align: center;
         }
 
-        /* --- MODOS DE ACCESIBILIDAD --- */
         body.high-contrast {
             --mre-blue: #000000; --mre-blue-light: #000000; --mre-red: #D50000;
             --soft-bg: #FFFFFF; --border-color: #000000; --input-bg: #FFFFFF;
@@ -66,7 +64,6 @@
                 radial-gradient(at 100% 0%, rgba(213, 43, 30, 0.05) 0px, transparent 50%);
         }
 
-        /* --- CABECERA --- */
         .portal-header { 
             display: flex; justify-content: space-between; align-items: center; background: white; 
             padding: 1.25rem 2.5rem; box-shadow: 0 4px 10px -1px rgba(0,0,0,0.05); 
@@ -115,7 +112,6 @@
         .dropdown-item-mre { padding: 12px 16px; border: none; background: none; width: 100%; text-align: left; font-size: 0.9rem; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 10px; }
         .dropdown-item-mre:hover { background: #F8FAFC; color: var(--mre-red); }
 
-        /* --- LAYOUT PRINCIPAL --- */
         .app-container { display: flex; flex: 1; overflow: hidden; position: relative; }
 
         .main-sidebar {
@@ -137,7 +133,6 @@
 
         .content-area { flex: 1; padding: 2rem 3rem; overflow-y: auto; position: relative; }
         
-        /* --- GRILLA Y CARDS --- */
         .grid-frame { 
             background: white; border-radius: 20px; box-shadow: var(--card-shadow); 
             border: 1px solid #E2E8F0; position: relative; overflow: hidden;
@@ -146,8 +141,8 @@
         }
         .grid-frame::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(to right, var(--mre-red), var(--mre-blue)); }
         
-        .grid-header-frame { background-color: #FFFF; padding: 1.25rem 1.5rem; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; }
-        .grid-header-title { font-size: 1rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
+        .grid-header-frame { background-color: #FFFF; padding: 1.25rem 1.5rem; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; gap: 1.5rem; }
+        .grid-header-title { font-size: 1rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 10px; white-space: nowrap; }
 
         .mre-table { width: 100%; border-collapse: separate; border-spacing: 0; }
         .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 1rem 1.5rem; border-bottom: 2px solid #E2E8F0; letter-spacing: 0.5px; }
@@ -157,7 +152,13 @@
         .btn-main { background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); color: #ffffff; border: none; border-radius: 12px; padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.85rem; transition: var(--transition); }
         .btn-main:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 40, 85, 0.2); color: white; }
 
-        /* --- MODALES --- */
+        .btn-grid-action {
+            background-color: white; border: 1px solid var(--border-color); border-radius: 10px;
+            padding: 0.5rem 0.85rem; font-size: 0.8rem; font-weight: 700; color: var(--text-muted);
+            display: flex; align-items: center; gap: 8px; transition: var(--transition);
+        }
+        .btn-grid-action:hover { border-color: var(--mre-blue); color: var(--mre-blue); background-color: #F8FAFC; }
+
         .mre-modal-overlay { position: fixed; inset: 0; background: rgba(0, 40, 85, 0.4); backdrop-filter: blur(4px); z-index: 4000; display: none; align-items: center; justify-content: center; padding: 20px; }
         .mre-modal { background: white; border-radius: 24px; max-width: 800px; width: 100%; padding: 2.5rem; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.2); max-height: 95vh; overflow-y: auto; }
         .section-title { font-size: 0.9rem; font-weight: 900; color: var(--mre-blue); text-transform: uppercase; display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem; }
@@ -166,7 +167,6 @@
         .selection-item { padding: 0.5rem 0.75rem; border-bottom: 1px solid #E2E8F0; font-size: 0.8rem; font-weight: 600; display: flex; justify-content: space-between; }
         .selection-item:last-child { border-bottom: none; }
 
-        /* --- AUDITORÍA --- */
         .audit-table { width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; margin-top: 1rem; }
         .audit-table th { background: #F8FAFC; color: #64748B; font-size: 0.65rem; font-weight: 800; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-color); text-transform: uppercase; }
         .audit-table td { padding: 0.75rem 1rem; border-bottom: 1px solid #F1F5F9; font-size: 0.75rem; }
@@ -174,7 +174,6 @@
         .tag-create { background: #DCFCE7; color: #15803D; }
         .tag-update { background: #E0F2FE; color: #0369A1; }
 
-        /* --- FORMULARIOS --- */
         .form-label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.4rem; display: block; }
         .form-control-mre { background-color: var(--input-bg); border: 1px solid #E2E8F0; border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.9rem; width: 100%; transition: var(--transition); color: var(--text-main); }
         .form-control-mre:focus { outline: none; border-color: var(--mre-blue); box-shadow: 0 0 0 3px rgba(0, 40, 85, 0.1); background: white; }
@@ -182,7 +181,6 @@
         .form-control-mre:disabled { background-color: #f1f5f9; cursor: not-allowed; opacity: 0.7; }
         .form-control-mre[type="file"] { padding: 0.5rem 0.75rem; background: white; font-size: 0.8rem; }
 
-        /* --- AVATARES Y FIRMAS --- */
         .avatar-circle {
             width: 40px; height: 40px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
@@ -205,7 +203,6 @@
         }
         .signature-img { height: 40px; width: auto; opacity: 0.8; }
         
-        /* --- FOOTER & PAGINADO --- */
         .grid-footer { padding: 1rem 1.5rem; background-color: #F8FAFC; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .btn-pagination { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #E2E8F0; border-radius: 8px; color: #64748B; cursor: pointer; transition: var(--transition); }
         .btn-pagination:hover:not(:disabled) { background: var(--mre-blue); color: white; border-color: var(--mre-blue); }
@@ -215,7 +212,6 @@
         .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Scrollbar personalizada */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
@@ -289,7 +285,6 @@
         </aside>
 
         <main class="content-area">
-            <!-- HEADER DE LA PÁGINA -->
             <header class="d-flex justify-content-between align-items-end mb-4 animate-fade">
                 <div>
                     <h2 class="fw-black text-navy m-0" style="color: var(--mre-blue);">Registro de Firmas</h2>
@@ -305,15 +300,28 @@
                     <div class="grid-header-title">
                         Listado de Funcionarios
                     </div>
-                    <div class="position-relative" style="width: 300px;">
-                        <i data-lucide="search" class="position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:#94A3B8; width:16px;"></i>
-                        <input type="text" class="form-control-mre ps-5" placeholder="Buscar funcionario...">
+                    <div class="d-flex align-items-center gap-2">
+                        <button class="btn-grid-action" data-bs-toggle="tooltip" title="Configurar Columnas">
+                            <i data-lucide="layout-columns" style="width:16px"></i> Columna
+                        </button>
+                        <button class="btn-grid-action" data-bs-toggle="tooltip" title="Exportar a Excel">
+                            <i data-lucide="file-spreadsheet" style="width:16px"></i> Excel
+                        </button>
+                        <button class="btn-grid-action" data-bs-toggle="tooltip" title="Exportar a PDF">
+                            <i data-lucide="file-text" style="width:16px"></i> PDF
+                        </button>
+
+                        <div class="position-relative ms-2" style="width: 300px;">
+                            <i data-lucide="search" class="position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:#94A3B8; width:16px;"></i>
+                            <input type="text" class="form-control-mre ps-5" placeholder="Buscar funcionario...">
+                        </div>
                     </div>
                 </div>
                 <div class="table-responsive">
                     <table class="mre-table">
                         <thead>
                             <tr>
+                                <th width="60" class="text-center">ID</th>
                                 <th width="40" class="text-center"><input type="checkbox" id="selectAllItems" onchange="toggleSelectAllItems()" data-bs-toggle="tooltip" title="Marcar todos"></th>
                                 <th>Funcionario</th>
                                 <th>Documento</th>
@@ -324,7 +332,7 @@
                             </tr>
                         </thead>
                         <tbody id="officialsTableBody">
-                            <!-- CONTENIDO GENERADO POR JS -->
+                            <!-- JS CONTENIDO -->
                         </tbody>
                     </table>
                 </div>
@@ -361,7 +369,6 @@
             <div class="section-title" id="modalTitle">Nuevo Registro</div>
             <form id="officialForm">
                 <div class="row g-4 mb-4">
-                    <!-- Sección de Datos Personales -->
                     <div class="col-md-6">
                         <label class="form-label">Nombre <span class="text-danger">*</span></label>
                         <input type="text" id="inputNombre" class="form-control-mre" placeholder="Ej: Juan" required>
@@ -405,7 +412,6 @@
                         </select>
                     </div>
 
-                    <!-- SECCIÓN: USUARIO DE SISTEMA (Solo visible en AGREGAR) -->
                     <div id="userCreationSection" class="col-12 mt-4">
                         <div class="section-title mb-3" style="font-size: 0.8rem;">Crear Usuario de Sistema</div>
                         <div class="p-4 border rounded-3 bg-light">
@@ -448,7 +454,6 @@
                         </div>
                     </div>
 
-                    <!-- Nueva Sección: Documentación Adjunta -->
                     <div class="col-12 mt-4">
                         <div class="section-title mb-3" style="font-size: 0.8rem;">Documentación Adjunta</div>
                     </div>
@@ -456,13 +461,11 @@
                     <div class="col-md-6">
                         <label class="form-label">Fotocopia de Cédula <span class="text-danger">*</span></label>
                         <input type="file" id="inputCedulaFile" class="form-control-mre" accept=".pdf,.jpg,.jpeg,.png">
-                        <div class="form-text small text-muted">Formatos: PDF, JPG (Máx. 5MB)</div>
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label">Nota de Designación <span class="text-danger">*</span></label>
                         <input type="file" id="inputNotaFile" class="form-control-mre" accept=".pdf">
-                        <div class="form-text small text-muted">Decreto o resolución de nombramiento (PDF)</div>
                     </div>
 
                     <div class="col-12">
@@ -478,7 +481,6 @@
                                     <label class="form-check-label fw-bold small" for="firmaElectronica">Electrónica / Digital</label>
                                 </div>
                             </div>
-                            
                             <input type="file" id="inputFirmaFile" class="form-control-mre" accept=".png,.jpg,.jpeg,.svg,.p12,.cer">
                             <div class="form-text small text-muted mt-2" id="signatureHint">
                                 <i data-lucide="info" style="width:12px; display:inline; vertical-align:middle"></i>
@@ -487,7 +489,6 @@
                         </div>
                     </div>
 
-                    <!-- SECCIÓN DE AUDITORÍA (Oculta por defecto, visible solo en 'view') -->
                     <div id="auditSection" class="col-12 mt-4 pt-4 border-top d-none">
                         <div class="section-title">Historial de Auditoría</div>
                         <div class="table-responsive mt-3">
@@ -514,7 +515,6 @@
         </div>
     </div>
 
-    <!-- MODAL DE CONFIRMACIÓN ELIMINACIÓN -->
     <div class="mre-modal-overlay" id="modalDeleteConfirm">
         <div class="mre-modal shadow-lg" style="max-width: 480px;">
             <div class="text-center mb-4">
@@ -532,7 +532,6 @@
         </div>
     </div>
 
-    <!-- MODAL DE CONFIRMACIÓN INACTIVACIÓN -->
     <div class="mre-modal-overlay" id="modalInactivateConfirm">
         <div class="mre-modal shadow-lg" style="max-width: 550px;">
             <div class="text-center mb-4">
@@ -550,22 +549,13 @@
         </div>
     </div>
 
-    <!-- Bootstrap Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // Datos Mockeados
         let mockOfficials = [
             { 
-                id: 1, 
-                nombre: 'María',
-                apellido: 'González', 
-                email: 'mgonzalez@mec.gov.py', 
-                doc: '3.542.110', 
-                cargo: 'Secretaria General',
-                inst: 'MEC - MIN. DE EDUCACIÓN Y CIENCIAS',
-                status: 'ACTI',
-                initials: 'MG',
+                id: 1, nombre: 'María', apellido: 'González', email: 'mgonzalez@mec.gov.py', doc: '3.542.110', cargo: 'Secretaria General',
+                inst: 'MEC - MIN. DE EDUCACIÓN Y CIENCIAS', status: 'ACTI', initials: 'MG',
                 signaturePath: 'data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAwIDgwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMCw1MCBDMjAsMjAgNTAsMTAgNjAsMzAgQzcwLDUwIDgwLDYwIDkwLDQwIEMxMDAsMjAgMTMwLDMwIDE1MCw1MCBDMTYwLDYwIDE4MCw1NSAxOTAsNDU1IiBzdHJva2U9IiM0NzU1NjkiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==',
                 history: [
                     { date: '15/01/2026 10:00', action: 'CREATE', user: 'admin', desc: 'Creación de registro' },
@@ -573,30 +563,14 @@
                 ]
             },
             { 
-                id: 2, 
-                nombre: 'Ricardo',
-                apellido: 'Duarte', 
-                email: 'rduarte@msp.gov.py', 
-                doc: '4.100.250', 
-                cargo: 'Director de RRHH',
-                inst: 'MSPYBS - MIN. DE SALUD PÚBLICA',
-                status: 'ACTI',
-                initials: 'RD',
+                id: 2, nombre: 'Ricardo', apellido: 'Duarte', email: 'rduarte@msp.gov.py', doc: '4.100.250', cargo: 'Director de RRHH',
+                inst: 'MSPYBS - MIN. DE SALUD PÚBLICA', status: 'ACTI', initials: 'RD',
                 signaturePath: 'data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAwIDgwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0yMCw0MCBDMzAsMjAgNDAsNjAgNjAsNDAgQzgwLDIwIDEwMCwzMCAxMjAsNTAgQzE0MCw3MCAxNjAsMjAgMTgwLDMwIiBzdHJva2U9IiM0NzU1NjkiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==',
-                history: [
-                    { date: '18/01/2026 09:15', action: 'CREATE', user: 'admin', desc: 'Creación de registro' }
-                ]
+                history: [{ date: '18/01/2026 09:15', action: 'CREATE', user: 'admin', desc: 'Creación de registro' }]
             },
             { 
-                id: 3, 
-                nombre: 'Carlos',
-                apellido: 'Benítez', 
-                email: 'cbenitez@mitic.gov.py', 
-                doc: '2.890.123', 
-                cargo: 'Auditor Interno',
-                inst: 'MITIC',
-                status: 'INAC',
-                initials: 'CB',
+                id: 3, nombre: 'Carlos', apellido: 'Benítez', email: 'cbenitez@mitic.gov.py', doc: '2.890.123', cargo: 'Auditor Interno',
+                inst: 'MITIC', status: 'INAC', initials: 'CB',
                 signaturePath: 'data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAwIDgwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMCw0MCBDNDAsMTAgODAsMTAgMTIwLDQwIHM4MCwzMCA4MCwwIiBzdHJva2U9IiM5OUEzQjgiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==',
                 history: [
                     { date: '10/01/2026 11:00', action: 'CREATE', user: 'system', desc: 'Importación masiva' },
@@ -608,7 +582,6 @@
         let idToDelete = null;
 
         function renderOfficials() {
-            // DISPOSE TOOLTIPS EXISTENTES PARA EVITAR CONFLICTOS
             const tableBody = document.getElementById('officialsTableBody');
             const existingTooltips = tableBody.querySelectorAll('[data-bs-toggle="tooltip"]');
             existingTooltips.forEach(el => {
@@ -618,6 +591,7 @@
 
             tableBody.innerHTML = mockOfficials.map(o => `
                 <tr data-id="${o.id}" class="${o.status === 'INAC' ? 'opacity-75 bg-light' : ''}">
+                    <td class="text-center fw-bold text-navy">${o.id}</td>
                     <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()" ${o.status === 'INAC' ? 'disabled' : ''}></td>
                     <td>
                         <div class="d-flex align-items-center gap-3">
@@ -633,23 +607,13 @@
                         <div class="fw-bold text-dark" style="font-size: 0.85rem;">${o.cargo}</div>
                         <div class="text-muted text-uppercase" style="font-size: 0.65rem; max-width: 180px; line-height: 1.2;">${o.inst}</div>
                     </td>
-                    <td>
-                        <div class="signature-box">
-                            <img src="${o.signaturePath}" class="signature-img" alt="Firma">
-                        </div>
-                    </td>
+                    <td><div class="signature-box"><img src="${o.signaturePath}" class="signature-img" alt="Firma"></div></td>
                     <td><span class="badge ${o.status === 'ACTI' ? 'bg-success bg-opacity-10 text-success' : 'bg-secondary bg-opacity-10 text-secondary'} border border-${o.status === 'ACTI' ? 'success' : 'secondary'} small">${o.status === 'ACTI' ? 'Activo' : 'Inactivo'}</span></td>
                     <td class="text-center">
                         <div class="d-flex justify-content-center gap-1">
-                            <button class="btn btn-sm btn-light border" onclick="openOfficialModal('view', ${o.id})" data-bs-toggle="tooltip" title="Visualizar">
-                                <i data-lucide="eye" style="width:14px"></i>
-                            </button>
-                            <button class="btn btn-sm btn-light border" onclick="openOfficialModal('edit', ${o.id})" data-bs-toggle="tooltip" title="Editar">
-                                <i data-lucide="edit-3" style="width:14px"></i>
-                            </button>
-                            <button class="btn btn-sm btn-light border text-danger" onclick="deleteItem(${o.id})" data-bs-toggle="tooltip" title="Eliminar">
-                                <i data-lucide="trash-2" style="width:14px"></i>
-                            </button>
+                            <button class="btn btn-sm btn-light border" onclick="openOfficialModal('view', ${o.id})" data-bs-toggle="tooltip" title="Visualizar"><i data-lucide="eye" style="width:14px"></i></button>
+                            <button class="btn btn-sm btn-light border" onclick="openOfficialModal('edit', ${o.id})" data-bs-toggle="tooltip" title="Editar"><i data-lucide="edit-3" style="width:14px"></i></button>
+                            <button class="btn btn-sm btn-light border text-danger" onclick="deleteItem(${o.id})" data-bs-toggle="tooltip" title="Eliminar"><i data-lucide="trash-2" style="width:14px"></i></button>
                         </div>
                     </td>
                 </tr>
@@ -659,22 +623,18 @@
             updateSelectionUI();
             lucide.createIcons();
             
-            // INICIALIZACIÓN SEGURA DE TOOLTIPS
             const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
             tooltipTriggerList.map(function (tooltipTriggerEl) {
-                // Usar getOrCreateInstance evita errores de re-inicialización
                 return bootstrap.Tooltip.getOrCreateInstance(tooltipTriggerEl);
             });
         }
 
-        // --- LÓGICA DE SELECCIÓN Y BOTONES ---
         function updateSelectionUI() {
             const checks = document.querySelectorAll('.record-check:checked');
             const total = document.querySelectorAll('.record-check:not(:disabled)').length;
             const btnInactivate = document.getElementById('btnInactivateItems');
             const btnCancel = document.getElementById('btnCancelSelection');
             const selectAll = document.getElementById('selectAllItems');
-
             if(btnInactivate) btnInactivate.disabled = checks.length === 0;
             if(btnCancel) btnCancel.style.display = checks.length > 0 ? 'flex' : 'none';
             if(selectAll) selectAll.checked = (checks.length === total && total > 0);
@@ -706,8 +666,7 @@
         }
 
         function confirmLogicalInactivation() {
-            const checks = document.querySelectorAll('.record-check:checked');
-            checks.forEach(cb => {
+            document.querySelectorAll('.record-check:checked').forEach(cb => {
                 const id = parseInt(cb.closest('tr').dataset.id);
                 const item = mockOfficials.find(o => o.id === id);
                 if(item) item.status = 'INAC';
@@ -717,52 +676,28 @@
             handleCancelSelection();
         }
 
-        // --- LÓGICA DE USUARIO ---
         function generateUsername() {
             const nombre = document.getElementById('inputNombre').value.trim();
             const apellido = document.getElementById('inputApellido').value.trim();
             const userField = document.getElementById('inputUsuarioSystem');
-
             if (nombre && apellido) {
-                // Obtener primera letra del nombre + apellido completo
-                let username = (nombre.charAt(0) + apellido).toLowerCase();
-                
-                // Remover acentos y caracteres especiales
-                username = username.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                
-                // Remover espacios si los hubiera (ej: apellido compuesto)
-                username = username.replace(/\s+/g, '');
-                
+                let username = (nombre.charAt(0) + apellido).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '');
                 userField.value = username;
-            } else {
-                userField.value = '';
-            }
+            } else userField.value = '';
         }
 
-        // --- LÓGICA DE CONTRASEÑA ---
         function togglePassword(inputId, iconId) {
             const input = document.getElementById(inputId);
             const icon = document.getElementById(iconId);
-            
-            if (input.type === "password") {
-                input.type = "text";
-                icon.setAttribute('data-lucide', 'eye-off');
-            } else {
-                input.type = "password";
-                icon.setAttribute('data-lucide', 'eye');
-            }
+            if (input.type === "password") { input.type = "text"; icon.setAttribute('data-lucide', 'eye-off'); }
+            else { input.type = "password"; icon.setAttribute('data-lucide', 'eye'); }
             lucide.createIcons();
         }
 
-        // --- LÓGICA DE MODALES DE REGISTRO ---
         function toggleSignatureHint() {
             const isOlografa = document.getElementById('firmaOlografa').checked;
             const hint = document.getElementById('signatureHint');
-            if(isOlografa) {
-                hint.innerHTML = '<i data-lucide="info" style="width:12px; display:inline; vertical-align:middle"></i> Suba la imagen de la firma (PNG/JPG con fondo transparente)';
-            } else {
-                hint.innerHTML = '<i data-lucide="info" style="width:12px; display:inline; vertical-align:middle"></i> Suba el certificado digital público (.cer, .crt) o archivo correspondiente.';
-            }
+            hint.innerHTML = isOlografa ? '<i data-lucide="info" style="width:12px; display:inline; vertical-align:middle"></i> Suba la imagen de la firma (PNG/JPG con fondo transparente)' : '<i data-lucide="info" style="width:12px; display:inline; vertical-align:middle"></i> Suba el certificado digital público (.cer, .crt) o archivo correspondiente.';
             lucide.createIcons();
         }
 
@@ -775,13 +710,11 @@
             const auditSection = document.getElementById('auditSection');
             const auditTimeline = document.getElementById('auditTimeline');
             const userCreationSection = document.getElementById('userCreationSection');
-            
             form.reset();
             modal.style.display = 'flex';
             inputs.forEach(i => i.disabled = false);
             btnSave.style.display = 'block';
             toggleSignatureHint();
-
             if (mode === 'add') {
                 title.innerText = 'Nuevo Registro';
                 auditSection.classList.add('d-none');
@@ -796,32 +729,18 @@
                     document.getElementById('inputCorreo').value = official.email;
                     document.getElementById('inputCargo').value = official.cargo;
                     document.getElementById('inputInstitucion').value = official.inst;
-                    
                     if (mode === 'edit') {
                         title.innerText = 'Editar Funcionario';
                         auditSection.classList.add('d-none');
-                        userCreationSection.classList.remove('d-none'); // Mostrar usuario en editar
-                        generateUsername(); // Regenerar usuario basado en los datos cargados
+                        userCreationSection.classList.remove('d-none');
+                        generateUsername();
                     } else if (mode === 'view') {
                         title.innerText = 'Detalle del Funcionario';
                         inputs.forEach(i => i.disabled = true);
                         btnSave.style.display = 'none';
                         userCreationSection.classList.add('d-none');
-
-                        // MOSTRAR AUDITORÍA
                         auditSection.classList.remove('d-none');
-                        if(official.history) {
-                           auditTimeline.innerHTML = official.history.map(h => `
-                                <tr>
-                                    <td>${h.date}</td>
-                                    <td><span class="badge-audit tag-${h.action.toLowerCase()}">${h.action}</span></td>
-                                    <td>${h.user}</td>
-                                    <td>${h.desc}</td>
-                                </tr>
-                            `).join('');
-                        } else {
-                            auditTimeline.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Sin historial disponible</td></tr>';
-                        }
+                        auditTimeline.innerHTML = official.history ? official.history.map(h => `<tr><td>${h.date}</td><td><span class="badge-audit tag-${h.action.toLowerCase()}">${h.action}</span></td><td>${h.user}</td><td>${h.desc}</td></tr>`).join('') : '<tr><td colspan="4" class="text-center text-muted">Sin historial</td></tr>';
                     }
                 }
             }
@@ -829,30 +748,18 @@
         }
 
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
         function deleteItem(id) {
             const official = mockOfficials.find(o => o.id === id);
-            if(official) {
-                idToDelete = id;
-                document.getElementById('deleteItemInfo').innerText = `FUNCIONARIO: ${official.nombre} ${official.apellido}`;
-                document.getElementById('modalDeleteConfirm').style.display = 'flex';
-                lucide.createIcons();
-            }
+            if(official) { idToDelete = id; document.getElementById('deleteItemInfo').innerText = `FUNCIONARIO: ${official.nombre} ${official.apellido}`; document.getElementById('modalDeleteConfirm').style.display = 'flex'; lucide.createIcons(); }
         }
-
         function confirmDelete() {
             if (idToDelete !== null) {
                 const index = mockOfficials.findIndex(o => o.id === idToDelete);
-                if (index > -1) {
-                    mockOfficials.splice(index, 1);
-                    renderOfficials();
-                }
-                closeModal('modalDeleteConfirm');
-                idToDelete = null;
+                if (index > -1) { mockOfficials.splice(index, 1); renderOfficials(); }
+                closeModal('modalDeleteConfirm'); idToDelete = null;
             }
         }
 
-        // Header funcs
         function toggleSidebar() { document.getElementById('mainSidebar').classList.toggle('show'); }
         function toggleA11yMenu(e) { e.stopPropagation(); document.getElementById('a11yMenu').classList.toggle('show'); }
         function toggleUserMenu(e) { e.stopPropagation(); document.getElementById('userMenu').classList.toggle('show'); }
@@ -865,17 +772,10 @@
         function toggleGrayscale() { document.body.classList.toggle('grayscale-mode'); }
         function handleLogout() { if(confirm('¿Cerrar sesión?')) location.reload(); }
 
-        // Event Listeners
-        document.addEventListener('click', () => {
-            ['userMenu', 'a11yMenu'].forEach(id => document.getElementById(id)?.classList.remove('show'));
-        });
-        
+        document.addEventListener('click', () => { ['userMenu', 'a11yMenu'].forEach(id => document.getElementById(id)?.classList.remove('show')); });
         document.getElementById('inputNombre').addEventListener('input', generateUsername);
         document.getElementById('inputApellido').addEventListener('input', generateUsername);
-
-        document.addEventListener('DOMContentLoaded', () => { 
-            renderOfficials(); 
-        });
+        document.addEventListener('DOMContentLoaded', renderOfficials);
     </script>
 </body>
 </html>
