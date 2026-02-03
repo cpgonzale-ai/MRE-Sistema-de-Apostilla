@@ -28,6 +28,7 @@
 
         html { font-size: calc(var(--base-font-size) * var(--font-scale)); }
 
+        /* --- MODOS DE ACCESIBILIDAD --- */
         body.high-contrast {
             --mre-blue: #000000;
             --mre-blue-light: #000000;
@@ -354,7 +355,7 @@
 
                 <div class="grid-frame animate-fade">
                     <div class="grid-header-frame">
-                        <h4 class="fw-black text-uppercase m-0" style="color: var(--mre-blue); font-size: 0.85rem;">Listado de Usuarios</h4>
+                        <h4 class="fw-black text-uppercase m-0" style="color: var(--mre-blue); font-size: 0.85rem;" title="Listado de Usuarios registrados">Listado de Usuarios</h4>
                         <div class="d-flex align-items-center gap-2">
                             <button class="btn-tool-generic" onclick="alert('Configurando columnas...')" title="Personalizar columnas visibles"><i data-lucide="layout-columns" style="width: 16px;"></i> Columnas</button>
                             <button class="btn-tool-generic" onclick="alert('Exportando a Excel...')" title="Descargar reporte en formato XLSX"><i data-lucide="file-spreadsheet" style="width: 16px;"></i> Excel</button>
@@ -399,13 +400,13 @@
                                         </div>
                                     </td>
                                 </tr>
-                                <tr data-associated="false" data-group="Operador ológrafo" data-status="Activo">
+                                <tr data-associated="false" data-group="Operador Ológrafo" data-status="Activo">
                                     <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()" title="Seleccionar registro"></td>
                                     <td class="text-center fw-bold text-navy">1002</td>
                                     <td><code class="fw-bold">mriquelme</code></td>
                                     <td class="fw-bold text-navy">Marta Riquelme</td>
                                     <td>mriquelme@mre.gov.py</td>
-                                    <td><span class="badge bg-light text-dark border px-2">Operador ológrafo</span></td>
+                                    <td><span class="badge bg-light text-dark border px-2">Operador Ológrafo</span></td>
                                     <td><span class="badge-status status-active">Activo</span></td>
                                     <td>15/08/2026</td>
                                     <td class="text-end">
@@ -416,19 +417,36 @@
                                         </div>
                                     </td>
                                 </tr>
-                                <tr data-associated="true" data-group="Operador Verificación previa" data-status="Inactivo">
-                                    <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()" title="Seleccionar registro"></td>
+                                <tr data-associated="true" data-group="Operador verificación previa" data-status="Inactivo">
+                                    <td class="text-center"><input type="checkbox" class="record-check" disabled title="No seleccionable (Inactivo)"></td>
                                     <td class="text-center fw-bold text-navy">1003</td>
                                     <td><code class="fw-bold">jsalinas</code></td>
                                     <td class="fw-bold text-navy">Jorge Salinas</td>
                                     <td>jsalinas@mre.gov.py</td>
-                                    <td><span class="badge bg-light text-dark border px-2">Operador Verificación previa</span></td>
+                                    <td><span class="badge bg-light text-dark border px-2">Operador verificación previa</span></td>
                                     <td><span class="badge-status status-inactive">Inactivo</span></td>
                                     <td>20/12/2026</td>
                                     <td class="text-end">
                                         <div class="actions-cell-container">
                                             <button class="btn-action-icon" title="Consultar información detallada" onclick="showFormView('view', 1003)"><i data-lucide="eye" style="width:18px"></i></button>
                                             <button class="btn-action-icon" title="Modificar parámetros del usuario" onclick="showFormView('edit', 1003)"><i data-lucide="edit-3" style="width:18px"></i></button>
+                                            <div style="width:38px"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr data-associated="true" data-group="Administrador de legalizaciones" data-status="Activo">
+                                    <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()" title="Seleccionar registro"></td>
+                                    <td class="text-center fw-bold text-navy">1004</td>
+                                    <td><code class="fw-bold">lortiz</code></td>
+                                    <td class="fw-bold text-navy">Luis Ortiz</td>
+                                    <td>lortiz@mre.gov.py</td>
+                                    <td><span class="badge bg-light text-dark border px-2">Administrador de legalizaciones</span></td>
+                                    <td><span class="badge-status status-active">Activo</span></td>
+                                    <td>10/11/2026</td>
+                                    <td class="text-end">
+                                        <div class="actions-cell-container">
+                                            <button class="btn-action-icon" title="Consultar" onclick="showFormView('view', 1004)"><i data-lucide="eye" style="width:18px"></i></button>
+                                            <button class="btn-action-icon" title="Editar" onclick="showFormView('edit', 1004)"><i data-lucide="edit-3" style="width:18px"></i></button>
                                             <div style="width:38px"></div>
                                         </div>
                                     </td>
@@ -552,7 +570,7 @@
                                 <label class="form-label">Fecha de Expiración</label>
                                 <input type="date" id="f_exp_detail" class="form-control-mre" title="Vencimiento de la vigencia de la cuenta">
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-4" id="statusFieldContainer">
                                 <label class="form-label">Estado <span class="text-danger">*</span></label>
                                 <select id="f_status_detail" class="form-control-mre" title="Estado de acceso al sistema">
                                     <option value="Activo">Activo</option>
@@ -567,8 +585,10 @@
                                 <div class="list-title">Grupos Disponibles</div>
                                 <div class="dual-list-box" id="availGroupsBox" title="Haga clic para asociar grupo">
                                     <div class="list-item" onclick="moveGroup(this, 'assignedGroupsDetail')">Administrador de sistema</div>
-                                    <div class="list-item" onclick="moveGroup(this, 'assignedGroupsDetail')">Operador ológrafo</div>
-                                    <div class="list-item" onclick="moveGroup(this, 'assignedGroupsDetail')">Ciudadano</div>
+                                    <div class="list-item" onclick="moveGroup(this, 'assignedGroupsDetail')">Operador Ológrafo</div>
+                                    <div class="list-item" onclick="moveGroup(this, 'assignedGroupsDetail')">Operador verificación previa</div>
+                                    <div class="list-item" onclick="moveGroup(this, 'assignedGroupsDetail')">Administrador de legalizaciones</div>
+                                    <div class="list-item" onclick="moveGroup(this, 'assignedGroupsDetail')">Funcionario Externo</div>
                                 </div>
                             </div>
                             <div class="d-flex flex-column gap-2">
@@ -605,7 +625,7 @@
 
                         <div class="pt-4 border-top d-flex justify-content-end gap-3">
                             <button type="button" class="btn-tool-generic px-4 py-2" onclick="showListView()" style="background: #94A3B8; color: white; border: none;" title="Cancelar cambios y volver al listado">Cancelar</button>
-                            <button type="button" id="btnSubmitForm" class="btn-main px-5 py-2" onclick="alert('Operación exitosa')" title="Guardar todos los cambios realizados">Guardar Cambios</button>
+                            <button type="button" id="btnSubmitForm" class="btn-main px-5 py-2" onclick="handleSaveForm()" title="Guardar todos los cambios realizados">Guardar Cambios</button>
                         </div>
                     </form>
                 </div>
@@ -674,6 +694,8 @@
     </div>
 
     <script>
+        let currentEditingId = null; // Variable global para rastrear si es edición o alta
+
         document.addEventListener('DOMContentLoaded', () => { 
             lucide.createIcons(); 
             initSidebarPopups();
@@ -683,6 +705,7 @@
         function showListView() {
             document.getElementById('viewForm').style.display = 'none';
             document.getElementById('viewList').style.display = 'block';
+            currentEditingId = null; // Resetear al volver al listado
         }
 
         function showFormView(mode, id) {
@@ -694,6 +717,7 @@
             const searchBtn = document.getElementById('btnSearchDetail');
             const userSearch = document.getElementById('u_search_detail');
             const statusField = document.getElementById('f_status_detail');
+            const statusContainer = document.getElementById('statusFieldContainer');
 
             document.getElementById('viewList').style.display = 'none';
             viewForm.style.display = 'block';
@@ -706,6 +730,9 @@
             searchBtn.classList.remove('d-none');
             userSearch.readOnly = false;
             statusField.disabled = false;
+            
+            // Restaurar visibilidad por defecto
+            statusContainer.style.display = '';
 
             const allInputs = form.querySelectorAll('input, select');
             allInputs.forEach(i => {
@@ -717,6 +744,8 @@
             if (mode === 'add') {
                 headerTitle.innerText = "Agregar Usuario";
                 statusField.value = "Activo";
+                // Ocultar campo estado en modo agregar
+                statusContainer.style.display = 'none';
             } 
             else if (mode === 'view' || mode === 'edit') {
                 headerTitle.innerText = mode === 'view' ? "Visualizar Usuario" : "Editar Usuario";
@@ -745,17 +774,19 @@
 
         function loadMockData(id) {
             const data = {
-                1001: { u: 'cgonzalez', n: 'Carlos', l: 'González', g: 'Administrador de sistema', s: 'Activo' },
-                1002: { u: 'mriquelme', n: 'Marta', l: 'Riquelme', g: 'Operador ológrafo', s: 'Activo' },
-                1003: { u: 'jsalinas', n: 'Jorge', l: 'Salinas', g: 'Operador Verificación previa', s: 'Inactivo' },
-                1005: { u: 'amartinez', n: 'Alberto', l: 'Martínez', g: 'Ciudadano', s: 'Activo' },
-                1006: { u: 'lperon', n: 'Lucía', l: 'Perón', g: 'Ciudadano', s: 'Activo' }
+                1001: { u: 'cgonzalez', n: 'Carlos', l: 'González', g: 'Administrador de sistema', s: 'Activo', exp: '2026-12-31' },
+                1002: { u: 'mriquelme', n: 'Marta', l: 'Riquelme', g: 'Operador Ológrafo', s: 'Activo', exp: '2026-08-15' },
+                1003: { u: 'jsalinas', n: 'Jorge', l: 'Salinas', g: 'Operador verificación previa', s: 'Inactivo', exp: '2026-12-20' },
+                1004: { u: 'lortiz', n: 'Luis', l: 'Ortiz', g: 'Administrador de legalizaciones', s: 'Activo', exp: '2026-11-10' },
+                1005: { u: 'amartinez', n: 'Alberto', l: 'Martínez', g: 'Ciudadano', s: 'Activo', exp: '2027-01-01' },
+                1006: { u: 'lperon', n: 'Lucía', l: 'Perón', g: 'Ciudadano', s: 'Activo', exp: '2026-12-15' }
             };
             const user = data[id] || data[1001];
             document.getElementById('u_search_detail').value = user.u;
             document.getElementById('f_name_detail').value = user.n;
             document.getElementById('f_last_detail').value = user.l;
             document.getElementById('f_status_detail').value = user.s;
+            document.getElementById('f_exp_detail').value = user.exp || ""; // Cargar fecha
             document.getElementById('assignedGroupsDetail').innerHTML = `<div class="list-item" onclick="moveGroup(this, 'availGroupsBox')">${user.g}</div>`;
         }
 
@@ -766,7 +797,7 @@
         }
 
         function requestDeletion(id, name) {
-            if (id === 1001 || id === 1003 || id === 1005) {
+            if (id === 1001 || id === 1003 || id === 1005 || id === 1004) {
                 document.getElementById('modalDeleteError').style.display = 'flex';
             } else {
                 document.getElementById('deleteUserName').innerText = name;
@@ -792,7 +823,7 @@
 
         function toggleSelectAll() {
             const check = document.getElementById('selectAll').checked;
-            document.querySelectorAll('.record-check').forEach(c => c.checked = check);
+            document.querySelectorAll('.record-check:not(:disabled)').forEach(c => c.checked = check);
             updateSelectionUI();
         }
 
@@ -821,7 +852,8 @@
             }
 
             const sa = document.getElementById('selectAll');
-            if(sa) sa.checked = (checkedCount === document.querySelectorAll('.record-check').length && checkedCount > 0);
+            const totalSelectable = document.querySelectorAll('.record-check:not(:disabled)').length;
+            if(sa) sa.checked = (checkedCount === totalSelectable && checkedCount > 0);
         }
 
         function cancelSelection() {
@@ -834,6 +866,31 @@
         function simulateSearchDetail() {
             const user = document.getElementById('u_search_detail').value;
             if(!user) return;
+            
+            if (user.toLowerCase() === 'jperon') {
+                hideSearchError();
+                document.getElementById('f_name_detail').value = "Juan";
+                document.getElementById('f_last_detail').value = "Perón";
+                document.getElementById('f_type_detail').value = "CI";
+                document.getElementById('f_type_detail').disabled = true;
+                document.getElementById('f_doc_detail').value = "3.456.789";
+                document.getElementById('f_email_detail').value = "jperon@mre.gov.py";
+                document.getElementById('f_phone_detail').value = "+595 981 123 456";
+                document.getElementById('f_exp_detail').value = ""; // Expiración vacía
+                
+                ['f_name_detail', 'f_last_detail', 'f_doc_detail', 'f_email_detail', 'f_phone_detail'].forEach(id => {
+                    document.getElementById(id).readOnly = true;
+                    document.getElementById(id).style.backgroundColor = "#F1F5F9";
+                });
+                document.getElementById('f_type_detail').style.backgroundColor = "#F1F5F9";
+                return;
+            }
+
+            if(user.toLowerCase() === 'inexistente') {
+                document.getElementById('searchErrorMsg').style.display = 'block';
+                return;
+            }
+            
             hideSearchError();
             document.getElementById('f_name_detail').value = "Funcionario";
             document.getElementById('f_last_detail').value = "MRE";
@@ -842,6 +899,97 @@
                 if(el && el.tagName === 'SELECT') el.disabled = true; else el.readOnly = true;
                 if(el) el.style.backgroundColor = "#F1F5F9";
             });
+        }
+
+        // --- LÓGICA DE GUARDADO ---
+        function handleSaveForm() {
+            const user = document.getElementById('u_search_detail').value;
+            const name = document.getElementById('f_name_detail').value;
+            const lastName = document.getElementById('f_last_detail').value;
+            const email = document.getElementById('f_email_detail').value;
+            const expDate = document.getElementById('f_exp_detail').value || '-';
+            const status = document.getElementById('f_status_detail').value;
+            
+            const groupsContainer = document.getElementById('assignedGroupsDetail');
+            const groups = Array.from(groupsContainer.querySelectorAll('.list-item')).map(div => div.innerText);
+            const mainGroup = groups.length > 0 ? groups[0] : 'Sin grupo';
+            
+            if(!user || !name) {
+                alert("Debe completar los datos del usuario mediante la búsqueda.");
+                return;
+            }
+
+            const fullName = `${name} ${lastName}`;
+            const statusClass = status === 'Activo' ? 'status-active' : 'status-inactive';
+
+            const actionsHtml = `
+                <div class="actions-cell-container">
+                    <button class="btn-action-icon" title="Visualizar" onclick="showFormView('view', ${currentEditingId || 9999})"><i data-lucide="eye" style="width:18px"></i></button>
+                    <button class="btn-action-icon" title="Editar" onclick="showFormView('edit', ${currentEditingId || 9999})"><i data-lucide="edit-3" style="width:18px"></i></button>
+                    <button class="btn-action-icon btn-action-delete" title="Eliminar" onclick="requestDeletion(${currentEditingId || 9999}, '${fullName}')"><i data-lucide="trash-2" style="width:18px"></i></button>
+                </div>
+            `;
+
+            if (currentEditingId) {
+                const rows = document.querySelectorAll('#userTableBody tr');
+                let rowToUpdate = null;
+                rows.forEach(r => {
+                    const idCell = r.cells[1];
+                    if (idCell && parseInt(idCell.innerText) === currentEditingId) {
+                        rowToUpdate = r;
+                    }
+                });
+
+                if (rowToUpdate) {
+                    rowToUpdate.cells[5].innerHTML = `<span class="badge bg-light text-dark border px-2">${mainGroup}</span>`;
+                    rowToUpdate.setAttribute('data-status', status);
+                    rowToUpdate.cells[6].innerHTML = `<span class="badge-status ${statusClass}">${status}</span>`;
+                    rowToUpdate.cells[7].innerText = expDate;
+                    rowToUpdate.setAttribute('data-group', mainGroup);
+                    // Actualizar checkbox según estado
+                    const checkbox = rowToUpdate.querySelector('.record-check');
+                    if (status === 'Inactivo') {
+                         checkbox.disabled = true;
+                         checkbox.checked = false;
+                    } else {
+                         checkbox.disabled = false;
+                    }
+                }
+
+            } else {
+                const tbody = document.getElementById('userTableBody');
+                const newId = Math.floor(Math.random() * 10000) + 2000;
+                
+                const tr = document.createElement('tr');
+                tr.setAttribute('data-associated', 'false');
+                tr.setAttribute('data-group', mainGroup);
+                tr.setAttribute('data-status', status);
+
+                const checkDisabled = status === 'Inactivo' ? 'disabled' : '';
+
+                tr.innerHTML = `
+                    <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()" ${checkDisabled}></td>
+                    <td class="text-center fw-bold text-navy">${newId}</td>
+                    <td><code class="fw-bold">${user}</code></td>
+                    <td class="fw-bold text-navy">${fullName}</td>
+                    <td>${email}</td>
+                    <td><span class="badge bg-light text-dark border px-2">${mainGroup}</span></td>
+                    <td><span class="badge-status ${statusClass}">${status}</span></td>
+                    <td>${expDate}</td>
+                    <td class="text-end">${actionsHtml.replace(/9999/g, newId)}</td>
+                `;
+                tbody.insertBefore(tr, tbody.firstChild);
+            }
+
+            lucide.createIcons();
+            alert('Datos guardados correctamente.');
+            showListView();
+            updatePaginationInfo();
+        }
+
+        function updatePaginationInfo() {
+             const count = document.getElementById('userTableBody').rows.length;
+             document.getElementById('paginationInfo').innerText = `Mostrando 1 a ${count} de ${count} registros`;
         }
 
         function initSidebarPopups() {
@@ -863,6 +1011,19 @@
             });
         }
         function toggleSidebar() { document.querySelector('.main-sidebar').classList.toggle('show'); }
+        function toggleA11yMenu(e) { e.stopPropagation(); document.getElementById('a11yMenu').classList.toggle('show'); }
+        function toggleUserMenu(e) { e.stopPropagation(); document.getElementById('userMenu').classList.toggle('show'); }
+        function changeFontSize(delta) {
+            let current = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--font-scale')) || 1;
+            let newScale = Math.min(Math.max(current + delta, 0.8), 1.5);
+            document.documentElement.style.setProperty('--font-scale', newScale);
+            document.getElementById('fontSizeDisplay').innerText = Math.round(newScale * 100) + '%';
+        }
+        function toggleGrayscale() { document.body.classList.toggle('grayscale-mode'); }
+        document.addEventListener('click', () => {
+            if(document.getElementById('a11yMenu')) document.getElementById('a11yMenu').classList.remove('show');
+            if(document.getElementById('userMenu')) document.getElementById('userMenu').classList.remove('show');
+        });
     </script>
 </body>
 </html>
