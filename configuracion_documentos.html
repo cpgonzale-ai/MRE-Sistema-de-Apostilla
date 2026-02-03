@@ -235,7 +235,7 @@
                         </button>
                         <div class="position-relative">
                             <i data-lucide="search" class="position-absolute" style="left:10px; top:50%; transform:translateY(-50%); width:14px; color:#94A3B8;"></i>
-                            <input type="text" class="form-control form-control-sm border ps-4" placeholder="Buscar documento..." style="width:200px; border-radius: 8px;" title="Filtrar por nombre o código">
+                            <input type="text" class="form-control form-control-sm border ps-4" placeholder="Buscar documento..." style="width:320px; border-radius: 8px;" title="Filtrar por nombre o código">
                         </div>
                     </div>
                 </div>
@@ -295,14 +295,13 @@
             <div class="section-title" id="modalTitle">Nuevo Documento</div>
             <form id="formDoc" onsubmit="saveData(event)">
                 <div class="row g-4 mb-4">
-                    <div class="col-md-8">
+                    <div class="col-md-12">
                         <label class="form-label">Nombre del Documento <span class="text-danger">*</span></label>
                         <input type="text" id="docName" class="form-control-mre" placeholder="ej: Certificado de Nacimiento" oninput="generateCode(this.value)" required title="Nombre descriptivo del documento para el ciudadano">
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Código Único (Automático)</label>
-                        <input type="text" id="docCode" class="form-control-mre form-control-readonly" readonly required placeholder="Autogenerado (ej: CERT_NAC)" title="Identificador técnico único generado automáticamente">
-                    </div>
+                    <!-- Campo Código Único Oculto (Generación Automática) -->
+                    <input type="hidden" id="docCode">
+                    
                     <div class="col-md-4">
                         <label class="form-label">Formato Permitido <span class="text-danger">*</span></label>
                         <select id="docFormat" class="form-control-mre" required title="Formato de archivo que el sistema validará">
@@ -445,7 +444,7 @@
             body.innerHTML = documents.map(d => `
                 <tr class="${d.status === 'INAC' ? 'opacity-75 bg-light' : ''}" data-code="${d.code}">
                     <td class="text-center">
-                        <input type="checkbox" class="doc-check" onchange="updateSelectionUI()">
+                        <input type="checkbox" class="doc-check" onchange="updateSelectionUI()" ${d.status === 'INAC' ? 'disabled' : ''}>
                     </td>
                     <td class="text-center"><code>${d.code}</code></td>
                     <td class="fw-bold text-navy">${d.name}</td>
@@ -479,20 +478,20 @@
         }
 
         function toggleSelectAll(checked) {
-            document.querySelectorAll('.doc-check').forEach(cb => cb.checked = checked);
+            document.querySelectorAll('.doc-check:not(:disabled)').forEach(cb => cb.checked = checked);
             updateSelectionUI();
         }
 
         function updateSelectionUI() {
             const checks = document.querySelectorAll('.doc-check:checked');
-            const totalChecks = document.querySelectorAll('.doc-check').length;
+            const totalEnabledChecks = document.querySelectorAll('.doc-check:not(:disabled)').length;
             const btnInactivate = document.getElementById('btnInactivate');
             const btnCancel = document.getElementById('btnCancelSelection');
             const selectAll = document.getElementById('selectAll');
 
             if (btnInactivate) btnInactivate.disabled = checks.length === 0;
             if (btnCancel) btnCancel.style.display = checks.length > 0 ? 'flex' : 'none';
-            if (totalChecks > 0 && selectAll) selectAll.checked = checks.length === totalChecks;
+            if (totalEnabledChecks > 0 && selectAll) selectAll.checked = checks.length === totalEnabledChecks;
         }
 
         function cancelSelection() {
@@ -519,7 +518,16 @@
             checks.forEach(cb => {
                 const code = cb.closest('tr').dataset.code;
                 const doc = documents.find(d => d.code === code);
-                if(doc) doc.status = 'INAC';
+                if(doc) {
+                    doc.status = 'INAC';
+                    if (!doc.history) doc.history = [];
+                    doc.history.push({
+                        date: new Date().toLocaleString(),
+                        action: 'UPDATE',
+                        user: 'current_user',
+                        desc: 'Inactivación masiva'
+                    });
+                }
             });
             render();
             closeModal('modalInactivateConfirm');
@@ -572,6 +580,7 @@
                 document.getElementById('docRequired').value = d.req;
                 document.getElementById('docMaxSize').value = d.size;
                 document.getElementById('docStatus').value = d.status;
+                document.getElementById('docDesc').value = d.desc || '';
 
                 if(mode === 'view') {
                     inputs.forEach(i => i.disabled = true);
@@ -593,7 +602,52 @@
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         
         function saveData(e) { 
-            e.preventDefault(); 
+            e.preventDefault();
+            
+            const code = document.getElementById('docCode').value;
+            const name = document.getElementById('docName').value;
+            const format = document.getElementById('docFormat').value;
+            const order = document.getElementById('docOrder').value;
+            const req = document.getElementById('docRequired').value;
+            const maxSize = document.getElementById('docMaxSize').value;
+            const desc = document.getElementById('docDesc').value;
+            const status = currentMode === 'add' ? 'ACTI' : document.getElementById('docStatus').value;
+
+            if (currentMode === 'add') {
+                const newDoc = {
+                    code: code,
+                    name: name,
+                    format: format,
+                    req: req,
+                    size: maxSize,
+                    status: status,
+                    desc: desc,
+                    hasLinkedRecords: false,
+                    history: [{ date: new Date().toLocaleString(), action: 'CREATE', user: 'current_user', desc: 'Creación inicial' }]
+                };
+                documents.push(newDoc);
+            } else if (currentMode === 'edit') {
+                const index = documents.findIndex(d => d.code === code);
+                if (index !== -1) {
+                    documents[index].name = name;
+                    documents[index].format = format;
+                    documents[index].order = order;
+                    documents[index].req = req;
+                    documents[index].size = maxSize;
+                    documents[index].status = status;
+                    documents[index].desc = desc;
+                    
+                    if (!documents[index].history) documents[index].history = [];
+                    documents[index].history.push({
+                        date: new Date().toLocaleString(),
+                        action: 'UPDATE',
+                        user: 'current_user',
+                        desc: 'Actualización de datos'
+                    });
+                }
+            }
+
+            render();
             alert('Configuración guardada correctamente.'); 
             closeModal('modalDoc'); 
         }
