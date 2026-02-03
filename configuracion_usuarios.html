@@ -157,7 +157,7 @@
         .btn-action-icon:hover { background: #F1F5F9; color: var(--mre-blue); border-color: var(--mre-blue); }
         .btn-action-delete:hover { color: var(--mre-red); border-color: var(--mre-red); }
 
-        .actions-cell-container { display: flex; justify-content: flex-end; align-items: center; gap: 8px; min-width: 120px; }
+        .actions-cell-container { display: flex; justify-content: flex-end; align-items: center; gap: 8px; min-width: 140px; }
 
         .badge-status { padding: 0.4rem 0.8rem; border-radius: 8px; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; }
         .status-active { background-color: #DCFCE7; color: #15803D; }
@@ -330,15 +330,13 @@
     </header>
 
     <div class="app-container">
+        <!-- BARRA LATERAL SIMPLIFICADA: SÓLO GESTIÓN DE USUARIOS -->
         <aside class="main-sidebar animate-fade">
             <nav class="nav-menu">
                 <p class="px-3 mb-2 text-muted fw-bold uppercase" style="font-size: 0.7rem; letter-spacing: 1.2px;">Administración</p>
-                <a href="#" class="nav-link-mre" title="Tipos de documentos"><i data-lucide="file-text" style="width: 18px;"></i> <span>Tipos de documentos</span></a>
-                <a href="javascript:void(0)" onclick="showListView()" class="nav-link-mre active" title="Gestión de Usuarios"><i data-lucide="users" style="width: 18px;"></i> <span>Usuarios</span></a>
-                <a href="#" class="nav-link-mre" title="Grupos y Permisos"><i data-lucide="shield-check" style="width: 18px;"></i> <span>Grupos y Permisos</span></a>
-                <a href="#" class="nav-link-mre" title="Configuración de referencia"><i data-lucide="settings-2" style="width: 18px;"></i> <span>Configuración de referencia</span></a>
-                <a href="#" class="nav-link-mre" title="Configuración de campos"><i data-lucide="layout-grid" style="width: 18px;"></i> <span>Configuración de campos</span></a>
-                <a href="#" class="nav-link-mre" title="Configuración de documentos"><i data-lucide="settings" style="width: 18px;"></i> <span>Configuración de documentos</span></a>
+                <a href="javascript:void(0)" onclick="showListView()" class="nav-link-mre active" title="Gestión de Usuarios" data-popup="Módulo de control de Usuarios">
+                    <i data-lucide="users" style="width: 18px;"></i> <span>Gestión de usuarios</span>
+                </a>
             </nav>
         </aside>
 
@@ -359,10 +357,9 @@
                     <div class="grid-header-frame">
                         <h4 class="fw-black text-uppercase m-0" style="color: var(--mre-blue); font-size: 0.85rem;" title="Listado de Usuarios registrados">Listado de Usuarios</h4>
                         <div class="d-flex align-items-center gap-2">
-                            <!-- BOTONES HERRAMIENTAS RESTAURADOS -->
-                            <button class="btn-tool-generic" onclick="alert('Configurando columnas...')" title="Configurar Columnas"><i data-lucide="layout-columns" style="width: 16px;"></i> Columnas</button>
-                            <button class="btn-tool-generic" onclick="alert('Exportando a Excel...')" title="Exportar a Excel"><i data-lucide="file-spreadsheet" style="width: 16px;"></i> Excel</button>
-                            <button class="btn-tool-generic" onclick="alert('Exportando a PDF...')" title="Exportar a PDF"><i data-lucide="file-text" style="width: 16px;"></i> PDF</button>
+                            <button class="btn-tool-generic" onclick="alert('Configurando columnas...')" title="Excel"><i data-lucide="layout-columns" style="width: 16px;"></i> Columnas</button>
+                            <button class="btn-tool-generic" onclick="alert('Exportando a Excel...')" title="Excel"><i data-lucide="file-spreadsheet" style="width: 16px;"></i> Excel</button>
+                            <button class="btn-tool-generic" onclick="alert('Exportando a PDF...')" title="PDF"><i data-lucide="file-text" style="width: 16px;"></i> PDF</button>
                             <div class="position-relative" style="width: 250px;">
                                 <i data-lucide="search" class="position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:#94A3B8; width:16px;"></i>
                                 <input type="text" class="form-control-mre ps-5" placeholder="Filtrar usuario...">
@@ -478,11 +475,9 @@
                     <div class="grid-footer">
                         <div><span class="text-muted small fw-bold" id="paginationInfo">Mostrando 1 a 5 de 5 registros</span></div>
                         <div class="d-flex gap-2">
-                            <!-- BOTÓN INACTIVAR -->
                             <button class="btn-outline-mre-danger" id="btnMassAction" disabled onclick="showModalInactivateMass()" title="Inactivar masivamente (Solo activos)">
                                 <i data-lucide="power" style="width: 14px;"></i> Inactivar
                             </button>
-                            <!-- BOTÓN FORZAR CAMBIO DE CONTRASEÑA (CIUDADANOS) -->
                             <button class="btn-outline-mre-primary" id="btnForcePass" disabled onclick="showModalForcePass()" title="Forzar cambio de contraseña (Ciudadanos)">
                                 <i data-lucide="key" style="width: 14px;"></i> Forzar cambio de contraseña
                             </button>
@@ -510,7 +505,7 @@
 
                 <div class="grid-frame p-5 animate-fade">
                     <form id="userFormDetail">
-                        <div class="section-title">Datos del Usuario (Sistema MRE)</div>
+                        <div class="section-title" title="Datos MRE">Datos del Usuario (Sistema MRE)</div>
                         <div class="row g-4 mb-4">
                             <div class="col-md-4">
                                 <label class="form-label">Nombre de usuario (MRE) <span class="text-danger" id="reqUser">*</span></label>
@@ -591,6 +586,10 @@
         </main>
     </div>
 
+    <footer class="mre-footer">
+        <div class="footer-left">&copy; 2026 Ministerio de Relaciones Exteriores - Dirección de Informática</div>
+    </footer>
+
     <!-- MODALES -->
     <div class="mre-modal-overlay" id="modalDelete">
         <div class="mre-modal animate-fade text-center" style="max-width: 450px;">
@@ -598,7 +597,7 @@
                 <i data-lucide="trash-2" style="width: 32px; height: 32px;"></i>
             </div>
             <h5 class="fw-800 text-navy mb-2">Confirmar Eliminación</h5>
-            <p class="text-muted small px-4">¿Desea eliminar definitivamente al usuario <strong id="deleteUserName"></strong>?</p>
+            <p class="text-muted small px-4">¿Desea eliminar definitivamente al usuario <strong id="deleteUserName"></strong>? Esta acción es irreversible.</p>
             <div class="d-flex justify-content-center gap-3 mt-4 pt-3 border-top">
                 <button class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalDelete')">Cancelar</button>
                 <button class="btn btn-danger rounded-pill px-4 fw-800" onclick="alert('Satisfactoriamente eliminado.'); closeModal('modalDelete');">Sí, eliminar</button>
@@ -612,7 +611,7 @@
                 <i data-lucide="power" style="width: 32px; height: 32px;"></i>
             </div>
             <h5 class="fw-800 text-navy mb-2">Confirmar Inactivación</h5>
-            <p class="text-muted small px-4">¿Desea inactivar de forma masiva los usuarios seleccionados?</p>
+            <p class="text-muted small px-4">¿Desea inactivar de forma masiva los usuarios seleccionados de forma simultánea?</p>
             <div class="d-flex justify-content-center gap-3 mt-4 pt-3 border-top">
                 <button class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalInactivateMass')">Cancelar</button>
                 <button class="btn-main px-5 py-2" onclick="alert('Registros inactivados correctamente.'); closeModal('modalInactivateMass'); cancelSelection();">Sí, inactivar</button>
@@ -640,7 +639,7 @@
                 <i data-lucide="alert-circle" style="width: 32px; height: 32px;"></i>
             </div>
             <h5 class="fw-800 text-navy mb-2">No es posible eliminar</h5>
-            <p class="text-muted small px-4">El usuario posee gestiones asociadas en el sistema.</p>
+            <p class="text-muted small px-4">El usuario posee gestiones asociadas en el sistema. No puede ser borrado por razones de integridad histórica.</p>
             <div class="d-flex justify-content-center mt-4 pt-3 border-top">
                 <button class="btn-main px-5 py-2" onclick="closeModal('modalDeleteError')">Entendido</button>
             </div>
@@ -808,8 +807,8 @@
             const user = document.getElementById('u_search_detail').value;
             if(!user) return;
             hideSearchError();
-            document.getElementById('f_name_detail').value = "Funcionario MRE";
-            document.getElementById('f_last_detail').value = "Ejemplo";
+            document.getElementById('f_name_detail').value = "Funcionario";
+            document.getElementById('f_last_detail').value = "MRE";
             ['f_name_detail', 'f_last_detail', 'f_type_detail', 'f_doc_detail', 'f_email_detail', 'f_phone_detail'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el && el.tagName === 'SELECT') el.disabled = true; else el.readOnly = true;
