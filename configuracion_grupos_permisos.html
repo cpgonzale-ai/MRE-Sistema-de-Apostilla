@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIA-PY | Configuración de Grupos y Permisos</title>
+    <title>SIA-PY | Grupos y Permisos</title>
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Google Fonts -->
@@ -154,6 +154,13 @@
         .btn-main { background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); color: #ffffff; border: none; border-radius: 12px; padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.85rem; transition: var(--transition); }
         .btn-main:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 40, 85, 0.2); color: white; }
 
+        .btn-tool-generic {
+            background: #FFFFFF; color: var(--mre-blue); border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem; border-radius: 10px; font-size: 0.75rem; font-weight: 700;
+            display: flex; align-items: center; gap: 8px; transition: var(--transition); cursor: pointer; margin-right: 8px;
+        }
+        .btn-tool-generic:hover { background: #F1F5F9; border-color: var(--mre-blue); }
+
         /* --- FOOTER & PAGINADO --- */
         .grid-footer { padding: 1rem 1.5rem; background-color: #F8FAFC; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .btn-pagination { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #E2E8F0; border-radius: 8px; color: #64748B; cursor: pointer; transition: var(--transition); }
@@ -265,18 +272,14 @@
         <aside class="main-sidebar animate-fade" id="mainSidebar">
             <nav class="nav-menu p-3">
                 <p class="px-3 mb-2 text-muted fw-bold uppercase" style="font-size: 0.7rem; letter-spacing: 1.2px;">Administración</p>
-                <a href="#" class="nav-link-mre"><i data-lucide="file-text" style="width: 18px;"></i> <span>Tipos de documentos</span></a>
-                <a href="#" class="nav-link-mre"><i data-lucide="users" style="width: 18px;"></i> <span>Usuarios</span></a>
                 <a href="#" class="nav-link-mre active"><i data-lucide="shield-check" style="width: 18px;"></i> <span>Grupos y Permisos</span></a>
-                <a href="#" class="nav-link-mre"><i data-lucide="settings-2" style="width: 18px;"></i> <span>Configuración de referencias</span></a>
-                <a href="#" class="nav-link-mre"><i data-lucide="layout-grid" style="width: 18px;"></i> <span>Configuración de campos</span></a>
             </nav>
         </aside>
 
         <main class="content-area">
             <header class="d-flex justify-content-between align-items-end mb-4 animate-fade">
                 <div>
-                    <h2 class="fw-black text-navy m-0">Configuración de Grupos y Permisos</h2>
+                    <h2 class="fw-black text-navy m-0">Grupos y Permisos</h2>
                     <p class="text-muted small mb-0">Gestione los roles y privilegios de acceso al sistema</p>
                 </div>
                 <button class="btn-main d-inline-flex align-items-center gap-2 shadow-sm" onclick="openGroupModal('add')">
@@ -287,9 +290,20 @@
             <div class="grid-frame animate-fade">
                 <div class="grid-header-frame">
                     <h4 class="fw-black text-uppercase m-0" style="color: var(--mre-blue); font-size: 0.8rem;">Listado de Grupos</h4>
-                    <div class="position-relative" style="width: 300px;">
-                        <i data-lucide="search" class="position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:#94A3B8; width:16px;"></i>
-                        <input type="text" class="form-control-mre ps-5" placeholder="Filtrar grupos...">
+                    <div class="d-flex align-items-center gap-2">
+                        <button class="btn-tool-generic" data-bs-toggle="tooltip" title="Configurar Columnas">
+                            <i data-lucide="layout-columns" style="width: 16px;"></i> Columnas
+                        </button>
+                        <button class="btn-tool-generic" data-bs-toggle="tooltip" title="Exportar a Excel">
+                            <i data-lucide="file-spreadsheet" style="width: 16px;"></i> Excel
+                        </button>
+                        <button class="btn-tool-generic" data-bs-toggle="tooltip" title="Generar PDF">
+                            <i data-lucide="file-text" style="width: 16px;"></i> PDF
+                        </button>
+                        <div class="position-relative" style="max-width: 250px;">
+                            <i data-lucide="search" class="position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:#94A3B8; width:16px;"></i>
+                            <input type="text" class="form-control-mre ps-5" placeholder="Filtrar grupos...">
+                        </div>
                     </div>
                 </div>
 
