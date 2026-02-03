@@ -152,13 +152,38 @@
         .btn-main { background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); color: #ffffff; border: none; border-radius: 12px; padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.85rem; transition: var(--transition); }
         .btn-main:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 40, 85, 0.2); color: white; }
 
-        .btn-grid-action {
-            background-color: white; border: 1px solid var(--border-color); border-radius: 10px;
-            padding: 0.5rem 0.85rem; font-size: 0.8rem; font-weight: 700; color: var(--text-muted);
-            display: flex; align-items: center; gap: 8px; transition: var(--transition);
+        /* --- BOTONES DEL SISTEMA (NUEVOS ESTILOS) --- */
+        .btn-tool-generic {
+            background: #FFFFFF; color: var(--mre-blue); border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem; border-radius: 10px; font-size: 0.75rem; font-weight: 700;
+            display: flex; align-items: center; gap: 8px; transition: var(--transition); cursor: pointer;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
         }
-        .btn-grid-action:hover { border-color: var(--mre-blue); color: var(--mre-blue); background-color: #F8FAFC; }
+        .btn-tool-generic:hover { background: #F1F5F9; border-color: var(--mre-blue); transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 
+        .btn-action-icon {
+            width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 10px; border: 1px solid var(--border-color); background: white; color: var(--text-muted);
+            transition: var(--transition); cursor: pointer;
+        }
+        .btn-action-icon:hover { background: #F1F5F9; color: var(--mre-blue); border-color: var(--mre-blue); }
+
+        .btn-outline-mre-danger { 
+            border: 2px solid var(--mre-red); color: var(--mre-red); font-weight: 800; border-radius: 12px;
+            padding: 0.5rem 1.2rem; font-size: 0.75rem; background: transparent; transition: var(--transition);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .btn-outline-mre-danger:hover:not(:disabled) { background: var(--mre-red); color: white; }
+        .btn-outline-mre-danger:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .btn-outline-mre-secondary {
+            border: 2px solid #94A3B8; color: #475569; font-weight: 800; border-radius: 12px;
+            padding: 0.5rem 1.2rem; font-size: 0.75rem; background: transparent; transition: var(--transition);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .btn-outline-mre-secondary:hover { background: #94A3B8; color: white; }
+
+        /* --- MODALES --- */
         .mre-modal-overlay { position: fixed; inset: 0; background: rgba(0, 40, 85, 0.4); backdrop-filter: blur(4px); z-index: 4000; display: none; align-items: center; justify-content: center; padding: 20px; }
         .mre-modal { background: white; border-radius: 24px; max-width: 800px; width: 100%; padding: 2.5rem; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.2); max-height: 95vh; overflow-y: auto; }
         .section-title { font-size: 0.9rem; font-weight: 900; color: var(--mre-blue); text-transform: uppercase; display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem; }
@@ -167,6 +192,7 @@
         .selection-item { padding: 0.5rem 0.75rem; border-bottom: 1px solid #E2E8F0; font-size: 0.8rem; font-weight: 600; display: flex; justify-content: space-between; }
         .selection-item:last-child { border-bottom: none; }
 
+        /* --- AUDITORÍA --- */
         .audit-table { width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; margin-top: 1rem; }
         .audit-table th { background: #F8FAFC; color: #64748B; font-size: 0.65rem; font-weight: 800; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-color); text-transform: uppercase; }
         .audit-table td { padding: 0.75rem 1rem; border-bottom: 1px solid #F1F5F9; font-size: 0.75rem; }
@@ -174,13 +200,14 @@
         .tag-create { background: #DCFCE7; color: #15803D; }
         .tag-update { background: #E0F2FE; color: #0369A1; }
 
-        .form-label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.4rem; display: block; }
-        .form-control-mre { background-color: var(--input-bg); border: 1px solid #E2E8F0; border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.9rem; width: 100%; transition: var(--transition); color: var(--text-main); }
-        .form-control-mre:focus { outline: none; border-color: var(--mre-blue); box-shadow: 0 0 0 3px rgba(0, 40, 85, 0.1); background: white; }
-        .form-control-mre::placeholder { color: #94A3B8; }
-        .form-control-mre:disabled { background-color: #f1f5f9; cursor: not-allowed; opacity: 0.7; }
+        /* --- FORMULARIOS --- */
+        .form-label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem; display: block; }
+        .form-control-mre { background-color: var(--input-bg); border: 1px solid #E2E8F0; border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.9rem; width: 100%; transition: var(--transition); }
+        .form-control-mre:focus { outline: none; border-color: var(--mre-blue-light); box-shadow: 0 0 0 3px rgba(0, 56, 168, 0.1); }
+        .form-control-mre:disabled { background-color: #EDF2F7; color: #64748B; }
         .form-control-mre[type="file"] { padding: 0.5rem 0.75rem; background: white; font-size: 0.8rem; }
 
+        /* --- AVATARES Y FIRMAS --- */
         .avatar-circle {
             width: 40px; height: 40px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
@@ -203,7 +230,8 @@
         }
         .signature-img { height: 40px; width: auto; opacity: 0.8; }
         
-        .grid-footer { padding: 1rem 1.5rem; background-color: #F8FAFC; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        /* --- FOOTER & PAGINADO --- */
+        .grid-footer { padding: 1.25rem 1.5rem; background-color: #F8FAFC; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .btn-pagination { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #E2E8F0; border-radius: 8px; color: #64748B; cursor: pointer; transition: var(--transition); }
         .btn-pagination:hover:not(:disabled) { background: var(--mre-blue); color: white; border-color: var(--mre-blue); }
         .page-indicator { font-size: 0.85rem; font-weight: 700; color: var(--mre-blue); padding: 0 8px; }
@@ -212,6 +240,7 @@
         .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* Scrollbar personalizada */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
@@ -285,6 +314,7 @@
         </aside>
 
         <main class="content-area">
+            <!-- HEADER DE LA PÁGINA -->
             <header class="d-flex justify-content-between align-items-end mb-4 animate-fade">
                 <div>
                     <h2 class="fw-black text-navy m-0" style="color: var(--mre-blue);">Registro de Firmas</h2>
@@ -301,16 +331,18 @@
                         Listado de Funcionarios
                     </div>
                     <div class="d-flex align-items-center gap-2">
-                        <button class="btn-grid-action" data-bs-toggle="tooltip" title="Configurar Columnas">
-                            <i data-lucide="layout-columns" style="width:16px"></i> Columna
+                        <!-- Botones de Acción de Grilla (NUEVO ESTILO) -->
+                        <button class="btn-tool-generic" data-bs-toggle="tooltip" title="Configurar Columnas">
+                            <i data-lucide="layout-columns" style="width:16px"></i> Columnas
                         </button>
-                        <button class="btn-grid-action" data-bs-toggle="tooltip" title="Exportar a Excel">
+                        <button class="btn-tool-generic" data-bs-toggle="tooltip" title="Exportar a Excel">
                             <i data-lucide="file-spreadsheet" style="width:16px"></i> Excel
                         </button>
-                        <button class="btn-grid-action" data-bs-toggle="tooltip" title="Exportar a PDF">
+                        <button class="btn-tool-generic" data-bs-toggle="tooltip" title="Exportar a PDF">
                             <i data-lucide="file-text" style="width:16px"></i> PDF
                         </button>
 
+                        <!-- Buscador -->
                         <div class="position-relative ms-2" style="width: 300px;">
                             <i data-lucide="search" class="position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:#94A3B8; width:16px;"></i>
                             <input type="text" class="form-control-mre ps-5" placeholder="Buscar funcionario...">
@@ -321,8 +353,8 @@
                     <table class="mre-table">
                         <thead>
                             <tr>
-                                <th width="60" class="text-center">ID</th>
                                 <th width="40" class="text-center"><input type="checkbox" id="selectAllItems" onchange="toggleSelectAllItems()" data-bs-toggle="tooltip" title="Marcar todos"></th>
+                                <th width="60" class="text-center">ID</th>
                                 <th>Funcionario</th>
                                 <th>Documento</th>
                                 <th>Institución / Cargo</th>
@@ -340,10 +372,10 @@
                     <div><span class="text-muted small fw-bold" id="paginationInfo">Mostrando registros</span></div>
                     
                     <div class="d-flex gap-2">
-                        <button class="btn btn-outline-danger fw-bold d-flex align-items-center gap-2" id="btnInactivateItems" disabled onclick="handleInactivateSelection()" style="border-radius: 12px; border-width: 2px;" data-bs-toggle="tooltip" title="Inactivar seleccionados">
+                        <button class="btn-outline-mre-danger" id="btnInactivateItems" disabled onclick="handleInactivateSelection()" data-bs-toggle="tooltip" title="Inactivar seleccionados">
                             <i data-lucide="power" style="width: 14px;"></i> Inactivar
                         </button>
-                        <button class="btn btn-outline-secondary fw-bold d-flex align-items-center gap-2" id="btnCancelSelection" onclick="handleCancelSelection()" style="border-radius: 12px; border-width: 2px; display: none;" data-bs-toggle="tooltip" title="Limpiar selección">
+                        <button class="btn-outline-mre-secondary" id="btnCancelSelection" onclick="handleCancelSelection()" style="display: none;" data-bs-toggle="tooltip" title="Limpiar selección">
                             <i data-lucide="x" style="width: 14px;"></i> Cancelar
                         </button>
                     </div>
@@ -369,6 +401,7 @@
             <div class="section-title" id="modalTitle">Nuevo Registro</div>
             <form id="officialForm">
                 <div class="row g-4 mb-4">
+                    <!-- Sección de Datos Personales -->
                     <div class="col-md-6">
                         <label class="form-label">Nombre <span class="text-danger">*</span></label>
                         <input type="text" id="inputNombre" class="form-control-mre" placeholder="Ej: Juan" required>
@@ -385,10 +418,22 @@
                         <label class="form-label">Correo Electrónico <span class="text-danger">*</span></label>
                         <input type="email" id="inputCorreo" class="form-control-mre" placeholder="correo@ejemplo.gov.py" required>
                     </div>
-                    <div class="col-12">
+                    
+                    <!-- CAMPO CARGO (Ancho dinámico) -->
+                    <div class="col-12" id="containerCargo">
                         <label class="form-label">Cargo <span class="text-danger">*</span></label>
                         <input type="text" id="inputCargo" class="form-control-mre" placeholder="Ej: Director General" required>
                     </div>
+
+                    <!-- CAMPO ESTADO (Visible solo en Editar/Ver) -->
+                    <div class="col-md-4 d-none" id="containerStatus">
+                        <label class="form-label">Estado <span class="text-danger">*</span></label>
+                        <select id="inputEstado" class="form-control-mre">
+                            <option value="ACTI">Activo</option>
+                            <option value="INAC">Inactivo</option>
+                        </select>
+                    </div>
+
                     <div class="col-12">
                         <label class="form-label">Institución <span class="text-danger">*</span></label>
                         <select id="inputInstitucion" class="form-control-mre" required>
@@ -412,6 +457,7 @@
                         </select>
                     </div>
 
+                    <!-- SECCIÓN: USUARIO DE SISTEMA -->
                     <div id="userCreationSection" class="col-12 mt-4">
                         <div class="section-title mb-3" style="font-size: 0.8rem;">Crear Usuario de Sistema</div>
                         <div class="p-4 border rounded-3 bg-light">
@@ -454,6 +500,7 @@
                         </div>
                     </div>
 
+                    <!-- Nueva Sección: Documentación Adjunta -->
                     <div class="col-12 mt-4">
                         <div class="section-title mb-3" style="font-size: 0.8rem;">Documentación Adjunta</div>
                     </div>
@@ -481,6 +528,7 @@
                                     <label class="form-check-label fw-bold small" for="firmaElectronica">Electrónica / Digital</label>
                                 </div>
                             </div>
+                            
                             <input type="file" id="inputFirmaFile" class="form-control-mre" accept=".png,.jpg,.jpeg,.svg,.p12,.cer">
                             <div class="form-text small text-muted mt-2" id="signatureHint">
                                 <i data-lucide="info" style="width:12px; display:inline; vertical-align:middle"></i>
@@ -489,6 +537,7 @@
                         </div>
                     </div>
 
+                    <!-- SECCIÓN DE AUDITORÍA -->
                     <div id="auditSection" class="col-12 mt-4 pt-4 border-top d-none">
                         <div class="section-title">Historial de Auditoría</div>
                         <div class="table-responsive mt-3">
@@ -515,6 +564,7 @@
         </div>
     </div>
 
+    <!-- MODAL DE CONFIRMACIÓN ELIMINACIÓN -->
     <div class="mre-modal-overlay" id="modalDeleteConfirm">
         <div class="mre-modal shadow-lg" style="max-width: 480px;">
             <div class="text-center mb-4">
@@ -532,6 +582,7 @@
         </div>
     </div>
 
+    <!-- MODAL DE CONFIRMACIÓN INACTIVACIÓN -->
     <div class="mre-modal-overlay" id="modalInactivateConfirm">
         <div class="mre-modal shadow-lg" style="max-width: 550px;">
             <div class="text-center mb-4">
@@ -549,9 +600,11 @@
         </div>
     </div>
 
+    <!-- Bootstrap Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+        // Datos Mockeados
         let mockOfficials = [
             { 
                 id: 1, nombre: 'María', apellido: 'González', email: 'mgonzalez@mec.gov.py', doc: '3.542.110', cargo: 'Secretaria General',
@@ -581,18 +634,30 @@
 
         let idToDelete = null;
 
-        function renderOfficials() {
-            const tableBody = document.getElementById('officialsTableBody');
-            const existingTooltips = tableBody.querySelectorAll('[data-bs-toggle="tooltip"]');
-            existingTooltips.forEach(el => {
+        // Función segura para inicializar Tooltips
+        function initTooltips() {
+            // Dispose existing to avoid "Please use show on visible elements"
+            const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            tooltips.forEach(el => {
                 const tooltip = bootstrap.Tooltip.getInstance(el);
                 if (tooltip) tooltip.dispose();
             });
 
+            // Re-init only if elements are visible
+            tooltips.forEach(el => {
+                // Check if element is visible in the layout (not hidden by parent display:none)
+                if (el.offsetWidth > 0 || el.offsetHeight > 0) {
+                    bootstrap.Tooltip.getOrCreateInstance(el);
+                }
+            });
+        }
+
+        function renderOfficials() {
+            const tableBody = document.getElementById('officialsTableBody');
             tableBody.innerHTML = mockOfficials.map(o => `
                 <tr data-id="${o.id}" class="${o.status === 'INAC' ? 'opacity-75 bg-light' : ''}">
-                    <td class="text-center fw-bold text-navy">${o.id}</td>
                     <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()" ${o.status === 'INAC' ? 'disabled' : ''}></td>
+                    <td class="text-center fw-bold text-navy">${o.id}</td>
                     <td>
                         <div class="d-flex align-items-center gap-3">
                             <div class="avatar-circle ${o.initials === 'RD' ? 'rd' : ''}">${o.initials}</div>
@@ -610,10 +675,10 @@
                     <td><div class="signature-box"><img src="${o.signaturePath}" class="signature-img" alt="Firma"></div></td>
                     <td><span class="badge ${o.status === 'ACTI' ? 'bg-success bg-opacity-10 text-success' : 'bg-secondary bg-opacity-10 text-secondary'} border border-${o.status === 'ACTI' ? 'success' : 'secondary'} small">${o.status === 'ACTI' ? 'Activo' : 'Inactivo'}</span></td>
                     <td class="text-center">
-                        <div class="d-flex justify-content-center gap-1">
-                            <button class="btn btn-sm btn-light border" onclick="openOfficialModal('view', ${o.id})" data-bs-toggle="tooltip" title="Visualizar"><i data-lucide="eye" style="width:14px"></i></button>
-                            <button class="btn btn-sm btn-light border" onclick="openOfficialModal('edit', ${o.id})" data-bs-toggle="tooltip" title="Editar"><i data-lucide="edit-3" style="width:14px"></i></button>
-                            <button class="btn btn-sm btn-light border text-danger" onclick="deleteItem(${o.id})" data-bs-toggle="tooltip" title="Eliminar"><i data-lucide="trash-2" style="width:14px"></i></button>
+                        <div class="d-flex justify-content-center gap-2">
+                            <button class="btn-action-icon" onclick="openOfficialModal('view', ${o.id})" data-bs-toggle="tooltip" title="Visualizar"><i data-lucide="eye" style="width:18px"></i></button>
+                            <button class="btn-action-icon" onclick="openOfficialModal('edit', ${o.id})" data-bs-toggle="tooltip" title="Editar"><i data-lucide="edit-3" style="width:18px"></i></button>
+                            <button class="btn-action-icon" onclick="deleteItem(${o.id})" data-bs-toggle="tooltip" title="Eliminar"><i data-lucide="trash-2" style="width:18px"></i></button>
                         </div>
                     </td>
                 </tr>
@@ -622,11 +687,7 @@
             document.getElementById('paginationInfo').innerText = `Mostrando 1 a ${mockOfficials.length} de ${mockOfficials.length} registros`;
             updateSelectionUI();
             lucide.createIcons();
-            
-            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return bootstrap.Tooltip.getOrCreateInstance(tooltipTriggerEl);
-            });
+            initTooltips(); // Llamada centralizada
         }
 
         function updateSelectionUI() {
@@ -638,6 +699,7 @@
             if(btnInactivate) btnInactivate.disabled = checks.length === 0;
             if(btnCancel) btnCancel.style.display = checks.length > 0 ? 'flex' : 'none';
             if(selectAll) selectAll.checked = (checks.length === total && total > 0);
+            initTooltips(); // Actualizar tooltips ya que el botón cancelar puede aparecer/desaparecer
         }
 
         function toggleSelectAllItems() {
@@ -710,14 +772,30 @@
             const auditSection = document.getElementById('auditSection');
             const auditTimeline = document.getElementById('auditTimeline');
             const userCreationSection = document.getElementById('userCreationSection');
+            
+            // Referencias para manejo de grilla dinámica
+            const containerCargo = document.getElementById('containerCargo');
+            const containerStatus = document.getElementById('containerStatus');
+            const inputEstado = document.getElementById('inputEstado');
+
             form.reset();
             modal.style.display = 'flex';
             inputs.forEach(i => i.disabled = false);
             btnSave.style.display = 'block';
             toggleSignatureHint();
+
             if (mode === 'add') {
                 title.innerText = 'Nuevo Registro';
+                
+                // Ocultar Auditoría y Estado
                 auditSection.classList.add('d-none');
+                containerStatus.classList.add('d-none');
+                
+                // Ajustar ancho de Cargo a full
+                containerCargo.classList.remove('col-md-8');
+                containerCargo.classList.add('col-12');
+
+                // Mostrar creación de usuario
                 userCreationSection.classList.remove('d-none');
                 document.getElementById('inputUsuarioSystem').readOnly = true; 
             } else {
@@ -729,6 +807,13 @@
                     document.getElementById('inputCorreo').value = official.email;
                     document.getElementById('inputCargo').value = official.cargo;
                     document.getElementById('inputInstitucion').value = official.inst;
+                    inputEstado.value = official.status; // Setear estado
+
+                    // Mostrar Estado y ajustar grilla
+                    containerStatus.classList.remove('d-none');
+                    containerCargo.classList.remove('col-12');
+                    containerCargo.classList.add('col-md-8');
+                    
                     if (mode === 'edit') {
                         title.innerText = 'Editar Funcionario';
                         auditSection.classList.add('d-none');
@@ -736,15 +821,19 @@
                         generateUsername();
                     } else if (mode === 'view') {
                         title.innerText = 'Detalle del Funcionario';
-                        inputs.forEach(i => i.disabled = true);
+                        inputs.forEach(i => i.disabled = true); // Esto deshabilita también el select de estado
                         btnSave.style.display = 'none';
                         userCreationSection.classList.add('d-none');
                         auditSection.classList.remove('d-none');
+                        
                         auditTimeline.innerHTML = official.history ? official.history.map(h => `<tr><td>${h.date}</td><td><span class="badge-audit tag-${h.action.toLowerCase()}">${h.action}</span></td><td>${h.user}</td><td>${h.desc}</td></tr>`).join('') : '<tr><td colspan="4" class="text-center text-muted">Sin historial</td></tr>';
                     }
                 }
             }
-            setTimeout(() => lucide.createIcons(), 100);
+            setTimeout(() => {
+                lucide.createIcons();
+                initTooltips();
+            }, 150);
         }
 
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
@@ -775,7 +864,10 @@
         document.addEventListener('click', () => { ['userMenu', 'a11yMenu'].forEach(id => document.getElementById(id)?.classList.remove('show')); });
         document.getElementById('inputNombre').addEventListener('input', generateUsername);
         document.getElementById('inputApellido').addEventListener('input', generateUsername);
-        document.addEventListener('DOMContentLoaded', renderOfficials);
+        document.addEventListener('DOMContentLoaded', () => {
+            renderOfficials();
+            initTooltips();
+        });
     </script>
 </body>
 </html>
