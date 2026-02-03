@@ -151,7 +151,7 @@
         .tag-create { background: #DCFCE7; color: #15803D; }
         .tag-update { background: #E0F2FE; color: #0369A1; }
 
-        /* SELECCIÓN */
+        /* LISTADO DE SELECCIÓN */
         .selection-list { max-height: 150px; overflow-y: auto; border: 1px solid #E2E8F0; border-radius: 12px; padding: 0.5rem; background: #F8FAFC; }
         .selection-item { padding: 0.5rem 0.75rem; border-bottom: 1px solid #E2E8F0; font-size: 0.8rem; font-weight: 600; display: flex; justify-content: space-between; }
         .selection-item:last-child { border-bottom: none; }
@@ -177,18 +177,18 @@
         
         <div class="d-flex align-items-center gap-3">
             <div class="a11y-container position-relative">
-                <button class="btn btn-light btn-sm border fw-bold px-3 rounded-pill" onclick="toggleA11yMenu()">
+                <button class="btn btn-light btn-sm border fw-bold px-3 rounded-pill" onclick="toggleA11yMenu()" title="Opciones de accesibilidad">
                     <i data-lucide="accessibility" style="width: 16px;" class="me-1"></i> Accesibilidad
                 </button>
                 <div id="a11yMenu" class="dropdown-menu p-3 shadow-lg border-0 position-absolute end-0 mt-2" style="width:220px; display: none;">
                     <div class="small fw-800 mb-2 text-muted text-uppercase">Tamaño de Texto</div>
                     <div class="d-flex justify-content-between align-items-center mb-3 bg-light p-1 rounded-3">
-                        <button class="btn btn-sm btn-white border shadow-sm" onclick="changeFontSize(-0.1)">-</button>
+                        <button class="btn btn-sm btn-white border shadow-sm" onclick="changeFontSize(-0.1)" title="Reducir fuente">-</button>
                         <span id="fontLabel" class="fw-bold">100%</span>
-                        <button class="btn btn-sm btn-white border shadow-sm" onclick="changeFontSize(0.1)">+</button>
+                        <button class="btn btn-sm btn-white border shadow-sm" onclick="changeFontSize(0.1)" title="Aumentar fuente">+</button>
                     </div>
                     <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" onchange="document.body.classList.toggle('grayscale-mode')">
+                        <input class="form-check-input" type="checkbox" onchange="document.body.classList.toggle('grayscale-mode')" title="Activar escala de grises">
                         <label class="form-check-label small fw-bold">Escala de Grises</label>
                     </div>
                 </div>
@@ -197,7 +197,7 @@
                 <div class="fw-bold small">Carlos González</div>
                 <div class="text-muted" style="font-size: 0.65rem;">CI: 4.567.890</div>
             </div>
-            <div class="bg-light p-2 rounded-circle border"><i data-lucide="user"></i></div>
+            <div class="bg-light p-2 rounded-circle border" title="Perfil de usuario"><i data-lucide="user"></i></div>
         </div>
     </header>
 
@@ -205,11 +205,7 @@
         <aside class="main-sidebar">
             <nav class="mt-4">
                 <p class="px-4 small text-muted fw-800 uppercase mb-2" style="letter-spacing: 1px;">Administración</p>
-                <a href="#" class="nav-link-mre"><i data-lucide="file-text" style="width:18px"></i> Tipos de documentos</a>
-                <a href="#" class="nav-link-mre"><i data-lucide="users" style="width:18px"></i> Usuarios</a>
-                <a href="#" class="nav-link-mre"><i data-lucide="settings-2" style="width:18px"></i> Ref. Maestras</a>
-                <a href="#" class="nav-link-mre"><i data-lucide="layout-grid" style="width:18px"></i> Config. de campos</a>
-                <a href="#" class="nav-link-mre active"><i data-lucide="file-cog" style="width:18px"></i> Config. de documentos</a>
+                <a href="#" class="nav-link-mre active" title="Ir a Configuración de Documentos"><i data-lucide="file-cog" style="width:18px"></i> Config. de documentos</a>
             </nav>
         </aside>
 
@@ -219,7 +215,7 @@
                     <h2 class="fw-800 m-0 text-navy">Configuración de Documentos</h2>
                     <p class="text-muted small">Gestione los parámetros técnicos y formatos permitidos por cada tipo de documento</p>
                 </div>
-                <button class="btn-main shadow-sm" onclick="openModal('add')">
+                <button class="btn-main shadow-sm" onclick="openModal('add')" title="Crear un nuevo tipo de documento">
                     <i data-lucide="plus-circle" class="me-2"></i> Agregar
                 </button>
             </div>
@@ -228,18 +224,18 @@
                 <div class="grid-header-frame">
                     <h6 class="fw-800 m-0 uppercase" style="font-size: 0.75rem; color: var(--mre-blue)">Listado de Documentos</h6>
                     <div class="d-flex gap-2">
-                        <button class="btn-tool-generic" onclick="alert('Configurar Columnas...')">
+                        <button class="btn-tool-generic" onclick="alert('Configurar Columnas...')" title="Seleccionar columnas visibles">
                             <i data-lucide="layout-columns" style="width: 16px;"></i> Columnas
                         </button>
-                        <button class="btn-tool-generic" onclick="alert('Exportando listado completo a Excel...')">
+                        <button class="btn-tool-generic" onclick="alert('Exportando listado completo a Excel...')" title="Descargar como Excel">
                             <i data-lucide="file-spreadsheet" style="width: 16px;"></i> Excel
                         </button>
-                        <button class="btn-tool-generic" onclick="alert('Exportando listado completo a PDF...')">
+                        <button class="btn-tool-generic" onclick="alert('Exportando listado completo a PDF...')" title="Descargar como PDF">
                             <i data-lucide="file-text" style="width:16px;"></i> PDF
                         </button>
                         <div class="position-relative">
                             <i data-lucide="search" class="position-absolute" style="left:10px; top:50%; transform:translateY(-50%); width:14px; color:#94A3B8;"></i>
-                            <input type="text" class="form-control form-control-sm border ps-4" placeholder="Buscar documento..." style="width:200px; border-radius: 8px;">
+                            <input type="text" class="form-control form-control-sm border ps-4" placeholder="Buscar documento..." style="width:200px; border-radius: 8px;" title="Filtrar por nombre o código">
                         </div>
                     </div>
                 </div>
@@ -248,7 +244,7 @@
                         <thead>
                             <tr>
                                 <th width="40" class="text-center">
-                                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this.checked)">
+                                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this.checked)" title="Seleccionar todo">
                                 </th>
                                 <th class="text-center" width="120">Código</th>
                                 <th>Nombre del Documento</th>
@@ -270,10 +266,10 @@
                     </div>
 
                     <div class="d-flex gap-2">
-                        <button class="btn btn-outline-danger fw-bold d-flex align-items-center gap-2" id="btnInactivate" disabled onclick="handleInactivateSelection()" style="border-radius: 12px; border-width: 2px; font-size: 0.8rem;">
+                        <button class="btn btn-outline-danger fw-bold d-flex align-items-center gap-2" id="btnInactivate" disabled onclick="handleInactivateSelection()" style="border-radius: 12px; border-width: 2px; font-size: 0.8rem;" title="Inactivar registros seleccionados">
                             <i data-lucide="power" style="width: 14px;"></i> Inactivar
                         </button>
-                        <button class="btn btn-outline-secondary fw-bold d-flex align-items-center gap-2" id="btnCancelSelection" onclick="cancelSelection()" style="border-radius: 12px; border-width: 2px; font-size: 0.8rem; display: none;">
+                        <button class="btn btn-outline-secondary fw-bold d-flex align-items-center gap-2" id="btnCancelSelection" onclick="cancelSelection()" style="border-radius: 12px; border-width: 2px; font-size: 0.8rem; display: none;" title="Cancelar selección">
                             <i data-lucide="x" style="width: 14px;"></i> Cancelar
                         </button>
                     </div>
@@ -301,15 +297,15 @@
                 <div class="row g-4 mb-4">
                     <div class="col-md-8">
                         <label class="form-label">Nombre del Documento <span class="text-danger">*</span></label>
-                        <input type="text" id="docName" class="form-control-mre" placeholder="ej: Certificado de Nacimiento" oninput="generateCode(this.value)" required>
+                        <input type="text" id="docName" class="form-control-mre" placeholder="ej: Certificado de Nacimiento" oninput="generateCode(this.value)" required title="Nombre descriptivo del documento para el ciudadano">
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Código Único (Automático)</label>
-                        <input type="text" id="docCode" class="form-control-mre form-control-readonly" readonly required>
+                        <input type="text" id="docCode" class="form-control-mre form-control-readonly" readonly required placeholder="Autogenerado (ej: CERT_NAC)" title="Identificador técnico único generado automáticamente">
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Formato Permitido <span class="text-danger">*</span></label>
-                        <select id="docFormat" class="form-control-mre" required>
+                        <select id="docFormat" class="form-control-mre" required title="Formato de archivo que el sistema validará">
                             <option value="">Seleccione...</option>
                             <option value="pdf">pdf</option>
                             <option value="png">png</option>
@@ -319,29 +315,29 @@
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">Orden <span class="text-danger">*</span></label>
-                        <input type="number" id="docOrder" class="form-control-mre" value="10" required>
+                        <input type="number" id="docOrder" class="form-control-mre" value="10" required placeholder="ej: 10" title="Orden de visualización en el listado">
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Requerido <span class="text-danger">*</span></label>
-                        <select id="docRequired" class="form-control-mre" required>
+                        <select id="docRequired" class="form-control-mre" required title="Indica si el documento es obligatorio para el trámite">
                             <option value="Si">Si</option>
                             <option value="No">No</option>
                         </select>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Tamaño Máx (MB) <span class="text-danger">*</span></label>
-                        <input type="number" id="docMaxSize" class="form-control-mre" value="5" required>
+                        <input type="number" id="docMaxSize" class="form-control-mre" value="5" required placeholder="ej: 5" title="Tamaño máximo permitido en Megabytes">
                     </div>
                     <div class="col-md-4" id="docStatusContainer">
                         <label class="form-label">Estado <span class="text-danger">*</span></label>
-                        <select id="docStatus" class="form-control-mre" required>
+                        <select id="docStatus" class="form-control-mre" required title="Estado actual del registro">
                             <option value="ACTI">Activo</option>
                             <option value="INAC">Inactivo</option>
                         </select>
                     </div>
                     <div class="col-md-12">
                         <label class="form-label">Descripción (Opcional)</label>
-                        <textarea id="docDesc" class="form-control-mre" rows="2" placeholder="Notas adicionales sobre la carga del documento..."></textarea>
+                        <textarea id="docDesc" class="form-control-mre" rows="2" placeholder="Ej: Subir escaneo legible de ambas caras..." title="Instrucciones adicionales para el usuario"></textarea>
                     </div>
                 </div>
 
@@ -496,7 +492,7 @@
 
             if (btnInactivate) btnInactivate.disabled = checks.length === 0;
             if (btnCancel) btnCancel.style.display = checks.length > 0 ? 'flex' : 'none';
-            if (totalChecks > 0 && selectAll) selectAll.checked = (checks.length === totalChecks);
+            if (totalChecks > 0 && selectAll) selectAll.checked = checks.length === totalChecks;
         }
 
         function cancelSelection() {
