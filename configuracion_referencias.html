@@ -305,26 +305,26 @@
                 <div class="a11y-dropdown-menu" id="a11yMenu" onclick="event.stopPropagation()">
                     <div class="a11y-section-title">Tamaño de Texto</div>
                     <div class="text-resize-controls">
-                        <button class="btn-resize" onclick="changeFontSize(-0.1)" title="Reducir"><i data-lucide="minus" style="width: 16px;"></i></button>
+                        <button class="btn-resize" onclick="changeFontSize(-0.1)" title="Reducir tamaño de fuente"><i data-lucide="minus" style="width: 16px;"></i></button>
                         <span class="font-size-display" id="fontSizeDisplay">100%</span>
-                        <button class="btn-resize" onclick="changeFontSize(0.1)" title="Aumentar"><i data-lucide="plus" style="width: 16px;"></i></button>
+                        <button class="btn-resize" onclick="changeFontSize(0.1)" title="Aumentar tamaño de fuente"><i data-lucide="plus" style="width: 16px;"></i></button>
                     </div>
                     <div class="a11y-section-title mt-3">Visualización</div>
                     <div class="switch-control">
                         <div class="switch-label"><i data-lucide="eye-off" style="width: 16px;"></i> Escala de Grises</div>
                         <label class="toggle-switch">
                             <input type="checkbox" id="switchGrayscale" onchange="toggleGrayscale()">
-                            <span class="slider"></span>
+                            <span class="slider" title="Activar/Desactivar escala de grises"></span>
                         </label>
                     </div>
                 </div>
             </div>
 
             <div class="user-info-text text-end d-none d-md-block">
-                <div class="fw-800 text-navy" style="font-size: 0.95rem;">Carlos González</div>
+                <div class="fw-800 text-navy" style="font-size: 1rem;">Carlos González</div>
                 <div class="text-muted small fw-bold">CI: 4.567.890</div>
             </div>
-            <div class="dots-menu-trigger shadow-sm" onclick="toggleUserMenu(event)">
+            <div class="dots-menu-trigger shadow-sm" onclick="toggleUserMenu(event)" title="Opciones de perfil de usuario">
                 <i data-lucide="user" style="width: 24px;"></i>
             </div>
             <div class="dropdown-menu-mre shadow" id="userMenu">
@@ -332,7 +332,7 @@
                     <p class="fw-800 text-navy mb-0" style="font-size: 0.95rem;">Carlos González</p>
                     <p class="text-muted small mb-0 fw-bold">CI: 4.567.890</p>
                 </div>
-                <button class="dropdown-item-mre text-danger fw-700" onclick="handleLogout()">
+                <button class="dropdown-item-mre text-danger fw-700" onclick="handleLogout()" title="Cerrar sesión de forma segura">
                     <i data-lucide="log-out" style="width: 14px;"></i> Cerrar Sesión
                 </button>
             </div>
@@ -348,11 +348,7 @@
                     <button class="btn btn-sm btn-light" onclick="toggleSidebar()"><i data-lucide="x" style="width: 16px;"></i></button>
                 </div>
                 <p class="px-3 mb-2 text-muted fw-bold uppercase" style="font-size: 0.75rem; letter-spacing: 1px;">Administración</p>
-                <a href="#" class="nav-link-mre" data-popup="Gestión de clases de documentos institucionales."><i data-lucide="file-text" style="width: 18px;"></i> <span>Tipos de documentos</span></a>
-                <a href="#" class="nav-link-mre" data-popup="Administración de cuentas de usuario."><i data-lucide="users" style="width: 18px;"></i> <span>Usuarios</span></a>
-                <a href="#" class="nav-link-mre" data-popup="Seguridad y roles de sistema."><i data-lucide="shield-check" style="width: 18px;"></i> <span>Grupos y Permisos</span></a>
-                <a href="#" class="nav-link-mre active"><i data-lucide="settings-2" style="width: 18px;"></i> <span>Configuración de Referencias</span></a>
-                <a href="#" class="nav-link-mre" data-popup="Configuración avanzada de campos dinámicos."><i data-lucide="layout-grid" style="width: 18px;"></i> <span>Configuración de campos</span></a>
+                <a href="#" class="nav-link-mre active" title="Configuración de Referencias Maestras"><i data-lucide="settings-2" style="width: 18px;"></i> <span>Configuración de Referencias</span></a>
             </nav>
         </aside>
 
@@ -365,7 +361,7 @@
                             <li class="breadcrumb-item active text-primary">Referencias</li>
                         </ol>
                     </nav>
-                    <h2 class="fw-black text-navy m-0">Gestión de Referencias</h2>
+                    <h2 class="fw-black text-navy m-0">Tipos de Referencias y Referencias</h2>
                 </div>
             </header>
 
@@ -374,7 +370,7 @@
                     <div class="col-md-5">
                         <label class="form-label">Seleccionar Tipo de Referencia (Dominio)</label>
                         <div class="custom-select-container" id="tipoSelectContainer">
-                            <div class="custom-select-trigger" onclick="toggleTipoDropdown(event)">
+                            <div class="custom-select-trigger" onclick="toggleTipoDropdown(event)" title="Click para expandir listado de dominios">
                                 <span id="tipoSelectLabel">Seleccione un dominio...</span>
                                 <i data-lucide="chevron-down" style="width: 16px;"></i>
                             </div>
@@ -382,7 +378,7 @@
                                 <div class="custom-select-search-wrapper">
                                     <div class="position-relative">
                                         <i data-lucide="search" class="position-absolute" style="left:12px; top:10px; color:#94A3B8; width:18px;"></i>
-                                        <input type="text" id="tipoSearchInput" class="custom-select-search-input" placeholder="Buscar entre dominios..." onkeyup="filterTipoOptions(this.value)">
+                                        <input type="text" id="tipoSearchInput" class="custom-select-search-input" placeholder="Ej. NACIONALIDAD" onkeyup="filterTipoOptions(this.value)">
                                     </div>
                                 </div>
                                 <div class="custom-select-options-list" id="tipoOptionsList"></div>
@@ -396,15 +392,16 @@
                                 <div class="fw-bold text-muted" id="tipoModuloLabel" style="font-size: 0.95rem;">---</div>
                             </div>
                             <div class="d-flex gap-2">
-                                <button class="btn-action-icon shadow-sm" onclick="viewSelectedTipo()" title="Visualizar"><i data-lucide="eye"></i></button>
-                                <button class="btn-action-icon shadow-sm" onclick="editSelectedTipo()" title="Editar"><i data-lucide="edit-3"></i></button>
-                                <!-- BOTÓN ELIMINAR PARA EL TIPO (CONDICIONAL) -->
-                                <button class="btn-action-icon d-none shadow-sm" id="btnDeleteTipo" style="color: var(--mre-red); border-color: #FECDD3;" onclick="openTipoActionModal('DELETE')" title="Eliminar Dominio"><i data-lucide="trash-2"></i></button>
+                                <button class="btn-action-icon shadow-sm" onclick="viewSelectedTipo()" title="Visualizar detalles del tipo de referencia"><i data-lucide="eye"></i></button>
+                                <button class="btn-action-icon shadow-sm" onclick="editSelectedTipo()" title="Editar parámetros del tipo de referencia"><i data-lucide="edit-3"></i></button>
+                                <button class="btn-action-icon d-none shadow-sm" id="btnDeleteTipo" style="color: var(--mre-red); border-color: #FECDD3;" onclick="openTipoActionModal('DELETE')" title="Eliminar dominio (Solo si está vacío)"><i data-lucide="trash-2"></i></button>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-3 text-end">
-                        <button class="btn-main shadow px-4" onclick="openModal('modalTipo', 'add')"><i data-lucide="plus" style="width: 14px;" class="me-1"></i> Nuevo Tipo</button>
+                        <button class="btn-main shadow px-4" onclick="openModal('modalTipo', 'add')" title="Crear un nuevo tipo de referencia maestro">
+                            <i data-lucide="plus" style="width: 14px;" class="me-1"></i> Nuevo Tipo
+                        </button>
                     </div>
                 </div>
             </div>
@@ -413,14 +410,16 @@
                 <div class="grid-header-frame">
                     <h5 class="fw-black text-uppercase m-0" style="color: var(--mre-blue); font-size: 0.85rem;">Lista de Valores: <span id="currentTipoLabel" class="text-primary">---</span></h5>
                     <div class="d-flex align-items-center gap-2">
-                        <button class="btn-tool-generic shadow-sm"><i data-lucide="layout-columns" style="width: 16px;"></i> Columnas</button>
-                        <button class="btn-tool-generic shadow-sm"><i data-lucide="file-spreadsheet" style="width: 16px;"></i> Excel</button>
-                        <button class="btn-tool-generic shadow-sm"><i data-lucide="file-text" style="width: 16px;"></i> PDF</button>
+                        <button class="btn-tool-generic shadow-sm" title="Configurar visibilidad de columnas en la grilla"><i data-lucide="layout-columns" style="width: 16px;"></i> Columnas</button>
+                        <button class="btn-tool-generic shadow-sm" title="Exportar registros filtrados a formato Excel"><i data-lucide="file-spreadsheet" style="width: 16px;"></i> Excel</button>
+                        <button class="btn-tool-generic shadow-sm" title="Exportar registros filtrados a formato PDF"><i data-lucide="file-text" style="width: 16px;"></i> PDF</button>
                         <div class="position-relative ms-2" style="max-width: 300px;">
                             <i data-lucide="search" class="position-absolute" style="left:14px; top:50%; transform:translateY(-50%); color:#94A3B8; width:16px;"></i>
-                            <input type="text" id="similaritySearchInput" class="form-control-mre ps-5 py-2 shadow-sm" placeholder="Buscar similitudes..." onkeyup="handleSimilaritySearch()">
+                            <input type="text" id="similaritySearchInput" class="form-control-mre ps-5 py-2 shadow-sm" placeholder="Ej. Certificado de..." onkeyup="handleSimilaritySearch()" title="Búsqueda por similitud en descripción o código">
                         </div>
-                        <button class="btn-main d-inline-flex align-items-center gap-2 shadow-sm ms-2" id="btnAddRef" disabled onclick="openModal('modalRef', 'add')"><i data-lucide="plus-circle" style="width: 16px;"></i> Agregar</button>
+                        <button class="btn-main d-inline-flex align-items-center gap-2 shadow-sm ms-2" id="btnAddRef" disabled onclick="openModal('modalRef', 'add')" title="Agregar nuevo valor de referencia al dominio seleccionado">
+                            <i data-lucide="plus-circle" style="width: 16px;"></i> Agregar
+                        </button>
                     </div>
                 </div>
 
@@ -428,7 +427,7 @@
                     <table class="mre-table">
                         <thead>
                             <tr>
-                                <th width="40" class="text-center"><input type="checkbox" id="selectAll" class="mre-checkbox" onchange="toggleSelectAll(this)"></th>
+                                <th width="40" class="text-center"><input type="checkbox" id="selectAll" class="mre-checkbox" onchange="toggleSelectAll(this)" title="Seleccionar/Deseleccionar todos los registros activos"></th>
                                 <th width="100" class="text-center">ID</th>
                                 <th>Descripción</th>
                                 <th>Valor Alfanumérico</th>
@@ -445,16 +444,16 @@
                     <div><span class="text-muted small fw-bold" id="paginationInfo">Mostrando 0 a 0 de 0 registros</span></div>
                     <div class="d-flex align-items-center gap-3">
                         <div class="d-flex gap-2">
-                             <button class="btn-danger-outline d-inline-flex align-items-center gap-2 px-3 py-1 shadow-sm" id="btnInactivar" disabled onclick="handleInactivar()"><i data-lucide="power" style="width: 14px;"></i> Inactivar</button>
-                             <button class="btn-cancel-mre shadow-sm px-3 py-1" id="btnCancelDeselect" disabled onclick="deselectAll()">Cancelar</button>
+                             <button class="btn-danger-outline d-inline-flex align-items-center gap-2 px-3 py-1 shadow-sm" id="btnInactivar" disabled onclick="handleInactivar()" title="Inactivar masivamente los registros seleccionados"><i data-lucide="power" style="width: 14px;"></i> Inactivar</button>
+                             <button class="btn-cancel-mre shadow-sm px-3 py-1" id="btnCancelDeselect" disabled onclick="deselectAll()" title="Limpiar selección actual">Cancelar</button>
                         </div>
                         <div style="width:1px; height:24px; background:#E2E8F0;"></div>
                         <div class="d-flex align-items-center gap-1">
-                            <button class="btn-pagination shadow-sm" id="btnPageFirst" onclick="changePage('first')"><i data-lucide="chevrons-left" style="width: 16px;"></i></button>
-                            <button class="btn-pagination shadow-sm" id="btnPagePrev" onclick="changePage('prev')"><i data-lucide="chevron-left" style="width: 16px;"></i></button>
+                            <button class="btn-pagination shadow-sm" id="btnPageFirst" onclick="changePage('first')" title="Primera página"><i data-lucide="chevrons-left" style="width: 16px;"></i></button>
+                            <button class="btn-pagination shadow-sm" id="btnPagePrev" onclick="changePage('prev')" title="Página anterior"><i data-lucide="chevron-left" style="width: 16px;"></i></button>
                             <span class="page-indicator" id="pageIndicator">Pág 1</span>
-                            <button class="btn-pagination shadow-sm" id="btnPageNext" onclick="changePage('next')"><i data-lucide="chevron-right" style="width: 16px;"></i></button>
-                            <button class="btn-pagination shadow-sm" id="btnPageLast" onclick="changePage('last')"><i data-lucide="chevrons-right" style="width: 16px;"></i></button>
+                            <button class="btn-pagination shadow-sm" id="btnPageNext" onclick="changePage('next')" title="Página siguiente"><i data-lucide="chevron-right" style="width: 16px;"></i></button>
+                            <button class="btn-pagination shadow-sm" id="btnPageLast" onclick="changePage('last')" title="Última página"><i data-lucide="chevrons-right" style="width: 16px;"></i></button>
                         </div>
                     </div>
                 </div>
@@ -474,8 +473,8 @@
             </div>
             <div id="deleteItemInfo" class="bg-light p-3 rounded-4 border mb-4 text-center fw-bold text-navy small"></div>
             <div class="d-flex justify-content-center gap-3 mt-4 pt-3 border-top">
-                <button type="button" class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalDeleteConfirm')">No, mantener</button>
-                <button type="button" class="btn-main bg-danger border-danger px-4" onclick="confirmLogicalDelete()">Sí, eliminar registro</button>
+                <button type="button" class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalDeleteConfirm')" title="Cancelar operación y volver">No, mantener</button>
+                <button type="button" class="btn-main bg-danger border-danger px-4" onclick="confirmLogicalDelete()" title="Confirmar eliminación permanente del registro">Sí, eliminar registro</button>
             </div>
         </div>
     </div>
@@ -486,23 +485,29 @@
             <div class="section-title" id="modalTipoTitle">Gestionar Tipo de Referencia</div>
             <form id="formTipo">
                 <div class="row g-4 mb-4">
-                    <div class="col-md-8"><label class="form-label">Identificador del Dominio <span class="text-danger">*</span></label><input type="text" id="tipoIdInput" class="form-control-mre" required></div>
+                    <div class="col-md-8">
+                        <label class="form-label">Identificador del Dominio <span class="text-danger">*</span></label>
+                        <input type="text" id="tipoIdInput" class="form-control-mre" placeholder="Ej. TIPO_DOCUMENTO" title="Código único alfanumérico para el dominio" required>
+                    </div>
                     <div class="col-md-4" id="tipoStatusFieldContainer">
                         <label class="form-label">Estado <span class="text-danger">*</span></label>
-                        <select id="tipoStatusInput" class="form-control-mre">
+                        <select id="tipoStatusInput" class="form-control-mre" title="Vigencia administrativa del dominio">
                             <option value="ACTI">Activo</option>
                             <option value="INAC">Inactivo</option>
                         </select>
                     </div>
-                    <div class="col-12"><label class="form-label">Descripción General <span class="text-danger">*</span></label><textarea id="tipoDescInput" class="form-control-mre" rows="3" required></textarea></div>
+                    <div class="col-12">
+                        <label class="form-label">Descripción General <span class="text-danger">*</span></label>
+                        <textarea id="tipoDescInput" class="form-control-mre" rows="3" placeholder="Breve descripción del dominio y su propósito en el sistema..." title="Explicación detallada de la categoría de referencias" required></textarea>
+                    </div>
                 </div>
                 <div class="audit-history-container d-none" id="auditHistorySectionTipo">
                     <div class="section-title">Historial de Auditoría</div>
                     <div class="table-responsive"><table class="audit-grid-table"><thead><tr><th>Fecha</th><th>Acción</th><th>Usuario</th><th>Descripción</th></tr></thead><tbody id="auditHistoryBodyTipo"></tbody></table></div>
                 </div>
                 <div class="mt-4 pt-4 border-top d-flex justify-content-end gap-3">
-                    <button type="button" class="btn btn-light rounded-pill px-5 fw-bold shadow-sm" onclick="closeModal('modalTipo')">Cerrar</button>
-                    <button type="submit" id="btnSaveTipo" class="btn-main px-5 shadow">Guardar Cambios</button>
+                    <button type="button" class="btn btn-light rounded-pill px-5 fw-bold shadow-sm" onclick="closeModal('modalTipo')" title="Cerrar ventana sin guardar cambios">Cerrar</button>
+                    <button type="submit" id="btnSaveTipo" class="btn-main px-5 shadow" title="Guardar modificaciones del tipo de referencia">Guardar Cambios</button>
                 </div>
             </form>
         </div>
@@ -516,19 +521,31 @@
                 <div class="row g-4 mb-4">
                     <div class="col-md-8">
                         <label class="form-label">Descripción <span class="text-danger">*</span></label>
-                        <input type="text" id="refDesc" class="form-control-mre shadow-sm" required>
+                        <input type="text" id="refDesc" class="form-control-mre shadow-sm" placeholder="Nombre del valor específico" title="Nombre legible para el usuario" required>
                     </div>
                     <div class="col-md-4" id="refStatusFieldContainer">
                         <label class="form-label">Estado <span class="text-danger">*</span></label>
-                        <select id="refStatusInput" class="form-control-mre">
+                        <select id="refStatusInput" class="form-control-mre" title="Define si el valor es seleccionable en trámites">
                             <option value="ACTI">Activo</option>
                             <option value="INAC">Inactivo</option>
                         </select>
                     </div>
-                    <div class="col-md-4"><label class="form-label">Valor Alfanumérico</label><input type="text" id="refAlf" class="form-control-mre shadow-sm"></div>
-                    <div class="col-md-4"><label class="form-label">Valor Numérico</label><input type="number" id="refNum" class="form-control-mre shadow-sm"></div>
-                    <div class="col-md-4"><label class="form-label">Valor Fecha</label><input type="date" id="refFec" class="form-control-mre shadow-sm"></div>
-                    <div class="col-12"><label class="form-label">Descripción Larga</label><textarea id="refDescLarga" class="form-control-mre shadow-sm" rows="3"></textarea></div>
+                    <div class="col-md-4">
+                        <label class="form-label">Valor Alfanumérico</label>
+                        <input type="text" id="refAlf" class="form-control-mre shadow-sm" placeholder="Código alfanumérico asociado" title="Código técnico (ej. ISO para países)">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Valor Numérico</label>
+                        <input type="number" id="refNum" class="form-control-mre shadow-sm" placeholder="Código numérico asociado" title="Valor entero para clasificaciones técnicas">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Valor Fecha</label>
+                        <input type="date" id="refFec" class="form-control-mre shadow-sm" title="Fecha opcional asociada al registro">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Descripción Larga</label>
+                        <textarea id="refDescLarga" class="form-control-mre shadow-sm" rows="3" placeholder="Observaciones detalladas sobre este valor de referencia..." title="Información técnica u operativa adicional"></textarea>
+                    </div>
                 </div>
                 <div class="audit-history-container d-none" id="auditHistorySection">
                     <div class="section-title">Historial de Auditoría</div>
@@ -536,15 +553,30 @@
                 </div>
                 <div class="mt-4 pt-4 border-top d-flex justify-content-end align-items-center">
                     <div class="d-flex gap-3">
-                        <button type="button" class="btn btn-light rounded-pill px-5 fw-bold shadow-sm" onclick="closeModal('modalRef')">Cerrar</button>
-                        <button type="submit" id="btnSaveRef" class="btn-main px-5 shadow">Guardar Cambios</button>
+                        <button type="button" class="btn btn-light rounded-pill px-5 fw-bold shadow-sm" onclick="closeModal('modalRef')" title="Cerrar ventana sin guardar">Cerrar</button>
+                        <button type="submit" id="btnSaveRef" class="btn-main px-5 shadow" title="Actualizar datos de la referencia">Guardar Cambios</button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- OTROS MODALES DE ACCIÓN -->
+    <!-- MODAL CONFIRM INACTIVAR MASIVO -->
+    <div class="mre-modal-overlay" id="modalConfirmInactivate" role="dialog" aria-modal="true">
+        <div class="mre-modal animate-fade" style="max-width: 450px;">
+            <div class="text-center mb-4">
+                <div class="bg-danger bg-opacity-10 text-danger d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 64px; height: 64px;"><i data-lucide="alert-triangle"></i></div>
+                <h5 class="fw-black text-navy mb-2">Confirmar Inactivación</h5>
+                <p class="text-muted small">¿Está seguro de inactivar los siguientes registros?</p>
+            </div>
+            <div class="selected-items-confirm-list" id="selectedItemsList"></div>
+            <div class="d-flex justify-content-end gap-2 mt-4">
+                <button type="button" class="btn btn-light rounded-pill px-4 fw-bold shadow-sm" onclick="closeModal('modalConfirmInactivate')" title="Cancelar acción masiva">Cancelar</button>
+                <button type="button" class="btn-main bg-danger border-0 px-4" onclick="executeInactivation()" title="Proceder con la inactivación de los elementos listados">Sí, inactivar</button>
+            </div>
+        </div>
+    </div>
+
     <div class="mre-modal-overlay" id="modalConfirmTipoAction" role="dialog" aria-modal="true">
         <div class="mre-modal animate-fade" style="max-width: 450px;">
             <div class="text-center mb-4">
@@ -559,24 +591,12 @@
         </div>
     </div>
 
-    <div class="mre-modal-overlay" id="modalConfirmInactivate" role="dialog" aria-modal="true">
-        <div class="mre-modal animate-fade" style="max-width: 450px;">
-            <div class="text-center mb-4">
-                <div class="bg-danger bg-opacity-10 text-danger d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 64px; height: 64px;"><i data-lucide="alert-triangle"></i></div>
-                <h5 class="fw-black text-navy mb-2">Confirmar Inactivación</h5>
-                <p class="text-muted small">¿Está seguro de inactivar los siguientes registros?</p>
-            </div>
-            <div class="selected-items-confirm-list" id="selectedItemsList"></div>
-            <div class="d-flex justify-content-end gap-2 mt-4">
-                <button type="button" class="btn btn-light rounded-pill px-4 fw-bold shadow-sm" onclick="closeModal('modalConfirmInactivate')">Cancelar</button>
-                <button type="button" class="btn-main bg-danger border-0 px-4 shadow" onclick="executeInactivation()">Sí, inactivar</button>
-            </div>
-        </div>
-    </div>
-
+    <!-- FOOTER -->
     <footer class="mre-footer animate-fade">
         <div class="footer-left fw-600">&copy; 2026 Ministerio de Relaciones Exteriores - Dirección de Informática</div>
-        <div class="footer-right"><a href="#" class="btn-help shadow-sm"><i data-lucide="help-circle" style="width: 20px; height: 20px;"></i>¿Necesitas ayuda?</a></div>
+        <div class="footer-right">
+            <a href="#" class="btn-help shadow-sm" title="Abrir centro de ayuda y soporte técnico"><i data-lucide="help-circle" style="width: 20px; height: 20px;"></i>¿Necesitas ayuda?</a>
+        </div>
     </footer>
 
     <script>
@@ -682,10 +702,10 @@
                     <td class="align-middle"><span class="badge bg-light text-dark border px-3">${r.val_alf || '-'}</span></td>
                     <td class="text-end align-middle action-cell">
                         <div class="action-wrapper">
-                            <button class="btn-action-icon btn-action-view shadow-sm" onclick="openModal('modalRef', 'view', ${r.id})" title="Visualizar"><i data-lucide="eye" style="width:14px"></i></button>
-                            <button class="btn-action-icon btn-action-edit shadow-sm" onclick="openModal('modalRef', 'edit', ${r.id})" title="Editar" ${r.estado === 'INAC' ? 'disabled' : ''}><i data-lucide="edit-3" style="width:14px"></i></button>
+                            <button class="btn-action-icon btn-action-view shadow-sm" onclick="openModal('modalRef', 'view', ${r.id})" title="Visualizar detalles del registro"><i data-lucide="eye" style="width:14px"></i></button>
+                            <button class="btn-action-icon btn-action-edit shadow-sm" onclick="openModal('modalRef', 'edit', ${r.id})" title="Editar parámetros del registro" ${r.estado === 'INAC' ? 'disabled' : ''}><i data-lucide="edit-3" style="width:14px"></i></button>
                             ${ !r.hasLinkedRecords ? `
-                            <button class="btn-action-icon btn-action-delete shadow-sm" onclick="handleDeleteClick(${r.id}, 'REF')" title="Eliminar">
+                            <button class="btn-action-icon btn-action-delete shadow-sm" onclick="handleDeleteClick(${r.id}, 'REF')" title="Eliminar registro (Solo si no tiene dependencias)">
                                 <i data-lucide="trash-2" style="width:14px"></i>
                             </button>` : `<div style="width: 32px;"></div>` }
                         </div>
@@ -735,7 +755,6 @@
             pendingAction = action;
             if (action === 'DELETE') { handleDeleteClick(selectedTipoId, 'TIPO'); return; }
             
-            const iconContainer = document.getElementById('tipoActionIconContainer');
             const title = document.getElementById('tipoActionTitle');
             const message = document.getElementById('tipoActionMessage');
             const btnConfirm = document.getElementById('btnExecuteTipoAction');
@@ -751,9 +770,7 @@
 
         function executeTipoAction() {
             const t = mockTipos.find(x => x.id === selectedTipoId);
-            if (t && pendingAction === 'INACTIVATE') {
-                t.estado = 'INAC';
-            }
+            if (t && pendingAction === 'INACTIVATE') t.estado = 'INAC';
             closeModal('modalConfirmTipoAction');
             handleTipoChange(selectedTipoId);
         }
@@ -789,7 +806,7 @@
                 const auditSection = document.getElementById('auditHistorySection');
                 if (mode === 'view') {
                     auditSection.classList.remove('d-none');
-                    document.getElementById('auditHistoryBody').innerHTML = '<tr><td>20/01/2026 14:20</td><td>UPDATE</td><td>cgonzalez</td><td>Corrección ortográfica</td></tr>';
+                    document.getElementById('auditHistoryBody').innerHTML = '<tr><td>20/01/2026 14:20</td><td>UPDATE</td><td>cgonzalez</td><td>Ajuste técnico de valores</td></tr>';
                 } else { auditSection.classList.add('d-none'); }
                 enableForm(id, mode !== 'view');
             }
