@@ -15,7 +15,8 @@
             --mre-blue-light: #0038A8;
             --mre-red: #D52B1E;
             --mre-green: #10B981;
-            --soft-bg: #f8fafc; 
+            --mre-amber: #F59E0B;
+            --soft-bg: #f0f4f8; 
             --border-color: #E2E8F0;
             --input-bg: #F8FAFC;
             --text-main: #1E293B;
@@ -28,12 +29,30 @@
 
         html { font-size: calc(var(--base-font-size) * var(--font-scale)); }
 
+        /* --- ESTILO TOOLTIP PERSONALIZADO --- */
+        .tooltip {
+            --bs-tooltip-bg: #ffffff;
+            --bs-tooltip-color: #000000;
+            --bs-tooltip-opacity: 1;
+            --bs-tooltip-padding-y: 0.5rem;
+            --bs-tooltip-padding-x: 1rem;
+            --bs-tooltip-border-radius: 8px;
+            --bs-tooltip-font-size: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .tooltip-inner { border: 1px solid var(--border-color); font-weight: 600; text-align: center; }
+
+        /* --- MODOS DE ACCESIBILIDAD --- */
+        body.high-contrast {
+            --mre-blue: #000000; --mre-blue-light: #000000; --mre-red: #D50000;
+            --soft-bg: #FFFFFF; --border-color: #000000; --input-bg: #FFFFFF;
+            --text-main: #000000; --text-muted: #000000; --card-shadow: none;
+        }
         body.grayscale-mode { filter: grayscale(100%); }
 
         body { 
-            font-family: 'Inter', sans-serif; 
-            margin: 0; background-color: var(--soft-bg); color: var(--text-main); 
-            overflow: hidden; display: flex; flex-direction: column; height: 100vh;
+            font-family: 'Inter', sans-serif; margin: 0; background-color: var(--soft-bg); 
+            color: var(--text-main); overflow: hidden; display: flex; flex-direction: column; height: 100vh;
         }
 
         .elegant-background { 
@@ -47,15 +66,11 @@
         .portal-header { 
             display: flex; justify-content: space-between; align-items: center; background: white; 
             padding: 1.25rem 2.5rem; box-shadow: 0 4px 10px -1px rgba(0,0,0,0.05); 
-            border-bottom: 2px solid var(--border-color); position: relative; z-index: 2000;
+            border-bottom: 1px solid var(--border-color); position: relative; z-index: 2000; flex-shrink: 0;
         }
 
-        .mobile-toggle-btn {
-            background: transparent; border: none; color: var(--mre-blue); cursor: pointer;
-            padding: 4px; display: none; border-radius: 8px; transition: var(--transition);
-        }
-
-        /* ACCESIBILIDAD */
+        .mobile-toggle-btn { background: transparent; border: none; color: var(--mre-blue); cursor: pointer; padding: 4px; display: none; border-radius: 8px; transition: var(--transition); }
+        
         .a11y-container { position: relative; }
         .btn-a11y-trigger {
             background: #F8FAFC; border: 1px solid var(--border-color); color: var(--mre-blue);
@@ -66,21 +81,22 @@
             position: absolute; top: calc(100% + 10px); right: 0; 
             background: white; border-radius: 16px; width: 280px;
             box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.15); border: 1px solid var(--border-color);
-            display: none; z-index: 3000; padding: 1.5rem; animation: fadeIn 0.2s ease-out;
+            display: none; z-index: 3000; padding: 1rem; animation: fadeIn 0.2s ease-out;
         }
         .a11y-dropdown-menu.show { display: block; }
-        .a11y-section-title { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #94A3B8; margin-bottom: 0.8rem; letter-spacing: 0.5px; }
-        .text-resize-controls { display: flex; justify-content: space-between; align-items: center; background: #F8FAFC; border-radius: 10px; padding: 4px; border: 1px solid #E2E8F0; margin-bottom: 1rem; }
-        .btn-resize { width: 32px; height: 32px; border: none; background: white; border-radius: 8px; color: var(--mre-blue); display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: var(--transition); }
-        .font-size-display { font-size: 0.85rem; font-weight: 700; color: #475569; }
-        .toggle-switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+        .a11y-section-title { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem; }
+        .text-resize-controls { display: flex; align-items: center; justify-content: space-between; background: #F8FAFC; padding: 8px; border-radius: 12px; border: 1px solid var(--border-color); }
+        .btn-resize { background: white; border: 1px solid var(--border-color); border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .font-size-display { font-weight: 800; color: var(--mre-blue); font-size: 0.85rem; }
+        .switch-control { display: flex; align-items: center; justify-content: space-between; padding: 4px 0; }
+        .switch-label { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; inset: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--mre-blue); }
-        input:checked + .slider:before { transform: translateX(18px); }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #CBD5E1; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--mre-blue-light); }
+        input:checked + .slider:before { transform: translateX(20px); }
 
-        /* PERFIL */
         .dots-menu-trigger {
             width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
             border-radius: 12px; cursor: pointer; transition: var(--transition); color: var(--text-muted);
@@ -89,14 +105,11 @@
         .dropdown-menu-mre { 
             position: absolute; top: calc(100% + 10px); right: 0; background: white; border-radius: 12px; 
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); border: 1px solid var(--border-color); 
-            width: 200px; display: none; z-index: 3000; overflow: hidden; animation: fadeIn 0.2s ease-out;
+            width: 180px; display: none; z-index: 3000; overflow: hidden; animation: fadeIn 0.2s ease-out;
         }
         .dropdown-menu-mre.show { display: block; }
         .dropdown-header-info { padding: 16px; background: #F8FAFC; border-bottom: 1px solid var(--border-color); }
-        .dropdown-item-mre {
-            padding: 12px 16px; border: none; background: none; width: 100%; text-align: left;
-            font-size: 0.9rem; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 10px;
-        }
+        .dropdown-item-mre { padding: 12px 16px; border: none; background: none; width: 100%; text-align: left; font-size: 0.9rem; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 10px; }
         .dropdown-item-mre:hover { background: #F8FAFC; color: var(--mre-red); }
 
         /* --- LAYOUT PRINCIPAL --- */
@@ -105,8 +118,7 @@
         .main-sidebar {
             width: 280px; background: white; border-right: 1px solid var(--border-color);
             display: flex; flex-direction: column; z-index: 100; box-shadow: 4px 0 10px rgba(0,0,0,0.02);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow-x: hidden; flex-shrink: 0;
+            transition: var(--transition); overflow-x: hidden; flex-shrink: 0;
         }
 
         .sidebar-overlay {
@@ -121,34 +133,38 @@
             display: flex; align-items: center; gap: 12px; padding: 0.85rem 1rem;
             color: var(--text-muted); text-decoration: none; border-radius: 12px;
             font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; transition: var(--transition);
+            white-space: nowrap;
         }
+        .nav-link-mre:hover { background: #F1F5F9; color: var(--mre-blue); }
         .nav-link-mre.active { background: #f0f7ff; color: var(--mre-blue-light); box-shadow: 0 4px 6px -1px rgba(0, 40, 85, 0.05); }
 
-        .mre-sidebar-popup {
-            position: fixed; background: #1e293b; color: #f1f5f9; padding: 12px 16px;
-            border-radius: 12px; font-size: 0.75rem; font-weight: 600;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); z-index: 6000;
-            display: none; opacity: 0; transition: opacity 0.2s ease-out; max-width: 240px;
-        }
-        .mre-sidebar-popup.show { display: block; opacity: 1; }
-
-        .content-area { flex: 1; padding: 2rem 3.5rem; overflow-y: auto; position: relative; }
+        .content-area { flex: 1; padding: 2rem 3rem; overflow-y: auto; position: relative; }
         
+        /* --- GRILLA --- */
         .grid-frame { 
             background: white; border-radius: 20px; box-shadow: var(--card-shadow); 
             border: 1px solid #E2E8F0; position: relative; overflow: hidden;
-            display: flex; flex-direction: column; margin-bottom: 2rem;
-            z-index: 5;
+            display: flex; flex-direction: column; margin-bottom: 2rem; z-index: 5;
         }
-        .grid-frame::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px; background: linear-gradient(to right, var(--mre-red), var(--mre-blue)); }
+        .grid-frame::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(to right, var(--mre-red), var(--mre-blue)); }
         
-        .grid-header-frame { 
-            background-color: #F1F5F9; padding: 1.2rem 1.8rem; border-bottom: 1px solid #E2E8F0; 
-            display: flex; justify-content: space-between; align-items: center; 
-        }
+        .grid-header-frame { background-color: #F1F5F9; padding: 1rem 1.5rem; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; }
 
-        .action-cell { min-width: 140px; }
-        .action-wrapper { display: flex; justify-content: flex-end; gap: 6px; width: 100%; }
+        .mre-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 0.85rem 1.5rem; border-bottom: 2px solid #E2E8F0; background: #fafbfc; white-space: nowrap; }
+        .mre-table td { padding: 0.85rem 1.5rem; font-size: 0.8rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
+
+        .btn-main { background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); color: #ffffff; border: none; border-radius: 12px; padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.85rem; transition: var(--transition); }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 40, 85, 0.2); color: white; }
+
+        /* BOTONES DE HERRAMIENTAS Y ACCIONES (NUEVOS ESTILOS) */
+        .btn-tool-generic {
+            background: #FFFFFF; color: var(--mre-blue); border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem; border-radius: 10px; font-size: 0.75rem; font-weight: 700;
+            display: flex; align-items: center; gap: 8px; transition: var(--transition); cursor: pointer; margin-right: 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+        .btn-tool-generic:hover { background: #F1F5F9; border-color: var(--mre-blue); transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 
         .btn-action-icon {
             width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;
@@ -156,37 +172,66 @@
             transition: var(--transition); cursor: pointer; flex-shrink: 0;
         }
         .btn-action-icon:hover { background: #F1F5F9; color: var(--mre-blue); border-color: var(--mre-blue); }
-
-        .btn-tool-generic {
-            background: #FFFFFF; color: var(--mre-blue); border: 1px solid var(--border-color);
-            padding: 0.5rem 1rem; border-radius: 10px; font-size: 0.75rem; font-weight: 700;
-            display: flex; align-items: center; gap: 8px; transition: var(--transition);
+        
+        .btn-outline-mre-danger { 
+            border: 2px solid var(--mre-red); color: var(--mre-red); font-weight: 800; border-radius: 12px;
+            padding: 0.5rem 1.2rem; font-size: 0.75rem; background: transparent; transition: var(--transition);
+            display: flex; align-items: center; gap: 8px;
         }
+        .btn-outline-mre-danger:hover:not(:disabled) { background: var(--mre-red); color: white; }
+        .btn-outline-mre-danger:disabled { opacity: 0.4; cursor: not-allowed; }
 
-        .mre-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-        .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 1.1rem 1.5rem; border-bottom: 2px solid #E2E8F0; background: #fafbfc; white-space: nowrap; }
-        .mre-table td { padding: 1.1rem 1.5rem; font-size: 0.9rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
-        .row-inactive td { color: #94A3B8; background-color: #F8FAFC; }
+        .btn-outline-mre-secondary {
+            border: 2px solid #94A3B8; color: #475569; font-weight: 800; border-radius: 12px;
+            padding: 0.5rem 1.2rem; font-size: 0.75rem; background: transparent; transition: var(--transition);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .btn-outline-mre-secondary:hover { background: #94A3B8; color: white; }
 
-        .grid-footer { padding: 1rem 1.5rem; background-color: #F8FAFC; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        /* --- FOOTER & PAGINADO --- */
+        .grid-footer { padding: 1.25rem 1.5rem; background-color: #F8FAFC; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .btn-pagination { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #E2E8F0; border-radius: 8px; color: #64748B; cursor: pointer; transition: var(--transition); }
+        .btn-pagination:hover:not(:disabled) { background: var(--mre-blue); color: white; border-color: var(--mre-blue); }
+        .btn-pagination:disabled { opacity: 0.5; cursor: not-allowed; background: #F1F5F9; }
         .page-indicator { font-size: 0.85rem; font-weight: 700; color: var(--mre-blue); padding: 0 8px; }
 
-        .btn-main { background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); color: #ffffff; border: none; border-radius: 12px; padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.85rem; transition: var(--transition); }
+        /* --- MODALES --- */
+        .mre-modal-overlay { position: fixed; inset: 0; background: rgba(0, 40, 85, 0.4); backdrop-filter: blur(4px); z-index: 4000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .mre-modal { background: white; border-radius: 24px; max-width: 900px; width: 100%; padding: 2.5rem; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.2); max-height: 95vh; overflow-y: auto; }
+        
+        .section-title { font-size: 0.9rem; font-weight: 900; color: var(--mre-blue); text-transform: uppercase; display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem; }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: #E2E8F0; }
 
+        .form-label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem; display: block; }
+        .form-control-mre { background-color: var(--input-bg); border: 1px solid #E2E8F0; border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.9rem; width: 100%; transition: var(--transition); }
+        .form-control-mre:focus { outline: none; border-color: var(--mre-blue-light); box-shadow: 0 0 0 3px rgba(0, 56, 168, 0.1); }
+        .form-control-mre:disabled { background-color: #EDF2F7; color: #64748B; }
+
+        /* --- AUDITORÍA (ESTILO ACTUALIZADO) --- */
+        .audit-grid-table { width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; margin-top: 1rem; }
+        .audit-grid-table th { background: #F8FAFC; color: #64748B; font-size: 0.65rem; font-weight: 800; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-color); text-transform: uppercase; }
+        .audit-grid-table td { padding: 0.75rem 1rem; border-bottom: 1px solid #F1F5F9; font-size: 0.75rem; }
+        .badge-audit { padding: 3px 8px; border-radius: 5px; font-size: 0.65rem; font-weight: 800; }
+        .tag-create { background: #DCFCE7; color: #15803D; }
+        .tag-update { background: #E0F2FE; color: #0369A1; }
+
+        .master-selector-card { 
+            background: white; border-radius: 20px; padding: 1.5rem; border: 1px solid var(--border-color); 
+            box-shadow: var(--card-shadow); margin-bottom: 2rem; position: relative; z-index: 100;
+        }
+
+        .mre-footer { background: white; padding: 1rem 2.5rem; border-top: 1px solid var(--border-color); font-size: 0.75rem; color: #64748B; display: flex; justify-content: space-between; margin-top: auto; }
+        .btn-help { background: white; border: 1px solid var(--mre-blue); color: var(--mre-blue); padding: 0.6rem 1.2rem; border-radius: 50px; font-size: 0.75rem; font-weight: 800; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: var(--transition); }
+        .btn-help:hover { background: var(--mre-blue); color: white; }
+
+        .selected-items-confirm-list { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem; margin: 1.5rem 0; max-height: 150px; overflow-y: auto; }
+        .mre-checkbox { width: 20px; height: 20px; cursor: pointer; border: 2px solid var(--border-color); border-radius: 4px; transition: var(--transition); }
+        .mre-checkbox:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        /* CUSTOM SELECT */
         .custom-select-container { position: relative; width: 100%; }
-        .custom-select-trigger {
-            display: flex; justify-content: space-between; align-items: center;
-            background-color: var(--input-bg); border: 1px solid #E2E8F0; border-radius: 10px;
-            padding: 0.75rem 1rem; cursor: pointer; font-size: 0.95rem; transition: var(--transition);
-            color: var(--text-main); font-weight: 600;
-        }
-        .custom-select-dropdown {
-            position: absolute; top: calc(100% + 5px); left: 0; right: 0;
-            background: white; border: 1px solid #E2E8F0; border-radius: 16px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.15); z-index: 3000;
-            display: none; flex-direction: column; overflow: hidden;
-        }
+        .custom-select-trigger { display: flex; justify-content: space-between; align-items: center; background-color: var(--input-bg); border: 1px solid #E2E8F0; border-radius: 10px; padding: 0.75rem 1rem; cursor: pointer; font-size: 0.95rem; transition: var(--transition); color: var(--text-main); font-weight: 600; }
+        .custom-select-dropdown { position: absolute; top: calc(100% + 5px); left: 0; right: 0; background: white; border: 1px solid #E2E8F0; border-radius: 16px; box-shadow: 0 15px 30px rgba(0,0,0,0.15); z-index: 3000; display: none; flex-direction: column; overflow: hidden; }
         .custom-select-dropdown.show { display: flex; }
         .custom-select-search-wrapper { padding: 12px; border-bottom: 1px solid #F1F5F9; background: #F8FAFC; }
         .custom-select-search-input { width: 100%; border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px 12px 10px 40px; font-size: 0.9rem; outline: none; background: white; }
@@ -195,26 +240,7 @@
         .custom-select-option:hover { background-color: #f1f5f9; color: var(--mre-blue-light); }
         .custom-select-option.selected { background-color: #f0f7ff; color: var(--mre-blue-light); border-left: 4px solid var(--mre-blue-light); padding-left: 16px; }
 
-        .mre-modal-overlay { position: fixed; inset: 0; background: rgba(0, 40, 85, 0.4); backdrop-filter: blur(4px); z-index: 4000; display: none; align-items: center; justify-content: center; padding: 20px; }
-        .mre-modal { background: white; border-radius: 28px; max-width: 850px; width: 100%; padding: 2.5rem; position: relative; box-shadow: 0 30px 60px -12px rgba(0,0,0,0.25); max-height: 95vh; overflow-y: auto; }
-        
-        .section-title { font-size: 0.95rem; font-weight: 900; color: var(--mre-blue); text-transform: uppercase; display: flex; align-items: center; gap: 10px; margin-bottom: 1.8rem; }
-        .section-title::after { content: ''; flex: 1; height: 1px; background: #E2E8F0; }
-
-        .form-label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.6rem; display: block; letter-spacing: 0.5px; }
-        .form-control-mre { background-color: var(--input-bg); border: 1px solid #E2E8F0; border-radius: 12px; padding: 0.85rem 1.1rem; font-size: 0.95rem; width: 100%; transition: var(--transition); color: var(--text-main); font-weight: 500; }
-
-        .audit-grid-table { width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid var(--border-color); border-radius: 16px; overflow: hidden; margin-top: 1rem; background: #fafbfc; }
-        .audit-grid-table th { background: #F1F5F9; color: #64748B; font-size: 0.7rem; font-weight: 800; padding: 0.8rem 1.2rem; border-bottom: 1px solid var(--border-color); text-transform: uppercase; }
-        .audit-grid-table td { padding: 0.8rem 1.2rem; border-bottom: 1px solid #F1F5F9; font-size: 0.85rem; color: #475569; }
-
-        .mre-footer { background: white; border-top: 1px solid #E2E8F0; padding: 1.2rem 2.5rem; display: flex; justify-content: space-between; align-items: center; z-index: 100; margin-top: auto; }
-        .btn-help { background: white; border: 1px solid var(--mre-blue); color: var(--mre-blue); padding: 0.6rem 1.2rem; border-radius: 50px; font-size: 0.75rem; font-weight: 800; text-decoration: none; display: flex; align-items: center; gap: 8px; }
-
-        .master-selector-card { background: white; border-radius: 20px; padding: 1.5rem; border: 1px solid var(--border-color); box-shadow: var(--card-shadow); margin-bottom: 2rem; position: relative; z-index: 100; }
-
-        .mre-checkbox { width: 22px; height: 22px; cursor: pointer; border: 2px solid var(--border-color); border-radius: 6px; transition: var(--transition); }
-        .mre-checkbox:disabled { opacity: 0.3; cursor: not-allowed; }
+        .search-input-integrated { padding-left: 42px !important; border-radius: 12px !important; border: 1px solid #E2E8F0 !important; background: #F8FAFC !important; font-size: 0.9rem !important; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
@@ -228,7 +254,7 @@
 
     <header class="portal-header animate-fade">
         <div class="d-flex align-items-center gap-3">
-            <button class="mobile-toggle-btn" onclick="toggleSidebar()" aria-label="Abrir menú de navegación">
+            <button class="mobile-toggle-btn" onclick="toggleSidebar()" aria-label="Abrir menú de navegación" data-bs-toggle="tooltip" title="Abrir Menú Lateral">
                 <i data-lucide="menu" style="width: 26px;"></i>
             </button>
             <div class="bg-white p-2 rounded-3 border d-none d-sm-block" style="box-shadow: 0 4px 8px rgba(0,0,0,0.08)">
@@ -236,7 +262,7 @@
             </div>
             <div>
                 <h6 class="fw-black mb-0" style="color: var(--mre-blue); font-size: 1.4rem; letter-spacing: -0.5px;">SIA-PY</h6>
-                <p class="small mb-0 fw-800 uppercase" style="font-size: 1rem; letter-spacing: 0.8px; color: #000 !important;">SISTEMA INTEGRADO DE APOSTILLA ELECTRÓNICA DEL PARAGUAY</p>
+                <p class="small mb-0 fw-bold uppercase" style="font-size: 0.75rem; letter-spacing: 1.5px; color: #000 !important;">SISTEMA INTEGRADO DE APOSTILLA ELECTRÓNICA DEL PARAGUAY</p>
             </div>
         </div>
         
@@ -247,13 +273,14 @@
                     <span>Accesibilidad</span>
                     <i data-lucide="chevron-down" class="lucide-chevron-down" style="width: 14px; margin-left: 4px;"></i>
                 </button>
-                <div class="a11y-dropdown-menu" id="a11yMenu">
+                <div class="a11y-dropdown-menu" id="a11yMenu" onclick="event.stopPropagation()">
                     <div class="a11y-section-title">Tamaño de Texto</div>
                     <div class="text-resize-controls">
                         <button class="btn-resize" onclick="changeFontSize(-0.1)" title="Reducir tamaño de fuente"><i data-lucide="minus" style="width: 16px;"></i></button>
                         <span class="font-size-display" id="fontSizeDisplay">100%</span>
                         <button class="btn-resize" onclick="changeFontSize(0.1)" title="Aumentar tamaño de fuente"><i data-lucide="plus" style="width: 16px;"></i></button>
                     </div>
+                    <div class="a11y-section-title mt-3">Visualización</div>
                     <div class="switch-control">
                         <div class="switch-label"><i data-lucide="eye-off" style="width: 16px;"></i> Escala de Grises</div>
                         <label class="toggle-switch">
@@ -263,11 +290,12 @@
                     </div>
                 </div>
             </div>
+
             <div class="user-info-text text-end d-none d-md-block">
                 <div class="fw-800 text-navy" style="font-size: 0.95rem;">Carlos González</div>
                 <div class="text-muted small fw-bold">CI: 4.567.890</div>
             </div>
-            <div class="dots-menu-trigger shadow-sm" onclick="toggleUserMenu(event)">
+            <div class="dots-menu-trigger shadow-sm" onclick="toggleUserMenu(event)" title="Opciones de perfil de usuario">
                 <i data-lucide="user" style="width: 24px;"></i>
             </div>
             <div class="dropdown-menu-mre shadow" id="userMenu">
@@ -275,7 +303,7 @@
                     <p class="fw-800 text-navy mb-0" style="font-size: 0.95rem;">Carlos González</p>
                     <p class="text-muted small mb-0 fw-bold">CI: 4.567.890</p>
                 </div>
-                <button class="dropdown-item-mre text-danger fw-700" onclick="handleLogout()">
+                <button class="dropdown-item-mre text-danger fw-700" onclick="handleLogout()" title="Cerrar sesión de forma segura">
                     <i data-lucide="log-out" style="width: 14px;"></i> Cerrar Sesión
                 </button>
             </div>
@@ -284,37 +312,39 @@
 
     <div class="app-container">
         <aside class="main-sidebar animate-fade" id="mainSidebar">
-            <nav class="nav-menu">
-                <p class="px-3 mb-2 text-muted fw-bold uppercase" style="font-size: 0.75rem; letter-spacing: 1px;">Administración</p>
+            <nav class="nav-menu p-3">
+                <p class="px-3 mb-2 text-muted fw-bold uppercase" style="font-size: 0.7rem; letter-spacing: 1.2px;">Administración</p>
                 <a href="#" class="nav-link-mre active" title="Configuración de Referencias Maestras"><i data-lucide="settings-2" style="width: 18px;"></i> <span>Configuración de Referencias</span></a>
             </nav>
         </aside>
 
         <main class="content-area">
-            <header class="mb-4 animate-fade">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb mb-1" style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">
-                        <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted">Configuración</a></li>
-                        <li class="breadcrumb-item active text-primary">Referencias</li>
-                    </ol>
-                </nav>
-                <h2 class="fw-black text-navy m-0">Tipos de Referencias y Referencias</h2>
+            <header class="d-flex justify-content-between align-items-end mb-4 animate-fade">
+                <div>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-1" style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">
+                            <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted">Configuración</a></li>
+                            <li class="breadcrumb-item active text-primary">Referencias</li>
+                        </ol>
+                    </nav>
+                    <h2 class="fw-black text-navy m-0">Tipos de Referencias y Referencias</h2>
+                </div>
             </header>
 
             <div class="master-selector-card shadow-sm">
                 <div class="row align-items-end g-3">
                     <div class="col-md-5">
                         <label class="form-label">Seleccionar Tipo de Referencia (Dominio)</label>
-                        <div class="custom-select-container">
+                        <div class="custom-select-container" id="tipoSelectContainer">
                             <div class="custom-select-trigger" onclick="toggleTipoDropdown(event)" title="Click para expandir listado de dominios">
                                 <span id="tipoSelectLabel">Seleccione un dominio...</span>
                                 <i data-lucide="chevron-down" style="width: 16px;"></i>
                             </div>
-                            <div class="custom-select-dropdown shadow-lg" id="tipoSelectDropdown">
+                            <div class="custom-select-dropdown shadow-lg" id="tipoSelectDropdown" onclick="event.stopPropagation()">
                                 <div class="custom-select-search-wrapper">
                                     <div class="position-relative">
                                         <i data-lucide="search" class="position-absolute" style="left:12px; top:10px; color:#94A3B8; width:18px;"></i>
-                                        <input type="text" id="tipoSearchInput" class="custom-select-search-input" placeholder="Ej. Nacionalidad" onkeyup="filterTipoOptions(this.value)">
+                                        <input type="text" id="tipoSearchInput" class="custom-select-search-input" placeholder="Buscar entre dominios..." onkeyup="filterTipoOptions(this.value)">
                                     </div>
                                 </div>
                                 <div class="custom-select-options-list" id="tipoOptionsList"></div>
@@ -330,13 +360,13 @@
                             <div class="d-flex gap-2">
                                 <button class="btn-action-icon shadow-sm" onclick="viewSelectedTipo()" title="Visualizar detalles"><i data-lucide="eye"></i></button>
                                 <button class="btn-action-icon shadow-sm" onclick="editSelectedTipo()" title="Editar parámetros"><i data-lucide="edit-3"></i></button>
-                                <button class="btn-action-icon d-none shadow-sm" id="btnDeleteTipo" style="color: var(--mre-red); border-color: #FECDD3;" onclick="openTipoActionModal('DELETE')" title="Eliminar dominio"><i data-lucide="trash-2"></i></button>
+                                <button class="btn-action-icon d-none shadow-sm" id="btnDeleteTipo" style="color: var(--mre-red); border-color: #FECDD3;" onclick="openTipoActionModal('DELETE')" title="Eliminar dominio (Solo si está vacío)"><i data-lucide="trash-2"></i></button>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-3 text-end">
                         <button class="btn-main shadow px-4" onclick="openModal('modalTipo', 'add')" title="Crear un nuevo tipo de referencia maestro">
-                            <i data-lucide="plus" style="width: 16px;" class="me-1"></i> Nuevo Tipo
+                            <i data-lucide="plus" style="width: 16px;"></i> Nuevo Tipo
                         </button>
                     </div>
                 </div>
@@ -351,7 +381,7 @@
                         <button class="btn-tool-generic shadow-sm" title="PDF"><i data-lucide="file-text" style="width: 16px;"></i> PDF</button>
                         <div class="position-relative ms-2" style="max-width: 300px;">
                             <i data-lucide="search" class="position-absolute" style="left:14px; top:50%; transform:translateY(-50%); color:#94A3B8; width:16px;"></i>
-                            <input type="text" id="similaritySearchInput" class="form-control-mre ps-5 py-2 shadow-sm" placeholder="Ej. Paraguaya" onkeyup="handleSimilaritySearch()" title="Búsqueda por descripción">
+                            <input type="text" id="similaritySearchInput" class="search-input-integrated form-control-mre ps-5 py-2 shadow-sm" placeholder="Ej. Paraguaya" onkeyup="handleSimilaritySearch()" title="Búsqueda por descripción">
                         </div>
                         <button class="btn-main d-inline-flex align-items-center gap-2 shadow-sm ms-2" id="btnAddRef" disabled onclick="openModal('modalRef', 'add')" title="Agregar nuevo valor">
                             <i data-lucide="plus-circle" style="width: 16px;"></i> Agregar
@@ -379,59 +409,88 @@
 
                 <div class="grid-footer">
                     <div><span class="text-muted small fw-bold" id="paginationInfo">Mostrando 0 a 0 de 0 registros</span></div>
-                    <div class="d-flex align-items-center gap-1">
-                        <button class="btn-pagination shadow-sm" onclick="changePage('first')"><i data-lucide="chevrons-left" style="width: 16px;"></i></button>
-                        <button class="btn-pagination shadow-sm" onclick="changePage('prev')"><i data-lucide="chevron-left" style="width: 16px;"></i></button>
-                        <span class="page-indicator" id="pageIndicator">Pág 1</span>
-                        <button class="btn-pagination shadow-sm" onclick="changePage('next')"><i data-lucide="chevron-right" style="width: 16px;"></i></button>
-                        <button class="btn-pagination shadow-sm" onclick="changePage('last')"><i data-lucide="chevrons-right" style="width: 16px;"></i></button>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="d-flex gap-2">
+                             <button class="btn-outline-mre-danger" id="btnInactivar" disabled onclick="handleInactivar()" title="Inactivar masivamente los registros seleccionados"><i data-lucide="power" style="width: 14px;"></i> Inactivar</button>
+                             <button class="btn-outline-mre-secondary" id="btnCancelDeselect" disabled onclick="deselectAll()" title="Limpiar selección actual"><i data-lucide="x" style="width: 14px;"></i> Cancelar</button>
+                        </div>
+                        <div style="width:1px; height:24px; background:#E2E8F0;"></div>
+                        <div class="d-flex align-items-center gap-1">
+                            <button class="btn-pagination shadow-sm" id="btnPageFirst" onclick="changePage('first')" title="Primera página"><i data-lucide="chevrons-left" style="width: 16px;"></i></button>
+                            <button class="btn-pagination shadow-sm" id="btnPagePrev" onclick="changePage('prev')" title="Página anterior"><i data-lucide="chevron-left" style="width: 16px;"></i></button>
+                            <span class="page-indicator" id="pageIndicator">Pág 1</span>
+                            <button class="btn-pagination shadow-sm" id="btnPageNext" onclick="changePage('next')" title="Página siguiente"><i data-lucide="chevron-right" style="width: 16px;"></i></button>
+                            <button class="btn-pagination shadow-sm" id="btnPageLast" onclick="changePage('last')" title="Última página"><i data-lucide="chevrons-right" style="width: 16px;"></i></button>
+                        </div>
                     </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- MODALES -->
+    <!-- MODAL CONFIRM ELIMINACIÓN -->
     <div class="mre-modal-overlay" id="modalDeleteConfirm">
         <div class="mre-modal shadow-lg" style="max-width: 480px;">
             <div class="text-center mb-4">
-                <div class="bg-danger bg-opacity-10 text-danger d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 64px; height: 64px;"><i data-lucide="alert-triangle"></i></div>
+                <div class="bg-danger bg-opacity-10 text-danger d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 64px; height: 64px;">
+                    <i data-lucide="alert-triangle" style="width: 32px; height: 32px;"></i>
+                </div>
                 <h5 class="fw-800 text-navy mb-2">Confirmar Eliminación Lógica</h5>
                 <p class="text-muted small px-3">¿Está seguro que desea eliminar este registro? Esta acción marcará el elemento como eliminado y ya no estará disponible.</p>
             </div>
             <div id="deleteItemInfo" class="bg-light p-3 rounded-4 border mb-4 text-center fw-bold text-navy small"></div>
             <div class="d-flex justify-content-center gap-3 mt-4 pt-3 border-top">
-                <button type="button" class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalDeleteConfirm')">No, mantener</button>
+                <button type="button" class="btn-tool-generic" style="background: #94A3B8; color: white; border: none;" onclick="closeModal('modalDeleteConfirm')">No, mantener</button>
                 <button type="button" class="btn-main bg-danger border-danger px-4" onclick="confirmLogicalDelete()">Sí, eliminar registro</button>
             </div>
         </div>
     </div>
 
+    <!-- MODAL GESTIÓN DE TIPO -->
     <div class="mre-modal-overlay" id="modalTipo">
         <div class="mre-modal animate-fade">
             <div class="section-title" id="modalTipoTitle">Gestionar Tipo de Referencia</div>
-            <form>
-                <div class="row g-4 mb-4">
+            <form id="formTipo">
+                <div class="row g-4 mb-5">
                     <div class="col-md-8"><label class="form-label">Identificador del Dominio <span class="text-danger">*</span></label><input type="text" id="tipoIdInput" class="form-control-mre" placeholder="Ej. Nacionalidad" required></div>
-                    <div class="col-md-4" id="tipoStatusFieldContainer"><label class="form-label">Estado <span class="text-danger">*</span></label><select id="tipoStatusInput" class="form-control-mre"><option value="ACTI">Activo</option><option value="INAC">Inactivo</option></select></div>
-                    <div class="col-12"><label class="form-label">Descripción General <span class="text-danger">*</span></label><textarea id="tipoDescInput" class="form-control-mre" rows="3" placeholder="Descripción clara del dominio..."></textarea></div>
+                    <div class="col-md-4" id="tipoStatusFieldContainer">
+                        <label class="form-label">Estado <span class="text-danger">*</span></label>
+                        <select id="tipoStatusInput" class="form-control-mre">
+                            <option value="ACTI">Activo</option>
+                            <option value="INAC">Inactivo</option>
+                        </select>
+                    </div>
+                    <div class="col-12"><label class="form-label">Descripción General <span class="text-danger">*</span></label><textarea id="tipoDescInput" class="form-control-mre" rows="3" placeholder="Descripción clara del dominio..." required></textarea></div>
                 </div>
                 <div class="audit-history-container d-none" id="auditHistorySectionTipo">
                     <div class="section-title">Historial de Auditoría</div>
                     <div class="table-responsive"><table class="audit-grid-table"><thead><tr><th>Fecha</th><th>Acción</th><th>Usuario</th><th>Descripción</th></tr></thead><tbody id="auditHistoryBodyTipo"></tbody></table></div>
                 </div>
-                <div class="mt-4 pt-4 border-top d-flex justify-content-end gap-3"><button type="button" class="btn btn-light rounded-pill px-5 fw-bold shadow-sm" onclick="closeModal('modalTipo')">Cerrar</button><button type="submit" class="btn-main px-5 shadow">Guardar Cambios</button></div>
+                <div class="mt-5 pt-4 border-top d-flex justify-content-end gap-2">
+                    <button type="button" class="btn-tool-generic" style="background: #94A3B8; color: white; border: none;" onclick="closeModal('modalTipo')">Cancelar</button>
+                    <button type="submit" id="btnSaveTipo" class="btn-main px-4 shadow-sm">Guardar Cambios</button>
+                </div>
             </form>
         </div>
     </div>
 
+    <!-- MODAL GESTIÓN DE REFERENCIA -->
     <div class="mre-modal-overlay" id="modalRef">
         <div class="mre-modal animate-fade">
             <div class="section-title" id="refModalTitle">Detalle de Referencia</div>
-            <form>
-                <div class="row g-4 mb-4">
-                    <div class="col-md-8"><label class="form-label">Descripción <span class="text-danger">*</span></label><input type="text" id="refDesc" class="form-control-mre shadow-sm" placeholder="Ej. Paraguaya" required></div>
-                    <div class="col-md-4" id="refStatusFieldContainer"><label class="form-label">Estado <span class="text-danger">*</span></label><select id="refStatusInput" class="form-control-mre"><option value="ACTI">Activo</option><option value="INAC">Inactivo</option></select></div>
+            <form id="formRef">
+                <div class="row g-4 mb-5">
+                    <div class="col-md-8">
+                        <label class="form-label">Descripción <span class="text-danger">*</span></label>
+                        <input type="text" id="refDesc" class="form-control-mre shadow-sm" placeholder="Ej. Paraguaya" required>
+                    </div>
+                    <div class="col-md-4" id="refStatusFieldContainer">
+                        <label class="form-label">Estado <span class="text-danger">*</span></label>
+                        <select id="refStatusInput" class="form-control-mre" title="Define si el valor es seleccionable en trámites">
+                            <option value="ACTI">Activo</option>
+                            <option value="INAC">Inactivo</option>
+                        </select>
+                    </div>
                     <div class="col-md-4"><label class="form-label">Valor Alfanumérico</label><input type="text" id="refAlf" class="form-control-mre shadow-sm" placeholder="Ej. PAR"></div>
                     <div class="col-md-4"><label class="form-label">Valor Numérico</label><input type="number" id="refNum" class="form-control-mre shadow-sm" placeholder="Ej. 1"></div>
                     <div class="col-md-4"><label class="form-label">Valor Fecha</label><input type="date" id="refFec" class="form-control-mre shadow-sm"></div>
@@ -441,14 +500,51 @@
                     <div class="section-title">Historial de Auditoría</div>
                     <div class="table-responsive"><table class="audit-grid-table"><thead><tr><th>Fecha</th><th>Acción</th><th>Usuario</th><th>Descripción</th></tr></thead><tbody id="auditHistoryBody"></tbody></table></div>
                 </div>
-                <div class="mt-4 pt-4 border-top d-flex justify-content-end align-items-center"><div class="d-flex gap-3"><button type="button" class="btn btn-light rounded-pill px-5 fw-bold shadow-sm" onclick="closeModal('modalRef')">Cerrar</button><button type="submit" class="btn-main px-5 shadow">Guardar Cambios</button></div></div>
+                <div class="mt-5 pt-4 border-top d-flex justify-content-end align-items-center">
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn-tool-generic" style="background: #94A3B8; color: white; border: none;" onclick="closeModal('modalRef')">Cancelar</button>
+                        <button type="submit" id="btnSaveRef" class="btn-main px-4 shadow-sm">Guardar Cambios</button>
+                    </div>
+                </div>
             </form>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRM INACTIVAR MASIVO -->
+    <div class="mre-modal-overlay" id="modalConfirmInactivate" role="dialog" aria-modal="true">
+        <div class="mre-modal animate-fade" style="max-width: 550px;">
+            <div class="text-center mb-4">
+                <div class="bg-warning bg-opacity-10 text-warning d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 64px; height: 64px;">
+                    <i data-lucide="power" style="width: 32px; height: 32px; color: var(--mre-amber);"></i>
+                </div>
+                <h5 class="fw-800 text-navy mb-2">Confirmar Inactivación</h5>
+                <p class="text-muted small">¿Está seguro de inactivar los siguientes registros?</p>
+            </div>
+            <div class="selected-items-confirm-list" id="selectedItemsList"></div>
+            <div class="d-flex justify-content-center gap-3 mt-4 pt-3 border-top">
+                <button type="button" class="btn-tool-generic" style="background: #94A3B8; color: white; border: none;" onclick="closeModal('modalConfirmInactivate')">Cancelar</button>
+                <button type="button" class="btn-main px-4 shadow-sm" style="background: var(--mre-amber); border-color: var(--mre-amber);" onclick="executeInactivation()">Confirmar Inactivación</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mre-modal-overlay" id="modalConfirmTipoAction" role="dialog" aria-modal="true">
+        <div class="mre-modal animate-fade" style="max-width: 480px;">
+            <div class="text-center mb-4">
+                <div id="tipoActionIconContainer" class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 64px; height: 64px;"><i data-lucide="alert-triangle" id="tipoActionIcon" style="width: 32px; height: 32px;"></i></div>
+                <h5 class="fw-black text-navy mb-2" id="tipoActionTitle">Confirmar Acción</h5>
+                <p class="text-muted small" id="tipoActionMessage"></p>
+            </div>
+            <div class="d-flex justify-content-center gap-3 mt-4 pt-3 border-top">
+                <button type="button" class="btn-tool-generic" style="background: #94A3B8; color: white; border: none;" onclick="closeModal('modalConfirmTipoAction')">Cancelar</button>
+                <button type="button" id="btnExecuteTipoAction" class="btn-main px-4 shadow" onclick="executeTipoAction()">Confirmar</button>
+            </div>
         </div>
     </div>
 
     <footer class="mre-footer animate-fade">
         <div class="footer-left fw-600">&copy; 2026 Ministerio de Relaciones Exteriores - Dirección de Informática</div>
-        <div class="footer-right"><a href="#" class="btn-help shadow-sm"><i data-lucide="help-circle" style="width: 20px; height: 20px;"></i>¿Necesitas ayuda?</a></div>
+        <div class="footer-right"><a href="#" class="btn-help shadow-sm" title="Abrir centro de ayuda y soporte técnico"><i data-lucide="help-circle" style="width: 20px; height: 20px;"></i>¿Necesitas ayuda?</a></div>
     </footer>
 
     <script>
@@ -472,6 +568,14 @@
         document.addEventListener('click', () => {
             document.querySelectorAll('.dropdown-menu-mre, .a11y-dropdown-menu, .custom-select-dropdown').forEach(m => m.classList.remove('show'));
         });
+
+        function changeFontSize(delta) {
+            let current = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--font-scale'));
+            let newScale = Math.min(Math.max(current + delta, 0.8), 1.5);
+            document.documentElement.style.setProperty('--font-scale', newScale);
+            document.getElementById('fontSizeDisplay').innerText = Math.round(newScale * 100) + '%';
+        }
+        function toggleGrayscale() { document.body.classList.toggle('grayscale-mode'); }
 
         // MOCK DATA
         let mockTipos = [
@@ -552,6 +656,7 @@
                 </tr>
             `).join('');
             lucide.createIcons();
+            updateUIState();
         }
 
         function handleDeleteClick(id, type) {
@@ -563,20 +668,55 @@
         }
 
         function confirmLogicalDelete() {
-            if (pendingActionType === 'REF') mockRef = mockRef.filter(r => r.id !== idToDelete);
-            else { mockTipos = mockTipos.filter(t => t.id !== idToDelete); document.getElementById('tipoInfo').classList.add('d-none'); renderTable([]); }
-            closeModal('modalDeleteConfirm');
-            filterData();
-            renderTipoSelector();
+            if(idToDelete) {
+                if (pendingActionType === 'REF') {
+                    mockRef = mockRef.filter(r => r.id !== idToDelete);
+                    filterData();
+                } else {
+                    mockTipos = mockTipos.filter(t => t.id !== idToDelete);
+                    renderTipoSelector();
+                    document.getElementById('tipoInfo').classList.add('d-none');
+                    document.getElementById('currentTipoLabel').innerText = '---';
+                    renderTable([]);
+                }
+                closeModal('modalDeleteConfirm');
+                idToDelete = null;
+            }
         }
+
+        function openTipoActionModal(action) {
+            if (!selectedTipoId) return;
+            pendingActionType = 'TIPO';
+            const title = document.getElementById('tipoActionTitle');
+            const message = document.getElementById('tipoActionMessage');
+            const btnConfirm = document.getElementById('btnExecuteTipoAction');
+            if (action === 'DELETE') { handleDeleteClick(selectedTipoId, 'TIPO'); return; }
+            lucide.createIcons();
+            openModal('modalConfirmTipoAction');
+        }
+
+        function executeTipoAction() {
+             closeModal('modalConfirmTipoAction');
+             // Stub for future actions
+        }
+
+        function viewSelectedTipo() { openModal('modalTipo', 'view'); }
+        function editSelectedTipo() { openModal('modalTipo', 'edit'); }
 
         function openModal(id, mode, refId) {
             const modal = document.getElementById(id); modal.style.display = 'flex';
             if (id === 'modalTipo') {
                 const t = mockTipos.find(x => x.id === selectedTipoId) || {dominio:'', descripcion:'', estado:'ACTI'};
                 document.getElementById('tipoIdInput').value = mode === 'add' ? '' : toTitleCase(t.dominio);
-                document.getElementById('tipoStatusInput').value = t.estado;
+                document.getElementById('tipoDescInput').value = mode === 'add' ? '' : t.descripcion;
+                document.getElementById('tipoStatusInput').value = mode === 'add' ? 'ACTI' : t.estado;
+                document.getElementById('modalTipoTitle').innerText = mode === 'add' ? 'Crear Nuevo Tipo' : (mode === 'edit' ? 'Modificar Tipo' : 'Detalles del Tipo');
                 document.getElementById('tipoStatusFieldContainer').style.display = mode === 'add' ? 'none' : 'block';
+                const auditSectionTipo = document.getElementById('auditHistorySectionTipo');
+                if (mode === 'view') {
+                    auditSectionTipo.classList.remove('d-none');
+                    document.getElementById('auditHistoryBodyTipo').innerHTML = '<tr><td>10/01/2026 08:00</td><td>CREATE</td><td>cgonzalez</td><td>Registro inicial</td></tr>';
+                } else { auditSectionTipo.classList.add('d-none'); }
                 enableForm(id, mode !== 'view');
             }
             if (id === 'modalRef') {
@@ -584,6 +724,12 @@
                 document.getElementById('refDesc').value = mode === 'add' ? '' : toTitleCase(r.descripcion);
                 document.getElementById('refStatusInput').value = r.estado;
                 document.getElementById('refStatusFieldContainer').style.display = mode === 'add' ? 'none' : 'block';
+                document.getElementById('refModalTitle').innerText = mode === 'add' ? 'Agregar Nueva Referencia' : (mode === 'edit' ? 'Modificar Referencia' : 'Detalles de la Referencia');
+                const auditSection = document.getElementById('auditHistorySection');
+                if (mode === 'view') {
+                    auditSection.classList.remove('d-none');
+                    document.getElementById('auditHistoryBody').innerHTML = '<tr><td>20/01/2026 14:20</td><td>UPDATE</td><td>cgonzalez</td><td>Corrección ortográfica</td></tr>';
+                } else { auditSection.classList.add('d-none'); }
                 enableForm(id, mode !== 'view');
             }
             lucide.createIcons();
@@ -604,8 +750,45 @@
         }
 
         function handleSimilaritySearch() { currentPage = 1; filterData(); }
-        function viewSelectedTipo() { openModal('modalTipo', 'view'); }
-        function editSelectedTipo() { openModal('modalTipo', 'edit'); }
+        function toggleSelectAll(s) { document.querySelectorAll('.record-check:not(:disabled)').forEach(c => c.checked = s.checked); updateUIState(); }
+        function deselectAll() { document.querySelectorAll('.record-check').forEach(c => c.checked = false); document.getElementById('selectAll').checked = false; updateUIState(); }
+        function updateUIState() {
+            const checks = document.querySelectorAll('.record-check:checked');
+            document.getElementById('btnInactivar').disabled = checks.length === 0;
+            document.getElementById('btnCancelDeselect').disabled = checks.length === 0;
+        }
+        function handleInactivar() {
+            const checks = document.querySelectorAll('.record-check:checked');
+            const listContainer = document.getElementById('selectedItemsList');
+            listContainer.innerHTML = '';
+            checks.forEach(c => { const row = c.closest('tr'); listContainer.innerHTML += `<div class="p-2 border-bottom small fw-bold text-navy">ID ${row.dataset.id}: ${row.querySelector('.fw-bold').innerText}</div>`; });
+            const modal = document.getElementById('modalConfirmInactivate');
+            if(modal) modal.style.display = 'flex';
+        }
+        function executeInactivation() {
+            document.querySelectorAll('.record-check:checked').forEach(c => { const id = parseInt(c.closest('tr').dataset.id); const r = mockRef.find(x => x.id === id); if (r) r.estado = 'INAC'; });
+            const modal = document.getElementById('modalConfirmInactivate');
+            if(modal) modal.style.display = 'none';
+            deselectAll(); filterData(); handleTipoChange(selectedTipoId);
+        }
+
+        // Sidebar Popups
+        let popupTimer;
+        const globalPopup = document.getElementById('sidebarGlobalPopup');
+        document.querySelectorAll('.nav-link-mre[data-popup]').forEach(link => {
+            link.addEventListener('mouseenter', () => {
+                clearTimeout(popupTimer);
+                const r = link.getBoundingClientRect();
+                globalPopup.innerHTML = link.dataset.popup;
+                globalPopup.style.top = `${r.top + (r.height / 2)}px`;
+                globalPopup.style.left = `${r.right + 10}px`;
+                globalPopup.style.transform = 'translateY(-50%)';
+                globalPopup.classList.add('show');
+            });
+            link.addEventListener('mouseleave', () => {
+                popupTimer = setTimeout(() => { if (!globalPopup.matches(':hover')) globalPopup.classList.remove('show'); }, 150);
+            });
+        });
 
         document.addEventListener('DOMContentLoaded', () => { renderTipoSelector(); lucide.createIcons(); });
     </script>
