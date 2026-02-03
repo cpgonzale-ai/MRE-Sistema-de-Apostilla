@@ -137,7 +137,6 @@
         .nav-link-mre:hover { background: #F1F5F9; color: var(--mre-blue); }
         .nav-link-mre.active { background: #f0f7ff; color: var(--mre-blue-light); box-shadow: 0 4px 6px -1px rgba(0, 40, 85, 0.05); }
 
-        /* POPUP DEL SIDEBAR */
         .mre-sidebar-popup {
             position: fixed; background: #1e293b; color: #f1f5f9; padding: 12px 16px;
             border-radius: 12px; font-size: 0.75rem; font-weight: 600;
@@ -241,11 +240,7 @@
         .audit-grid-table th { background: #F1F5F9; color: #64748B; font-size: 0.7rem; font-weight: 800; padding: 0.8rem 1.2rem; border-bottom: 1px solid var(--border-color); text-transform: uppercase; }
         .audit-grid-table td { padding: 0.8rem 1.2rem; border-bottom: 1px solid #F1F5F9; font-size: 0.85rem; color: #475569; }
 
-        .master-selector-card { 
-            background: white; border-radius: 20px; padding: 1.5rem; border: 1px solid var(--border-color); 
-            box-shadow: var(--card-shadow); margin-bottom: 2rem;
-            position: relative; z-index: 100;
-        }
+        .master-selector-card { background: white; border-radius: 20px; padding: 1.5rem; border: 1px solid var(--border-color); box-shadow: var(--card-shadow); margin-bottom: 2rem; position: relative; z-index: 100; }
 
         .btn-danger-outline { background: #ffffff; color: var(--mre-red); border: 1.5px solid var(--mre-red); border-radius: 12px; padding: 0.6rem 1.5rem; font-weight: 700; font-size: 0.85rem; transition: var(--transition); }
         .btn-danger-outline:hover:not(:disabled) { background: var(--mre-red); color: white; transform: translateY(-2px); }
@@ -353,11 +348,7 @@
                     <button class="btn btn-sm btn-light" onclick="toggleSidebar()"><i data-lucide="x" style="width: 16px;"></i></button>
                 </div>
                 <p class="px-3 mb-2 text-muted fw-bold uppercase" style="font-size: 0.75rem; letter-spacing: 1px;">Administración</p>
-                <a href="#" class="nav-link-mre" data-popup="Gestión de clases de documentos institucionales."><i data-lucide="file-text" style="width: 18px;"></i> <span>Tipos de documentos</span></a>
-                <a href="#" class="nav-link-mre" data-popup="Administración de cuentas de usuario."><i data-lucide="users" style="width: 18px;"></i> <span>Usuarios</span></a>
-                <a href="#" class="nav-link-mre" data-popup="Seguridad y roles de sistema."><i data-lucide="shield-check" style="width: 18px;"></i> <span>Grupos y Permisos</span></a>
-                <a href="#" class="nav-link-mre active"><i data-lucide="settings-2" style="width: 18px;"></i> <span>Configuración de Referencias</span></a>
-                <a href="#" class="nav-link-mre" data-popup="Configuración avanzada de campos dinámicos."><i data-lucide="layout-grid" style="width: 18px;"></i> <span>Configuración de campos</span></a>
+                <a href="#" class="nav-link-mre active" title="Configuración de Referencias Maestras"><i data-lucide="settings-2" style="width: 18px;"></i> <span>Configuración de Referencias</span></a>
             </nav>
         </aside>
 
@@ -401,8 +392,8 @@
                                 <div class="fw-bold text-muted" id="tipoModuloLabel" style="font-size: 0.95rem;">---</div>
                             </div>
                             <div class="d-flex gap-2">
-                                <button class="btn-action-icon shadow-sm" onclick="viewSelectedTipo()" title="Visualizar detalles"><i data-lucide="eye"></i></button>
-                                <button class="btn-action-icon shadow-sm" onclick="editSelectedTipo()" title="Editar parámetros"><i data-lucide="edit-3"></i></button>
+                                <button class="btn-action-icon shadow-sm" onclick="viewSelectedTipo()" title="Visualizar detalles del tipo de referencia"><i data-lucide="eye"></i></button>
+                                <button class="btn-action-icon shadow-sm" onclick="editSelectedTipo()" title="Editar parámetros del tipo de referencia"><i data-lucide="edit-3"></i></button>
                                 <button class="btn-action-icon d-none shadow-sm" id="btnDeleteTipo" style="color: var(--mre-red); border-color: #FECDD3;" onclick="openTipoActionModal('DELETE')" title="Eliminar dominio (Solo si está vacío)"><i data-lucide="trash-2"></i></button>
                             </div>
                         </div>
@@ -419,14 +410,14 @@
                 <div class="grid-header-frame">
                     <h5 class="fw-black text-uppercase m-0" style="color: var(--mre-blue); font-size: 0.85rem;">Lista de Valores: <span id="currentTipoLabel" class="text-primary">---</span></h5>
                     <div class="d-flex align-items-center gap-2">
-                        <button class="btn-tool-generic shadow-sm" title="Configurar columnas"><i data-lucide="layout-columns" style="width: 16px;"></i> Columnas</button>
-                        <button class="btn-tool-generic shadow-sm" title="Excel"><i data-lucide="file-spreadsheet" style="width: 16px;"></i> Excel</button>
-                        <button class="btn-tool-generic shadow-sm" title="PDF"><i data-lucide="file-text" style="width: 16px;"></i> PDF</button>
+                        <button class="btn-tool-generic shadow-sm" title="Configurar visibilidad de columnas en la grilla"><i data-lucide="layout-columns" style="width: 16px;"></i> Columnas</button>
+                        <button class="btn-tool-generic shadow-sm" title="Exportar registros filtrados a formato Excel"><i data-lucide="file-spreadsheet" style="width: 16px;"></i> Excel</button>
+                        <button class="btn-tool-generic shadow-sm" title="Exportar registros filtrados a formato PDF"><i data-lucide="file-text" style="width: 16px;"></i> PDF</button>
                         <div class="position-relative ms-2" style="max-width: 300px;">
                             <i data-lucide="search" class="position-absolute" style="left:14px; top:50%; transform:translateY(-50%); color:#94A3B8; width:16px;"></i>
-                            <input type="text" id="similaritySearchInput" class="search-input-integrated form-control-mre ps-5 py-2 shadow-sm" placeholder="Ej. Certificado de..." onkeyup="handleSimilaritySearch()" title="Búsqueda por descripción">
+                            <input type="text" id="similaritySearchInput" class="search-input-integrated form-control-mre ps-5 py-2 shadow-sm" placeholder="Ej. Certificado de..." onkeyup="handleSimilaritySearch()" title="Búsqueda por similitud en descripción o código">
                         </div>
-                        <button class="btn-main d-inline-flex align-items-center gap-2 shadow-sm ms-2" id="btnAddRef" disabled onclick="openModal('modalRef', 'add')" title="Agregar nuevo valor">
+                        <button class="btn-main d-inline-flex align-items-center gap-2 shadow-sm ms-2" id="btnAddRef" disabled onclick="openModal('modalRef', 'add')" title="Agregar nuevo valor de referencia al dominio seleccionado">
                             <i data-lucide="plus-circle" style="width: 16px;"></i> Agregar
                         </button>
                     </div>
@@ -497,15 +488,15 @@
             <div class="section-title" id="modalTipoTitle">Gestionar Tipo de Referencia</div>
             <form id="formTipo">
                 <div class="row g-4 mb-5">
-                    <div class="col-md-8"><label class="form-label">Identificador del Dominio <span class="text-danger">*</span></label><input type="text" id="tipoIdInput" class="form-control-mre" placeholder="Ej. Nacionalidad" required></div>
+                    <div class="col-md-8"><label class="form-label">Identificador del Dominio <span class="text-danger">*</span></label><input type="text" id="tipoIdInput" class="form-control-mre" placeholder="Ej. TIPO_DOCUMENTO" required></div>
                     <div class="col-md-4" id="tipoStatusFieldContainer">
                         <label class="form-label">Estado <span class="text-danger">*</span></label>
-                        <select id="tipoStatusInput" class="form-control-mre">
+                        <select id="tipoStatusInput" class="form-control-mre" title="Vigencia administrativa del dominio">
                             <option value="ACTI">Activo</option>
                             <option value="INAC">Inactivo</option>
                         </select>
                     </div>
-                    <div class="col-12"><label class="form-label">Descripción General <span class="text-danger">*</span></label><textarea id="tipoDescInput" class="form-control-mre" rows="3" placeholder="Descripción clara del dominio..." required></textarea></div>
+                    <div class="col-12"><label class="form-label">Descripción General <span class="text-danger">*</span></label><textarea id="tipoDescInput" class="form-control-mre" rows="3" placeholder="Breve descripción del dominio y su propósito en el sistema..." title="Explicación detallada de la categoría de referencias" required></textarea></div>
                 </div>
                 <div class="audit-history-container d-none" id="auditHistorySectionTipo">
                     <div class="section-title">Historial de Auditoría</div>
@@ -527,7 +518,7 @@
                 <div class="row g-4 mb-5">
                     <div class="col-md-8">
                         <label class="form-label">Descripción <span class="text-danger">*</span></label>
-                        <input type="text" id="refDesc" class="form-control-mre shadow-sm" placeholder="Ej. Paraguaya" required>
+                        <input type="text" id="refDesc" class="form-control-mre shadow-sm" placeholder="Nombre del valor específico" title="Nombre legible para el usuario" required>
                     </div>
                     <div class="col-md-4" id="refStatusFieldContainer">
                         <label class="form-label">Estado <span class="text-danger">*</span></label>
@@ -536,10 +527,10 @@
                             <option value="INAC">Inactivo</option>
                         </select>
                     </div>
-                    <div class="col-md-4"><label class="form-label">Valor Alfanumérico</label><input type="text" id="refAlf" class="form-control-mre shadow-sm" placeholder="Ej. PAR"></div>
-                    <div class="col-md-4"><label class="form-label">Valor Numérico</label><input type="number" id="refNum" class="form-control-mre shadow-sm" placeholder="Ej. 1"></div>
-                    <div class="col-md-4"><label class="form-label">Valor Fecha</label><input type="date" id="refFec" class="form-control-mre shadow-sm"></div>
-                    <div class="col-12"><label class="form-label">Descripción Larga</label><textarea id="refDescLarga" class="form-control-mre shadow-sm" rows="3" placeholder="Detalles técnicos..."></textarea></div>
+                    <div class="col-md-4"><label class="form-label">Valor Alfanumérico</label><input type="text" id="refAlf" class="form-control-mre shadow-sm" placeholder="Código alfanumérico asociado" title="Código técnico (ej. ISO para países)"></div>
+                    <div class="col-md-4"><label class="form-label">Valor Numérico</label><input type="number" id="refNum" class="form-control-mre shadow-sm" placeholder="Código numérico asociado" title="Valor entero para clasificaciones técnicas"></div>
+                    <div class="col-md-4"><label class="form-label">Valor Fecha</label><input type="date" id="refFec" class="form-control-mre shadow-sm" title="Fecha opcional asociada al registro"></div>
+                    <div class="col-12"><label class="form-label">Descripción Larga</label><textarea id="refDescLarga" class="form-control-mre shadow-sm" rows="3" placeholder="Observaciones detalladas sobre este valor de referencia..." title="Información técnica u operativa adicional"></textarea></div>
                 </div>
                 <div class="audit-history-container d-none" id="auditHistorySection">
                     <div class="section-title">Historial de Auditoría</div>
@@ -808,7 +799,17 @@
         function openTipoActionModal(action) {
             if (!selectedTipoId) return;
             pendingActionType = 'TIPO';
+            const title = document.getElementById('tipoActionTitle');
+            const message = document.getElementById('tipoActionMessage');
+            const btnConfirm = document.getElementById('btnExecuteTipoAction');
             if (action === 'DELETE') { handleDeleteClick(selectedTipoId, 'TIPO'); return; }
+            lucide.createIcons();
+            openModal('modalConfirmTipoAction');
+        }
+
+        function executeTipoAction() {
+             closeModal('modalConfirmTipoAction');
+             // Stub for future actions
         }
 
         function viewSelectedTipo() { openModal('modalTipo', 'view'); }
@@ -831,10 +832,10 @@
                 enableForm(id, mode !== 'view');
             }
             if (id === 'modalRef') {
-                const r = mockRef.find(x => x.id === refId) || {descripcion:'', estado:'ACTI'};
+                const r = mockRef.find(x => x.id === refId) || {descripcion:'', val_alf:'', val_num:'', val_fec:'', fecha_alta:'Hoy', estado:'ACTI'};
                 document.getElementById('refDesc').value = mode === 'add' ? '' : toTitleCase(r.descripcion);
                 document.getElementById('refAlf').value = mode === 'add' ? '' : (r.val_alf || '');
-                document.getElementById('refNum').value = mode === 'add' ? '' : (r.val_num || '');
+                document.getElementById('refNum').value = mode === 'add' ? '' : (r.val_num || ''); 
                 document.getElementById('refFec').value = mode === 'add' ? '' : (r.val_fec || '');
                 document.getElementById('refStatusInput').value = r.estado;
                 document.getElementById('refStatusFieldContainer').style.display = mode === 'add' ? 'none' : 'block';
