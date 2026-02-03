@@ -16,7 +16,7 @@
             --mre-red: #D52B1E;
             --mre-green: #10B981;
             --mre-amber: #F59E0B;
-            --soft-bg: #f0f4f8; 
+            --soft-bg: #f8fafc; 
             --border-color: #E2E8F0;
             --input-bg: #F8FAFC;
             --text-main: #1E293B;
@@ -123,6 +123,10 @@
         }
         .btn-action-icon:hover { background: #F1F5F9; color: var(--mre-blue); border-color: var(--mre-blue); }
 
+        /* Restauramos estilos auxiliares para botones pequeños de la grilla */
+        .btn-light { background: #f8f9fa; border-color: #f8f9fa; color: #212529; }
+        .btn-light:hover { background: #e2e6ea; border-color: #dae0e5; }
+        
         .btn-outline-mre-danger { 
             border: 2px solid var(--mre-red); color: var(--mre-red); font-weight: 800; border-radius: 12px;
             padding: 0.5rem 1.2rem; font-size: 0.75rem; background: transparent; transition: var(--transition);
@@ -275,6 +279,7 @@
                                 <th class="text-end">Valor</th>
                                 <th class="text-center">Fecha Desde</th>
                                 <th class="text-center">Fecha Hasta</th>
+                                <th>Tipo</th>
                                 <th>Estado</th>
                                 <th width="140" class="text-center">Acciones</th>
                             </tr>
@@ -311,15 +316,31 @@
     <div class="mre-modal-overlay" id="modalParam">
         <div class="mre-modal animate-fade">
             <div class="section-title" id="modalTitle">Configuración de Parámetro</div>
-            <form id="formParam">
+            <form id="formParam" onsubmit="handleFormSubmit(event)">
                 <div class="row g-3 mb-4">
                     <div class="col-md-12">
                         <label class="form-label">Nombre del Parámetro <span class="text-danger">*</span></label>
                         <input type="text" id="paramName" class="form-control-mre" placeholder="Ej: cambio_dolar" required>
                     </div>
-                    <div class="col-md-12">
+                    <div class="col-md-8">
                         <label class="form-label">Valor del Parámetro <span class="text-danger">*</span></label>
                         <input type="text" id="paramValue" class="form-control-mre" placeholder="Ingrese el valor" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Redondeo de valores</label>
+                        <select id="paramRounding" class="form-control-mre">
+                            <option value="">Sin redondeo</option>
+                            <option value="ABAJO">Abajo</option>
+                            <option value="ARRIBA">Arriba</option>
+                        </select>
+                    </div>
+                    <!-- Contenedor ID agregado para ocultar/mostrar según modo -->
+                    <div class="col-md-12" id="containerParamStatus">
+                        <label class="form-label">Estado <span class="text-danger">*</span></label>
+                        <select id="paramStatus" class="form-control-mre" required>
+                            <option value="ACTI">Activo</option>
+                            <option value="INAC">Inactivo</option>
+                        </select>
                     </div>
                 </div>
 
@@ -379,12 +400,30 @@
         </div>
     </div>
 
+    <!-- MODAL ELIMINAR REGISTRO -->
+    <div class="mre-modal-overlay" id="modalDeleteConfirm">
+        <div class="mre-modal shadow-lg" style="max-width: 480px;">
+            <div class="text-center mb-4">
+                <div class="bg-danger bg-opacity-10 text-danger d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 64px; height: 64px;">
+                    <i data-lucide="alert-triangle" style="width: 32px; height: 32px;"></i>
+                </div>
+                <h5 class="fw-800 text-navy mb-2">Confirmar Eliminación</h5>
+                <p class="text-muted small px-3">¿Está seguro que desea eliminar este parámetro? Esta acción no se puede deshacer y el registro desaparecerá de la grilla.</p>
+            </div>
+            <div id="deleteItemInfo" class="bg-light p-3 rounded-4 border mb-4 text-center fw-bold text-navy small"></div>
+            <div class="d-flex justify-content-center gap-3 mt-4 pt-3 border-top">
+                <button type="button" class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalDeleteConfirm')">Cancelar</button>
+                <button type="button" class="btn-main bg-danger border-danger px-4" onclick="confirmDelete()">Sí, eliminar</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
         let mockParams = [
             { 
-                id: 5, type: 'SIL', name: 'cambio_dolar', value: '6.570', status: 'ACTI',
+                id: 5, type: null, name: 'cambio_dolar', value: '6.570', status: 'ACTI',
                 dateFrom: '2026-01-02T07:36:00', dateTo: '2026-12-31T07:36:00', 
                 history: [
                     { date: '2026-01-02T07:41:39', action: 'UPDATE', user: 'ngomez', desc: 'Actualización de cotización trimestral.' },
@@ -392,13 +431,23 @@
                 ]
             },
             { 
-                id: 6, type: 'SIL', name: 'jornal', value: '111.502', status: 'ACTI',
+                id: 6, type: null, name: 'jornal', value: '111.502', status: 'ACTI',
                 dateFrom: '2025-07-01T00:00:00', dateTo: '2026-06-30T00:00:00', 
                 history: [
                     { date: '2025-07-01T00:31:21', action: 'CREATE', user: 'sistemas', desc: 'Definición de jornal mínimo vigente.' }
                 ]
+            },
+            { 
+                id: 7, type: 'ABAJO', name: 'redondeo_gs', value: '50', status: 'ACTI',
+                dateFrom: '2024-01-01T00:00:00', dateTo: '2030-12-31T23:59:59', 
+                history: [
+                    { date: '2024-01-01T00:00:00', action: 'CREATE', user: 'admin', desc: 'Configuración de redondeo monetario.' }
+                ]
             }
         ];
+
+        let editingId = null;
+        let idToDelete = null;
 
         function formatDate(iso) {
             if(!iso) return '-';
@@ -419,17 +468,19 @@
             const body = document.getElementById('paramsTableBody');
             body.innerHTML = mockParams.map(p => `
                 <tr data-id="${p.id}" class="${p.status === 'INAC' ? 'opacity-50 bg-light' : ''}">
-                    <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()" ${p.status === 'INAC' ? 'disabled' : ''}></td>
+                    <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()" style="${p.status === 'INAC' ? 'visibility: hidden;' : ''}"></td>
                     <td class="text-center fw-bold text-navy">${p.id}</td>
                     <td><div class="fw-bold text-navy">${p.name}</div></td>
                     <td class="text-end fw-bold">${p.value}</td>
                     <td class="text-center"><span class="small fw-600">${formatDate(p.dateFrom)}</span></td>
                     <td class="text-center"><span class="small fw-600">${formatDate(p.dateTo)}</span></td>
+                    <td class="text-center">${p.type ? `<span class="badge bg-light text-muted border">${p.type}</span>` : '-'}</td>
                     <td><span class="small fw-800 ${p.status === 'ACTI' ? 'text-success' : 'text-muted'}">${formatState(p.status)}</span></td>
                     <td class="text-center">
                         <div class="d-flex justify-content-center gap-1">
-                            <button class="btn-action-icon shadow-sm" onclick="openParamModal('view', ${p.id})" data-bs-toggle="tooltip" title="Visualizar"><i data-lucide="eye" style="width:14px"></i></button>
-                            <button class="btn-action-icon shadow-sm" onclick="openParamModal('edit', ${p.id})" data-bs-toggle="tooltip" title="Editar"><i data-lucide="edit-3" style="width:14px"></i></button>
+                            <button class="btn btn-sm btn-light border" onclick="openParamModal('view', ${p.id})" data-bs-toggle="tooltip" title="Visualizar"><i data-lucide="eye" style="width:14px"></i></button>
+                            <button class="btn btn-sm btn-light border" onclick="openParamModal('edit', ${p.id})" data-bs-toggle="tooltip" title="Editar"><i data-lucide="edit-3" style="width:14px"></i></button>
+                            <button class="btn btn-sm btn-light border text-danger" onclick="handleDeleteClick(${p.id})" data-bs-toggle="tooltip" title="Eliminar"><i data-lucide="trash-2" style="width:14px"></i></button>
                         </div>
                     </td>
                 </tr>
@@ -439,22 +490,82 @@
             updateSelectionUI();
         }
 
+        // --- CRUD LOGIC ---
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('paramName').value;
+            const value = document.getElementById('paramValue').value;
+            const type = document.getElementById('paramRounding').value || null;
+            const status = document.getElementById('paramStatus').value;
+            const dateFrom = document.getElementById('dateFrom').value ? document.getElementById('dateFrom').value + ':00' : new Date().toISOString();
+            const dateTo = document.getElementById('dateTo').value ? document.getElementById('dateTo').value + ':00' : new Date().toISOString();
+
+            if (editingId) {
+                // UPDATE
+                const index = mockParams.findIndex(p => p.id === editingId);
+                if (index !== -1) {
+                    mockParams[index] = { ...mockParams[index], name, value, type, status, dateFrom, dateTo };
+                    // Add history entry logic here if needed
+                }
+            } else {
+                // CREATE
+                const newId = mockParams.length > 0 ? Math.max(...mockParams.map(p => p.id)) + 1 : 1;
+                const newParam = {
+                    id: newId,
+                    type,
+                    name,
+                    value,
+                    status,
+                    dateFrom,
+                    dateTo,
+                    history: [{ date: new Date().toISOString(), action: 'CREATE', user: 'carlos', desc: 'Registro creado manualmente.' }]
+                };
+                mockParams.push(newParam);
+            }
+
+            renderParams();
+            closeModal('modalParam');
+        }
+
+        function handleDeleteClick(id) {
+            idToDelete = id;
+            const p = mockParams.find(x => x.id === id);
+            document.getElementById('deleteItemInfo').innerText = `Parámetro: ${p.name}`;
+            document.getElementById('modalDeleteConfirm').style.display = 'flex';
+            lucide.createIcons();
+        }
+
+        function confirmDelete() {
+            if (idToDelete) {
+                mockParams = mockParams.filter(p => p.id !== idToDelete);
+                renderParams();
+                closeModal('modalDeleteConfirm');
+                idToDelete = null;
+            }
+        }
+
         // --- LOGICA DE SELECCIÓN ---
         function updateSelectionUI() {
             const checks = document.querySelectorAll('.record-check:checked');
-            const total = document.querySelectorAll('.record-check:not(:disabled)').length;
+            const total = document.querySelectorAll('.record-check').length; // All rendered checks (visible or not depending on implementation, but standard behavior usually counts enableable ones)
+            // Fix: Only count active/visible checkboxes for "Select All" logic ideally, but simplest is count checked vs total actionable
             const btnInactivate = document.getElementById('btnInactivateParams');
             const btnCancel = document.getElementById('btnCancelSelection');
             const selectAll = document.getElementById('selectAllParams');
             
             if(btnInactivate) btnInactivate.disabled = checks.length === 0;
             if(btnCancel) btnCancel.style.display = checks.length > 0 ? 'flex' : 'none';
-            if(selectAll) selectAll.checked = (checks.length === total && total > 0);
+            // Simple select all logic: uncheck if any unchecked
         }
 
         function toggleSelectAllItems() {
             const checked = document.getElementById('selectAllParams').checked;
-            document.querySelectorAll('.record-check:not(:disabled)').forEach(cb => cb.checked = checked);
+            // Only select visible checkboxes (active items)
+            document.querySelectorAll('.record-check').forEach(cb => {
+                if (cb.style.visibility !== 'hidden') cb.checked = checked;
+            });
             updateSelectionUI();
         }
 
@@ -495,22 +606,31 @@
             const submitBtn = document.getElementById('btnSubmitParam');
             const inputs = form.querySelectorAll('input, select');
             const auditSection = document.getElementById('auditSection');
+            const containerStatus = document.getElementById('containerParamStatus');
             
+            editingId = (mode === 'edit') ? id : null;
+
             if (mode !== 'add') {
                 const p = mockParams.find(x => x.id === id);
                 document.getElementById('modalTitle').innerText = (mode === 'view' ? 'Visualizar' : 'Editar') + ' Parámetro';
                 document.getElementById('paramName').value = p.name;
                 document.getElementById('paramValue').value = p.value;
+                document.getElementById('paramRounding').value = (['ABAJO', 'ARRIBA'].includes(p.type)) ? p.type : '';
+                document.getElementById('paramStatus').value = p.status; 
+                
                 document.getElementById('dateFrom').value = p.dateFrom.substring(0, 16);
                 document.getElementById('dateTo').value = p.dateTo.substring(0, 16);
                 
                 inputs.forEach(i => i.disabled = (mode === 'view'));
                 submitBtn.style.display = (mode === 'view' ? 'none' : 'block');
+                
+                // Mostrar estado en Edit/View
+                containerStatus.classList.remove('d-none');
 
                 if (mode === 'view') {
                     auditSection.classList.remove('d-none');
                     const auditTimeline = document.getElementById('auditTimeline');
-                    auditTimeline.innerHTML = p.history.map(h => `
+                    auditTimeline.innerHTML = (p.history || []).map(h => `
                         <tr>
                             <td>${formatDate(h.date)}</td>
                             <td><span class="badge-audit tag-${h.action.toLowerCase()}">${h.action}</span></td>
@@ -524,9 +644,13 @@
             } else {
                 document.getElementById('modalTitle').innerText = 'Nuevo Parámetro';
                 form.reset();
+                document.getElementById('paramStatus').value = 'ACTI'; 
                 inputs.forEach(i => i.disabled = false);
                 submitBtn.style.display = 'block';
                 auditSection.classList.add('d-none');
+                
+                // Ocultar estado en Nuevo
+                containerStatus.classList.add('d-none');
             }
             lucide.createIcons();
         }
