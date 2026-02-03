@@ -319,20 +319,28 @@
             <div class="section-title" id="modalTitle">Detalles de la Ley</div>
             <form id="formLeyes">
                 <div class="row g-4 mb-5">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="form-label" data-bs-toggle="tooltip" title="Define si es una Ley base o una excepción específica">Tipo de Registro <span class="text-danger">*</span></label>
                         <select id="leyTipoRegistro" class="form-control-mre" onchange="handleRegistroTypeChange()" required>
                             <option value="LEY">Ley</option>
                             <option value="EXCEPCION">Excepción</option>
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="form-label">Número de Ley <span class="text-danger">*</span></label>
                         <input type="text" id="leyNumero" class="form-control-mre" placeholder="Ej: 1030/97" required data-bs-toggle="tooltip" title="Ingrese el número oficial de la Ley">
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="form-label">Párrafo de la ley <span class="text-danger">*</span></label>
                         <input type="text" id="leyParrafo" class="form-control-mre" placeholder="Ej: Art. 1° inc. a" required data-bs-toggle="tooltip" title="Referencia al artículo o inciso específico">
+                    </div>
+                    <!-- Campo Estado agregado con ID para control de visibilidad -->
+                    <div class="col-md-3" id="containerLeyEstado">
+                        <label class="form-label" data-bs-toggle="tooltip" title="Estado operativo del registro">Estado <span class="text-danger">*</span></label>
+                        <select id="leyEstado" class="form-control-mre" required>
+                            <option value="ACTI">Activo</option>
+                            <option value="INAC">Inactivo</option>
+                        </select>
                     </div>
                     
                     <!-- Campo condicional: Fecha -->
@@ -350,8 +358,8 @@
                     <div class="col-md-6 condicional-field">
                         <label class="form-label">Tipo de valor</label>
                         <select id="leyTipoValor" class="form-control-mre" data-bs-toggle="tooltip" title="Unidad monetaria del arancel">
-                            <option value="jornal">Jornal</option>
-                            <option value="dolar">Dolar</option>
+                            <option value="Jornal en Gs.">Jornal en Gs.</option>
+                            <option value="Jornal en USD">Jornal en USD</option>
                         </select>
                     </div>
                     <div class="col-md-6 condicional-field">
@@ -425,24 +433,24 @@
     <script>
         let leyes = [
             { 
-                id: 1, numero: '1030/97', desc: 'Ley Nº 1030 Certificado Nacimiento - N', valor: '0,5', tipo: 'jornal', fecha: '1997-01-13', parrafo: 'Art 1ro.', tipoReg: 'LEY', status: 'ACTI',
+                id: 1, numero: '1030/97', desc: 'Ley Nº 1030 Certificado Nacimiento - N', valor: '0,5', tipo: 'Jornal en Gs.', fecha: '1997-01-13', parrafo: 'Art 1ro.', tipoReg: 'LEY', status: 'ACTI',
                 history: [
                     { date: '15/01/2026 08:30', action: 'CREATE', user: 'cgonzalez', desc: 'Migración inicial de datos.' },
                     { date: '20/01/2026 14:15', action: 'UPDATE', user: 'admin_mre', desc: 'Ajuste de valor por resolución 14/2026.' }
                 ]
             },
             { 
-                id: 2, numero: '4033/10', desc: 'Ley Nº 4033 Arancel Consular', valor: '1', tipo: 'jornal', fecha: '2010-09-08', parrafo: 'Art 5°.', tipoReg: 'LEY', status: 'ACTI',
+                id: 2, numero: '4033/10', desc: 'Ley Nº 4033 Arancel Consular', valor: '1', tipo: 'Jornal en Gs.', fecha: '2010-09-08', parrafo: 'Art 5°.', tipoReg: 'LEY', status: 'ACTI',
                 history: [{ date: '10/01/2026 09:00', action: 'CREATE', user: 'sys_root', desc: 'Registro manual.' }]
             },
-            { id: 3, numero: '5230/14', desc: 'Ley Nº 5230 Modernización de tasas', valor: '0,5', tipo: 'dolar', fecha: '2014-06-25', parrafo: 'Art 2°.', tipoReg: 'LEY', status: 'INAC', history: [] },
-            { id: 4, numero: '6102/18', desc: 'Ley Nº 6102 Excepción de Visas', valor: '0,5', tipo: 'jornal', fecha: '2018-11-30', parrafo: 'Art 1ro.', tipoReg: 'LEY', status: 'ACTI', history: [] },
-            { id: 5, numero: '3321/09', desc: 'Ley Nº 3321 Poderes Notariales', valor: '1', tipo: 'dolar', fecha: '2009-04-12', parrafo: 'Art 10.', tipoReg: 'LEY', status: 'ACTI', history: [] }
+            { id: 3, numero: '5230/14', desc: 'Ley Nº 5230 Modernización de tasas', valor: '0,5', tipo: 'Jornal en USD', fecha: '2014-06-25', parrafo: 'Art 2°.', tipoReg: 'LEY', status: 'INAC', history: [] },
+            { id: 4, numero: '6102/18', desc: 'Ley Nº 6102 Excepción de Visas', valor: '0,5', tipo: 'Jornal en Gs.', fecha: '2018-11-30', parrafo: 'Art 1ro.', tipoReg: 'LEY', status: 'ACTI', history: [] },
+            { id: 5, numero: '3321/09', desc: 'Ley Nº 3321 Poderes Notariales', valor: '1', tipo: 'Jornal en USD', fecha: '2009-04-12', parrafo: 'Art 10.', tipoReg: 'LEY', status: 'ACTI', history: [] }
         ];
 
         let deleteId = null;
+        let currentEditingId = null; 
 
-        // Inicializar tooltips de Bootstrap
         function initTooltips() {
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
             var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -454,9 +462,11 @@
             const body = document.getElementById('leyesTableBody');
             body.innerHTML = leyes.map(l => `
                 <tr data-id="${l.id}" class="${l.status === 'INAC' ? 'row-inactive' : ''}">
-                    <td class="text-center"><input type="checkbox" class="row-check" onchange="updateBulkUI()"></td>
+                    <td class="text-center">
+                        ${l.status === 'ACTI' ? `<input type="checkbox" class="row-check" onchange="updateBulkUI()">` : ''}
+                    </td>
                     <td class="text-center fw-bold text-navy">${l.id}</td>
-                    <td><span class="badge bg-light text-navy border">${l.numero}</span></td>
+                    <td><div class="fw-bold text-navy">${l.numero}</div></td>
                     <td>
                         <div class="fw-bold" style="font-size: 0.8rem">${l.desc || 'Sin descripción'}</div>
                         <div class="text-muted d-flex gap-2" style="font-size: 0.7rem">
@@ -481,9 +491,9 @@
                     </td>
                 </tr>
             `).join('');
-            document.getElementById('paginationInfo').innerText = `Mostrando 1 a ${leyes.length} de ${leyes.length} registros`;
+            document.getElementById('paginationInfo').innerText = `Mostrando ${leyes.length} de ${leyes.length} registros`;
             lucide.createIcons();
-            initTooltips(); // Reinicializar tooltips para elementos nuevos
+            initTooltips(); 
         }
 
         // Header funcs
@@ -519,6 +529,7 @@
             const btnSubmit = document.getElementById('btnSubmit');
             const auditSection = document.getElementById('auditSection');
             const inputs = form.querySelectorAll('input, textarea, select');
+            const containerLeyEstado = document.getElementById('containerLeyEstado');
 
             modal.style.display = 'flex';
             inputs.forEach(i => i.disabled = false);
@@ -526,20 +537,32 @@
             auditSection.classList.add('d-none');
 
             if(mode === 'add') {
+                currentEditingId = null;
                 title.innerText = 'Agregar Nueva Ley';
                 form.reset();
                 document.getElementById('leyTipoRegistro').value = 'LEY';
+                document.getElementById('leyEstado').value = 'ACTI';
+                document.getElementById('leyTipoValor').value = 'Jornal en Gs.'; // Valor por defecto
+                
+                // Ocultar campo estado en creación
+                if(containerLeyEstado) containerLeyEstado.classList.add('d-none');
+                
                 handleRegistroTypeChange();
             } else {
+                currentEditingId = id;
                 const l = leyes.find(x => x.id === id);
                 title.innerText = (mode === 'edit' ? 'Editar' : 'Visualizar') + ' Ley: ' + l.numero;
                 
+                // Mostrar campo estado en edición/visualización
+                if(containerLeyEstado) containerLeyEstado.classList.remove('d-none');
+
                 document.getElementById('leyTipoRegistro').value = l.tipoReg || 'LEY';
                 document.getElementById('leyNumero').value = l.numero;
                 document.getElementById('leyParrafo').value = l.parrafo;
+                document.getElementById('leyEstado').value = l.status || 'ACTI';
                 document.getElementById('leyFecha').value = l.fecha || '';
                 document.getElementById('leyDescripcion').value = l.desc || '';
-                document.getElementById('leyTipoValor').value = l.tipo || 'jornal';
+                document.getElementById('leyTipoValor').value = l.tipo || 'Jornal en Gs.';
                 document.getElementById('leyValor').value = l.valor || '';
 
                 handleRegistroTypeChange();
@@ -570,6 +593,7 @@
             const btnInactivate = document.getElementById('btnInactivateLaws');
             const btnCancel = document.getElementById('btnCancelSelection');
             const selectAll = document.getElementById('selectAll');
+            // Solo contamos los visibles/habilitados
             const total = document.querySelectorAll('.row-check').length;
 
             if(btnInactivate) btnInactivate.disabled = checkedCount === 0;
@@ -584,7 +608,12 @@
         }
 
         function handleDelete(id) { deleteId = id; document.getElementById('modalDelete').style.display = 'flex'; }
-        function confirmDelete() { leyes = leyes.filter(l => l.id !== deleteId); renderLeyes(); closeModal('modalDelete'); }
+        
+        function confirmDelete() { 
+            leyes = leyes.filter(l => l.id !== deleteId); 
+            renderLeyes(); 
+            closeModal('modalDelete'); 
+        }
         
         function handleInactivarMasivo() { 
             const checks = document.querySelectorAll('.row-check:checked');
@@ -610,18 +639,68 @@
             checks.forEach(cb => {
                 const id = parseInt(cb.closest('tr').dataset.id);
                 const ley = leyes.find(l => l.id === id);
-                if (ley) ley.status = 'INAC';
+                if (ley) {
+                    ley.status = 'INAC';
+                    ley.history.push({ 
+                        date: new Date().toLocaleString(), 
+                        action: 'UPDATE', 
+                        user: 'admin_mre', 
+                        desc: 'Inactivación masiva de registro.' 
+                    });
+                }
             });
             
-            renderLeyes();
             closeModal('modalInactivateConfirm');
             handleCancelSelection();
-            // alert('Las leyes seleccionadas han sido inactivadas.');
+            renderLeyes();
         }
 
+        // Manejador del submit del formulario (Crear / Editar)
         document.getElementById('formLeyes').onsubmit = (e) => {
             e.preventDefault();
-            alert('Registro guardado exitosamente.');
+            
+            const formData = {
+                tipoReg: document.getElementById('leyTipoRegistro').value,
+                numero: document.getElementById('leyNumero').value,
+                parrafo: document.getElementById('leyParrafo').value,
+                fecha: document.getElementById('leyFecha').value,
+                desc: document.getElementById('leyDescripcion').value,
+                tipo: document.getElementById('leyTipoValor').value,
+                valor: document.getElementById('leyValor').value,
+                status: document.getElementById('leyEstado').value
+            };
+
+            if (currentEditingId) {
+                // EDITAR
+                const index = leyes.findIndex(l => l.id === currentEditingId);
+                if (index !== -1) {
+                    leyes[index] = { 
+                        ...leyes[index], 
+                        ...formData,
+                        history: [...leyes[index].history, {
+                            date: new Date().toLocaleString(), 
+                            action: 'UPDATE', 
+                            user: 'usuario_actual', 
+                            desc: 'Actualización de datos desde formulario.'
+                        }]
+                    };
+                }
+            } else {
+                // CREAR
+                const newId = leyes.length > 0 ? Math.max(...leyes.map(l => l.id)) + 1 : 1;
+                leyes.push({
+                    id: newId,
+                    ...formData,
+                    history: [{
+                        date: new Date().toLocaleString(), 
+                        action: 'CREATE', 
+                        user: 'usuario_actual', 
+                        desc: 'Registro creado manualmente.'
+                    }]
+                });
+            }
+
+            renderLeyes();
             closeModal('modalLeyes');
         };
 
