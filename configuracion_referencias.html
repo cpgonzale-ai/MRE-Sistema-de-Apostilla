@@ -28,12 +28,6 @@
 
         html { font-size: calc(var(--base-font-size) * var(--font-scale)); }
 
-        /* --- ACCESIBILIDAD --- */
-        body.high-contrast {
-            --mre-blue: #000000; --mre-blue-light: #000000; --mre-red: #D50000;
-            --soft-bg: #FFFFFF; --border-color: #000000; --input-bg: #FFFFFF;
-            --text-main: #000000; --text-muted: #000000; --card-shadow: none;
-        }
         body.grayscale-mode { filter: grayscale(100%); }
 
         body { 
@@ -53,14 +47,13 @@
         .portal-header { 
             display: flex; justify-content: space-between; align-items: center; background: white; 
             padding: 1.25rem 2.5rem; box-shadow: 0 4px 10px -1px rgba(0,0,0,0.05); 
-            border-bottom: 1px solid var(--border-color); position: relative; z-index: 2000;
+            border-bottom: 2px solid var(--border-color); position: relative; z-index: 2000;
         }
 
         .mobile-toggle-btn {
             background: transparent; border: none; color: var(--mre-blue); cursor: pointer;
             padding: 4px; display: none; border-radius: 8px; transition: var(--transition);
         }
-        .mobile-toggle-btn:hover { background: #F1F5F9; }
 
         /* ACCESIBILIDAD */
         .a11y-container { position: relative; }
@@ -80,8 +73,6 @@
         .text-resize-controls { display: flex; justify-content: space-between; align-items: center; background: #F8FAFC; border-radius: 10px; padding: 4px; border: 1px solid #E2E8F0; margin-bottom: 1rem; }
         .btn-resize { width: 32px; height: 32px; border: none; background: white; border-radius: 8px; color: var(--mre-blue); display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: var(--transition); }
         .font-size-display { font-size: 0.85rem; font-weight: 700; color: #475569; }
-        .switch-control { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid #F1F5F9; }
-        .switch-label { font-size: 0.85rem; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
         .toggle-switch { position: relative; display: inline-block; width: 40px; height: 22px; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; inset: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px; }
@@ -95,7 +86,6 @@
             border-radius: 12px; cursor: pointer; transition: var(--transition); color: var(--text-muted);
             background: #F8FAFC; border: 1px solid var(--border-color);
         }
-        .dots-menu-trigger:hover { background: #F1F5F9; color: var(--mre-blue-light); border-color: var(--mre-blue-light); }
         .dropdown-menu-mre { 
             position: absolute; top: calc(100% + 10px); right: 0; background: white; border-radius: 12px; 
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); border: 1px solid var(--border-color); 
@@ -112,7 +102,6 @@
         /* --- LAYOUT PRINCIPAL --- */
         .app-container { display: flex; flex: 1; overflow: hidden; position: relative; }
 
-        /* --- SIDEBAR PRINCIPAL --- */
         .main-sidebar {
             width: 280px; background: white; border-right: 1px solid var(--border-color);
             display: flex; flex-direction: column; z-index: 100; box-shadow: 4px 0 10px rgba(0,0,0,0.02);
@@ -132,9 +121,7 @@
             display: flex; align-items: center; gap: 12px; padding: 0.85rem 1rem;
             color: var(--text-muted); text-decoration: none; border-radius: 12px;
             font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; transition: var(--transition);
-            white-space: nowrap;
         }
-        .nav-link-mre:hover { background: #F1F5F9; color: var(--mre-blue); }
         .nav-link-mre.active { background: #f0f7ff; color: var(--mre-blue-light); box-shadow: 0 4px 6px -1px rgba(0, 40, 85, 0.05); }
 
         .mre-sidebar-popup {
@@ -145,10 +132,8 @@
         }
         .mre-sidebar-popup.show { display: block; opacity: 1; }
 
-        /* --- ÁREA DE CONTENIDO --- */
         .content-area { flex: 1; padding: 2rem 3.5rem; overflow-y: auto; position: relative; }
         
-        /* GRILLA */
         .grid-frame { 
             background: white; border-radius: 20px; box-shadow: var(--card-shadow); 
             border: 1px solid #E2E8F0; position: relative; overflow: hidden;
@@ -162,7 +147,6 @@
             display: flex; justify-content: space-between; align-items: center; 
         }
 
-        /* BOTONES ACCIONES */
         .action-cell { min-width: 140px; }
         .action-wrapper { display: flex; justify-content: flex-end; gap: 6px; width: 100%; }
 
@@ -172,36 +156,24 @@
             transition: var(--transition); cursor: pointer; flex-shrink: 0;
         }
         .btn-action-icon:hover { background: #F1F5F9; color: var(--mre-blue); border-color: var(--mre-blue); }
-        .btn-action-view:hover { color: var(--mre-blue-light); border-color: var(--mre-blue-light); }
-        .btn-action-edit:hover { color: var(--mre-green); border-color: var(--mre-green); }
-        .btn-action-delete:hover { color: var(--mre-red); border-color: var(--mre-red); }
 
-        /* BOTONES HERRAMIENTAS */
         .btn-tool-generic {
             background: #FFFFFF; color: var(--mre-blue); border: 1px solid var(--border-color);
             padding: 0.5rem 1rem; border-radius: 10px; font-size: 0.75rem; font-weight: 700;
             display: flex; align-items: center; gap: 8px; transition: var(--transition);
-            cursor: pointer;
         }
-        .btn-tool-generic:hover { background: #F1F5F9; border-color: var(--mre-blue); }
 
         .mre-table { width: 100%; border-collapse: separate; border-spacing: 0; }
         .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 1.1rem 1.5rem; border-bottom: 2px solid #E2E8F0; background: #fafbfc; white-space: nowrap; }
         .mre-table td { padding: 1.1rem 1.5rem; font-size: 0.9rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
         .row-inactive td { color: #94A3B8; background-color: #F8FAFC; }
-        .row-inactive .badge { opacity: 0.6; background-color: #E2E8F0 !important; color: #64748B !important; border: 1px solid #CBD5E1 !important; }
 
-        /* PAGINACIÓN */
         .grid-footer { padding: 1rem 1.5rem; background-color: #F8FAFC; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .btn-pagination { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #E2E8F0; border-radius: 8px; color: #64748B; cursor: pointer; transition: var(--transition); }
-        .btn-pagination:hover:not(:disabled) { background: var(--mre-blue); color: white; border-color: var(--mre-blue); }
-        .btn-pagination:disabled { opacity: 0.5; cursor: not-allowed; background: #F1F5F9; }
         .page-indicator { font-size: 0.85rem; font-weight: 700; color: var(--mre-blue); padding: 0 8px; }
 
         .btn-main { background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); color: #ffffff; border: none; border-radius: 12px; padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.85rem; transition: var(--transition); }
-        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 40, 85, 0.2); }
 
-        /* CUSTOM SELECT */
         .custom-select-container { position: relative; width: 100%; }
         .custom-select-trigger {
             display: flex; justify-content: space-between; align-items: center;
@@ -214,7 +186,6 @@
             background: white; border: 1px solid #E2E8F0; border-radius: 16px;
             box-shadow: 0 15px 30px rgba(0,0,0,0.15); z-index: 3000;
             display: none; flex-direction: column; overflow: hidden;
-            animation: fadeIn 0.2s ease-out;
         }
         .custom-select-dropdown.show { display: flex; }
         .custom-select-search-wrapper { padding: 12px; border-bottom: 1px solid #F1F5F9; background: #F8FAFC; }
@@ -224,7 +195,6 @@
         .custom-select-option:hover { background-color: #f1f5f9; color: var(--mre-blue-light); }
         .custom-select-option.selected { background-color: #f0f7ff; color: var(--mre-blue-light); border-left: 4px solid var(--mre-blue-light); padding-left: 16px; }
 
-        /* MODALES */
         .mre-modal-overlay { position: fixed; inset: 0; background: rgba(0, 40, 85, 0.4); backdrop-filter: blur(4px); z-index: 4000; display: none; align-items: center; justify-content: center; padding: 20px; }
         .mre-modal { background: white; border-radius: 28px; max-width: 850px; width: 100%; padding: 2.5rem; position: relative; box-shadow: 0 30px 60px -12px rgba(0,0,0,0.25); max-height: 95vh; overflow-y: auto; }
         
@@ -238,40 +208,16 @@
         .audit-grid-table th { background: #F1F5F9; color: #64748B; font-size: 0.7rem; font-weight: 800; padding: 0.8rem 1.2rem; border-bottom: 1px solid var(--border-color); text-transform: uppercase; }
         .audit-grid-table td { padding: 0.8rem 1.2rem; border-bottom: 1px solid #F1F5F9; font-size: 0.85rem; color: #475569; }
 
-        /* FOOTER INSTITUCIONAL */
-        .mre-footer {
-            background: white; border-top: 1px solid #E2E8F0; padding: 1.2rem 2.5rem;
-            display: flex; justify-content: space-between; align-items: center; z-index: 100; margin-top: auto;
-        }
-        .btn-help { background: white; border: 1px solid var(--mre-blue); color: var(--mre-blue); padding: 0.6rem 1.2rem; border-radius: 50px; font-size: 0.75rem; font-weight: 800; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: var(--transition); }
-        .btn-help:hover { background: var(--mre-blue); color: white; }
+        .mre-footer { background: white; border-top: 1px solid #E2E8F0; padding: 1.2rem 2.5rem; display: flex; justify-content: space-between; align-items: center; z-index: 100; margin-top: auto; }
+        .btn-help { background: white; border: 1px solid var(--mre-blue); color: var(--mre-blue); padding: 0.6rem 1.2rem; border-radius: 50px; font-size: 0.75rem; font-weight: 800; text-decoration: none; display: flex; align-items: center; gap: 8px; }
 
-        .btn-danger-outline { background: #ffffff; color: var(--mre-red); border: 1.5px solid var(--mre-red); border-radius: 12px; padding: 0.6rem 1.5rem; font-weight: 700; font-size: 0.85rem; transition: var(--transition); }
-        .btn-danger-outline:hover:not(:disabled) { background: var(--mre-red); color: white; transform: translateY(-2px); }
-        .btn-danger-outline:disabled { opacity: 0.4; cursor: not-allowed; border-color: #E2E8F0; color: #94A3B8; }
-        .btn-cancel-mre { background: white; border: 1px solid #CBD5E1; color: #475569; border-radius: 12px; padding: 0.6rem 1.5rem; font-weight: 700; font-size: 0.85rem; transition: var(--transition); }
-        .btn-cancel-mre:hover { background: #f8fafc; border-color: #94a3b8; }
+        .master-selector-card { background: white; border-radius: 20px; padding: 1.5rem; border: 1px solid var(--border-color); box-shadow: var(--card-shadow); margin-bottom: 2rem; position: relative; z-index: 100; }
 
-        .selected-items-confirm-list { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 1rem; margin: 1.5rem 0; max-height: 150px; overflow-y: auto; }
         .mre-checkbox { width: 22px; height: 22px; cursor: pointer; border: 2px solid var(--border-color); border-radius: 6px; transition: var(--transition); }
         .mre-checkbox:disabled { opacity: 0.3; cursor: not-allowed; }
 
-        .master-selector-card { 
-            background: white; border-radius: 20px; padding: 1.5rem; border: 1px solid var(--border-color); 
-            box-shadow: var(--card-shadow); margin-bottom: 2rem;
-            position: relative; z-index: 100;
-        }
-
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
-
-        @media (max-width: 992px) {
-            .mobile-toggle-btn { display: block; }
-            .main-sidebar { position: fixed; left: 0; top: 0; bottom: 0; transform: translateX(-100%); width: 280px; z-index: 2000; }
-            .main-sidebar.show { transform: translateX(0); }
-            .content-area { padding: 1.5rem 1.5rem; }
-            .grid-footer { flex-direction: column; align-items: stretch; gap: 15px; }
-        }
     </style>
 </head>
 <body>
@@ -280,7 +226,6 @@
     <div id="sidebarGlobalPopup" class="mre-sidebar-popup"></div>
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
-    <!-- CABECERA INSTITUCIONAL -->
     <header class="portal-header animate-fade">
         <div class="d-flex align-items-center gap-3">
             <button class="mobile-toggle-btn" onclick="toggleSidebar()" aria-label="Abrir menú de navegación">
@@ -302,29 +247,27 @@
                     <span>Accesibilidad</span>
                     <i data-lucide="chevron-down" class="lucide-chevron-down" style="width: 14px; margin-left: 4px;"></i>
                 </button>
-                <div class="a11y-dropdown-menu" id="a11yMenu" onclick="event.stopPropagation()">
+                <div class="a11y-dropdown-menu" id="a11yMenu">
                     <div class="a11y-section-title">Tamaño de Texto</div>
                     <div class="text-resize-controls">
                         <button class="btn-resize" onclick="changeFontSize(-0.1)" title="Reducir tamaño de fuente"><i data-lucide="minus" style="width: 16px;"></i></button>
                         <span class="font-size-display" id="fontSizeDisplay">100%</span>
                         <button class="btn-resize" onclick="changeFontSize(0.1)" title="Aumentar tamaño de fuente"><i data-lucide="plus" style="width: 16px;"></i></button>
                     </div>
-                    <div class="a11y-section-title mt-3">Visualización</div>
                     <div class="switch-control">
                         <div class="switch-label"><i data-lucide="eye-off" style="width: 16px;"></i> Escala de Grises</div>
                         <label class="toggle-switch">
                             <input type="checkbox" id="switchGrayscale" onchange="toggleGrayscale()">
-                            <span class="slider" title="Activar/Desactivar escala de grises"></span>
+                            <span class="slider"></span>
                         </label>
                     </div>
                 </div>
             </div>
-
             <div class="user-info-text text-end d-none d-md-block">
-                <div class="fw-800 text-navy" style="font-size: 1rem;">Carlos González</div>
+                <div class="fw-800 text-navy" style="font-size: 0.95rem;">Carlos González</div>
                 <div class="text-muted small fw-bold">CI: 4.567.890</div>
             </div>
-            <div class="dots-menu-trigger shadow-sm" onclick="toggleUserMenu(event)" title="Opciones de perfil de usuario">
+            <div class="dots-menu-trigger shadow-sm" onclick="toggleUserMenu(event)">
                 <i data-lucide="user" style="width: 24px;"></i>
             </div>
             <div class="dropdown-menu-mre shadow" id="userMenu">
@@ -332,7 +275,7 @@
                     <p class="fw-800 text-navy mb-0" style="font-size: 0.95rem;">Carlos González</p>
                     <p class="text-muted small mb-0 fw-bold">CI: 4.567.890</p>
                 </div>
-                <button class="dropdown-item-mre text-danger fw-700" onclick="handleLogout()" title="Cerrar sesión de forma segura">
+                <button class="dropdown-item-mre text-danger fw-700" onclick="handleLogout()">
                     <i data-lucide="log-out" style="width: 14px;"></i> Cerrar Sesión
                 </button>
             </div>
@@ -340,45 +283,38 @@
     </header>
 
     <div class="app-container">
-        <!-- SIDEBAR -->
         <aside class="main-sidebar animate-fade" id="mainSidebar">
             <nav class="nav-menu">
-                <div class="d-flex justify-content-between align-items-center mb-3 px-3 d-lg-none">
-                    <span class="text-muted fw-bold uppercase" style="font-size: 0.8rem;">Menú</span>
-                    <button class="btn btn-sm btn-light" onclick="toggleSidebar()"><i data-lucide="x" style="width: 16px;"></i></button>
-                </div>
                 <p class="px-3 mb-2 text-muted fw-bold uppercase" style="font-size: 0.75rem; letter-spacing: 1px;">Administración</p>
                 <a href="#" class="nav-link-mre active" title="Configuración de Referencias Maestras"><i data-lucide="settings-2" style="width: 18px;"></i> <span>Configuración de Referencias</span></a>
             </nav>
         </aside>
 
         <main class="content-area">
-            <header class="d-flex justify-content-between align-items-end mb-4 animate-fade">
-                <div>
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb mb-1" style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">
-                            <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted">Configuración</a></li>
-                            <li class="breadcrumb-item active text-primary">Referencias</li>
-                        </ol>
-                    </nav>
-                    <h2 class="fw-black text-navy m-0">Tipos de Referencias y Referencias</h2>
-                </div>
+            <header class="mb-4 animate-fade">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-1" style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">
+                        <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted">Configuración</a></li>
+                        <li class="breadcrumb-item active text-primary">Referencias</li>
+                    </ol>
+                </nav>
+                <h2 class="fw-black text-navy m-0">Tipos de Referencias y Referencias</h2>
             </header>
 
-            <div class="master-selector-card animate-fade shadow-sm">
+            <div class="master-selector-card shadow-sm">
                 <div class="row align-items-end g-3">
                     <div class="col-md-5">
                         <label class="form-label">Seleccionar Tipo de Referencia (Dominio)</label>
-                        <div class="custom-select-container" id="tipoSelectContainer">
+                        <div class="custom-select-container">
                             <div class="custom-select-trigger" onclick="toggleTipoDropdown(event)" title="Click para expandir listado de dominios">
                                 <span id="tipoSelectLabel">Seleccione un dominio...</span>
                                 <i data-lucide="chevron-down" style="width: 16px;"></i>
                             </div>
-                            <div class="custom-select-dropdown shadow-lg" id="tipoSelectDropdown" onclick="event.stopPropagation()">
+                            <div class="custom-select-dropdown shadow-lg" id="tipoSelectDropdown">
                                 <div class="custom-select-search-wrapper">
                                     <div class="position-relative">
                                         <i data-lucide="search" class="position-absolute" style="left:12px; top:10px; color:#94A3B8; width:18px;"></i>
-                                        <input type="text" id="tipoSearchInput" class="custom-select-search-input" placeholder="Ej. NACIONALIDAD" onkeyup="filterTipoOptions(this.value)">
+                                        <input type="text" id="tipoSearchInput" class="custom-select-search-input" placeholder="Ej. Nacionalidad" onkeyup="filterTipoOptions(this.value)">
                                     </div>
                                 </div>
                                 <div class="custom-select-options-list" id="tipoOptionsList"></div>
@@ -392,32 +328,32 @@
                                 <div class="fw-bold text-muted" id="tipoModuloLabel" style="font-size: 0.95rem;">---</div>
                             </div>
                             <div class="d-flex gap-2">
-                                <button class="btn-action-icon shadow-sm" onclick="viewSelectedTipo()" title="Visualizar detalles del tipo de referencia"><i data-lucide="eye"></i></button>
-                                <button class="btn-action-icon shadow-sm" onclick="editSelectedTipo()" title="Editar parámetros del tipo de referencia"><i data-lucide="edit-3"></i></button>
-                                <button class="btn-action-icon d-none shadow-sm" id="btnDeleteTipo" style="color: var(--mre-red); border-color: #FECDD3;" onclick="openTipoActionModal('DELETE')" title="Eliminar dominio (Solo si está vacío)"><i data-lucide="trash-2"></i></button>
+                                <button class="btn-action-icon shadow-sm" onclick="viewSelectedTipo()" title="Visualizar detalles"><i data-lucide="eye"></i></button>
+                                <button class="btn-action-icon shadow-sm" onclick="editSelectedTipo()" title="Editar parámetros"><i data-lucide="edit-3"></i></button>
+                                <button class="btn-action-icon d-none shadow-sm" id="btnDeleteTipo" style="color: var(--mre-red); border-color: #FECDD3;" onclick="openTipoActionModal('DELETE')" title="Eliminar dominio"><i data-lucide="trash-2"></i></button>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-3 text-end">
                         <button class="btn-main shadow px-4" onclick="openModal('modalTipo', 'add')" title="Crear un nuevo tipo de referencia maestro">
-                            <i data-lucide="plus" style="width: 14px;" class="me-1"></i> Nuevo Tipo
+                            <i data-lucide="plus" style="width: 16px;" class="me-1"></i> Nuevo Tipo
                         </button>
                     </div>
                 </div>
             </div>
 
-            <div class="grid-frame animate-fade shadow-sm">
+            <div class="grid-frame shadow-sm">
                 <div class="grid-header-frame">
                     <h5 class="fw-black text-uppercase m-0" style="color: var(--mre-blue); font-size: 0.85rem;">Lista de Valores: <span id="currentTipoLabel" class="text-primary">---</span></h5>
                     <div class="d-flex align-items-center gap-2">
-                        <button class="btn-tool-generic shadow-sm" title="Configurar visibilidad de columnas en la grilla"><i data-lucide="layout-columns" style="width: 16px;"></i> Columnas</button>
-                        <button class="btn-tool-generic shadow-sm" title="Exportar registros filtrados a formato Excel"><i data-lucide="file-spreadsheet" style="width: 16px;"></i> Excel</button>
-                        <button class="btn-tool-generic shadow-sm" title="Exportar registros filtrados a formato PDF"><i data-lucide="file-text" style="width: 16px;"></i> PDF</button>
+                        <button class="btn-tool-generic shadow-sm" title="Configurar columnas"><i data-lucide="layout-columns" style="width: 16px;"></i> Columnas</button>
+                        <button class="btn-tool-generic shadow-sm" title="Excel"><i data-lucide="file-spreadsheet" style="width: 16px;"></i> Excel</button>
+                        <button class="btn-tool-generic shadow-sm" title="PDF"><i data-lucide="file-text" style="width: 16px;"></i> PDF</button>
                         <div class="position-relative ms-2" style="max-width: 300px;">
                             <i data-lucide="search" class="position-absolute" style="left:14px; top:50%; transform:translateY(-50%); color:#94A3B8; width:16px;"></i>
-                            <input type="text" id="similaritySearchInput" class="form-control-mre ps-5 py-2 shadow-sm" placeholder="Ej. Certificado de..." onkeyup="handleSimilaritySearch()" title="Búsqueda por similitud en descripción o código">
+                            <input type="text" id="similaritySearchInput" class="form-control-mre ps-5 py-2 shadow-sm" placeholder="Ej. Paraguaya" onkeyup="handleSimilaritySearch()" title="Búsqueda por descripción">
                         </div>
-                        <button class="btn-main d-inline-flex align-items-center gap-2 shadow-sm ms-2" id="btnAddRef" disabled onclick="openModal('modalRef', 'add')" title="Agregar nuevo valor de referencia al dominio seleccionado">
+                        <button class="btn-main d-inline-flex align-items-center gap-2 shadow-sm ms-2" id="btnAddRef" disabled onclick="openModal('modalRef', 'add')" title="Agregar nuevo valor">
                             <i data-lucide="plus-circle" style="width: 16px;"></i> Agregar
                         </button>
                     </div>
@@ -427,224 +363,131 @@
                     <table class="mre-table">
                         <thead>
                             <tr>
-                                <th width="40" class="text-center"><input type="checkbox" id="selectAll" class="mre-checkbox" onchange="toggleSelectAll(this)" title="Seleccionar/Deseleccionar todos los registros activos"></th>
+                                <th width="40" class="text-center"><input type="checkbox" id="selectAll" class="mre-checkbox" onchange="toggleSelectAll(this)" title="Seleccionar todos"></th>
                                 <th width="100" class="text-center">ID</th>
                                 <th>Descripción</th>
                                 <th>Valor Alfanumérico</th>
+                                <th>Estado</th>
                                 <th width="160" class="text-end action-cell">Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="referenciasTableBody">
-                            <tr><td colspan="5" class="text-center py-5 text-muted"><p class="fw-bold">Seleccione un dominio para gestionar sus valores</p></td></tr>
+                            <tr><td colspan="6" class="text-center py-5 text-muted"><p class="fw-bold">Seleccione un dominio para gestionar sus valores</p></td></tr>
                         </tbody>
                     </table>
                 </div>
 
                 <div class="grid-footer">
                     <div><span class="text-muted small fw-bold" id="paginationInfo">Mostrando 0 a 0 de 0 registros</span></div>
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="d-flex gap-2">
-                             <button class="btn-danger-outline d-inline-flex align-items-center gap-2 px-3 py-1 shadow-sm" id="btnInactivar" disabled onclick="handleInactivar()" title="Inactivar masivamente los registros seleccionados"><i data-lucide="power" style="width: 14px;"></i> Inactivar</button>
-                             <button class="btn-cancel-mre shadow-sm px-3 py-1" id="btnCancelDeselect" disabled onclick="deselectAll()" title="Limpiar selección actual">Cancelar</button>
-                        </div>
-                        <div style="width:1px; height:24px; background:#E2E8F0;"></div>
-                        <div class="d-flex align-items-center gap-1">
-                            <button class="btn-pagination shadow-sm" id="btnPageFirst" onclick="changePage('first')" title="Primera página"><i data-lucide="chevrons-left" style="width: 16px;"></i></button>
-                            <button class="btn-pagination shadow-sm" id="btnPagePrev" onclick="changePage('prev')" title="Página anterior"><i data-lucide="chevron-left" style="width: 16px;"></i></button>
-                            <span class="page-indicator" id="pageIndicator">Pág 1</span>
-                            <button class="btn-pagination shadow-sm" id="btnPageNext" onclick="changePage('next')" title="Página siguiente"><i data-lucide="chevron-right" style="width: 16px;"></i></button>
-                            <button class="btn-pagination shadow-sm" id="btnPageLast" onclick="changePage('last')" title="Última página"><i data-lucide="chevrons-right" style="width: 16px;"></i></button>
-                        </div>
+                    <div class="d-flex align-items-center gap-1">
+                        <button class="btn-pagination shadow-sm" onclick="changePage('first')"><i data-lucide="chevrons-left" style="width: 16px;"></i></button>
+                        <button class="btn-pagination shadow-sm" onclick="changePage('prev')"><i data-lucide="chevron-left" style="width: 16px;"></i></button>
+                        <span class="page-indicator" id="pageIndicator">Pág 1</span>
+                        <button class="btn-pagination shadow-sm" onclick="changePage('next')"><i data-lucide="chevron-right" style="width: 16px;"></i></button>
+                        <button class="btn-pagination shadow-sm" onclick="changePage('last')"><i data-lucide="chevrons-right" style="width: 16px;"></i></button>
                     </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- MODAL CONFIRM ELIMINACIÓN -->
+    <!-- MODALES -->
     <div class="mre-modal-overlay" id="modalDeleteConfirm">
         <div class="mre-modal shadow-lg" style="max-width: 480px;">
             <div class="text-center mb-4">
-                <div class="bg-danger bg-opacity-10 text-danger d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 64px; height: 64px;">
-                    <i data-lucide="alert-triangle" style="width: 32px; height: 32px;"></i>
-                </div>
+                <div class="bg-danger bg-opacity-10 text-danger d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 64px; height: 64px;"><i data-lucide="alert-triangle"></i></div>
                 <h5 class="fw-800 text-navy mb-2">Confirmar Eliminación Lógica</h5>
                 <p class="text-muted small px-3">¿Está seguro que desea eliminar este registro? Esta acción marcará el elemento como eliminado y ya no estará disponible.</p>
             </div>
             <div id="deleteItemInfo" class="bg-light p-3 rounded-4 border mb-4 text-center fw-bold text-navy small"></div>
             <div class="d-flex justify-content-center gap-3 mt-4 pt-3 border-top">
-                <button type="button" class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalDeleteConfirm')" title="Cancelar operación y volver">No, mantener</button>
-                <button type="button" class="btn-main bg-danger border-danger px-4" onclick="confirmLogicalDelete()" title="Confirmar eliminación permanente del registro">Sí, eliminar registro</button>
+                <button type="button" class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalDeleteConfirm')">No, mantener</button>
+                <button type="button" class="btn-main bg-danger border-danger px-4" onclick="confirmLogicalDelete()">Sí, eliminar registro</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL GESTIÓN DE TIPO -->
     <div class="mre-modal-overlay" id="modalTipo">
         <div class="mre-modal animate-fade">
             <div class="section-title" id="modalTipoTitle">Gestionar Tipo de Referencia</div>
-            <form id="formTipo">
+            <form>
                 <div class="row g-4 mb-4">
-                    <div class="col-md-8">
-                        <label class="form-label">Identificador del Dominio <span class="text-danger">*</span></label>
-                        <input type="text" id="tipoIdInput" class="form-control-mre" placeholder="Ej. TIPO_DOCUMENTO" title="Código único alfanumérico para el dominio" required>
-                    </div>
-                    <div class="col-md-4" id="tipoStatusFieldContainer">
-                        <label class="form-label">Estado <span class="text-danger">*</span></label>
-                        <select id="tipoStatusInput" class="form-control-mre" title="Vigencia administrativa del dominio">
-                            <option value="ACTI">Activo</option>
-                            <option value="INAC">Inactivo</option>
-                        </select>
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label">Descripción General <span class="text-danger">*</span></label>
-                        <textarea id="tipoDescInput" class="form-control-mre" rows="3" placeholder="Breve descripción del dominio y su propósito en el sistema..." title="Explicación detallada de la categoría de referencias" required></textarea>
-                    </div>
+                    <div class="col-md-8"><label class="form-label">Identificador del Dominio <span class="text-danger">*</span></label><input type="text" id="tipoIdInput" class="form-control-mre" placeholder="Ej. Nacionalidad" required></div>
+                    <div class="col-md-4" id="tipoStatusFieldContainer"><label class="form-label">Estado <span class="text-danger">*</span></label><select id="tipoStatusInput" class="form-control-mre"><option value="ACTI">Activo</option><option value="INAC">Inactivo</option></select></div>
+                    <div class="col-12"><label class="form-label">Descripción General <span class="text-danger">*</span></label><textarea id="tipoDescInput" class="form-control-mre" rows="3" placeholder="Descripción clara del dominio..."></textarea></div>
                 </div>
                 <div class="audit-history-container d-none" id="auditHistorySectionTipo">
                     <div class="section-title">Historial de Auditoría</div>
                     <div class="table-responsive"><table class="audit-grid-table"><thead><tr><th>Fecha</th><th>Acción</th><th>Usuario</th><th>Descripción</th></tr></thead><tbody id="auditHistoryBodyTipo"></tbody></table></div>
                 </div>
-                <div class="mt-4 pt-4 border-top d-flex justify-content-end gap-3">
-                    <button type="button" class="btn btn-light rounded-pill px-5 fw-bold shadow-sm" onclick="closeModal('modalTipo')" title="Cerrar ventana sin guardar cambios">Cerrar</button>
-                    <button type="submit" id="btnSaveTipo" class="btn-main px-5 shadow" title="Guardar modificaciones del tipo de referencia">Guardar Cambios</button>
-                </div>
+                <div class="mt-4 pt-4 border-top d-flex justify-content-end gap-3"><button type="button" class="btn btn-light rounded-pill px-5 fw-bold shadow-sm" onclick="closeModal('modalTipo')">Cerrar</button><button type="submit" class="btn-main px-5 shadow">Guardar Cambios</button></div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL GESTIÓN DE REFERENCIA -->
     <div class="mre-modal-overlay" id="modalRef">
         <div class="mre-modal animate-fade">
             <div class="section-title" id="refModalTitle">Detalle de Referencia</div>
-            <form id="formRef">
+            <form>
                 <div class="row g-4 mb-4">
-                    <div class="col-md-8">
-                        <label class="form-label">Descripción <span class="text-danger">*</span></label>
-                        <input type="text" id="refDesc" class="form-control-mre shadow-sm" placeholder="Nombre del valor específico" title="Nombre legible para el usuario" required>
-                    </div>
-                    <div class="col-md-4" id="refStatusFieldContainer">
-                        <label class="form-label">Estado <span class="text-danger">*</span></label>
-                        <select id="refStatusInput" class="form-control-mre" title="Define si el valor es seleccionable en trámites">
-                            <option value="ACTI">Activo</option>
-                            <option value="INAC">Inactivo</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Valor Alfanumérico</label>
-                        <input type="text" id="refAlf" class="form-control-mre shadow-sm" placeholder="Código alfanumérico asociado" title="Código técnico (ej. ISO para países)">
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Valor Numérico</label>
-                        <input type="number" id="refNum" class="form-control-mre shadow-sm" placeholder="Código numérico asociado" title="Valor entero para clasificaciones técnicas">
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Valor Fecha</label>
-                        <input type="date" id="refFec" class="form-control-mre shadow-sm" title="Fecha opcional asociada al registro">
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label">Descripción Larga</label>
-                        <textarea id="refDescLarga" class="form-control-mre shadow-sm" rows="3" placeholder="Observaciones detalladas sobre este valor de referencia..." title="Información técnica u operativa adicional"></textarea>
-                    </div>
+                    <div class="col-md-8"><label class="form-label">Descripción <span class="text-danger">*</span></label><input type="text" id="refDesc" class="form-control-mre shadow-sm" placeholder="Ej. Paraguaya" required></div>
+                    <div class="col-md-4" id="refStatusFieldContainer"><label class="form-label">Estado <span class="text-danger">*</span></label><select id="refStatusInput" class="form-control-mre"><option value="ACTI">Activo</option><option value="INAC">Inactivo</option></select></div>
+                    <div class="col-md-4"><label class="form-label">Valor Alfanumérico</label><input type="text" id="refAlf" class="form-control-mre shadow-sm" placeholder="Ej. PAR"></div>
+                    <div class="col-md-4"><label class="form-label">Valor Numérico</label><input type="number" id="refNum" class="form-control-mre shadow-sm" placeholder="Ej. 1"></div>
+                    <div class="col-md-4"><label class="form-label">Valor Fecha</label><input type="date" id="refFec" class="form-control-mre shadow-sm"></div>
+                    <div class="col-12"><label class="form-label">Descripción Larga</label><textarea id="refDescLarga" class="form-control-mre shadow-sm" rows="3" placeholder="Detalles técnicos..."></textarea></div>
                 </div>
                 <div class="audit-history-container d-none" id="auditHistorySection">
                     <div class="section-title">Historial de Auditoría</div>
                     <div class="table-responsive"><table class="audit-grid-table"><thead><tr><th>Fecha</th><th>Acción</th><th>Usuario</th><th>Descripción</th></tr></thead><tbody id="auditHistoryBody"></tbody></table></div>
                 </div>
-                <div class="mt-4 pt-4 border-top d-flex justify-content-end align-items-center">
-                    <div class="d-flex gap-3">
-                        <button type="button" class="btn btn-light rounded-pill px-5 fw-bold shadow-sm" onclick="closeModal('modalRef')" title="Cerrar ventana sin guardar">Cerrar</button>
-                        <button type="submit" id="btnSaveRef" class="btn-main px-5 shadow" title="Actualizar datos de la referencia">Guardar Cambios</button>
-                    </div>
-                </div>
+                <div class="mt-4 pt-4 border-top d-flex justify-content-end align-items-center"><div class="d-flex gap-3"><button type="button" class="btn btn-light rounded-pill px-5 fw-bold shadow-sm" onclick="closeModal('modalRef')">Cerrar</button><button type="submit" class="btn-main px-5 shadow">Guardar Cambios</button></div></div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL CONFIRM INACTIVAR MASIVO -->
-    <div class="mre-modal-overlay" id="modalConfirmInactivate" role="dialog" aria-modal="true">
-        <div class="mre-modal animate-fade" style="max-width: 450px;">
-            <div class="text-center mb-4">
-                <div class="bg-danger bg-opacity-10 text-danger d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 64px; height: 64px;"><i data-lucide="alert-triangle"></i></div>
-                <h5 class="fw-black text-navy mb-2">Confirmar Inactivación</h5>
-                <p class="text-muted small">¿Está seguro de inactivar los siguientes registros?</p>
-            </div>
-            <div class="selected-items-confirm-list" id="selectedItemsList"></div>
-            <div class="d-flex justify-content-end gap-2 mt-4">
-                <button type="button" class="btn btn-light rounded-pill px-4 fw-bold shadow-sm" onclick="closeModal('modalConfirmInactivate')" title="Cancelar acción masiva">Cancelar</button>
-                <button type="button" class="btn-main bg-danger border-0 px-4" onclick="executeInactivation()" title="Proceder con la inactivación de los elementos listados">Sí, inactivar</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="mre-modal-overlay" id="modalConfirmTipoAction" role="dialog" aria-modal="true">
-        <div class="mre-modal animate-fade" style="max-width: 450px;">
-            <div class="text-center mb-4">
-                <div id="tipoActionIconContainer" class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 64px; height: 64px;"><i data-lucide="alert-triangle" id="tipoActionIcon" style="width: 32px; height: 32px;"></i></div>
-                <h5 class="fw-black text-navy mb-2" id="tipoActionTitle">Confirmar Acción</h5>
-                <p class="text-muted small" id="tipoActionMessage"></p>
-            </div>
-            <div class="d-flex justify-content-end gap-2 mt-4">
-                <button type="button" class="btn btn-light rounded-pill px-4 fw-bold shadow-sm" onclick="closeModal('modalConfirmTipoAction')">Cancelar</button>
-                <button type="button" id="btnExecuteTipoAction" class="btn-main px-4 shadow" onclick="executeTipoAction()">Confirmar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- FOOTER -->
     <footer class="mre-footer animate-fade">
         <div class="footer-left fw-600">&copy; 2026 Ministerio de Relaciones Exteriores - Dirección de Informática</div>
-        <div class="footer-right">
-            <a href="#" class="btn-help shadow-sm" title="Abrir centro de ayuda y soporte técnico"><i data-lucide="help-circle" style="width: 20px; height: 20px;"></i>¿Necesitas ayuda?</a>
-        </div>
+        <div class="footer-right"><a href="#" class="btn-help shadow-sm"><i data-lucide="help-circle" style="width: 20px; height: 20px;"></i>¿Necesitas ayuda?</a></div>
     </footer>
 
     <script>
+        // HELPERS
+        const toTitleCase = (str) => {
+            if (!str) return '';
+            return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+        };
+
+        const formatState = (state) => {
+            return state === 'ACTI' ? 'Activo' : 'Inactivo';
+        };
+
         // UI CORE
         function toggleSidebar() { document.getElementById('mainSidebar').classList.toggle('show'); document.getElementById('sidebarOverlay').classList.toggle('active'); }
-        function toggleA11yMenu(e) { e.stopPropagation(); document.getElementById('a11yMenu').classList.toggle('show'); document.getElementById('a11yTrigger').classList.toggle('active'); }
-        
-        function toggleTipoDropdown(e) {
-            e.stopPropagation();
-            const dropdown = document.getElementById('tipoSelectDropdown');
-            if (!dropdown.classList.contains('show')) { dropdown.classList.add('show'); document.getElementById('tipoSearchInput').focus(); renderTipoSelector(); } 
-            else { dropdown.classList.remove('show'); }
-        }
-
-        document.addEventListener('click', (e) => {
-            const dropdown = document.getElementById('tipoSelectDropdown');
-            if (dropdown && !dropdown.contains(e.target)) dropdown.classList.remove('show');
-            if (document.getElementById('a11yMenu')) { document.getElementById('a11yMenu').classList.remove('show'); document.getElementById('a11yTrigger').classList.remove('active'); }
-            if (document.getElementById('userMenu')) document.getElementById('userMenu').classList.remove('show');
-            if (document.getElementById('sidebarGlobalPopup')) document.getElementById('sidebarGlobalPopup').classList.remove('show');
-        });
-
+        function toggleA11yMenu(e) { e.stopPropagation(); document.getElementById('a11yMenu').classList.toggle('show'); }
+        function toggleTipoDropdown(e) { e.stopPropagation(); document.getElementById('tipoSelectDropdown').classList.toggle('show'); document.getElementById('tipoSearchInput').focus(); }
         function toggleUserMenu(e) { e.stopPropagation(); document.getElementById('userMenu').classList.toggle('show'); }
         function handleLogout() { if(confirm('¿Desea cerrar sesión?')) location.reload(); }
 
-        function changeFontSize(delta) {
-            let current = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--font-scale'));
-            let newScale = Math.min(Math.max(current + delta, 0.8), 1.5);
-            document.documentElement.style.setProperty('--font-scale', newScale);
-            document.getElementById('fontSizeDisplay').innerText = Math.round(newScale * 100) + '%';
-        }
-        function toggleGrayscale() { document.body.classList.toggle('grayscale-mode'); }
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.dropdown-menu-mre, .a11y-dropdown-menu, .custom-select-dropdown').forEach(m => m.classList.remove('show'));
+        });
 
         // MOCK DATA
         let mockTipos = [
-            { id: 1, dominio: 'NACIONALIDAD', estado: 'ACTI', descripcion: 'Países de origen para trámites de apostilla.' },
+            { id: 1, dominio: 'NACIONALIDAD', estado: 'ACTI', descripcion: 'Países de origen para trámites.' },
             { id: 2, dominio: 'TIPO_DOCUMENTO', estado: 'INAC', descripcion: 'Tipos de identificación civil.' },
-            { id: 3, dominio: 'ESTADO_CIVIL', estado: 'ACTI', descripcion: 'Situación legal de convivencia.' }
+            { id: 3, dominio: 'ESTADO_CIVIL', estado: 'ACTI', descripcion: 'Situación legal.' }
         ];
 
         let mockRef = [
-            { id: 1, id_tipo: 1, estado: 'ACTI', descripcion: 'PARAGUAYA', val_alf: 'PAR', val_num: null, val_fec: null, usu_alta: 'CGONZALEZ', fecha_alta: '10/01/2026', hasLinkedRecords: true },
-            { id: 2, id_tipo: 1, estado: 'INAC', descripcion: 'ARGENTINA', val_alf: 'ARG', val_num: null, val_fec: null, usu_alta: 'CGONZALEZ', fecha_alta: '10/01/2026', hasLinkedRecords: false },
-            { id: 3, id_tipo: 1, estado: 'ACTI', descripcion: 'BRASILEÑA', val_alf: 'BRA', val_num: null, val_fec: null, usu_alta: 'SISTEMA', fecha_alta: '12/01/2026', hasLinkedRecords: true }
+            { id: 1, id_tipo: 1, estado: 'ACTI', descripcion: 'PARAGUAYA', val_alf: 'PAR', hasLinkedRecords: true },
+            { id: 2, id_tipo: 1, estado: 'INAC', descripcion: 'ARGENTINA', val_alf: 'ARG', hasLinkedRecords: false },
+            { id: 3, id_tipo: 1, estado: 'ACTI', descripcion: 'BRASILEÑA', val_alf: 'BRA', hasLinkedRecords: true }
         ];
 
         for (let i = 4; i <= 15; i++) {
-            mockRef.push({ id: i, id_tipo: 1, estado: i % 4 === 0 ? 'INAC' : 'ACTI', descripcion: `Nacionalidad Tipo ${i}`, val_alf: `DOC${i}`, val_num: i, usu_alta: 'SISTEMA', fecha_alta: '15/01/2026', hasLinkedRecords: i % 3 === 0 });
+            mockRef.push({ id: i, id_tipo: 1, estado: i % 4 === 0 ? 'INAC' : 'ACTI', descripcion: `NACIONALIDAD TIPO ${i}`, val_alf: `NAC${i}`, hasLinkedRecords: i % 3 === 0 });
         }
 
         let selectedTipoId = null;
@@ -652,14 +495,13 @@
         const rowsPerPage = 5;
         let currentFilteredData = [];
         let idToDelete = null;
-        let pendingActionType = null; 
-        let pendingAction = null;     
+        let pendingActionType = null;
 
         function renderTipoSelector(filter = '') {
             const list = document.getElementById('tipoOptionsList');
             const query = filter.toLowerCase();
             const filtered = mockTipos.filter(t => t.dominio.toLowerCase().includes(query));
-            list.innerHTML = filtered.length === 0 ? '<div class="custom-select-no-results">Sin dominios...</div>' : filtered.map(t => `<div class="custom-select-option ${selectedTipoId == t.id ? 'selected' : ''}" onclick="selectTipoOption(${t.id}, '${t.dominio}')"><span>${t.dominio}</span>${selectedTipoId == t.id ? '<i data-lucide="check" style="width:14px;"></i>' : ''}</div>`).join('');
+            list.innerHTML = filtered.length === 0 ? '<div class="custom-select-no-results">Sin resultados</div>' : filtered.map(t => `<div class="custom-select-option ${selectedTipoId == t.id ? 'selected' : ''}" onclick="selectTipoOption(${t.id}, '${toTitleCase(t.dominio)}')"><span>${toTitleCase(t.dominio)}</span>${selectedTipoId == t.id ? '<i data-lucide="check" style="width:14px;"></i>' : ''}</div>`).join('');
             lucide.createIcons();
         }
 
@@ -668,24 +510,23 @@
         function selectTipoOption(id, label) {
             selectedTipoId = id;
             document.getElementById('tipoSelectLabel').innerText = label;
-            document.getElementById('tipoSelectDropdown').classList.remove('show');
             handleTipoChange(id);
         }
 
         function handleTipoChange(id) {
             const tipo = mockTipos.find(t => t.id === id);
             const hasRefs = mockRef.some(r => r.id_tipo === id);
-            document.getElementById('tipoModuloLabel').innerText = tipo.estado === 'ACTI' ? 'Activo' : 'Inactivo';
+            document.getElementById('tipoModuloLabel').innerText = formatState(tipo.estado);
             document.getElementById('btnDeleteTipo').classList.toggle('d-none', hasRefs);
             document.getElementById('tipoInfo').classList.remove('d-none');
-            document.getElementById('currentTipoLabel').innerText = tipo.dominio;
+            document.getElementById('currentTipoLabel').innerText = toTitleCase(tipo.dominio);
             document.getElementById('btnAddRef').disabled = false;
             filterData();
         }
 
         function filterData() {
             const query = document.getElementById('similaritySearchInput').value.toLowerCase();
-            currentFilteredData = mockRef.filter(r => r.id_tipo === selectedTipoId && (r.descripcion.toLowerCase().includes(query) || (r.val_alf && r.val_alf.toLowerCase().includes(query))));
+            currentFilteredData = mockRef.filter(r => r.id_tipo === selectedTipoId && r.descripcion.toLowerCase().includes(query));
             const start = (currentPage - 1) * rowsPerPage;
             renderTable(currentFilteredData.slice(start, start + rowsPerPage));
             updatePagination();
@@ -693,121 +534,56 @@
 
         function renderTable(data) {
             const body = document.getElementById('referenciasTableBody');
-            if (data.length === 0) { body.innerHTML = `<tr><td colspan="5" class="text-center py-5 text-muted">Sin datos.</td></tr>`; return; }
+            if (data.length === 0) { body.innerHTML = `<tr><td colspan="6" class="text-center py-5 text-muted">Sin datos</td></tr>`; return; }
             body.innerHTML = data.map(r => `
-                <tr class="${r.estado === 'INAC' ? 'row-inactive' : ''}" data-id="${r.id}" data-status="${r.estado}">
-                    <td class="text-center align-middle"><input type="checkbox" class="mre-checkbox record-check" onchange="updateUIState()" ${r.estado === 'INAC' ? 'disabled' : ''}></td>
+                <tr class="${r.estado === 'INAC' ? 'row-inactive' : ''}" data-id="${r.id}">
+                    <td class="text-center align-middle"><input type="checkbox" class="mre-checkbox record-check" ${r.estado === 'INAC' ? 'disabled' : ''}></td>
                     <td class="text-center fw-bold align-middle">${r.id}</td>
-                    <td class="align-middle"><div class="fw-bold">${r.descripcion}</div></td>
+                    <td class="align-middle"><div class="fw-bold">${toTitleCase(r.descripcion)}</div></td>
                     <td class="align-middle"><span class="badge bg-light text-dark border px-3">${r.val_alf || '-'}</span></td>
+                    <td class="align-middle"><span class="small fw-800 ${r.estado === 'ACTI' ? 'text-success' : 'text-muted'}">${formatState(r.estado)}</span></td>
                     <td class="text-end align-middle action-cell">
                         <div class="action-wrapper">
-                            <button class="btn-action-icon btn-action-view shadow-sm" onclick="openModal('modalRef', 'view', ${r.id})" title="Visualizar detalles del registro"><i data-lucide="eye" style="width:14px"></i></button>
-                            <button class="btn-action-icon btn-action-edit shadow-sm" onclick="openModal('modalRef', 'edit', ${r.id})" title="Editar parámetros del registro" ${r.estado === 'INAC' ? 'disabled' : ''}><i data-lucide="edit-3" style="width:14px"></i></button>
-                            ${ !r.hasLinkedRecords ? `
-                            <button class="btn-action-icon btn-action-delete shadow-sm" onclick="handleDeleteClick(${r.id}, 'REF')" title="Eliminar registro (Solo si no tiene dependencias)">
-                                <i data-lucide="trash-2" style="width:14px"></i>
-                            </button>` : `<div style="width: 32px;"></div>` }
+                            <button class="btn-action-icon shadow-sm" onclick="openModal('modalRef', 'view', ${r.id})"><i data-lucide="eye" style="width:14px"></i></button>
+                            <button class="btn-action-icon shadow-sm" onclick="openModal('modalRef', 'edit', ${r.id})"><i data-lucide="edit-3" style="width:14px"></i></button>
+                            ${ !r.hasLinkedRecords ? `<button class="btn-action-icon shadow-sm" onclick="handleDeleteClick(${r.id}, 'REF')"><i data-lucide="trash-2" style="width:14px"></i></button>` : `<div style="width: 32px;"></div>` }
                         </div>
                     </td>
                 </tr>
             `).join('');
             lucide.createIcons();
-            updateUIState();
         }
 
         function handleDeleteClick(id, type) {
             idToDelete = id;
             pendingActionType = type;
-            let infoText = "";
-            if (type === 'REF') {
-                const ref = mockRef.find(r => r.id === id);
-                infoText = `REGISTRO: ${ref.descripcion} (ID: ${ref.id})`;
-            } else {
-                const tipo = mockTipos.find(t => t.id === id);
-                infoText = `TIPO DE REFERENCIA: ${tipo.dominio}`;
-            }
-            document.getElementById('deleteItemInfo').innerText = infoText;
+            const item = type === 'REF' ? mockRef.find(r => r.id === id) : mockTipos.find(t => t.id === id);
+            document.getElementById('deleteItemInfo').innerText = `${type === 'REF' ? 'VALOR' : 'DOMINIO'}: ${toTitleCase(item.descripcion || item.dominio)}`;
             document.getElementById('modalDeleteConfirm').style.display = 'flex';
-            lucide.createIcons();
         }
 
         function confirmLogicalDelete() {
-            if(idToDelete) {
-                if (pendingActionType === 'REF') {
-                    mockRef = mockRef.filter(r => r.id !== idToDelete);
-                    filterData();
-                } else {
-                    mockTipos = mockTipos.filter(t => t.id !== idToDelete);
-                    renderTipoSelector();
-                    document.getElementById('tipoInfo').classList.add('d-none');
-                    document.getElementById('currentTipoLabel').innerText = '---';
-                    renderTable([]);
-                }
-                closeModal('modalDeleteConfirm');
-                idToDelete = null;
-            }
+            if (pendingActionType === 'REF') mockRef = mockRef.filter(r => r.id !== idToDelete);
+            else { mockTipos = mockTipos.filter(t => t.id !== idToDelete); document.getElementById('tipoInfo').classList.add('d-none'); renderTable([]); }
+            closeModal('modalDeleteConfirm');
+            filterData();
+            renderTipoSelector();
         }
-
-        function openTipoActionModal(action) {
-            if (!selectedTipoId) return;
-            pendingActionType = 'TIPO';
-            pendingAction = action;
-            if (action === 'DELETE') { handleDeleteClick(selectedTipoId, 'TIPO'); return; }
-            
-            const title = document.getElementById('tipoActionTitle');
-            const message = document.getElementById('tipoActionMessage');
-            const btnConfirm = document.getElementById('btnExecuteTipoAction');
-
-            title.innerText = 'Confirmar Acción';
-            message.innerText = `¿Está seguro de realizar esta acción?`;
-            btnConfirm.className = 'btn-main bg-danger border-0 px-4 shadow';
-            btnConfirm.innerText = 'Confirmar';
-            
-            lucide.createIcons();
-            openModal('modalConfirmTipoAction');
-        }
-
-        function executeTipoAction() {
-            const t = mockTipos.find(x => x.id === selectedTipoId);
-            if (t && pendingAction === 'INACTIVATE') t.estado = 'INAC';
-            closeModal('modalConfirmTipoAction');
-            handleTipoChange(selectedTipoId);
-        }
-
-        function viewSelectedTipo() { openModal('modalTipo', 'view'); }
-        function editSelectedTipo() { openModal('modalTipo', 'edit'); }
 
         function openModal(id, mode, refId) {
             const modal = document.getElementById(id); modal.style.display = 'flex';
             if (id === 'modalTipo') {
                 const t = mockTipos.find(x => x.id === selectedTipoId) || {dominio:'', descripcion:'', estado:'ACTI'};
-                document.getElementById('tipoIdInput').value = mode === 'add' ? '' : t.dominio;
-                document.getElementById('tipoDescInput').value = mode === 'add' ? '' : t.descripcion;
-                document.getElementById('tipoStatusInput').value = mode === 'add' ? 'ACTI' : t.estado;
-                document.getElementById('modalTipoTitle').innerText = mode === 'add' ? 'Crear Nuevo Tipo' : (mode === 'edit' ? 'Modificar Tipo' : 'Detalles del Tipo');
+                document.getElementById('tipoIdInput').value = mode === 'add' ? '' : toTitleCase(t.dominio);
+                document.getElementById('tipoStatusInput').value = t.estado;
                 document.getElementById('tipoStatusFieldContainer').style.display = mode === 'add' ? 'none' : 'block';
-                const auditSectionTipo = document.getElementById('auditHistorySectionTipo');
-                if (mode === 'view') {
-                    auditSectionTipo.classList.remove('d-none');
-                    document.getElementById('auditHistoryBodyTipo').innerHTML = '<tr><td>10/01/2026 08:00</td><td>CREATE</td><td>cgonzalez</td><td>Registro inicial</td></tr>';
-                } else { auditSectionTipo.classList.add('d-none'); }
                 enableForm(id, mode !== 'view');
             }
             if (id === 'modalRef') {
-                const r = mockRef.find(x => x.id === refId) || {descripcion:'', val_alf:'', val_num:'', val_fec:'', fecha_alta:'Hoy', estado:'ACTI'};
-                document.getElementById('refDesc').value = mode === 'add' ? '' : r.descripcion; 
-                document.getElementById('refAlf').value = mode === 'add' ? '' : (r.val_alf || '');
-                document.getElementById('refNum').value = mode === 'add' ? '' : (r.val_num || ''); 
-                document.getElementById('refFec').value = mode === 'add' ? '' : (r.val_fec || '');
-                document.getElementById('refStatusInput').value = mode === 'add' ? 'ACTI' : r.estado;
-                document.getElementById('refModalTitle').innerText = mode === 'add' ? 'Agregar Nueva Referencia' : (mode === 'edit' ? 'Modificar Referencia' : 'Detalles de la Referencia');
+                const r = mockRef.find(x => x.id === refId) || {descripcion:'', estado:'ACTI'};
+                document.getElementById('refDesc').value = mode === 'add' ? '' : toTitleCase(r.descripcion);
+                document.getElementById('refStatusInput').value = r.estado;
                 document.getElementById('refStatusFieldContainer').style.display = mode === 'add' ? 'none' : 'block';
-                const auditSection = document.getElementById('auditHistorySection');
-                if (mode === 'view') {
-                    auditSection.classList.remove('d-none');
-                    document.getElementById('auditHistoryBody').innerHTML = '<tr><td>20/01/2026 14:20</td><td>UPDATE</td><td>cgonzalez</td><td>Ajuste técnico de valores</td></tr>';
-                } else { auditSection.classList.add('d-none'); }
                 enableForm(id, mode !== 'view');
             }
             lucide.createIcons();
@@ -816,56 +592,20 @@
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         function enableForm(id, state) { document.querySelectorAll(`#${id} input, #${id} textarea, #${id} select`).forEach(i => state ? i.removeAttribute('disabled') : i.setAttribute('disabled', true)); }
 
-        function handleSimilaritySearch() { currentPage = 1; filterData(); }
-        function toggleSelectAll(s) { document.querySelectorAll('.record-check:not(:disabled)').forEach(c => c.checked = s.checked); updateUIState(); }
-        function deselectAll() { document.querySelectorAll('.record-check').forEach(c => c.checked = false); document.getElementById('selectAll').checked = false; updateUIState(); }
-        function updateUIState() {
-            const checks = document.querySelectorAll('.record-check:checked');
-            const btnInactivate = document.getElementById('btnInactivar');
-            if(btnInactivate) btnInactivate.disabled = checks.length === 0;
-        }
-        function handleInactivar() {
-            const checks = document.querySelectorAll('.record-check:checked');
-            const listContainer = document.getElementById('selectedItemsList');
-            listContainer.innerHTML = '';
-            checks.forEach(c => { const row = c.closest('tr'); listContainer.innerHTML += `<div class="p-2 border-bottom small fw-bold text-navy">ID ${row.dataset.id}: ${row.querySelector('.fw-bold').innerText}</div>`; });
-            const modal = document.getElementById('modalConfirmInactivate');
-            if(modal) modal.style.display = 'flex';
-        }
-        function executeInactivation() {
-            document.querySelectorAll('.record-check:checked').forEach(c => { const id = parseInt(c.closest('tr').dataset.id); const r = mockRef.find(x => x.id === id); if (r) r.estado = 'INAC'; });
-            const modal = document.getElementById('modalConfirmInactivate');
-            if(modal) modal.style.display = 'none';
-            deselectAll(); filterData(); handleTipoChange(selectedTipoId);
-        }
         function changePage(action) {
             const total = Math.ceil(currentFilteredData.length / rowsPerPage);
             if (action === 'first') currentPage = 1; else if (action === 'prev' && currentPage > 1) currentPage--; else if (action === 'next' && currentPage < total) currentPage++; else if (action === 'last') currentPage = total;
             filterData();
         }
+
         function updatePagination() {
             const total = Math.ceil(currentFilteredData.length / rowsPerPage) || 1;
-            const indicator = document.getElementById('pageIndicator');
-            if(indicator) indicator.innerText = `Pág ${currentPage} de ${total}`;
+            document.getElementById('pageIndicator').innerText = `Pág ${currentPage} de ${total}`;
         }
 
-        // Sidebar Popups
-        let popupTimer;
-        const globalPopup = document.getElementById('sidebarGlobalPopup');
-        document.querySelectorAll('.nav-link-mre[data-popup]').forEach(link => {
-            link.addEventListener('mouseenter', () => {
-                clearTimeout(popupTimer);
-                const r = link.getBoundingClientRect();
-                globalPopup.innerHTML = link.dataset.popup;
-                globalPopup.style.top = `${r.top + (r.height / 2)}px`;
-                globalPopup.style.left = `${r.right + 10}px`;
-                globalPopup.style.transform = 'translateY(-50%)';
-                globalPopup.classList.add('show');
-            });
-            link.addEventListener('mouseleave', () => {
-                popupTimer = setTimeout(() => { if (!globalPopup.matches(':hover')) globalPopup.classList.remove('show'); }, 150);
-            });
-        });
+        function handleSimilaritySearch() { currentPage = 1; filterData(); }
+        function viewSelectedTipo() { openModal('modalTipo', 'view'); }
+        function editSelectedTipo() { openModal('modalTipo', 'edit'); }
 
         document.addEventListener('DOMContentLoaded', () => { renderTipoSelector(); lucide.createIcons(); });
     </script>
