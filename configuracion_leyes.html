@@ -29,6 +29,16 @@
 
         html { font-size: calc(var(--base-font-size) * var(--font-scale)); }
 
+        /* --- ESTILO TOOLTIP PERSONALIZADO --- */
+        .tooltip {
+            --bs-tooltip-bg: #1E293B;
+            --bs-tooltip-color: #ffffff;
+            --bs-tooltip-padding-y: 0.5rem;
+            --bs-tooltip-padding-x: 0.8rem;
+            --bs-tooltip-font-size: 0.75rem;
+            --bs-tooltip-border-radius: 6px;
+        }
+
         /* --- MODOS DE ACCESIBILIDAD --- */
         body.grayscale-mode { filter: grayscale(100%); }
 
@@ -163,7 +173,7 @@
 
     <header class="portal-header animate-fade">
         <div class="d-flex align-items-center gap-3">
-            <div class="bg-white p-2 rounded-3 border d-none d-sm-block" style="box-shadow: 0 4px 8px rgba(0,0,0,0.08)">
+            <div class="bg-white p-2 rounded-3 border d-none d-sm-block" style="box-shadow: 0 4px 8px rgba(0,0,0,0.08)" data-bs-toggle="tooltip" title="SIA-PY Módulo Legal">
                 <i data-lucide="scale" style="color: var(--mre-blue); width: 28px;"></i>
             </div>
             <div>
@@ -174,7 +184,7 @@
         
         <div class="user-dropdown d-flex align-items-center gap-3">
             <div class="a11y-container">
-                <button class="btn-a11y-trigger" id="a11yTrigger" onclick="toggleA11yMenu(event)">
+                <button class="btn-a11y-trigger" id="a11yTrigger" onclick="toggleA11yMenu(event)" data-bs-toggle="tooltip" title="Opciones de Accesibilidad y Visualización">
                     <i data-lucide="accessibility" style="width: 20px;"></i>
                     <span>Accesibilidad</span>
                     <i data-lucide="chevron-down" style="width: 14px; margin-left: 4px;"></i>
@@ -182,14 +192,14 @@
                 <div class="a11y-dropdown-menu" id="a11yMenu" onclick="event.stopPropagation()">
                     <div class="a11y-section-title">Tamaño de Texto</div>
                     <div class="text-resize-controls">
-                        <button class="btn-resize" onclick="changeFontSize(-0.1)"><i data-lucide="minus" style="width: 16px;"></i></button>
+                        <button class="btn-resize" onclick="changeFontSize(-0.1)" title="Reducir tamaño"><i data-lucide="minus" style="width: 16px;"></i></button>
                         <span class="font-size-display" id="fontSizeDisplay">100%</span>
-                        <button class="btn-resize" onclick="changeFontSize(0.1)"><i data-lucide="plus" style="width: 16px;"></i></button>
+                        <button class="btn-resize" onclick="changeFontSize(0.1)" title="Aumentar tamaño"><i data-lucide="plus" style="width: 16px;"></i></button>
                     </div>
                     <div class="a11y-section-title mt-3">Visualización</div>
                     <div class="switch-control">
                         <div class="switch-label"><i data-lucide="eye-off" style="width: 16px;"></i> Escala de Grises</div>
-                        <label class="toggle-switch">
+                        <label class="toggle-switch" title="Activar modo escala de grises">
                             <input type="checkbox" id="switchGrayscale" onchange="toggleGrayscale()">
                             <span class="slider"></span>
                         </label>
@@ -201,7 +211,7 @@
                 <div class="user-name fw-bold" style="font-size: 0.85rem;">Carlos González</div>
                 <div class="user-id text-muted" style="font-size: 0.7rem;">CI: 4.567.890</div>
             </div>
-            <div class="dots-menu-trigger" id="profileTrigger" onclick="toggleUserMenu(event)">
+            <div class="dots-menu-trigger" id="profileTrigger" onclick="toggleUserMenu(event)" data-bs-toggle="tooltip" title="Menú de Usuario">
                 <i data-lucide="user" style="width: 24px;"></i>
             </div>
             <div class="dropdown-menu-mre" id="userMenu">
@@ -216,7 +226,7 @@
         <aside class="main-sidebar animate-fade">
             <nav class="p-3">
                 <p class="px-3 mb-2 text-muted fw-bold uppercase" style="font-size: 0.7rem; letter-spacing: 1.2px;">Administración</p>
-                <a href="#" class="nav-link-mre active"><i data-lucide="book-open" style="width: 18px;"></i> <span>Configuración de Leyes</span></a>
+                <a href="#" class="nav-link-mre active" data-bs-toggle="tooltip" data-bs-placement="right" title="Gestión de Leyes y Aranceles"><i data-lucide="book-open" style="width: 18px;"></i> <span>Configuración de Leyes</span></a>
             </nav>
         </aside>
 
@@ -226,7 +236,7 @@
                     <h2 class="fw-black text-navy m-0" style="color: var(--mre-blue); font-size: 1.8rem;">Configuración de Leyes</h2>
                     <p class="text-muted small mb-0">Listado y configuración de base legal para aranceles</p>
                 </div>
-                <button class="btn-main shadow-sm" onclick="openModal('add')">
+                <button class="btn-main shadow-sm" onclick="openModal('add')" data-bs-toggle="tooltip" title="Crear un nuevo registro de ley o excepción">
                     <i data-lucide="plus-circle" style="width: 18px;"></i> Agregar Nueva Ley
                 </button>
             </header>
@@ -236,7 +246,7 @@
                     <h4 class="fw-black text-uppercase m-0" style="color: var(--mre-blue); font-size: 0.85rem;">Listado de Leyes Vigentes</h4>
                     <div class="position-relative" style="width: 320px;">
                         <i data-lucide="search" class="position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:#94A3B8; width:16px;"></i>
-                        <input type="text" class="form-control-mre ps-5" placeholder="Filtrar por descripción o número...">
+                        <input type="text" class="form-control-mre ps-5" placeholder="Filtrar por número, descripción..." data-bs-toggle="tooltip" title="Busque por Número de Ley, Párrafo o Descripción">
                     </div>
                 </div>
 
@@ -244,7 +254,7 @@
                     <table class="mre-table">
                         <thead>
                             <tr>
-                                <th width="40" class="text-center"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
+                                <th width="40" class="text-center"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()" data-bs-toggle="tooltip" title="Seleccionar todo"></th>
                                 <th width="80" class="text-center">ID</th>
                                 <th width="140">Número de Ley</th>
                                 <th>Descripción de la Ley</th>
@@ -262,10 +272,10 @@
                     <div><span class="text-muted small fw-bold" id="paginationInfo">Mostrando registros</span></div>
                     
                     <div class="d-flex gap-2">
-                        <button class="btn btn-outline-danger fw-bold d-flex align-items-center gap-2" id="btnInactivateLaws" disabled onclick="handleInactivarMasivo()" style="border-radius: 12px; border-width: 2px;">
+                        <button class="btn btn-outline-danger fw-bold d-flex align-items-center gap-2" id="btnInactivateLaws" disabled onclick="handleInactivarMasivo()" style="border-radius: 12px; border-width: 2px;" data-bs-toggle="tooltip" title="Inactivar todos los registros seleccionados">
                             <i data-lucide="power" style="width: 14px;"></i> Inactivar
                         </button>
-                        <button class="btn btn-outline-secondary fw-bold d-flex align-items-center gap-2" id="btnCancelSelection" onclick="handleCancelSelection()" style="border-radius: 12px; border-width: 2px; display: none;">
+                        <button class="btn btn-outline-secondary fw-bold d-flex align-items-center gap-2" id="btnCancelSelection" onclick="handleCancelSelection()" style="border-radius: 12px; border-width: 2px; display: none;" data-bs-toggle="tooltip" title="Limpiar selección">
                             <i data-lucide="x" style="width: 14px;"></i> Cancelar
                         </button>
                     </div>
@@ -287,7 +297,7 @@
             <form id="formLeyes">
                 <div class="row g-4 mb-5">
                     <div class="col-md-4">
-                        <label class="form-label">Tipo de Registro <span class="text-danger">*</span></label>
+                        <label class="form-label" data-bs-toggle="tooltip" title="Define si es una Ley base o una excepción específica">Tipo de Registro <span class="text-danger">*</span></label>
                         <select id="leyTipoRegistro" class="form-control-mre" onchange="handleRegistroTypeChange()" required>
                             <option value="LEY">Ley</option>
                             <option value="EXCEPCION">Excepción</option>
@@ -295,35 +305,35 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Número de Ley <span class="text-danger">*</span></label>
-                        <input type="text" id="leyNumero" class="form-control-mre" placeholder="Ej: 1030" required>
+                        <input type="text" id="leyNumero" class="form-control-mre" placeholder="Ej: 1030/97" required data-bs-toggle="tooltip" title="Ingrese el número oficial de la Ley">
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Párrafo de la ley <span class="text-danger">*</span></label>
-                        <input type="text" id="leyParrafo" class="form-control-mre" placeholder="Ej: Art 1ro." required>
+                        <input type="text" id="leyParrafo" class="form-control-mre" placeholder="Ej: Art. 1° inc. a" required data-bs-toggle="tooltip" title="Referencia al artículo o inciso específico">
                     </div>
                     
                     <!-- Campo condicional: Fecha -->
                     <div class="col-md-4 condicional-field">
                         <label class="form-label">Fecha de la ley</label>
-                        <input type="date" id="leyFecha" class="form-control-mre">
+                        <input type="date" id="leyFecha" class="form-control-mre" data-bs-toggle="tooltip" title="Fecha de promulgación">
                     </div>
 
                     <div class="col-12">
                         <label class="form-label">Descripción de la ley <span class="text-danger">*</span></label>
-                        <textarea id="leyDescripcion" class="form-control-mre" rows="3" placeholder="Descripción legal completa..." required></textarea>
+                        <textarea id="leyDescripcion" class="form-control-mre" rows="3" placeholder="Ingrese el texto descriptivo de la ley o excepción..." required data-bs-toggle="tooltip" title="Descripción completa del alcance legal"></textarea>
                     </div>
 
                     <!-- Campos condicionales: Tipo Valor y Valor -->
                     <div class="col-md-6 condicional-field">
                         <label class="form-label">Tipo de valor</label>
-                        <select id="leyTipoValor" class="form-control-mre">
+                        <select id="leyTipoValor" class="form-control-mre" data-bs-toggle="tooltip" title="Unidad monetaria del arancel">
                             <option value="jornal">Jornal</option>
                             <option value="dolar">Dolar</option>
                         </select>
                     </div>
                     <div class="col-md-6 condicional-field">
                         <label class="form-label">Valor</label>
-                        <input type="text" id="leyValor" class="form-control-mre" placeholder="Ej: 0.5">
+                        <input type="text" id="leyValor" class="form-control-mre" placeholder="Ej: 0.5" data-bs-toggle="tooltip" title="Coeficiente o monto numérico">
                     </div>
                 </div>
 
@@ -386,25 +396,36 @@
         <div>&copy; 2026 Ministerio de Relaciones Exteriores - Dirección de Informática</div>
     </footer>
 
+    <!-- Bootstrap Bundle with Popper for Tooltips -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
         let leyes = [
             { 
-                id: 1, numero: '1030', desc: 'Ley Nº 1030 Certificado Nacimiento - N', valor: '0,5', tipo: 'jornal', fecha: '1997-01-13', parrafo: 'Art 1ro.', tipoReg: 'LEY',
+                id: 1, numero: '1030/97', desc: 'Ley Nº 1030 Certificado Nacimiento - N', valor: '0,5', tipo: 'jornal', fecha: '1997-01-13', parrafo: 'Art 1ro.', tipoReg: 'LEY',
                 history: [
                     { date: '15/01/2026 08:30', action: 'CREATE', user: 'cgonzalez', desc: 'Migración inicial de datos.' },
                     { date: '20/01/2026 14:15', action: 'UPDATE', user: 'admin_mre', desc: 'Ajuste de valor por resolución 14/2026.' }
                 ]
             },
             { 
-                id: 2, numero: '1030', desc: 'Ley Nº 1030 Certificado de Defunción - N', valor: '1', tipo: 'jornal', fecha: '2008-01-13', parrafo: 'Art 1ro.', tipoReg: 'LEY',
+                id: 2, numero: '4033/10', desc: 'Ley Nº 4033 Arancel Consular', valor: '1', tipo: 'jornal', fecha: '2010-09-08', parrafo: 'Art 5°.', tipoReg: 'LEY',
                 history: [{ date: '10/01/2026 09:00', action: 'CREATE', user: 'sys_root', desc: 'Registro manual.' }]
             },
-            { id: 3, numero: '1030', desc: 'Ley Nº 1030 Certificado de Matrimonio - N', valor: '0,5', tipo: 'dolar', fecha: '2008-01-13', parrafo: 'Art 1ro.', tipoReg: 'LEY', history: [] },
-            { id: 4, numero: '1030', desc: 'Ley Nº 1030 Permiso del Menor - N', valor: '0,5', tipo: 'jornal', fecha: '2008-01-13', parrafo: 'Art 1ro.', tipoReg: 'LEY', history: [] },
-            { id: 5, numero: '1030', desc: 'Ley Nº 1030 Poderes - N', valor: '1', tipo: 'dolar', fecha: '2008-01-13', parrafo: 'Art 1ro.', tipoReg: 'LEY', history: [] }
+            { id: 3, numero: '5230/14', desc: 'Ley Nº 5230 Modernización de tasas', valor: '0,5', tipo: 'dolar', fecha: '2014-06-25', parrafo: 'Art 2°.', tipoReg: 'LEY', history: [] },
+            { id: 4, numero: '6102/18', desc: 'Ley Nº 6102 Excepción de Visas', valor: '0,5', tipo: 'jornal', fecha: '2018-11-30', parrafo: 'Art 1ro.', tipoReg: 'LEY', history: [] },
+            { id: 5, numero: '3321/09', desc: 'Ley Nº 3321 Poderes Notariales', valor: '1', tipo: 'dolar', fecha: '2009-04-12', parrafo: 'Art 10.', tipoReg: 'LEY', history: [] }
         ];
 
         let deleteId = null;
+
+        // Inicializar tooltips de Bootstrap
+        function initTooltips() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        }
 
         function renderLeyes() {
             const body = document.getElementById('leyesTableBody');
@@ -425,15 +446,16 @@
                     <td class="text-muted small">${l.tipoReg === 'EXCEPCION' ? '-' : (l.fecha ? l.fecha.split('-').reverse().join('/') : '-')}</td>
                     <td class="text-center">
                         <div class="d-flex justify-content-center gap-1">
-                            <button class="btn btn-sm btn-light border" onclick="openModal('view', ${l.id})"><i data-lucide="eye" style="width:14px"></i></button>
-                            <button class="btn btn-sm btn-light border" onclick="openModal('edit', ${l.id})"><i data-lucide="pencil" style="width:14px"></i></button>
-                            <button class="btn btn-sm btn-light border text-danger" onclick="handleDelete(${l.id})"><i data-lucide="trash-2" style="width:14px"></i></button>
+                            <button class="btn btn-sm btn-light border" onclick="openModal('view', ${l.id})" data-bs-toggle="tooltip" title="Ver detalles y auditoría"><i data-lucide="eye" style="width:14px"></i></button>
+                            <button class="btn btn-sm btn-light border" onclick="openModal('edit', ${l.id})" data-bs-toggle="tooltip" title="Editar registro"><i data-lucide="pencil" style="width:14px"></i></button>
+                            <button class="btn btn-sm btn-light border text-danger" onclick="handleDelete(${l.id})" data-bs-toggle="tooltip" title="Eliminar registro permanentemente"><i data-lucide="trash-2" style="width:14px"></i></button>
                         </div>
                     </td>
                 </tr>
             `).join('');
             document.getElementById('paginationInfo').innerText = `Mostrando 1 a ${leyes.length} de ${leyes.length} registros`;
             lucide.createIcons();
+            initTooltips(); // Reinicializar tooltips para elementos nuevos
         }
 
         // Header funcs
@@ -577,7 +599,10 @@
             ['userMenu', 'a11yMenu'].forEach(id => document.getElementById(id)?.classList.remove('show'));
         });
 
-        window.onload = renderLeyes;
+        window.onload = () => {
+            renderLeyes();
+            initTooltips();
+        };
     </script>
 </body>
 </html>
