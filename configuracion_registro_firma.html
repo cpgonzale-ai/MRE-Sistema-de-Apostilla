@@ -357,7 +357,8 @@
                                 <th width="60" class="text-center">ID</th>
                                 <th>Funcionario</th>
                                 <th>Documento</th>
-                                <th>Institución / Cargo</th>
+                                <th>Institución</th>
+                                <th>Cargo</th>
                                 <th>Firma</th>
                                 <th>Estado</th>
                                 <th class="text-center" width="160">Acciones</th>
@@ -399,7 +400,8 @@
     <div class="mre-modal-overlay" id="modalOfficial">
         <div class="mre-modal animate-fade">
             <div class="section-title" id="modalTitle">Nuevo Registro</div>
-            <form id="officialForm">
+            <form id="officialForm" onsubmit="handleSave(event)">
+                <input type="hidden" id="officialId">
                 <div class="row g-4 mb-4">
                     <!-- Sección de Datos Personales -->
                     <div class="col-md-6">
@@ -470,9 +472,9 @@
                                 
                                 <div class="col-md-6">
                                     <label class="form-label">Contraseña <span class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <input type="password" id="inputPassword" class="form-control-mre border-end-0" placeholder="••••••••" style="border-top-right-radius: 0; border-bottom-right-radius: 0;">
-                                        <button class="btn bg-white border border-start-0" type="button" onclick="togglePassword('inputPassword', 'iconPass1')" style="border-top-right-radius: 10px; border-bottom-right-radius: 10px; border-color: #E2E8F0;">
+                                    <div class="position-relative">
+                                        <input type="password" id="inputPassword" class="form-control-mre pe-5" placeholder="••••••••">
+                                        <button type="button" class="btn position-absolute top-50 end-0 translate-middle-y me-2 p-1 border-0" onclick="togglePassword('inputPassword', 'iconPass1')" style="background: transparent; z-index: 5;">
                                             <i data-lucide="eye" id="iconPass1" style="width:18px; color:#64748B"></i>
                                         </button>
                                     </div>
@@ -480,9 +482,9 @@
                                 
                                 <div class="col-md-6">
                                     <label class="form-label">Confirmar Contraseña <span class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <input type="password" id="inputConfirmPassword" class="form-control-mre border-end-0" placeholder="••••••••" style="border-top-right-radius: 0; border-bottom-right-radius: 0;">
-                                        <button class="btn bg-white border border-start-0" type="button" onclick="togglePassword('inputConfirmPassword', 'iconPass2')" style="border-top-right-radius: 10px; border-bottom-right-radius: 10px; border-color: #E2E8F0;">
+                                    <div class="position-relative">
+                                        <input type="password" id="inputConfirmPassword" class="form-control-mre pe-5" placeholder="••••••••">
+                                        <button type="button" class="btn position-absolute top-50 end-0 translate-middle-y me-2 p-1 border-0" onclick="togglePassword('inputConfirmPassword', 'iconPass2')" style="background: transparent; z-index: 5;">
                                             <i data-lucide="eye" id="iconPass2" style="width:18px; color:#64748B"></i>
                                         </button>
                                     </div>
@@ -652,6 +654,53 @@
             });
         }
 
+        function handleSave(event) {
+            event.preventDefault();
+            
+            const idInput = document.getElementById('officialId').value;
+            const nombre = document.getElementById('inputNombre').value;
+            const apellido = document.getElementById('inputApellido').value;
+            const doc = document.getElementById('inputDocumento').value;
+            const email = document.getElementById('inputCorreo').value;
+            const cargo = document.getElementById('inputCargo').value;
+            const inst = document.getElementById('inputInstitucion').value;
+            const estado = document.getElementById('inputEstado').value; // Solo relevante en edición
+
+            if (idInput) {
+                // UPDATE
+                const id = parseInt(idInput);
+                const index = mockOfficials.findIndex(o => o.id === id);
+                if (index > -1) {
+                    mockOfficials[index] = { 
+                        ...mockOfficials[index], 
+                        nombre, apellido, doc, email, cargo, inst, 
+                        status: estado, // Actualizar estado desde el select en modo edición
+                        history: [...(mockOfficials[index].history || []), { date: new Date().toLocaleString(), action: 'UPDATE', user: 'admin', desc: 'Actualización de datos' }]
+                    };
+                }
+            } else {
+                // CREATE
+                const newId = mockOfficials.length > 0 ? Math.max(...mockOfficials.map(o => o.id)) + 1 : 1;
+                const initials = (nombre.charAt(0) + apellido.charAt(0)).toUpperCase();
+                
+                // Simulación de firma (usando un placeholder svg genérico para nuevos registros)
+                const dummySignature = 'data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAwIDgwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMCw0MCBDNDAsMTAgODAsMTAgMTIwLDQwIHM4MCwzMCA4MCwwIiBzdHJva2U9IiM5OUEzQjgiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==';
+
+                const newOfficial = {
+                    id: newId,
+                    nombre, apellido, doc, email, cargo, inst,
+                    status: 'ACTI', // Por defecto ACTIVO al crear
+                    initials,
+                    signaturePath: dummySignature,
+                    history: [{ date: new Date().toLocaleString(), action: 'CREATE', user: 'admin', desc: 'Registro inicial' }]
+                };
+                mockOfficials.push(newOfficial);
+            }
+
+            renderOfficials();
+            closeModal('modalOfficial');
+        }
+
         function renderOfficials() {
             const tableBody = document.getElementById('officialsTableBody');
             tableBody.innerHTML = mockOfficials.map(o => `
@@ -669,8 +718,10 @@
                     </td>
                     <td class="fw-bold text-dark font-monospace">${o.doc}</td>
                     <td>
+                        <div class="text-muted text-uppercase small" style="max-width: 180px; line-height: 1.2;">${o.inst}</div>
+                    </td>
+                    <td>
                         <div class="fw-bold text-dark" style="font-size: 0.85rem;">${o.cargo}</div>
-                        <div class="text-muted text-uppercase" style="font-size: 0.65rem; max-width: 180px; line-height: 1.2;">${o.inst}</div>
                     </td>
                     <td><div class="signature-box"><img src="${o.signaturePath}" class="signature-img" alt="Firma"></div></td>
                     <td><span class="badge ${o.status === 'ACTI' ? 'bg-success bg-opacity-10 text-success' : 'bg-secondary bg-opacity-10 text-secondary'} border border-${o.status === 'ACTI' ? 'success' : 'secondary'} small">${o.status === 'ACTI' ? 'Activo' : 'Inactivo'}</span></td>
@@ -777,6 +828,7 @@
             const containerCargo = document.getElementById('containerCargo');
             const containerStatus = document.getElementById('containerStatus');
             const inputEstado = document.getElementById('inputEstado');
+            const officialIdInput = document.getElementById('officialId');
 
             form.reset();
             modal.style.display = 'flex';
@@ -786,6 +838,7 @@
 
             if (mode === 'add') {
                 title.innerText = 'Nuevo Registro';
+                officialIdInput.value = ''; // ID vacío para crear
                 
                 // Ocultar Auditoría y Estado
                 auditSection.classList.add('d-none');
@@ -801,6 +854,7 @@
             } else {
                 const official = mockOfficials.find(o => o.id === id);
                 if (official) {
+                    officialIdInput.value = official.id; // Set ID para editar
                     document.getElementById('inputNombre').value = official.nombre;
                     document.getElementById('inputApellido').value = official.apellido;
                     document.getElementById('inputDocumento').value = official.doc;
