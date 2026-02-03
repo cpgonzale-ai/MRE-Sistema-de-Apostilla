@@ -16,7 +16,7 @@
             --mre-red: #D52B1E;
             --mre-green: #10B981;
             --mre-amber: #F59E0B;
-            --soft-bg: #f0f4f8; 
+            --soft-bg: #f8fafc; /* Ajustado al código de referencia */
             --border-color: #E2E8F0;
             --input-bg: #F8FAFC;
             --text-main: #1E293B;
@@ -52,7 +52,8 @@
         .portal-header { 
             display: flex; justify-content: space-between; align-items: center; background: white; 
             padding: 1.25rem 2.5rem; box-shadow: 0 4px 10px -1px rgba(0,0,0,0.05); 
-            border-bottom: 1px solid var(--border-color); position: relative; z-index: 2000;
+            border-bottom: 2px solid var(--border-color); /* Ajustado a 2px según referencia */
+            position: relative; z-index: 2000;
         }
 
         .btn-a11y-trigger {
@@ -96,15 +97,30 @@
         }
         .grid-frame::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(to right, var(--mre-red), var(--mre-blue)); }
         
-        .grid-header-frame { background-color: #F1F5F9; padding: 1rem 1.5rem; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; }
+        .grid-header-frame { background-color: #F1F5F9; padding: 1.2rem 1.8rem; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; }
 
         .mre-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-        .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 0.85rem 1.5rem; border-bottom: 2px solid #E2E8F0; background: #fff; }
-        .mre-table td { padding: 0.85rem 1.5rem; font-size: 0.8rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
+        .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 1.1rem 1.5rem; border-bottom: 2px solid #E2E8F0; background: #fafbfc; }
+        .mre-table td { padding: 1.1rem 1.5rem; font-size: 0.9rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
         .mre-table tr:hover td { background-color: #F8FAFC; }
 
+        /* --- BOTONES DEL ESTILO DE REFERENCIA --- */
         .btn-main { background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); color: #ffffff; border: none; border-radius: 12px; padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.85rem; transition: var(--transition); }
         .btn-main:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 40, 85, 0.2); color: white; }
+
+        .btn-tool-generic {
+            background: #FFFFFF; color: var(--mre-blue); border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem; border-radius: 10px; font-size: 0.75rem; font-weight: 700;
+            display: flex; align-items: center; gap: 8px; transition: var(--transition);
+        }
+        .btn-tool-generic:hover { background: #F8FAFC; border-color: var(--mre-blue); }
+
+        .btn-action-icon {
+            width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 8px; border: 1px solid var(--border-color); background: white; color: var(--text-muted);
+            transition: var(--transition); cursor: pointer; flex-shrink: 0;
+        }
+        .btn-action-icon:hover { background: #F1F5F9; color: var(--mre-blue); border-color: var(--mre-blue); }
 
         /* --- FOOTER & PAGINADO --- */
         .grid-footer { padding: 1rem 1.5rem; background-color: #F8FAFC; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
@@ -195,11 +211,7 @@
         <aside class="main-sidebar animate-fade">
             <nav class="nav-menu p-3">
                 <p class="px-3 mb-2 text-muted fw-bold uppercase" style="font-size: 0.7rem; letter-spacing: 1.2px;">Administración</p>
-                <a href="#" class="nav-link-mre"><i data-lucide="file-text" style="width: 18px;"></i> <span>Tipos de documentos</span></a>
-                <a href="#" class="nav-link-mre"><i data-lucide="users" style="width: 18px;"></i> <span>Usuarios</span></a>
-                <a href="#" class="nav-link-mre"><i data-lucide="shield-check" style="width: 18px;"></i> <span>Grupos y Permisos</span></a>
                 <a href="#" class="nav-link-mre active"><i data-lucide="settings-2" style="width: 18px;"></i> <span>Parámetros del Sistema</span></a>
-                <a href="#" class="nav-link-mre"><i data-lucide="layout-grid" style="width: 18px;"></i> <span>Configuración de campos</span></a>
             </nav>
         </aside>
 
@@ -216,10 +228,23 @@
 
             <div class="grid-frame animate-fade">
                 <div class="grid-header-frame">
-                    <h4 class="fw-black text-uppercase m-0" style="color: var(--mre-blue); font-size: 0.8rem;">Listado de Parámetros SIL</h4>
-                    <div class="position-relative" style="width: 320px;">
-                        <i data-lucide="search" class="position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:#94A3B8; width:16px;"></i>
-                        <input type="text" class="form-control-mre ps-5" placeholder="Filtrar parámetros...">
+                    <h4 class="fw-black text-uppercase m-0" style="color: var(--mre-blue); font-size: 0.8rem;">Listado de Parámetros</h4>
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="d-flex gap-2">
+                            <button class="btn-tool-generic shadow-sm" title="Configurar Columnas">
+                                <i data-lucide="layout-columns" style="width: 16px;"></i> Columnas
+                            </button>
+                            <button class="btn-tool-generic shadow-sm" title="Exportar a Excel">
+                                <i data-lucide="sheet" style="width: 16px;"></i> Excel
+                            </button>
+                            <button class="btn-tool-generic shadow-sm" title="Exportar a PDF">
+                                <i data-lucide="file-text" style="width: 16px;"></i> PDF
+                            </button>
+                        </div>
+                        <div class="position-relative ms-2" style="width: 280px;">
+                            <i data-lucide="search" class="position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:#94A3B8; width:16px;"></i>
+                            <input type="text" class="form-control-mre ps-5" placeholder="Filtrar parámetros...">
+                        </div>
                     </div>
                 </div>
 
@@ -229,11 +254,11 @@
                             <tr>
                                 <th width="40" class="text-center"><input type="checkbox" id="selectAllParams" onchange="toggleSelectAllItems()"></th>
                                 <th width="60" class="text-center">ID</th>
-                                <th width="80">Tipo</th>
                                 <th>Nombre</th>
                                 <th class="text-end">Valor</th>
                                 <th class="text-center">Fecha Desde</th>
                                 <th class="text-center">Fecha Hasta</th>
+                                <th>Estado</th>
                                 <th width="140" class="text-center">Acciones</th>
                             </tr>
                         </thead>
@@ -271,7 +296,6 @@
             <div class="section-title" id="modalTitle">Configuración de Parámetro</div>
             <form id="formParam">
                 <div class="row g-3 mb-4">
-                    <!-- Se eliminó el campo 'Tipo' del formulario por requerimiento -->
                     <div class="col-md-12">
                         <label class="form-label">Nombre del Parámetro <span class="text-danger">*</span></label>
                         <input type="text" id="paramName" class="form-control-mre" placeholder="Ej: cambio_dolar" required>
@@ -372,21 +396,23 @@
             return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
         }
 
+        const formatState = (state) => state === 'ACTI' ? 'Activo' : 'Inactivo';
+
         function renderParams() {
             const body = document.getElementById('paramsTableBody');
             body.innerHTML = mockParams.map(p => `
                 <tr data-id="${p.id}" class="${p.status === 'INAC' ? 'opacity-50 bg-light' : ''}">
                     <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()" ${p.status === 'INAC' ? 'disabled' : ''}></td>
                     <td class="text-center fw-bold text-navy">${p.id}</td>
-                    <td><span class="badge bg-light text-muted border">${p.type}</span></td>
                     <td><div class="fw-bold text-navy">${p.name}</div></td>
                     <td class="text-end fw-bold">${p.value}</td>
                     <td class="text-center"><span class="small fw-600">${formatDate(p.dateFrom)}</span></td>
                     <td class="text-center"><span class="small fw-600">${formatDate(p.dateTo)}</span></td>
+                    <td><span class="small fw-800 ${p.status === 'ACTI' ? 'text-success' : 'text-muted'}">${formatState(p.status)}</span></td>
                     <td class="text-center">
                         <div class="d-flex justify-content-center gap-1">
-                            <button class="btn btn-sm btn-light border" onclick="openParamModal('view', ${p.id})" data-bs-toggle="tooltip" title="Visualizar"><i data-lucide="eye" style="width:14px"></i></button>
-                            <button class="btn btn-sm btn-light border" onclick="openParamModal('edit', ${p.id})" data-bs-toggle="tooltip" title="Editar"><i data-lucide="edit-3" style="width:14px"></i></button>
+                            <button class="btn-action-icon shadow-sm" onclick="openParamModal('view', ${p.id})" data-bs-toggle="tooltip" title="Visualizar"><i data-lucide="eye" style="width:14px"></i></button>
+                            <button class="btn-action-icon shadow-sm" onclick="openParamModal('edit', ${p.id})" data-bs-toggle="tooltip" title="Editar"><i data-lucide="edit-3" style="width:14px"></i></button>
                         </div>
                     </td>
                 </tr>
@@ -456,7 +482,6 @@
             if (mode !== 'add') {
                 const p = mockParams.find(x => x.id === id);
                 document.getElementById('modalTitle').innerText = (mode === 'view' ? 'Visualizar' : 'Editar') + ' Parámetro';
-                // El campo 'paramType' ya no se asigna pues fue removido del HTML
                 document.getElementById('paramName').value = p.name;
                 document.getElementById('paramValue').value = p.value;
                 document.getElementById('dateFrom').value = p.dateFrom.substring(0, 16);
