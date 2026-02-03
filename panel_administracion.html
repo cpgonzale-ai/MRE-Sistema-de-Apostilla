@@ -29,22 +29,6 @@
 
         html { font-size: calc(var(--base-font-size) * var(--font-scale)); }
 
-        .tooltip {
-            --bs-tooltip-bg: #ffffff;
-            --bs-tooltip-color: #000000;
-            --bs-tooltip-opacity: 1;
-            --bs-tooltip-padding-y: 0.5rem;
-            --bs-tooltip-padding-x: 1rem;
-            --bs-tooltip-border-radius: 8px;
-            --bs-tooltip-font-size: 0.75rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
-        .tooltip-inner {
-            border: 1px solid var(--border-color);
-            font-weight: 600;
-            text-align: center;
-        }
-
         body.high-contrast {
             --mre-blue: #000000; --mre-blue-light: #000000; --mre-red: #D50000;
             --soft-bg: #FFFFFF; --border-color: #000000; --input-bg: #FFFFFF;
@@ -70,8 +54,7 @@
             border-bottom: 1px solid var(--border-color); position: relative; z-index: 2000;
         }
 
-        .mobile-toggle-btn { background: transparent; border: none; color: var(--mre-blue); cursor: pointer; padding: 4px; display: none; border-radius: 8px; transition: var(--transition); }
-        
+        /* --- ACCESIBILIDAD & DROPDOWNS --- */
         .a11y-container { position: relative; }
         .btn-a11y-trigger {
             background: #F8FAFC; border: 1px solid var(--border-color); color: var(--mre-blue);
@@ -85,33 +68,8 @@
             display: none; z-index: 3000; padding: 1rem; animation: fadeIn 0.2s ease-out;
         }
         .a11y-dropdown-menu.show { display: block; }
-        .a11y-section-title { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem; }
-        .text-resize-controls { display: flex; align-items: center; justify-content: space-between; background: #F8FAFC; padding: 8px; border-radius: 12px; border: 1px solid var(--border-color); }
-        .btn-resize { background: white; border: 1px solid var(--border-color); border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .font-size-display { font-weight: 800; color: var(--mre-blue); font-size: 0.85rem; }
-        .switch-control { display: flex; align-items: center; justify-content: space-between; padding: 4px 0; }
-        .switch-label { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
-        .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
-        .toggle-switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #CBD5E1; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--mre-blue-light); }
-        input:checked + .slider:before { transform: translateX(20px); }
 
-        .dots-menu-trigger {
-            width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
-            border-radius: 12px; cursor: pointer; transition: var(--transition); color: var(--text-muted);
-            background: #F8FAFC; border: 1px solid var(--border-color);
-        }
-        .dropdown-menu-mre { 
-            position: absolute; top: calc(100% + 10px); right: 0; background: white; border-radius: 12px; 
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); border: 1px solid var(--border-color); 
-            width: 180px; display: none; z-index: 3000; overflow: hidden; animation: fadeIn 0.2s ease-out;
-        }
-        .dropdown-menu-mre.show { display: block; }
-        .dropdown-item-mre { padding: 12px 16px; border: none; background: none; width: 100%; text-align: left; font-size: 0.9rem; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 10px; }
-        .dropdown-item-mre:hover { background: #F8FAFC; color: var(--mre-red); }
-
+        /* --- SIDEBAR --- */
         .app-container { display: flex; flex: 1; overflow: hidden; position: relative; }
 
         .main-sidebar {
@@ -131,6 +89,31 @@
         .nav-link-mre:hover { background: #F1F5F9; color: var(--mre-blue); }
         .nav-link-mre.active { background: #f0f7ff; color: var(--mre-blue-light); box-shadow: 0 4px 6px -1px rgba(0, 40, 85, 0.05); }
 
+        /* --- COLLAPSIBLE SECTION --- */
+        .nav-section-toggle {
+            cursor: pointer;
+            transition: var(--transition);
+            user-select: none;
+            outline: none;
+        }
+        .nav-section-toggle:hover { color: var(--mre-blue) !important; }
+        
+        .nav-submenu {
+            max-height: 2000px;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0, 1, 0, 1);
+        }
+        .nav-submenu.collapsed {
+            max-height: 0;
+            transition: max-height 0.4s cubic-bezier(1, 0, 1, 0);
+        }
+        .section-chevron {
+            transition: transform 0.3s ease;
+        }
+        .collapsed .section-chevron {
+            transform: rotate(-90deg);
+        }
+
         .content-area { flex: 1; padding: 2rem 3rem; overflow-y: auto; position: relative; }
         
         .mre-footer { background: white; padding: 1rem 2.5rem; border-top: 1px solid var(--border-color); font-size: 0.75rem; color: #64748B; display: flex; justify-content: space-between; margin-top: auto; }
@@ -149,10 +132,10 @@
 
     <header class="portal-header animate-fade">
         <div class="d-flex align-items-center gap-3">
-            <button class="mobile-toggle-btn" onclick="toggleSidebar()" aria-label="Abrir menú de navegación">
+            <button class="mobile-toggle-btn" onclick="toggleSidebar()">
                 <i data-lucide="menu" style="width: 26px;"></i>
             </button>
-            <div class="bg-white p-2 rounded-3 border d-none d-sm-block" style="box-shadow: 0 4px 8px rgba(0,0,0,0.08)">
+            <div class="bg-white p-2 rounded-3 border d-none d-sm-block">
                 <i data-lucide="globe" style="color: var(--mre-blue); width: 28px;"></i>
             </div>
             <div>
@@ -163,40 +146,21 @@
         
         <div class="user-dropdown d-flex align-items-center gap-3">
             <div class="a11y-container">
-                <button class="btn-a11y-trigger" id="a11yTrigger" onclick="toggleA11yMenu(event)">
+                <button class="btn-a11y-trigger" onclick="toggleA11yMenu(event)">
                     <i data-lucide="accessibility" style="width: 20px;"></i>
                     <span class="d-none d-md-block">Accesibilidad</span>
-                    <i data-lucide="chevron-down" class="lucide-chevron-down" style="width: 14px; margin-left: 4px;"></i>
+                    <i data-lucide="chevron-down" style="width: 14px;"></i>
                 </button>
-                <div class="a11y-dropdown-menu" id="a11yMenu" onclick="event.stopPropagation()">
+                <div class="a11y-dropdown-menu" id="a11yMenu">
                     <div class="a11y-section-title">Tamaño de Texto</div>
-                    <div class="text-resize-controls">
-                        <button class="btn-resize" onclick="changeFontSize(-0.1)"><i data-lucide="minus" style="width: 16px;"></i></button>
-                        <span class="font-size-display" id="fontSizeDisplay">100%</span>
-                        <button class="btn-resize" onclick="changeFontSize(0.1)"><i data-lucide="plus" style="width: 16px;"></i></button>
-                    </div>
-                    <div class="a11y-section-title mt-3">Visualización</div>
-                    <div class="switch-control">
-                        <div class="switch-label"><i data-lucide="eye-off" style="width: 16px;"></i> Escala de Grises</div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="switchGrayscale" onchange="toggleGrayscale()">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
                 </div>
             </div>
-
             <div class="user-info-text d-none d-md-block text-end">
                 <div class="user-name fw-bold" style="font-size: 0.85rem;">Carlos González</div>
                 <div class="user-id text-muted" style="font-size: 0.7rem;">CI: 4.567.890</div>
             </div>
-            <div class="dots-menu-trigger" id="profileTrigger" onclick="toggleUserMenu(event)">
+            <div class="dots-menu-trigger" onclick="toggleUserMenu(event)">
                 <i data-lucide="user" style="width: 24px;"></i>
-            </div>
-            <div class="dropdown-menu-mre" id="userMenu">
-                <button class="dropdown-item-mre text-danger" onclick="handleLogout()">
-                    <i data-lucide="log-out" style="width: 14px;"></i> Cerrar Sesión
-                </button>
             </div>
         </div>
     </header>
@@ -204,21 +168,59 @@
     <div class="app-container">
         <aside class="main-sidebar animate-fade" id="mainSidebar">
             <nav class="nav-menu p-3">
-                <p class="px-3 mb-2 text-muted fw-bold uppercase" style="font-size: 0.7rem; letter-spacing: 1.2px;">Administración</p>
-                <a href="https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/configuracion_usuarios.html" class="nav-link-mre active"><i data-lucide="users" style="width: 18px;"></i> <span>Gestión de Usuarios</span></a>
-                <a href="https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/configuracion_grupos_permisos.html" class="nav-link-mre"><i data-lucide="shield-check" style="width: 18px;"></i> <span>Grupos y Permisos</span></a>
-                <a href="https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/configuracion_referencias.html" class="nav-link-mre"><i data-lucide="library" style="width: 18px;"></i> <span>Configuración de Referencias</span></a>
-                <a href="https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/configuracion_campos.html" class="nav-link-mre"><i data-lucide="layout-grid" style="width: 18px;"></i> <span>Configuración de Campos</span></a>
-                <a href="https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/configuracion_documentos.html" class="nav-link-mre"><i data-lucide="file-cog" style="width: 18px;"></i> <span>Configuración de Documentos</span></a>
-                <a href="https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/configuracion_leyes.html" class="nav-link-mre"><i data-lucide="scale" style="width: 18px;"></i> <span>Configuración de Leyes</span></a>
-                <a href="https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/parametros_sistema.html" class="nav-link-mre"><i data-lucide="sliders-horizontal" style="width: 18px;"></i> <span>Parámetros del Sistema</span></a>
-                <a href="https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/configuracion_registro_firma.html" class="nav-link-mre"><i data-lucide="pen-tool" style="width: 18px;"></i> <span>Registro de Firmas</span></a>
-                <a href="https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/configuracion_tipo_documento.html" class="nav-link-mre"><i data-lucide="file-text" style="width: 18px;"></i> <span>Tipos de Documentos</span></a>
+                <a href="https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/pantalla_principal.html" class="nav-link-mre">
+                    <i data-lucide="home" style="width: 18px;"></i> <span>Página Principal</span>
+                </a>
+                <a href="https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/portal_ciudadano.html" class="nav-link-mre mb-4">
+                    <i data-lucide="user-round" style="width: 18px;"></i> <span>Portal del Ciudadano (RAC)</span>
+                </a>
+                
+                <div class="nav-section">
+                    <button class="nav-section-toggle px-3 mb-2 d-flex align-items-center justify-content-between w-100 border-0 bg-transparent text-muted fw-bold uppercase p-0" 
+                            style="font-size: 0.7rem; letter-spacing: 1.2px;" 
+                            onclick="toggleNavSection('adminSubmenu', this)">
+                        <span>Administración</span>
+                        <i data-lucide="chevron-down" class="section-chevron" style="width: 14px;"></i>
+                    </button>
+                    
+                    <div id="adminSubmenu" class="nav-submenu">
+                        <a href="https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/configuracion_usuarios.html" class="nav-link-mre active">
+                            <i data-lucide="users" style="width: 18px;"></i> <span>Gestión de Usuarios</span>
+                        </a>
+                        <a href="https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/configuracion_grupos_permisos.html" class="nav-link-mre">
+                            <i data-lucide="shield-check" style="width: 18px;"></i> <span>Grupos y Permisos</span>
+                        </a>
+                        <a href="https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/configuracion_referencias.html" class="nav-link-mre">
+                            <i data-lucide="library" style="width: 18px;"></i> <span>Configuración de Referencias</span>
+                        </a>
+                        <a href="https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/configuracion_campos.html" class="nav-link-mre">
+                            <i data-lucide="layout-grid" style="width: 18px;"></i> <span>Configuración de Campos</span>
+                        </a>
+                        <a href="https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/configuracion_documentos.html" class="nav-link-mre">
+                            <i data-lucide="file-cog" style="width: 18px;"></i> <span>Configuración de Documentos</span>
+                        </a>
+                        <a href="https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/configuracion_leyes.html" class="nav-link-mre">
+                            <i data-lucide="scale" style="width: 18px;"></i> <span>Configuración de Leyes</span>
+                        </a>
+                        <a href="https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/parametros_sistema.html" class="nav-link-mre">
+                            <i data-lucide="sliders-horizontal" style="width: 18px;"></i> <span>Parámetros del Sistema</span>
+                        </a>
+                        <a href="https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/configuracion_registro_firma.html" class="nav-link-mre">
+                            <i data-lucide="pen-tool" style="width: 18px;"></i> <span>Registro de Firmas</span>
+                        </a>
+                        <a href="https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/configuracion_tipo_documento.html" class="nav-link-mre">
+                            <i data-lucide="file-text" style="width: 18px;"></i> <span>Tipos de Documentos</span>
+                        </a>
+                        <a href="https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/portal_funcionario.html" class="nav-link-mre">
+                            <i data-lucide="briefcase" style="width: 18px;"></i> <span>Portal del Funcionario</span>
+                        </a>
+                    </div>
+                </div>
             </nav>
         </aside>
 
         <main class="content-area">
-            <!-- Content scope managed externally -->
+            <!-- El contenido se inyecta dinámicamente -->
         </main>
     </div>
 
@@ -226,31 +228,23 @@
         <div>&copy; 2026 Ministerio de Relaciones Exteriores - Dirección de Informática</div>
     </footer>
 
-    <!-- Bootstrap Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
     <script>
+        function toggleNavSection(id, btn) {
+            const submenu = document.getElementById(id);
+            submenu.classList.toggle('collapsed');
+            btn.classList.toggle('collapsed');
+        }
+
         function toggleSidebar() { document.getElementById('mainSidebar').classList.toggle('show'); }
         function toggleA11yMenu(e) { e.stopPropagation(); document.getElementById('a11yMenu').classList.toggle('show'); }
-        function toggleUserMenu(e) { e.stopPropagation(); document.getElementById('userMenu').classList.toggle('show'); }
+        function toggleUserMenu(e) { e.stopPropagation(); document.getElementById('userMenu')?.classList.toggle('show'); }
         
-        function changeFontSize(delta) {
-            let current = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--font-scale')) || 1;
-            let newScale = Math.min(Math.max(current + delta, 0.8), 1.5);
-            document.documentElement.style.setProperty('--font-scale', newScale);
-            document.getElementById('fontSizeDisplay').innerText = Math.round(newScale * 100) + '%';
-        }
-        
-        function toggleGrayscale() { document.body.classList.toggle('grayscale-mode'); }
-        function handleLogout() { if(confirm('¿Cerrar sesión?')) location.reload(); }
-
         document.addEventListener('click', () => {
-            ['userMenu', 'a11yMenu'].forEach(id => document.getElementById(id)?.classList.remove('show'));
+            document.getElementById('a11yMenu')?.classList.remove('show');
         });
         
-        document.addEventListener('DOMContentLoaded', () => { 
-            lucide.createIcons();
-        });
+        document.addEventListener('DOMContentLoaded', () => { lucide.createIcons(); });
     </script>
 </body>
 </html>
