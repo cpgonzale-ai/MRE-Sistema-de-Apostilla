@@ -154,7 +154,6 @@
         .btn-main { background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); color: #ffffff; border: none; border-radius: 12px; padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.85rem; transition: var(--transition); }
         .btn-main:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 40, 85, 0.2); color: white; }
 
-        /* Estilo actualizado según referencia */
         .btn-action-icon {
             width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center;
             border-radius: 10px; border: 1px solid var(--border-color); background: white; color: var(--text-muted);
@@ -171,7 +170,7 @@
 
         .mre-footer { background: white; padding: 1rem 2.5rem; border-top: 1px solid var(--border-color); font-size: 0.75rem; color: #64748B; display: flex; justify-content: space-between; margin-top: auto; }
 
-        /* --- ESTILOS ESPECÍFICOS DE LA GESTIÓN DE DOCUMENTOS (MANTENIDOS) --- */
+        /* --- ESTILOS ESPECÍFICOS DE LA GESTIÓN DE DOCUMENTOS --- */
         .mre-modal-overlay { position: fixed; inset: 0; background: rgba(0, 40, 85, 0.4); backdrop-filter: blur(4px); z-index: 4000; display: none; align-items: center; justify-content: center; padding: 20px; }
         .mre-modal { background: white; border-radius: 24px; max-width: 1200px; width: 100%; padding: 2.5rem; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.2); max-height: 95vh; overflow-y: auto; }
         
@@ -207,10 +206,7 @@
         .list-item-field { padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: 0.2s; border: 1px solid transparent; margin-bottom: 2px; }
         .list-item-field:hover { background: #F8FAFC; border-color: #CBD5E1; }
         .list-item-field.selected { background: #E0F2FE; border-color: var(--mre-blue-light); }
-        .btn-transfer { width: 32px; height: 32px; border-radius: 8px; border: 1px solid #E2E8F0; background: white; color: var(--mre-blue); display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .btn-transfer:hover:not(:disabled) { background: var(--mre-blue); color: white; }
-        .btn-transfer:disabled { opacity: 0.5; cursor: not-allowed; }
-
+        
         .table-associated { font-size: 0.7rem; width: 100%; border-collapse: collapse; }
         .table-associated td { padding: 6px 10px; border-bottom: 1px solid #F1F5F9; }
 
@@ -234,6 +230,10 @@
         .selection-list { max-height: 150px; overflow-y: auto; border: 1px solid #E2E8F0; border-radius: 12px; padding: 0.5rem; background: #F8FAFC; }
         .selection-item { padding: 0.5rem 0.75rem; border-bottom: 1px solid #E2E8F0; font-size: 0.8rem; font-weight: 600; display: flex; justify-content: space-between; }
         .selection-item:last-child { border-bottom: none; }
+
+        /* Estilo para filas seleccionadas en la tabla */
+        tr.selected td { background-color: #E0F2FE !important; }
+        tr { transition: background-color 0.2s; }
     </style>
 </head>
 <body>
@@ -397,9 +397,8 @@
                                 <input type="text" id="docName" class="form-control-mre" placeholder="Ej: Certificado de Antecedentes Penales" required>
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label">Tipo de evento <span class="text-danger">*</span></label>
+                                <label class="form-label">Tipo de trámite <span class="text-danger">*</span></label>
                                 <select id="docEvento" class="form-control-mre" required>
-                                    <option value="APO_LEG">Apostilla o Legalización</option>
                                     <option value="LEG">Legalización</option>
                                     <option value="APO">Apostilla</option>
                                 </select>
@@ -459,9 +458,37 @@
                                 <label class="form-label">Entidad Responsable</label>
                                 <select id="entityInput" class="form-control-mre" onchange="handleEntityChange()">
                                     <option value="">-- Seleccionar Entidad --</option>
+                                    <option value="4">Administración Nacional de Electricidad (ANDE)</option>
+                                    <option value="5">Administración Nacional de Navegación y Puertos</option>
+                                    <option value="6">Agencia Financiera de Desarrollo</option>
+                                    <option value="7">Agencia Nacional de Evaluación y Acreditación de la Educación Superior</option>
+                                    <option value="8">Agencia Nacional de Tránsito y Seguridad Vial</option>
+                                    <option value="9">Autoridad Reguladora Radiológica y Nuclear</option>
+                                    <option value="10">Banco Central del Paraguay</option>
+                                    <option value="11">Banco Nacional de Fomento</option>
+                                    <option value="12">Caja de Jubilaciones y Pensiones de Empleados Bancarios</option>
+                                    <option value="13">Caja de Jubilaciones y Pensiones del Personal de la ANDE</option>
+                                    <option value="14">Caja de Jubilaciones y Pensiones del Personal Municipal</option>
+                                    <option value="15">Caja de Préstamos del Ministerio de Defensa Nacional</option>
+                                    <option value="16">Caja de Seguridad Social de Empleados y Obreros Ferroviarios</option>
+                                    <option value="17">Cámara de Diputados</option>
+                                    <option value="18">Cámara de Senadores</option>
+                                    <option value="19">Cañas Paraguayas S.A.</option>
+                                    <option value="20">Comisión Nacional de la Competencia</option>
+                                    <option value="21">Comisión Nacional de Telecomunicaciones</option>
+                                    <option value="22">Comisión Nacional de Valores</option>
+                                    <option value="23">Compañía Paraguaya de Comunicaciones S.A.</option>
+                                    <option value="24">Congreso Nacional</option>
+                                    <option value="25">Consejo de la Magistratura</option>
+                                    <option value="26">Consejo Nacional de Educación Superior</option>
+                                    <option value="27">Contraloría General de la República</option>
+                                    <option value="28">Corte Suprema de Justicia</option>
+                                    <option value="29">Crédito Agrícola de Habilitación</option>
+                                    <option value="30">Defensoría del Pueblo</option>
+                                    <option value="31">Dirección Nacional de Aduanas</option>
+                                    <option value="3">Ministerio de Educación y Ciencias</option>
                                     <option value="1">Ministerio de Relaciones Exteriores</option>
                                     <option value="2">Ministerio de Salud Pública</option>
-                                    <option value="3">Ministerio de Educación y Ciencias</option>
                                 </select>
                             </div>
                             <div class="col-md-4">
@@ -614,9 +641,9 @@
                             <div class="list-container">
                                 <div class="list-header">Campos Disponibles</div>
                                 <div class="list-content" id="listAvailableFields">
-                                    <div class="list-item-field" onclick="toggleItem(this)" data-id="f1">Número de referencia</div>
-                                    <div class="list-item-field" onclick="toggleItem(this)" data-id="f2">Código único del documento</div>
-                                    <div class="list-item-field" onclick="toggleItem(this)" data-id="f3">Número de Documento</div>
+                                    <div class="list-item-field" onclick="toggleItem(this)" ondblclick="moveItem(this, 'fields')" data-id="f1">Número de referencia</div>
+                                    <div class="list-item-field" onclick="toggleItem(this)" ondblclick="moveItem(this, 'fields')" data-id="f2">Código único del documento</div>
+                                    <div class="list-item-field" onclick="toggleItem(this)" ondblclick="moveItem(this, 'fields')" data-id="f3">Número de Documento</div>
                                 </div>
                             </div>
                             <div class="transfer-actions d-flex flex-column gap-2">
@@ -624,7 +651,13 @@
                                 <button type="button" class="btn-transfer" onclick="transferGeneric('fields', 'toAvailable')"><i data-lucide="chevron-left"></i></button>
                             </div>
                             <div class="list-container">
-                                <div class="list-header d-flex justify-content-between"><span>Campos Asociados</span><span>Obli.</span></div>
+                                <div class="list-header d-flex justify-content-between align-items-center">
+                                    <span>Campos Asociados</span>
+                                    <div class="d-flex align-items-center gap-1" style="font-size: 0.6rem;">
+                                        <span style="width: 50px; text-align: center;">Orden</span>
+                                        <span style="width: 30px; text-align: center;">Obli.</span>
+                                    </div>
+                                </div>
                                 <div class="list-content p-0"><table class="table-associated" id="tableFields"><tbody></tbody></table></div>
                             </div>
                         </div>
@@ -645,8 +678,8 @@
                             <div class="list-container">
                                 <div class="list-header">Disponibles</div>
                                 <div class="list-content" id="listAvailableAdj">
-                                    <div class="list-item-field" onclick="toggleItem(this)" data-id="a1">Cédula de Identidad</div>
-                                    <div class="list-item-field" onclick="toggleItem(this)" data-id="a2">Pasaporte (PDF)</div>
+                                    <div class="list-item-field" onclick="toggleItem(this)" ondblclick="moveItem(this, 'adj')" data-id="a1">Cédula de Identidad</div>
+                                    <div class="list-item-field" onclick="toggleItem(this)" ondblclick="moveItem(this, 'adj')" data-id="a2">Pasaporte (PDF)</div>
                                 </div>
                             </div>
                             <div class="transfer-actions d-flex flex-column gap-2">
@@ -654,11 +687,17 @@
                                 <button type="button" class="btn-transfer" onclick="transferGeneric('adj', 'toAvailable')"><i data-lucide="chevron-left"></i></button>
                             </div>
                             <div class="list-container">
-                                <div class="list-header d-flex justify-content-between"><span>Asociados</span><span>Obli.</span></div>
+                                <div class="list-header d-flex justify-content-between align-items-center">
+                                    <span>Asociados</span>
+                                    <div class="d-flex align-items-center gap-1" style="font-size: 0.6rem;">
+                                        <span style="width: 50px; text-align: center;">Orden</span>
+                                        <span style="width: 30px; text-align: center;">Obli.</span>
+                                    </div>
+                                </div>
                                 <div class="list-content p-0"><table class="table-associated" id="tableAdj"><tbody></tbody></table></div>
                             </div>
                         </div>
-                        <div class="text-end">
+                        <div class="text-end" id="nextToAuditBtn">
                             <button type="button" class="btn btn-primary btn-sm fw-bold px-4 rounded-pill" onclick="toggleApartado(5)">Siguiente <i data-lucide="arrow-right" class="ms-1" style="width:14px"></i></button>
                         </div>
                     </div>
@@ -683,12 +722,8 @@
                             </div>
                         </div>
 
-                        <div class="text-end" id="nextToAuditBtn">
+                        <div class="text-end" id="nextToAuditBtn2">
                             <button type="button" class="btn btn-primary btn-sm fw-bold px-4 rounded-pill" onclick="toggleApartado(6)">Siguiente <i data-lucide="arrow-right" class="ms-1" style="width:14px"></i></button>
-                        </div>
-                        <div class="d-flex justify-content-end gap-2 mt-4 mode-edit-only">
-                            <button type="button" class="btn btn-light btn-sm rounded-pill px-4 border fw-bold" onclick="closeModal('modalDoc')">Cancelar</button>
-                            <button type="submit" class="btn-main px-5">Guardar Registro</button>
                         </div>
                     </div>
                 </div>
@@ -726,11 +761,13 @@
                                 </tbody>
                             </table>
                         </div>
-                        
-                        <div class="d-flex justify-content-end gap-2 mt-4">
-                            <button type="button" class="btn btn-light btn-sm rounded-pill px-4 border fw-bold" onclick="closeModal('modalDoc')">Cerrar</button>
-                        </div>
                     </div>
+                </div>
+
+                <!-- ACTION BUTTONS FOOTER (GLOBAL) -->
+                <div class="modal-footer-custom mt-4 pt-3 border-top d-flex justify-content-end gap-2 bg-white sticky-bottom">
+                    <button type="button" class="btn btn-light btn-sm rounded-pill px-4 border fw-bold" onclick="closeModal('modalDoc')">Cancelar</button>
+                    <button type="submit" id="btnSaveDoc" class="btn-main px-5 mode-edit-only">Guardar Registro</button>
                 </div>
 
             </form>
@@ -792,11 +829,39 @@
         ];
 
         let selectedDocForDelete = null;
+        let currentEditingId = null; // Variable para controlar edición vs creación
 
         const mockOffices = {
             "1": [{id: "101", name: "Dirección de Legalizaciones"}, {id: "102", name: "Departamento de Pasaportes"}],
             "2": [{id: "201", name: "Vigilancia Sanitaria"}, {id: "202", name: "Registro de Profesionales"}],
-            "3": [{id: "301", name: "Secretaría General"}, {id: "302", name: "Dirección de Títulos"}]
+            "3": [{id: "301", name: "Secretaría General"}, {id: "302", name: "Dirección de Títulos"}],
+            "4": [{id: "401", name: "Administración Nacional de Electricidad (ANDE)"}],
+            "5": [{id: "501", name: "Administración Nacional de Navegación y Puertos (ANNP)"}],
+            "6": [{id: "601", name: "Agencia Financiera de Desarrollo (AFD)"}],
+            "7": [{id: "701", name: "Agencia Nacional de Evaluación y Acreditación de la Educación Superior (ANEAES)"}],
+            "8": [{id: "801", name: "Agencia Nacional de Tránsito y Seguridad Vial (ANTSV)"}],
+            "9": [{id: "901", name: "Autoridad Reguladora Radiológica y Nuclear (ARRN)"}],
+            "10": [{id: "1001", name: "Banco Central del Paraguay (BCP)"}],
+            "11": [{id: "1101", name: "Banco Nacional de Fomento (BNF)"}],
+            "12": [{id: "1201", name: "Caja de Jubilaciones y Pensiones de Bancos y Afines (CJPEB)"}],
+            "13": [{id: "1301", name: "Caja de Jubilaciones y Pensiones del Personal de la ANDE (CJPPA)"}],
+            "14": [{id: "1401", name: "Caja de Jubilaciones y Pensiones del Personal Municipal (CJPPM)"}],
+            "15": [
+                {id: "1501", name: "Caja de Prestamos del Ministerio de Defensa Nacional (CPMDN)"},
+                {id: "1502", name: "Comando de la Armada"},
+                {id: "1503", name: "Comando de la Fuerza Aérea"},
+                {id: "1504", name: "Comando de las Fuerzas Militares"},
+                {id: "1505", name: "Comando del Ejército"},
+                {id: "1506", name: "Comando en Jefe"},
+                {id: "1507", name: "Comando Logístico"}
+            ],
+            "16": [{id: "1601", name: "Caja de Seguridad social de Empleado y Obreros Ferroviarios (CSSEOF)"}],
+            "19": [{id: "1901", name: "Cañas Paraguayas S.A. (CAPASA)"}],
+            // Mapeo adicional para entidades sin ID explícito en el select anterior pero presentes en la lista solicitada
+            "99": [
+                {id: "9901", name: "Agencia Espacial del Paraguay (AEP)"},
+                {id: "9902", name: "Auditoría General del Poder Ejecutivo (AGPE)"}
+            ]
         };
 
         function showToast(msg) {
@@ -865,10 +930,13 @@
             const checks = document.querySelectorAll('.record-check:checked');
             checks.forEach(cb => {
                 const id = parseInt(cb.closest('tr').dataset.id);
-                const doc = mockData.find(d => d.id === id);
-                if(doc) doc.estado = 'INACTIVO';
+                // Actualizar estado en mockData
+                const docIndex = mockData.findIndex(d => d.id === id);
+                if(docIndex !== -1) {
+                    mockData[docIndex].estado = 'INACTIVO';
+                }
             });
-            renderDocs();
+            renderDocs(); // Actualiza la grilla y deshabilita checkboxes
             closeModal('modalInactivateConfirm');
             handleCancelSelection();
             showToast('Documentos inactivados correctamente.');
@@ -904,33 +972,122 @@
             const form = document.getElementById('formDoc');
             const auditSection = document.getElementById('apartado6');
             const nextToAudit = document.getElementById('nextToAuditBtn');
+            const nextToAudit2 = document.getElementById('nextToAuditBtn2'); 
+            
             modal.style.display = 'flex';
             toggleApartado(1);
             
             const isView = mode === 'view';
-            const elements = form.querySelectorAll('input, select, textarea, .btn-transfer');
+            const elements = form.querySelectorAll('input, select, textarea'); 
             elements.forEach(el => el.disabled = isView);
             
             // Lógica de visibilidad para secciones
             auditSection.style.display = isView ? 'block' : 'none';
             nextToAudit.style.display = isView ? 'block' : 'none';
+            if(nextToAudit2) nextToAudit2.style.display = isView ? 'block' : 'none';
 
             document.querySelectorAll('.action-col').forEach(el => el.style.display = isView ? 'none' : '');
-            document.querySelectorAll('.mode-edit-only').forEach(el => el.style.display = isView ? 'none' : 'flex');
+            
+            document.querySelectorAll('.mode-edit-only').forEach(el => {
+                el.style.display = isView ? 'none' : (el.tagName === 'BUTTON' ? 'block' : 'flex');
+            });
 
             const containerEstado = document.getElementById('containerDocEstado');
+            
+            // RESETEAR FORMULARIO
+            form.reset();
+            document.getElementById('officesTableBody').innerHTML = '<tr><td colspan="5" class="text-center text-muted italic p-2 small">No hay oficinas vinculadas</td></tr>';
+            document.getElementById('lawsTableBody').innerHTML = '<tr><td colspan="5" class="text-center text-muted small py-2">Sin leyes asignadas</td></tr>';
+            document.getElementById('excTableBody').innerHTML = '<tr><td colspan="5" class="text-center text-muted small py-2">Sin excepciones asignadas</td></tr>';
+            
+            // Resetear listas duales
+            ['listAvailableFields', 'listAvailableAdj'].forEach(listId => {
+                const listEl = document.getElementById(listId);
+                if(listEl) {
+                     listEl.querySelectorAll('.list-item-field').forEach(el => {
+                        el.style.display = 'flex';
+                        el.classList.remove('selected'); 
+                     });
+                }
+            });
+            ['tableFields', 'tableAdj'].forEach(tableId => {
+                const tbody = document.querySelector(`#${tableId} tbody`);
+                if(tbody) tbody.innerHTML = '';
+            });
+
             if(mode === 'edit' || mode === 'view') {
                 containerEstado.classList.remove('d-none');
+                currentEditingId = id;
                 const item = mockData.find(d => d.id === id);
                 document.getElementById('modalTitle').innerText = (mode === 'edit' ? 'Modificar Documento: ' : 'Visualizar Documento: ') + item.id;
+                
+                // 1. CARGAR DATOS PRINCIPALES
                 document.getElementById('docName').value = item.name;
+                document.getElementById('docEstado').value = item.estado;
+                
+                // Mapeo básico de valores para demo
+                const emisionMap = { 'AUTOMÁTICA': 'AUT', 'MANUAL': 'PRE', 'VAL. PREVIA': 'VAL', 'VERIFICACIÓN PREVIA': 'VER_PRE' };
+                const firmaMap = { 'OLÓGRAFA': 'OLO', 'ELECTRÓNICA': 'ELE' };
+                const origenMap = { 'Extranjero': 'EXT', 'Nacional': 'NAC' };
+                
+                if(item.emision in emisionMap) document.getElementById('docEmision').value = emisionMap[item.emision];
+                if(item.firma in firmaMap) document.getElementById('docFirma').value = firmaMap[item.firma];
+                if(item.origen in origenMap) document.getElementById('docOrigen').value = origenMap[item.origen];
+                
+                // Datos simulados obligatorios para que el formulario sea válido al abrir
+                document.getElementById('docEvento').value = 'LEG';
+                document.getElementById('docGenero').value = 'PERSONAL';
+                document.getElementById('docGrupo').value = 'NAC';
+
+                // 2. CARGAR OFICINAS (Simulado)
+                const officeBody = document.getElementById('officesTableBody');
+                officeBody.innerHTML = `
+                    <tr>
+                        <td class="text-center fw-bold text-navy">1</td>
+                        <td>Ministerio de Relaciones Exteriores</td>
+                        <td class="text-center fw-bold text-navy">101</td>
+                        <td>Dirección de Legalizaciones</td>
+                        <td class="text-center action-col"><button type="button" class="btn btn-sm text-danger border-0 p-0" onclick="this.closest('tr').remove()"><i data-lucide="x-circle" style="width:14px"></i></button></td>
+                    </tr>
+                `;
+
+                // 3. CARGAR LEYES (Obligatorio)
+                const lawBody = document.getElementById('lawsTableBody');
+                lawBody.innerHTML = `
+                    <tr>
+                        <td class="text-center fw-bold text-navy">49</td>
+                        <td>Ley 1030 - Antecedentes</td>
+                        <td class="small fw-bold">00000094555551442</td>
+                        <td class="small">2023-01-01 a 2030-12-31</td>
+                        <td class="text-center action-col"><button type="button" class="btn btn-sm text-danger border-0 p-0" onclick="this.closest('tr').remove()"><i data-lucide="trash-2" style="width:14px"></i></button></td>
+                    </tr>
+                `;
+
+                // 4. CARGAR CAMPOS ESPECÍFICOS (Obligatorio)
+                const fieldList = document.getElementById('listAvailableFields');
+                const fieldItem = fieldList.querySelector('[data-id="f1"]'); // Mueve 'Número de referencia'
+                if(fieldItem) moveItem(fieldItem, 'fields');
+
+                // 5. CARGAR ADJUNTOS (Opcional pero común)
+                const adjList = document.getElementById('listAvailableAdj');
+                const adjItem = adjList.querySelector('[data-id="a1"]'); // Mueve 'Cédula'
+                if(adjItem) moveItem(adjItem, 'adj');
+
+                // 6. CARGAR WEB SERVICES
+                document.getElementById('ws_endpoint').value = "https://api.servicios.gov.py/v1/validar";
+                document.getElementById('ws_token_auth').value = "dummy_token_secure_123";
+
+                // Si es modo view, ocultar acciones de las filas inyectadas manualmente
+                if (isView) {
+                    document.querySelectorAll('.action-col').forEach(el => el.style.display = 'none');
+                }
+
             } else {
+                // MODO NUEVO
                 containerEstado.classList.add('d-none');
                 document.getElementById('modalTitle').innerText = 'Nuevo Tipo de Documento';
-                form.reset();
-                document.getElementById('officesTableBody').innerHTML = '<tr><td colspan="5" class="text-center text-muted italic p-2 small">No hay oficinas vinculadas</td></tr>';
-                document.getElementById('lawsTableBody').innerHTML = '<tr><td colspan="5" class="text-center text-muted small py-2">Sin leyes asignadas</td></tr>';
-                document.getElementById('excTableBody').innerHTML = '<tr><td colspan="5" class="text-center text-muted small py-2">Sin excepciones asignadas</td></tr>';
+                currentEditingId = null; 
+                document.getElementById('docEstado').value = 'ACTIVO';
             }
             lucide.createIcons();
         }
@@ -944,8 +1101,9 @@
 
         function confirmDeletion() {
             if (selectedDocForDelete) {
+                // Eliminar del array mockData
                 mockData = mockData.filter(d => d.id !== selectedDocForDelete);
-                renderDocs();
+                renderDocs(); // Actualizar grilla
                 showToast('Registro eliminado exitosamente.');
                 closeModal('modalDelete');
                 selectedDocForDelete = null;
@@ -955,9 +1113,100 @@
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
         function toggleItem(el) { 
-            const isReadonly = el.closest('.list-container').closest('form').querySelector('input').disabled;
-            if (isReadonly) return;
+            const listContainer = el.closest('.list-container');
+            if(!listContainer) return;
+            const form = listContainer.closest('form');
+            if(!form) return;
+            const input = form.querySelector('input');
+            if(input && input.disabled) return; // Readonly check
+            
             el.classList.toggle('selected'); 
+        }
+
+        function transferGeneric(type, direction) {
+            const listId = type === 'fields' ? 'listAvailableFields' : 'listAvailableAdj';
+            const tableId = type === 'fields' ? 'tableFields' : 'tableAdj';
+            
+            if (direction === 'toAssigned') {
+                const list = document.getElementById(listId);
+                if (list) {
+                    const selected = list.querySelectorAll('.list-item-field.selected');
+                    selected.forEach(el => moveItem(el, type));
+                }
+            } else {
+                const tbody = document.querySelector(`#${tableId} tbody`);
+                if (tbody) {
+                    const selected = tbody.querySelectorAll('tr.selected');
+                    selected.forEach(el => moveItem(el, type));
+                }
+            }
+        }
+
+        // Función para transferencia directa (click-to-move)
+        function moveItem(element, type) {
+            // Verificar si estamos en modo lectura
+            const form = document.getElementById('formDoc');
+            if (form.querySelector('#docName').disabled) return;
+
+            const isRow = element.tagName === 'TR';
+            const listId = type === 'fields' ? 'listAvailableFields' : 'listAvailableAdj';
+            const tableId = type === 'fields' ? 'tableFields' : 'tableAdj';
+            const availableList = document.getElementById(listId);
+            const tableBody = document.querySelector(`#${tableId} tbody`);
+
+            if(!availableList || !tableBody) return;
+
+            if (isRow) {
+                // Mover de Tabla (Asociados) a Lista (Disponibles)
+                const id = element.dataset.id;
+                const listItem = availableList.querySelector(`[data-id="${id}"]`);
+                if (listItem) {
+                    listItem.style.display = 'flex'; // Mostrar item original
+                    listItem.classList.remove('selected');
+                }
+                element.remove();
+            } else {
+                // Mover de Lista (Disponibles) a Tabla (Asociados)
+                const id = element.dataset.id;
+                const text = element.innerText;
+
+                // Ocultar item lista y quitar selección
+                element.style.display = 'none';
+                element.classList.remove('selected');
+
+                const row = document.createElement('tr');
+                row.dataset.id = id;
+                row.className = "animate-fade";
+                row.style.cursor = "pointer";
+
+                // Lógica unificada para Campos y Adjuntos (ambos con Orden)
+                const nextOrder = tableBody.rows.length + 1;
+                row.innerHTML = `
+                    <td class="ps-2">${text}</td>
+                    <td width="60" class="text-center">
+                        <input type="number" class="form-control-mre p-0 text-center bg-white" style="height:22px; font-size:0.7rem;" value="${nextOrder}" min="1">
+                    </td>
+                    <td width="40" class="text-center">
+                        <input type="checkbox" class="form-check-input" style="width:14px; height:14px;">
+                    </td>
+                `;
+                
+                // Evento click para seleccionar
+                row.onclick = function(e) {
+                    // Evitar seleccionar si se hace click en inputs
+                    if(e.target.tagName === 'INPUT') return;
+                    // toggleItem logic but for table rows
+                    this.classList.toggle('selected');
+                };
+
+                // Evento doble click para mover de vuelta
+                row.ondblclick = function(e) {
+                    if(e.target.tagName === 'INPUT') return;
+                    moveItem(this, type);
+                }
+
+                tableBody.appendChild(row);
+            }
         }
 
         function addItem(type) {
@@ -1019,33 +1268,6 @@
             lucide.createIcons();
         }
 
-        function transferGeneric(type, dir) {
-            const listId = type === 'fields' ? 'listAvailableFields' : 'listAvailableAdj';
-            const tableId = type === 'fields' ? 'tableFields' : 'tableAdj';
-            const availableList = document.getElementById(listId);
-            const tableBody = document.querySelector(`#${tableId} tbody`);
-
-            if(dir === 'toAssigned') {
-                const selected = availableList.querySelectorAll('.list-item-field.selected');
-                selected.forEach(item => {
-                    const row = document.createElement('tr');
-                    row.dataset.id = item.dataset.id;
-                    row.innerHTML = `<td class="ps-2">${item.innerText}</td><td width="30" class="text-center"><input type="checkbox" class="form-check-input" style="width:14px; height:14px;"></td>`;
-                    row.onclick = function(e) { if(e.target.type !== 'checkbox' && !this.querySelector('input').disabled) this.classList.toggle('selected'); };
-                    tableBody.appendChild(row);
-                    item.style.display = 'none';
-                    item.classList.remove('selected');
-                });
-            } else {
-                const rows = tableBody.querySelectorAll('tr.selected');
-                rows.forEach(row => {
-                    const item = availableList.querySelector(`[data-id="${row.dataset.id}"]`);
-                    if(item) item.style.display = 'block';
-                    row.remove();
-                });
-            }
-        }
-
         function renderDocs() {
             const body = document.getElementById('docsTableBody');
             if (mockData.length === 0) {
@@ -1098,14 +1320,63 @@
             }
 
             // Validar WS Endpoint Seguro (Apartado 5)
-            const wsEndpoint = document.getElementById('ws_endpoint').value.trim();
+            // Uso de operador condicional para evitar error si el elemento no existe (aunque debería existir)
+            const wsEndpointInput = document.getElementById('ws_endpoint');
+            const wsEndpoint = wsEndpointInput ? wsEndpointInput.value.trim() : '';
+
             if (wsEndpoint && !wsEndpoint.startsWith('https://')) {
-                showToast('Error de Seguridad: El WS Endpoint debe utilizar protocolo seguro (https://).');
+                showToast('Error de Seguridad: El Endpoint debe utilizar protocolo seguro (https://).');
                 toggleApartado(5);
-                document.getElementById('ws_endpoint').focus();
+                if (wsEndpointInput) wsEndpointInput.focus();
                 return;
             }
 
+            // LÓGICA DE GUARDADO (CREAR / EDITAR)
+            // Verificamos existencia de elementos antes de acceder a .value
+            const nombreInput = document.getElementById('docName');
+            const origenSelect = document.getElementById('docOrigen');
+            const emisionSelect = document.getElementById('docEmision');
+            const firmaSelect = document.getElementById('docFirma');
+            const estadoSelect = document.getElementById('docEstado');
+
+            if (!nombreInput || !origenSelect || !emisionSelect || !firmaSelect || !estadoSelect) {
+                console.error("Error crítico: Elementos del formulario no encontrados.");
+                return;
+            }
+
+            const nombre = nombreInput.value;
+            const origenText = origenSelect.options[origenSelect.selectedIndex].text;
+            const emisionText = emisionSelect.options[emisionSelect.selectedIndex].text.toUpperCase();
+            const firmaText = firmaSelect.options[firmaSelect.selectedIndex].text.toUpperCase();
+            const estadoVal = estadoSelect.value;
+
+            if (currentEditingId) {
+                // EDITAR EXISTENTE
+                const docIndex = mockData.findIndex(d => d.id === currentEditingId);
+                if (docIndex !== -1) {
+                    mockData[docIndex] = {
+                        ...mockData[docIndex],
+                        name: nombre,
+                        origen: origenText,
+                        emision: emisionText,
+                        firma: firmaText,
+                        estado: estadoVal
+                    };
+                }
+            } else {
+                // CREAR NUEVO
+                const newId = mockData.length > 0 ? Math.max(...mockData.map(d => d.id)) + 1 : 1030;
+                mockData.push({
+                    id: newId,
+                    name: nombre,
+                    origen: origenText,
+                    emision: emisionText,
+                    firma: firmaText,
+                    estado: 'ACTIVO' // Nuevo siempre nace activo a menos que se especifique lo contrario
+                });
+            }
+
+            renderDocs();
             showToast('Registro guardado correctamente.');
             closeModal('modalDoc');
         });
