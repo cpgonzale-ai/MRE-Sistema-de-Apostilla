@@ -100,9 +100,27 @@
         .grid-header-frame { background-color: #F1F5F9; padding: 1.2rem 1.8rem; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; }
 
         .mre-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-        .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 1.1rem 1.5rem; border-bottom: 2px solid #E2E8F0; background: #fafbfc; }
+        .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 0.8rem 1.5rem; border-bottom: 1px solid #E2E8F0; background: #fafbfc; vertical-align: middle; }
+        .mre-table th.header-title { border-bottom: none; padding-bottom: 0.4rem; }
+        .mre-table th.header-filter { padding-top: 0.2rem; padding-bottom: 1rem; border-bottom: 2px solid #E2E8F0; }
         .mre-table td { padding: 1.1rem 1.5rem; font-size: 0.9rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
         .mre-table tr:hover td { background-color: #F8FAFC; }
+
+        .filter-input {
+            background-color: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 0.35rem 0.6rem;
+            font-size: 0.75rem;
+            width: 100%;
+            color: var(--text-main);
+            transition: var(--transition);
+        }
+        .filter-input:focus {
+            outline: none;
+            border-color: var(--mre-blue-light);
+            box-shadow: 0 0 0 2px rgba(0, 56, 168, 0.05);
+        }
 
         /* --- BOTONES DEL ESTILO DE REFERENCIA --- */
         .btn-main { background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); color: #ffffff; border: none; border-radius: 12px; padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.85rem; transition: var(--transition); }
@@ -262,10 +280,6 @@
                                 <i data-lucide="file-text" style="width: 16px;"></i> PDF
                             </button>
                         </div>
-                        <div class="position-relative ms-2" style="width: 280px;">
-                            <i data-lucide="search" class="position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:#94A3B8; width:16px;"></i>
-                            <input type="text" class="form-control-mre ps-5" placeholder="Filtrar parámetros...">
-                        </div>
                     </div>
                 </div>
 
@@ -273,15 +287,30 @@
                     <table class="mre-table">
                         <thead>
                             <tr>
-                                <th width="40" class="text-center"><input type="checkbox" id="selectAllParams" onchange="toggleSelectAllItems()"></th>
-                                <th width="60" class="text-center">ID</th>
-                                <th>Nombre</th>
-                                <th class="text-end">Valor</th>
-                                <th class="text-center">Fecha Desde</th>
-                                <th class="text-center">Fecha Hasta</th>
-                                <th>Tipo</th>
-                                <th>Estado</th>
-                                <th width="140" class="text-center">Acciones</th>
+                                <th width="40" class="text-center header-title">
+                                    <input type="checkbox" id="selectAllParams" onchange="toggleSelectAllItems()">
+                                </th>
+                                <th width="60" class="text-center header-title">ID</th>
+                                <th class="header-title">Nombre</th>
+                                <th class="text-end header-title">Valor</th>
+                                <th class="text-center header-title">Fecha Desde</th>
+                                <th class="text-center header-title">Fecha Hasta</th>
+                                <th class="header-title">Tipo</th>
+                                <th class="header-title">Estado</th>
+                                <th width="140" class="text-center header-title">Acciones</th>
+                            </tr>
+                            <tr class="filter-row">
+                                <th class="header-filter"></th>
+                                <th class="header-filter"><input type="text" class="filter-input" placeholder="#" onkeyup="filterGrid()"></th>
+                                <th class="header-filter"><input type="text" class="filter-input" placeholder="Buscar nombre..." onkeyup="filterGrid()"></th>
+                                <th class="header-filter"><input type="text" class="filter-input text-end" placeholder="Buscar valor..." onkeyup="filterGrid()"></th>
+                                <th class="header-filter"><input type="text" class="filter-input text-center" placeholder="Filtro" onkeyup="filterGrid()"></th>
+                                <th class="header-filter"><input type="text" class="filter-input text-center" placeholder="Filtro" onkeyup="filterGrid()"></th>
+                                <th class="header-filter"><input type="text" class="filter-input" placeholder="Tipo" onkeyup="filterGrid()"></th>
+                                <th class="header-filter">
+                                    <input type="text" class="filter-input" placeholder="Estado" onkeyup="filterGrid()">
+                                </th>
+                                <th class="header-filter"></th>
                             </tr>
                         </thead>
                         <tbody id="paramsTableBody"></tbody>
@@ -488,6 +517,46 @@
             lucide.createIcons();
             document.getElementById('paginationInfo').innerText = `Mostrando 1 a ${mockParams.length} de ${mockParams.length} registros`;
             updateSelectionUI();
+            
+            // Reapply filters after render if needed or initially clear
+            filterGrid();
+        }
+
+        // --- FILTER LOGIC (COMBINED) ---
+        function filterGrid() {
+            const inputs = document.querySelectorAll('.filter-input');
+            const rows = document.querySelectorAll('#paramsTableBody tr');
+
+            rows.forEach(row => {
+                let showRow = true;
+                const cells = row.querySelectorAll('td');
+                
+                // Mapeo de índices: 
+                // input[0] (ID) -> cells[1]
+                // input[1] (Nombre) -> cells[2]
+                // input[2] (Valor) -> cells[3]
+                // input[3] (Desde) -> cells[4]
+                // input[4] (Hasta) -> cells[5]
+                // input[5] (Tipo) -> cells[6]
+                // input[6] (Estado) -> cells[7]
+
+                const mapping = [1, 2, 3, 4, 5, 6, 7];
+
+                for (let i = 0; i < inputs.length; i++) {
+                    const inputVal = inputs[i].value.toLowerCase();
+                    if (!inputVal) continue; // Si no hay filtro, saltar
+
+                    const cellIndex = mapping[i];
+                    const cellText = cells[cellIndex].textContent.toLowerCase();
+
+                    if (!cellText.includes(inputVal)) {
+                        showRow = false;
+                        break; // Si falla uno, no mostrar fila
+                    }
+                }
+
+                row.style.display = showRow ? '' : 'none';
+            });
         }
 
         // --- CRUD LOGIC ---
