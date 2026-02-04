@@ -145,14 +145,27 @@
         .grid-header-title { font-size: 1rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 10px; white-space: nowrap; }
 
         .mre-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-        .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 1rem 1.5rem; border-bottom: 2px solid #E2E8F0; letter-spacing: 0.5px; }
-        .mre-table td { padding: 1.2rem 1.5rem; font-size: 0.85rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
+        .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 0.75rem 1rem; border-bottom: 2px solid #E2E8F0; vertical-align: top; }
+        .mre-table td { padding: 1rem 1rem; font-size: 0.85rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
         .mre-table tr:hover td { background-color: #F8FAFC; }
+
+        /* Estilos específicos para los inputs de filtro en cabecera */
+        .header-content { display: flex; flex-direction: column; gap: 6px; }
+        .filter-input {
+            width: 100%; font-size: 0.7rem; padding: 4px 8px; border-radius: 6px;
+            border: 1px solid #CBD5E1; background-color: #F8FAFC; color: var(--text-main);
+            font-weight: 500;
+        }
+        .filter-input:focus { outline: none; border-color: var(--mre-blue); background-color: white; }
+        .filter-select {
+            width: 100%; font-size: 0.7rem; padding: 4px 8px; border-radius: 6px;
+            border: 1px solid #CBD5E1; background-color: #F8FAFC; color: var(--text-main);
+            font-weight: 500;
+        }
 
         .btn-main { background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); color: #ffffff; border: none; border-radius: 12px; padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.85rem; transition: var(--transition); }
         .btn-main:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 40, 85, 0.2); color: white; }
 
-        /* --- BOTONES DEL SISTEMA (NUEVOS ESTILOS) --- */
         .btn-tool-generic {
             background: #FFFFFF; color: var(--mre-blue); border: 1px solid var(--border-color);
             padding: 0.5rem 1rem; border-radius: 10px; font-size: 0.75rem; font-weight: 700;
@@ -341,27 +354,69 @@
                         <button class="btn-tool-generic" data-bs-toggle="tooltip" title="Exportar a PDF">
                             <i data-lucide="file-text" style="width:16px"></i> PDF
                         </button>
-
-                        <!-- Buscador -->
-                        <div class="position-relative ms-2" style="width: 300px;">
-                            <i data-lucide="search" class="position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:#94A3B8; width:16px;"></i>
-                            <input type="text" class="form-control-mre ps-5" placeholder="Buscar funcionario...">
-                        </div>
                     </div>
                 </div>
                 <div class="table-responsive">
                     <table class="mre-table">
                         <thead>
                             <tr>
-                                <th width="40" class="text-center"><input type="checkbox" id="selectAllItems" onchange="toggleSelectAllItems()" data-bs-toggle="tooltip" title="Marcar todos"></th>
-                                <th width="60" class="text-center">ID</th>
-                                <th>Funcionario</th>
-                                <th>Documento</th>
-                                <th>Institución</th>
-                                <th>Cargo</th>
-                                <th>Firma</th>
-                                <th>Estado</th>
-                                <th class="text-center" width="160">Acciones</th>
+                                <th width="40" class="text-center">
+                                    <div class="header-content align-items-center">
+                                        <input type="checkbox" id="selectAllItems" onchange="toggleSelectAllItems()" data-bs-toggle="tooltip" title="Marcar todos">
+                                    </div>
+                                </th>
+                                <th width="60">
+                                    <div class="header-content">
+                                        <span>ID</span>
+                                        <input type="text" class="filter-input" placeholder="Filtro" onkeyup="filterGrid()">
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="header-content">
+                                        <span>Funcionario</span>
+                                        <input type="text" class="filter-input" placeholder="Buscar nombre..." onkeyup="filterGrid()">
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="header-content">
+                                        <span>Tipo</span>
+                                        <input type="text" class="filter-input" placeholder="Buscar tipo..." onkeyup="filterGrid()">
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="header-content">
+                                        <span>Documento</span>
+                                        <input type="text" class="filter-input" placeholder="Buscar CI..." onkeyup="filterGrid()">
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="header-content">
+                                        <span>Institución</span>
+                                        <input type="text" class="filter-input" placeholder="Buscar inst..." onkeyup="filterGrid()">
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="header-content">
+                                        <span>Cargo</span>
+                                        <input type="text" class="filter-input" placeholder="Buscar cargo..." onkeyup="filterGrid()">
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="header-content">
+                                        <span>Firma</span>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="header-content">
+                                        <span>Estado</span>
+                                        <input type="text" class="filter-input" placeholder="Buscar estado..." onkeyup="filterGrid()">
+                                    </div>
+                                </th>
+                                <th class="text-center" width="160">
+                                    <div class="header-content">
+                                        <span>Acciones</span>
+                                    </div>
+                                </th>
                             </tr>
                         </thead>
                         <tbody id="officialsTableBody">
@@ -404,6 +459,37 @@
                 <input type="hidden" id="officialId">
                 <div class="row g-4 mb-4">
                     <!-- Sección de Datos Personales -->
+                    <div class="col-12">
+                        <label class="form-label">Tipo de Funcionario <span class="text-danger">*</span></label>
+                        <select id="inputTipoFuncionario" class="form-control-mre" required onchange="toggleUserCreationSection()">
+                            <option value="Nacional">Nacional</option>
+                            <option value="Extranjero">Extranjero</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label">Institución <span class="text-danger">*</span></label>
+                        <select id="inputInstitucion" class="form-control-mre" required>
+                            <option value="" selected disabled>Seleccione una entidad...</option>
+                            <option value="ADMINISTRACIÓN NACIONAL DE ELECTRICIDAD">ADMINISTRACIÓN NACIONAL DE ELECTRICIDAD</option>
+                            <option value="ADMINISTRACIÓN NACIONAL DE NAVEGACIÓN Y PUERTOS">ADMINISTRACIÓN NACIONAL DE NAVEGACIÓN Y PUERTOS</option>
+                            <option value="AGENCIA FINANCIERA DE DESARROLLO">AGENCIA FINANCIERA DE DESARROLLO</option>
+                            <option value="AGENCIA NACIONAL DE EVALUACIÓN Y ACREDITACIÓN DE LA EDUCACIÓN SUPERIOR">AGENCIA NACIONAL DE EVALUACIÓN Y ACREDITACIÓN DE LA EDUCACIÓN SUPERIOR</option>
+                            <option value="AGENCIA NACIONAL DE TRÁNSITO Y SEGURIDAD VIAL">AGENCIA NACIONAL DE TRÁNSITO Y SEGURIDAD VIAL</option>
+                            <option value="AUTORIDAD REGULADORA RADIOLÓGICA Y NUCLEAR">AUTORIDAD REGULADORA RADIOLÓGICA Y NUCLEAR</option>
+                            <option value="BANCO CENTRAL DEL PARAGUAY">BANCO CENTRAL DEL PARAGUAY</option>
+                            <option value="BANCO NACIONAL DE FOMENTO">BANCO NACIONAL DE FOMENTO</option>
+                            <option value="MEC - MIN. DE EDUCACIÓN Y CIENCIAS">MEC - Min. de Educación y Ciencias</option>
+                            <option value="MSPYBS - MIN. DE SALUD PÚBLICA">MSPyBS - Min. de Salud Pública</option>
+                            <option value="MOPC - MIN. DE OBRAS PÚBLICAS">MOPC - Min. de Obras Públicas</option>
+                            <option value="MEF - MINISTERIO DE ECONOMÍA">MEF - Ministerio de Economía y Finanzas</option>
+                            <option value="PODER JUDICIAL">Poder Judicial (Corte Suprema)</option>
+                            <option value="MINISTERIO PÚBLICO">Ministerio Público (Fiscalía)</option>
+                            <option value="MITIC">MITIC</option>
+                            <option value="MRE - RELACIONES EXTERIORES">MRE - Relaciones Exteriores</option>
+                        </select>
+                    </div>
+
                     <div class="col-md-6">
                         <label class="form-label">Nombre <span class="text-danger">*</span></label>
                         <input type="text" id="inputNombre" class="form-control-mre" placeholder="Ej: Juan" required>
@@ -433,29 +519,6 @@
                         <select id="inputEstado" class="form-control-mre">
                             <option value="ACTI">Activo</option>
                             <option value="INAC">Inactivo</option>
-                        </select>
-                    </div>
-
-                    <div class="col-12">
-                        <label class="form-label">Institución <span class="text-danger">*</span></label>
-                        <select id="inputInstitucion" class="form-control-mre" required>
-                            <option value="" selected disabled>Seleccione una entidad...</option>
-                            <option value="ADMINISTRACIÓN NACIONAL DE ELECTRICIDAD">ADMINISTRACIÓN NACIONAL DE ELECTRICIDAD</option>
-                            <option value="ADMINISTRACIÓN NACIONAL DE NAVEGACIÓN Y PUERTOS">ADMINISTRACIÓN NACIONAL DE NAVEGACIÓN Y PUERTOS</option>
-                            <option value="AGENCIA FINANCIERA DE DESARROLLO">AGENCIA FINANCIERA DE DESARROLLO</option>
-                            <option value="AGENCIA NACIONAL DE EVALUACIÓN Y ACREDITACIÓN DE LA EDUCACIÓN SUPERIOR">AGENCIA NACIONAL DE EVALUACIÓN Y ACREDITACIÓN DE LA EDUCACIÓN SUPERIOR</option>
-                            <option value="AGENCIA NACIONAL DE TRÁNSITO Y SEGURIDAD VIAL">AGENCIA NACIONAL DE TRÁNSITO Y SEGURIDAD VIAL</option>
-                            <option value="AUTORIDAD REGULADORA RADIOLÓGICA Y NUCLEAR">AUTORIDAD REGULADORA RADIOLÓGICA Y NUCLEAR</option>
-                            <option value="BANCO CENTRAL DEL PARAGUAY">BANCO CENTRAL DEL PARAGUAY</option>
-                            <option value="BANCO NACIONAL DE FOMENTO">BANCO NACIONAL DE FOMENTO</option>
-                            <option value="MEC - MIN. DE EDUCACIÓN Y CIENCIAS">MEC - Min. de Educación y Ciencias</option>
-                            <option value="MSPYBS - MIN. DE SALUD PÚBLICA">MSPyBS - Min. de Salud Pública</option>
-                            <option value="MOPC - MIN. DE OBRAS PÚBLICAS">MOPC - Min. de Obras Públicas</option>
-                            <option value="MEF - MINISTERIO DE ECONOMÍA">MEF - Ministerio de Economía y Finanzas</option>
-                            <option value="PODER JUDICIAL">Poder Judicial (Corte Suprema)</option>
-                            <option value="MINISTERIO PÚBLICO">Ministerio Público (Fiscalía)</option>
-                            <option value="MITIC">MITIC</option>
-                            <option value="MRE - RELACIONES EXTERIORES">MRE - Relaciones Exteriores</option>
                         </select>
                     </div>
 
@@ -610,7 +673,7 @@
         let mockOfficials = [
             { 
                 id: 1, nombre: 'María', apellido: 'González', email: 'mgonzalez@mec.gov.py', doc: '3.542.110', cargo: 'Secretaria General',
-                inst: 'MEC - MIN. DE EDUCACIÓN Y CIENCIAS', status: 'ACTI', initials: 'MG',
+                inst: 'MEC - MIN. DE EDUCACIÓN Y CIENCIAS', status: 'ACTI', initials: 'MG', tipo: 'Nacional',
                 signaturePath: 'data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAwIDgwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMCw1MCBDMjAsMjAgNTAsMTAgNjAsMzAgQzcwLDUwIDgwLDYwIDkwLDQwIEMxMDAsMjAgMTMwLDMwIDE1MCw1MCBDMTYwLDYwIDE4MCw1NSAxOTAsNDU1IiBzdHJva2U9IiM0NzU1NjkiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==',
                 history: [
                     { date: '15/01/2026 10:00', action: 'CREATE', user: 'admin', desc: 'Creación de registro' },
@@ -619,13 +682,13 @@
             },
             { 
                 id: 2, nombre: 'Ricardo', apellido: 'Duarte', email: 'rduarte@msp.gov.py', doc: '4.100.250', cargo: 'Director de RRHH',
-                inst: 'MSPYBS - MIN. DE SALUD PÚBLICA', status: 'ACTI', initials: 'RD',
+                inst: 'MSPYBS - MIN. DE SALUD PÚBLICA', status: 'ACTI', initials: 'RD', tipo: 'Nacional',
                 signaturePath: 'data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAwIDgwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0yMCw0MCBDMzAsMjAgNDAsNjAgNjAsNDAgQzgwLDIwIDEwMCwzMCAxMjAsNTAgQzE0MCw3MCAxNjAsMjAgMTgwLDMwIiBzdHJva2U9IiM0NzU1NjkiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==',
                 history: [{ date: '18/01/2026 09:15', action: 'CREATE', user: 'admin', desc: 'Creación de registro' }]
             },
             { 
                 id: 3, nombre: 'Carlos', apellido: 'Benítez', email: 'cbenitez@mitic.gov.py', doc: '2.890.123', cargo: 'Auditor Interno',
-                inst: 'MITIC', status: 'INAC', initials: 'CB',
+                inst: 'MITIC', status: 'INAC', initials: 'CB', tipo: 'Nacional',
                 signaturePath: 'data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAwIDgwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMCw0MCBDNDAsMTAgODAsMTAgMTIwLDQwIHM4MCwzMCA4MCwwIiBzdHJva2U9IiM5OUEzQjgiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==',
                 history: [
                     { date: '10/01/2026 11:00', action: 'CREATE', user: 'system', desc: 'Importación masiva' },
@@ -635,6 +698,34 @@
         ];
 
         let idToDelete = null;
+        let currentFilter = {
+            id: '',
+            funcionario: '',
+            tipo: '',
+            doc: '',
+            inst: '',
+            cargo: '',
+            status: ''
+        };
+
+        // LÓGICA DE VISIBILIDAD DE SECCIÓN DE USUARIO
+        function toggleUserCreationSection() {
+            const tipo = document.getElementById('inputTipoFuncionario').value;
+            const userSection = document.getElementById('userCreationSection');
+            // Verificar si estamos en modo visualización (inputs deshabilitados) para no mostrar nada
+            const isViewMode = document.getElementById('inputNombre').disabled;
+
+            if (isViewMode) {
+                userSection.classList.add('d-none');
+                return;
+            }
+
+            if (tipo === 'Extranjero') {
+                userSection.classList.add('d-none');
+            } else {
+                userSection.classList.remove('d-none');
+            }
+        }
 
         // Función segura para inicializar Tooltips
         function initTooltips() {
@@ -654,10 +745,38 @@
             });
         }
 
+        // --- FILTRO DE GRILLA ---
+        function filterGrid() {
+            // Obtener valores de los inputs de la cabecera
+            const inputs = document.querySelectorAll('.header-content input[type="text"]');
+            
+            // Indices basados en el orden de aparición de inputs de texto:
+            // 0: ID
+            // 1: Funcionario
+            // 2: Tipo (NUEVO)
+            // 3: Documento
+            // 4: Institución
+            // 5: Cargo
+            // 6: Estado
+            
+            if (inputs.length >= 7) {
+                currentFilter.id = inputs[0].value.toLowerCase();
+                currentFilter.funcionario = inputs[1].value.toLowerCase();
+                currentFilter.tipo = inputs[2].value.toLowerCase();
+                currentFilter.doc = inputs[3].value.toLowerCase();
+                currentFilter.inst = inputs[4].value.toLowerCase();
+                currentFilter.cargo = inputs[5].value.toLowerCase();
+                currentFilter.status = inputs[6].value.toLowerCase(); 
+            }
+
+            renderOfficials();
+        }
+
         function handleSave(event) {
             event.preventDefault();
             
             const idInput = document.getElementById('officialId').value;
+            const tipo = document.getElementById('inputTipoFuncionario').value;
             const nombre = document.getElementById('inputNombre').value;
             const apellido = document.getElementById('inputApellido').value;
             const doc = document.getElementById('inputDocumento').value;
@@ -673,8 +792,8 @@
                 if (index > -1) {
                     mockOfficials[index] = { 
                         ...mockOfficials[index], 
-                        nombre, apellido, doc, email, cargo, inst, 
-                        status: estado, // Actualizar estado desde el select en modo edición
+                        tipo, nombre, apellido, doc, email, cargo, inst, 
+                        status: estado, 
                         history: [...(mockOfficials[index].history || []), { date: new Date().toLocaleString(), action: 'UPDATE', user: 'admin', desc: 'Actualización de datos' }]
                     };
                 }
@@ -683,13 +802,12 @@
                 const newId = mockOfficials.length > 0 ? Math.max(...mockOfficials.map(o => o.id)) + 1 : 1;
                 const initials = (nombre.charAt(0) + apellido.charAt(0)).toUpperCase();
                 
-                // Simulación de firma (usando un placeholder svg genérico para nuevos registros)
                 const dummySignature = 'data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAwIDgwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMCw0MCBDNDAsMTAgODAsMTAgMTIwLDQwIHM4MCwzMCA4MCwwIiBzdHJva2U9IiM5OUEzQjgiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==';
 
                 const newOfficial = {
                     id: newId,
-                    nombre, apellido, doc, email, cargo, inst,
-                    status: 'ACTI', // Por defecto ACTIVO al crear
+                    tipo, nombre, apellido, doc, email, cargo, inst,
+                    status: 'ACTI', 
                     initials,
                     signaturePath: dummySignature,
                     history: [{ date: new Date().toLocaleString(), action: 'CREATE', user: 'admin', desc: 'Registro inicial' }]
@@ -697,13 +815,30 @@
                 mockOfficials.push(newOfficial);
             }
 
+            // Limpiar filtros al guardar para ver el nuevo registro si es necesario, o mantenerlos
+            // En este caso, simplemente renderizamos
             renderOfficials();
             closeModal('modalOfficial');
         }
 
         function renderOfficials() {
             const tableBody = document.getElementById('officialsTableBody');
-            tableBody.innerHTML = mockOfficials.map(o => `
+            
+            // Aplicar filtros combinados (AND)
+            let filteredData = mockOfficials.filter(o => {
+                const fullName = `${o.nombre} ${o.apellido}`.toLowerCase();
+                const statusText = o.status === 'ACTI' ? 'activo' : 'inactivo'; // Mapeo para búsqueda por texto
+
+                return o.id.toString().includes(currentFilter.id) &&
+                       fullName.includes(currentFilter.funcionario) &&
+                       (o.tipo || '').toLowerCase().includes(currentFilter.tipo) &&
+                       o.doc.toLowerCase().includes(currentFilter.doc) &&
+                       o.inst.toLowerCase().includes(currentFilter.inst) &&
+                       o.cargo.toLowerCase().includes(currentFilter.cargo) &&
+                       statusText.includes(currentFilter.status);
+            });
+
+            tableBody.innerHTML = filteredData.map(o => `
                 <tr data-id="${o.id}" class="${o.status === 'INAC' ? 'opacity-75 bg-light' : ''}">
                     <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()" ${o.status === 'INAC' ? 'disabled' : ''}></td>
                     <td class="text-center fw-bold text-navy">${o.id}</td>
@@ -716,6 +851,7 @@
                             </div>
                         </div>
                     </td>
+                    <td><span class="badge bg-light text-dark border">${o.tipo || 'Nacional'}</span></td>
                     <td class="fw-bold text-dark font-monospace">${o.doc}</td>
                     <td>
                         <div class="text-muted text-uppercase small" style="max-width: 180px; line-height: 1.2;">${o.inst}</div>
@@ -735,10 +871,10 @@
                 </tr>
             `).join('');
             
-            document.getElementById('paginationInfo').innerText = `Mostrando 1 a ${mockOfficials.length} de ${mockOfficials.length} registros`;
+            document.getElementById('paginationInfo').innerText = `Mostrando ${filteredData.length} registros`;
             updateSelectionUI();
             lucide.createIcons();
-            initTooltips(); // Llamada centralizada
+            initTooltips(); 
         }
 
         function updateSelectionUI() {
@@ -782,7 +918,11 @@
             document.querySelectorAll('.record-check:checked').forEach(cb => {
                 const id = parseInt(cb.closest('tr').dataset.id);
                 const item = mockOfficials.find(o => o.id === id);
-                if(item) item.status = 'INAC';
+                if(item) {
+                    item.status = 'INAC';
+                    // Agregar historial
+                    item.history.push({ date: new Date().toLocaleString(), action: 'UPDATE', user: 'admin', desc: 'Inactivación masiva' });
+                }
             });
             renderOfficials();
             closeModal('modalInactivateConfirm');
@@ -829,6 +969,7 @@
             const containerStatus = document.getElementById('containerStatus');
             const inputEstado = document.getElementById('inputEstado');
             const officialIdInput = document.getElementById('officialId');
+            const inputTipoFuncionario = document.getElementById('inputTipoFuncionario');
 
             form.reset();
             modal.style.display = 'flex';
@@ -838,32 +979,30 @@
 
             if (mode === 'add') {
                 title.innerText = 'Nuevo Registro';
-                officialIdInput.value = ''; // ID vacío para crear
+                officialIdInput.value = ''; 
+                inputTipoFuncionario.value = 'Nacional'; // Default
                 
-                // Ocultar Auditoría y Estado
                 auditSection.classList.add('d-none');
                 containerStatus.classList.add('d-none');
                 
-                // Ajustar ancho de Cargo a full
                 containerCargo.classList.remove('col-md-8');
                 containerCargo.classList.add('col-12');
 
-                // Mostrar creación de usuario
-                userCreationSection.classList.remove('d-none');
                 document.getElementById('inputUsuarioSystem').readOnly = true; 
+                toggleUserCreationSection(); // Check inicial
             } else {
                 const official = mockOfficials.find(o => o.id === id);
                 if (official) {
-                    officialIdInput.value = official.id; // Set ID para editar
+                    officialIdInput.value = official.id;
+                    inputTipoFuncionario.value = official.tipo || 'Nacional';
                     document.getElementById('inputNombre').value = official.nombre;
                     document.getElementById('inputApellido').value = official.apellido;
                     document.getElementById('inputDocumento').value = official.doc;
                     document.getElementById('inputCorreo').value = official.email;
                     document.getElementById('inputCargo').value = official.cargo;
                     document.getElementById('inputInstitucion').value = official.inst;
-                    inputEstado.value = official.status; // Setear estado
+                    inputEstado.value = official.status; 
 
-                    // Mostrar Estado y ajustar grilla
                     containerStatus.classList.remove('d-none');
                     containerCargo.classList.remove('col-12');
                     containerCargo.classList.add('col-md-8');
@@ -871,13 +1010,13 @@
                     if (mode === 'edit') {
                         title.innerText = 'Editar Funcionario';
                         auditSection.classList.add('d-none');
-                        userCreationSection.classList.remove('d-none');
                         generateUsername();
+                        toggleUserCreationSection(); // Check visibilidad según tipo
                     } else if (mode === 'view') {
                         title.innerText = 'Detalle del Funcionario';
-                        inputs.forEach(i => i.disabled = true); // Esto deshabilita también el select de estado
+                        inputs.forEach(i => i.disabled = true); 
                         btnSave.style.display = 'none';
-                        userCreationSection.classList.add('d-none');
+                        userCreationSection.classList.add('d-none'); // Siempre oculto en view
                         auditSection.classList.remove('d-none');
                         
                         auditTimeline.innerHTML = official.history ? official.history.map(h => `<tr><td>${h.date}</td><td><span class="badge-audit tag-${h.action.toLowerCase()}">${h.action}</span></td><td>${h.user}</td><td>${h.desc}</td></tr>`).join('') : '<tr><td colspan="4" class="text-center text-muted">Sin historial</td></tr>';
