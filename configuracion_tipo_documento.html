@@ -150,6 +150,10 @@
         .mre-table { width: 100%; border-collapse: separate; border-spacing: 0; }
         .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 0.85rem 1.5rem; border-bottom: 2px solid #E2E8F0; background: #F8FAFC; }
         .mre-table td { padding: 0.85rem 1.5rem; font-size: 0.8rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
+        /* Filtros en grilla */
+        .filter-row th { padding: 0.5rem 1.5rem; background: #F8FAFC; border-bottom: 2px solid #E2E8F0; }
+        .filter-input { font-size: 0.7rem; padding: 0.4rem 0.6rem; height: 30px; border-radius: 6px; }
+
 
         .btn-main { background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); color: #ffffff; border: none; border-radius: 12px; padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.85rem; transition: var(--transition); }
         .btn-main:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 40, 85, 0.2); color: white; }
@@ -206,7 +210,10 @@
         .list-item-field { padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: 0.2s; border: 1px solid transparent; margin-bottom: 2px; }
         .list-item-field:hover { background: #F8FAFC; border-color: #CBD5E1; }
         .list-item-field.selected { background: #E0F2FE; border-color: var(--mre-blue-light); }
-        
+        .btn-transfer { width: 32px; height: 32px; border-radius: 8px; border: 1px solid #E2E8F0; background: white; color: var(--mre-blue); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .btn-transfer:hover:not(:disabled) { background: var(--mre-blue); color: white; }
+        .btn-transfer:disabled { opacity: 0.5; cursor: not-allowed; }
+
         .table-associated { font-size: 0.7rem; width: 100%; border-collapse: collapse; }
         .table-associated td { padding: 6px 10px; border-bottom: 1px solid #F1F5F9; }
 
@@ -316,10 +323,6 @@
             <div class="grid-frame animate-fade">
                 <div class="grid-header-frame">
                     <h4 class="fw-black text-uppercase m-0" style="color: var(--mre-blue); font-size: 0.8rem;">Registros Activos</h4>
-                    <div class="position-relative" style="width: 300px;">
-                        <i data-lucide="search" class="position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:#94A3B8; width:16px;"></i>
-                        <input type="text" class="form-control-mre ps-5" placeholder="Buscar por nombre o ID...">
-                    </div>
                 </div>
                 <div class="table-responsive">
                     <table class="mre-table">
@@ -333,6 +336,16 @@
                                 <th>Tipo de Firma</th>
                                 <th>Estado</th>
                                 <th width="160" class="text-center">Acciones</th>
+                            </tr>
+                            <tr class="filter-row">
+                                <th></th>
+                                <th><input type="text" class="form-control-mre filter-input" placeholder="Filtrar..."></th>
+                                <th><input type="text" class="form-control-mre filter-input" placeholder="Filtrar..."></th>
+                                <th><input type="text" class="form-control-mre filter-input" placeholder="Filtrar..."></th>
+                                <th><input type="text" class="form-control-mre filter-input" placeholder="Filtrar..."></th>
+                                <th><input type="text" class="form-control-mre filter-input" placeholder="Filtrar..."></th>
+                                <th><input type="text" class="form-control-mre filter-input" placeholder="Filtrar..."></th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody id="docsTableBody"></tbody>
@@ -541,7 +554,7 @@
                             <div class="col-12 mt-2">
                                 <div class="sub-section-title mt-0">Base Legal Asociada</div>
                                 <div class="row g-2 align-items-end mode-edit-only">
-                                    <div class="col-md-3">
+                                    <div class="col-md-5">
                                         <label class="form-label">Buscar Ley <span class="text-danger">*</span></label>
                                         <select id="lawInput" class="form-control-mre">
                                             <option value="">Seleccionar Ley...</option>
@@ -559,7 +572,7 @@
                                             <option value="89">Ley 4033 - Tasas Consulares</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-5">
                                         <label class="form-label">Cuenta de Depósito <span class="text-danger">*</span></label>
                                         <select id="lawAccount" class="form-control-mre">
                                             <option value="">Seleccionar Cuenta...</option>
@@ -567,18 +580,16 @@
                                             <option value="00000094555551443">00000094555551443</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-2"><label class="form-label">Desde <span class="text-danger">*</span></label><input type="date" id="lawDesde" class="form-control-mre"></div>
-                                    <div class="col-md-2"><label class="form-label">Hasta <span class="text-danger">*</span></label><input type="date" id="lawHasta" class="form-control-mre"></div>
                                     <div class="col-md-2"><button type="button" class="btn-main w-100 action-btn" onclick="addItem('law')">Agregar</button></div>
                                 </div>
                                 <div class="table-container-embedded mt-2">
                                     <table class="mre-table mb-0">
                                         <thead>
                                             <tr>
-                                                <th width="70">ID</th><th>Referencia Ley</th><th>Cuenta</th><th>Vigencia</th><th width="40" class="action-col"></th>
+                                                <th width="70">ID</th><th>Referencia Ley</th><th>Cuenta</th><th width="40" class="action-col"></th>
                                             </tr>
                                         </thead>
-                                        <tbody id="lawsTableBody"><tr><td colspan="5" class="text-center text-muted small py-2">Sin leyes asignadas</td></tr></tbody>
+                                        <tbody id="lawsTableBody"><tr><td colspan="4" class="text-center text-muted small py-2">Sin leyes asignadas</td></tr></tbody>
                                     </table>
                                 </div>
                             </div>
@@ -586,7 +597,7 @@
                             <div class="col-12 mt-2">
                                 <div class="sub-section-title">Excepciones Aplicables</div>
                                 <div class="row g-2 align-items-end mode-edit-only">
-                                    <div class="col-md-3">
+                                    <div class="col-md-5">
                                         <label class="form-label">Ley de Excepción</label>
                                         <select id="excInput" class="form-control-mre">
                                             <option value="">Seleccionar Excepción...</option>
@@ -596,7 +607,7 @@
                                             <option value="E4">Art 67 de la Constitución Nacional exoneración para indígenas</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-5">
                                         <label class="form-label">Cuenta de Depósito</label>
                                         <select id="excAccount" class="form-control-mre">
                                             <option value="">Seleccionar Cuenta...</option>
@@ -604,18 +615,16 @@
                                             <option value="00000094555551443">00000094555551443</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-2"><label class="form-label">Desde</label><input type="date" id="excDesde" class="form-control-mre"></div>
-                                    <div class="col-md-2"><label class="form-label">Hasta</label><input type="date" id="excHasta" class="form-control-mre"></div>
                                     <div class="col-md-2"><button type="button" class="btn-main w-100 action-btn" onclick="addItem('exc')">Agregar</button></div>
                                 </div>
                                 <div class="table-container-embedded mt-2">
                                     <table class="mre-table mb-0">
                                         <thead>
                                             <tr>
-                                                <th width="70">ID</th><th>Descripción Excepción</th><th>Cuenta</th><th>Vigencia</th><th width="40" class="action-col"></th>
+                                                <th width="70">ID</th><th>Descripción Excepción</th><th>Cuenta</th><th width="40" class="action-col"></th>
                                             </tr>
                                         </thead>
-                                        <tbody id="excTableBody"><tr><td colspan="5" class="text-center text-muted small py-2">Sin excepciones asignadas</td></tr></tbody>
+                                        <tbody id="excTableBody"><tr><td colspan="4" class="text-center text-muted small py-2">Sin excepciones asignadas</td></tr></tbody>
                                     </table>
                                 </div>
                             </div>
@@ -699,35 +708,10 @@
                     </div>
                 </div>
 
-                <!-- APARTADO 5: WEB SERVICES -->
-                <div class="apartado-container" id="apartado5">
+                <!-- APARTADO 5: AUDITORÍA (SOLO VISUALIZAR) -->
+                <div class="apartado-container" id="apartado5" style="display: none;">
                     <div class="apartado-header" onclick="toggleApartado(5)">
-                        <div class="apartado-title"><span class="apartado-icon-step">5</span> Configuración de Web Services</div>
-                        <i data-lucide="chevron-down" class="text-muted" style="width: 16px;"></i>
-                    </div>
-                    <div class="apartado-content">
-                        <div class="row g-3 p-3 bg-light rounded-3 border mb-3">
-                            <div class="col-md-12">
-                                <label class="form-label">Endpoint</label>
-                                <input type="text" id="ws_endpoint" class="form-control-mre" placeholder="https://api.servicios.gov.py/v1/validar">
-                                <div class="form-text text-muted" style="font-size: 0.65rem;">* Debe ser una conexión segura (https)</div>
-                            </div>
-                            <div class="col-md-12">
-                                <label class="form-label">Token / API Key</label>
-                                <input type="password" id="ws_token_auth" class="form-control-mre" placeholder="••••••••••••••••">
-                            </div>
-                        </div>
-
-                        <div class="text-end" id="nextToAuditBtn2">
-                            <button type="button" class="btn btn-primary btn-sm fw-bold px-4 rounded-pill" onclick="toggleApartado(6)">Siguiente <i data-lucide="arrow-right" class="ms-1" style="width:14px"></i></button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- APARTADO 6: AUDITORÍA (SOLO VISUALIZAR) -->
-                <div class="apartado-container" id="apartado6" style="display: none;">
-                    <div class="apartado-header" onclick="toggleApartado(6)">
-                        <div class="apartado-title"><span class="apartado-icon-step">6</span> Historial de Auditoría</div>
+                        <div class="apartado-title"><span class="apartado-icon-step">5</span> Historial de Auditoría</div>
                         <i data-lucide="chevron-down" class="text-muted" style="width: 16px;"></i>
                     </div>
                     <div class="apartado-content">
@@ -756,6 +740,10 @@
                                     </tr>
                                 </tbody>
                             </table>
+                        </div>
+                        
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <button type="button" class="btn btn-light btn-sm rounded-pill px-4 border fw-bold" onclick="closeModal('modalDoc')">Cerrar</button>
                         </div>
                     </div>
                 </div>
@@ -978,8 +966,8 @@
             elements.forEach(el => el.disabled = isView);
             
             // Lógica de visibilidad para secciones
-            auditSection.style.display = isView ? 'block' : 'none';
-            nextToAudit.style.display = isView ? 'block' : 'none';
+            if(auditSection) auditSection.style.display = isView ? 'block' : 'none';
+            if(nextToAudit) nextToAudit.style.display = isView ? 'block' : 'none';
             if(nextToAudit2) nextToAudit2.style.display = isView ? 'block' : 'none';
 
             document.querySelectorAll('.action-col').forEach(el => el.style.display = isView ? 'none' : '');
@@ -993,8 +981,8 @@
             // RESETEAR FORMULARIO
             form.reset();
             document.getElementById('officesTableBody').innerHTML = '<tr><td colspan="5" class="text-center text-muted italic p-2 small">No hay oficinas vinculadas</td></tr>';
-            document.getElementById('lawsTableBody').innerHTML = '<tr><td colspan="5" class="text-center text-muted small py-2">Sin leyes asignadas</td></tr>';
-            document.getElementById('excTableBody').innerHTML = '<tr><td colspan="5" class="text-center text-muted small py-2">Sin excepciones asignadas</td></tr>';
+            document.getElementById('lawsTableBody').innerHTML = '<tr><td colspan="4" class="text-center text-muted small py-2">Sin leyes asignadas</td></tr>';
+            document.getElementById('excTableBody').innerHTML = '<tr><td colspan="4" class="text-center text-muted small py-2">Sin excepciones asignadas</td></tr>';
             
             // Resetear listas duales
             ['listAvailableFields', 'listAvailableAdj'].forEach(listId => {
@@ -1054,7 +1042,6 @@
                         <td class="text-center fw-bold text-navy">49</td>
                         <td>Ley 1030 - Antecedentes</td>
                         <td class="small fw-bold">00000094555551442</td>
-                        <td class="small">2023-01-01 a 2030-12-31</td>
                         <td class="text-center action-col"><button type="button" class="btn btn-sm text-danger border-0 p-0" onclick="this.closest('tr').remove()"><i data-lucide="trash-2" style="width:14px"></i></button></td>
                     </tr>
                 `;
@@ -1233,13 +1220,11 @@
                 const accountId = type === 'law' ? 'lawAccount' : 'excAccount';
                 const select = document.getElementById(inputId);
                 const account = document.getElementById(accountId);
-                const desde = document.getElementById(type === 'law' ? 'lawDesde' : 'excDesde').value;
-                const hasta = document.getElementById(type === 'law' ? 'lawHasta' : 'excHasta').value;
 
                 // Validación específica para Leyes (Campos obligatorios)
                 if (type === 'law') {
-                    if (!select.value || !account.value || !desde || !hasta) {
-                        showToast('Error: Todos los campos de la Base Legal (Ley, Cuenta, Desde, Hasta) son obligatorios.');
+                    if (!select.value || !account.value) {
+                        showToast('Error: Todos los campos de la Base Legal (Ley, Cuenta) son obligatorios.');
                         return;
                     }
                 } else {
@@ -1254,7 +1239,6 @@
                     <td class="text-center fw-bold text-navy">${select.value}</td>
                     <td>${info[0]}</td>
                     <td class="small fw-bold">${account.value || '---'}</td>
-                    <td class="small">${desde || '-'} a ${hasta || '-'}</td>
                     <td class="text-center action-col"><button type="button" class="btn btn-sm text-danger border-0 p-0" onclick="this.closest('tr').remove()"><i data-lucide="trash-2" style="width:14px"></i></button></td>
                 `;
                 body.appendChild(row);
@@ -1312,18 +1296,6 @@
             if (specificFieldsRows.length === 0) {
                 showToast('Error: Debe seleccionar al menos un dato específico en el apartado 3.');
                 toggleApartado(3);
-                return;
-            }
-
-            // Validar WS Endpoint Seguro (Apartado 5)
-            // Uso de operador condicional para evitar error si el elemento no existe (aunque debería existir)
-            const wsEndpointInput = document.getElementById('ws_endpoint');
-            const wsEndpoint = wsEndpointInput ? wsEndpointInput.value.trim() : '';
-
-            if (wsEndpoint && !wsEndpoint.startsWith('https://')) {
-                showToast('Error de Seguridad: El Endpoint debe utilizar protocolo seguro (https://).');
-                toggleApartado(5);
-                if (wsEndpointInput) wsEndpointInput.focus();
                 return;
             }
 
