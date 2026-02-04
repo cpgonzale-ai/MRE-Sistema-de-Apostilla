@@ -334,9 +334,12 @@
         <aside class="main-sidebar animate-fade">
             <nav class="nav-menu">
                 <p class="px-3 mb-2 text-muted fw-bold uppercase" style="font-size: 0.7rem; letter-spacing: 1.2px;">Administración</p>
-                <a href="javascript:void(0)" onclick="showListView()" class="nav-link-mre active" title="Módulo principal de gestión de cuentas">
-                    <i data-lucide="users" style="width: 18px;"></i> <span>Gestión de usuarios</span>
-                </a>
+                <a href="#" class="nav-link-mre" title="Tipos de documentos"><i data-lucide="file-text" style="width: 18px;"></i> <span>Tipos de documentos</span></a>
+                <a href="javascript:void(0)" onclick="showListView()" class="nav-link-mre active" title="Gestión de Usuarios"><i data-lucide="users" style="width: 18px;"></i> <span>Gestión de usuarios</span></a>
+                <a href="#" class="nav-link-mre" title="Grupos y Permisos"><i data-lucide="shield-check" style="width: 18px;"></i> <span>Grupos y Permisos</span></a>
+                <a href="#" class="nav-link-mre" title="Configuración de referencia"><i data-lucide="settings-2" style="width: 18px;"></i> <span>Configuración de referencia</span></a>
+                <a href="#" class="nav-link-mre" title="Configuración de campos"><i data-lucide="layout-grid" style="width: 18px;"></i> <span>Configuración de campos</span></a>
+                <a href="#" class="nav-link-mre" title="Configuración de documentos"><i data-lucide="settings" style="width: 18px;"></i> <span>Configuración de documentos</span></a>
             </nav>
         </aside>
 
@@ -634,10 +637,6 @@
         </main>
     </div>
 
-    <footer class="mre-footer">
-        <div class="footer-left">&copy; 2026 Ministerio de Relaciones Exteriores - Dirección de Informática</div>
-    </footer>
-
     <!-- MODALES -->
     <div class="mre-modal-overlay" id="modalDelete">
         <div class="mre-modal animate-fade text-center" style="max-width: 450px;">
@@ -648,7 +647,7 @@
             <p class="text-muted small px-4">¿Desea eliminar definitivamente al usuario <strong id="deleteUserName"></strong>? Esta acción es irreversible.</p>
             <div class="d-flex justify-content-center gap-3 mt-4 pt-3 border-top">
                 <button class="btn btn-light rounded-pill px-4 fw-800 border" onclick="closeModal('modalDelete')" title="No eliminar">Cancelar</button>
-                <button class="btn btn-danger rounded-pill px-4 fw-800" onclick="alert('Satisfactoriamente eliminado.'); closeModal('modalDelete');" title="Confirmar eliminación permanente">Sí, eliminar</button>
+                <button class="btn btn-danger rounded-pill px-4 fw-800" onclick="executeDeletion()" title="Confirmar eliminación permanente">Sí, eliminar</button>
             </div>
         </div>
     </div>
@@ -695,7 +694,8 @@
     </div>
 
     <script>
-        let currentEditingId = null; // Variable global para rastrear si es edición o alta
+        let currentEditingId = null; 
+        let idToDelete = null;
 
         document.addEventListener('DOMContentLoaded', () => { 
             lucide.createIcons(); 
@@ -706,7 +706,7 @@
         function showListView() {
             document.getElementById('viewForm').style.display = 'none';
             document.getElementById('viewList').style.display = 'block';
-            currentEditingId = null; // Resetear al volver al listado
+            currentEditingId = null; 
         }
 
         function showFormView(mode, id) {
@@ -732,7 +732,6 @@
             userSearch.readOnly = false;
             statusField.disabled = false;
             
-            // Restaurar visibilidad por defecto
             statusContainer.style.display = '';
 
             const allInputs = form.querySelectorAll('input, select');
@@ -745,10 +744,11 @@
             if (mode === 'add') {
                 headerTitle.innerText = "Agregar Usuario";
                 statusField.value = "Activo";
-                // Ocultar campo estado en modo agregar
                 statusContainer.style.display = 'none';
+                currentEditingId = null;
             } 
             else if (mode === 'view' || mode === 'edit') {
+                currentEditingId = id;
                 headerTitle.innerText = mode === 'view' ? "Visualizar Usuario" : "Editar Usuario";
                 if(mode === 'view') {
                     btnSubmit.classList.add('d-none');
@@ -788,7 +788,7 @@
             document.getElementById('f_name_detail').value = user.n;
             document.getElementById('f_last_detail').value = user.l;
             document.getElementById('f_status_detail').value = user.s;
-            document.getElementById('f_exp_detail').value = user.exp || ""; // Cargar fecha
+            document.getElementById('f_exp_detail').value = user.exp || ""; 
             document.getElementById('assignedGroupsDetail').innerHTML = `<div class="list-item" onclick="moveGroup(this, 'availGroupsBox')">${user.g}</div>`;
         }
 
@@ -802,9 +802,26 @@
             if (id === 1001 || id === 1003 || id === 1005 || id === 1004) {
                 document.getElementById('modalDeleteError').style.display = 'flex';
             } else {
+                idToDelete = id;
                 document.getElementById('deleteUserName').innerText = name;
                 document.getElementById('modalDelete').style.display = 'flex';
             }
+        }
+
+        function executeDeletion() {
+            if (idToDelete) {
+                const rows = document.querySelectorAll('#userTableBody tr');
+                rows.forEach(r => {
+                    const idCell = r.cells[1];
+                    if (idCell && parseInt(idCell.innerText) === idToDelete) {
+                        r.remove();
+                    }
+                });
+                alert('Usuario eliminado del sistema satisfactoriamente.');
+                idToDelete = null;
+            }
+            closeModal('modalDelete');
+            updatePaginationInfo();
         }
 
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
@@ -878,9 +895,8 @@
                 document.getElementById('f_doc_detail').value = "3.456.789";
                 document.getElementById('f_email_detail').value = "jperon@mre.gov.py";
                 document.getElementById('f_phone_detail').value = "+595 981 123 456";
-                document.getElementById('f_exp_detail').value = ""; // Expiración vacía
+                document.getElementById('f_exp_detail').value = ""; 
                 
-                // Teléfono excluido del bloqueo post-búsqueda
                 ['f_name_detail', 'f_last_detail', 'f_doc_detail', 'f_email_detail'].forEach(id => {
                     document.getElementById(id).readOnly = true;
                     document.getElementById(id).style.backgroundColor = "#F1F5F9";
@@ -897,7 +913,6 @@
             hideSearchError();
             document.getElementById('f_name_detail').value = "Funcionario";
             document.getElementById('f_last_detail').value = "MRE";
-            // Teléfono excluido del bloqueo post-búsqueda
             ['f_name_detail', 'f_last_detail', 'f_type_detail', 'f_doc_detail', 'f_email_detail'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el && el.tagName === 'SELECT') el.disabled = true; else el.readOnly = true;
@@ -928,9 +943,9 @@
 
             const actionsHtml = `
                 <div class="actions-cell-container">
-                    <button class="btn-action-icon" title="Visualizar" onclick="showFormView('view', ${currentEditingId || 9999})"><i data-lucide="eye" style="width:18px"></i></button>
-                    <button class="btn-action-icon" title="Editar" onclick="showFormView('edit', ${currentEditingId || 9999})"><i data-lucide="edit-3" style="width:18px"></i></button>
-                    <button class="btn-action-icon btn-action-delete" title="Eliminar" onclick="requestDeletion(${currentEditingId || 9999}, '${fullName}')"><i data-lucide="trash-2" style="width:18px"></i></button>
+                    <button class="btn-action-icon" title="Visualizar" onclick="showFormView('view', 9999)"><i data-lucide="eye" style="width:18px"></i></button>
+                    <button class="btn-action-icon" title="Editar" onclick="showFormView('edit', 9999)"><i data-lucide="edit-3" style="width:18px"></i></button>
+                    <button class="btn-action-icon btn-action-delete" title="Eliminar" onclick="requestDeletion(9999, '${fullName}')"><i data-lucide="trash-2" style="width:18px"></i></button>
                 </div>
             `;
 
@@ -950,7 +965,7 @@
                     rowToUpdate.cells[6].innerHTML = `<span class="badge-status ${statusClass}">${status}</span>`;
                     rowToUpdate.cells[7].innerText = expDate;
                     rowToUpdate.setAttribute('data-group', mainGroup);
-                    // Actualizar checkbox según estado
+                    
                     const checkbox = rowToUpdate.querySelector('.record-check');
                     if (status === 'Inactivo') {
                          checkbox.disabled = true;
