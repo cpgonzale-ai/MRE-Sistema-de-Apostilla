@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prototipo Apostilla - Haya 1961</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&display=swap');
+
+        :root {
+            --border-color: #000000;
+        }
+
+        body {
+            font-family: 'Arimo', Arial, sans-serif;
+            background-color: #f3f4f6;
+            -webkit-print-color-adjust: exact;
+        }
+
+        .sheet {
+            background: white;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 2rem auto;
+            padding: 15mm;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        /* Table Specifics for rigid border control */
+        .apostille-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 2px solid var(--border-color);
+        }
+
+        .apostille-table td, .apostille-table th {
+            border: 1px solid var(--border-color);
+            padding: 4px 8px;
+            vertical-align: top;
+        }
+
+        .label-text {
+            font-size: 10pt;
+            font-weight: 700;
+            color: #000;
+        }
+
+        .sub-label {
+            font-size: 7pt;
+            font-weight: 400;
+            color: #333;
+            display: block;
+            margin-top: -2px;
+        }
+
+        .value-text {
+            font-size: 11pt;
+            color: #000;
+            line-height: 1.2;
+        }
+
+        .section-header {
+            text-align: center;
+            font-weight: 700;
+            background-color: #e5e5e5; /* Simulate slight tint if needed, usually white in scan */
+        }
+
+        .disclaimer-text {
+            font-size: 8pt;
+            text-align: justify;
+            line-height: 1.1;
+        }
+
+        /* Print Override */
+        @media print {
+            body { background: none; }
+            .sheet {
+                width: 100%;
+                margin: 0;
+                padding: 10mm;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sheet">
+        <!-- Main Apostille Box -->
+        <table class="apostille-table mb-6">
+            <!-- Header -->
+            <tr>
+                <td colspan="4" class="text-center py-2">
+                    <h1 class="font-bold text-lg leading-tight">APOSTILLE</h1>
+                    <p class="text-sm font-bold">(Convention de La Haye du 5 octobre 1961)</p>
+                </td>
+            </tr>
+
+            <!-- 1. Country -->
+            <tr>
+                <td colspan="4">
+                    <div class="flex items-baseline">
+                        <span class="label-text w-1/3">1. País <span class="sub-label inline font-normal">(country / pays):</span></span>
+                        <span class="value-text w-2/3 uppercase">REPUBLICA DEL PARAGUAY</span>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- Document Bridge Text -->
+            <tr>
+                <td colspan="4" class="text-center border-b-0 italic pb-1 pt-1">
+                    <span class="text-md">El presente documento público</span><br>
+                    <span class="text-xs text-gray-600">(This public document - Le présent acte public)</span>
+                </td>
+            </tr>
+
+            <!-- 2. Signed By -->
+            <tr>
+                <td colspan="4">
+                    <div class="flex items-center">
+                        <span class="label-text w-1/3 block">
+                            2. ha sido firmado por
+                            <span class="sub-label">(has been signed by / a été signé par)</span>
+                        </span>
+                        <span class="value-text w-2/3 uppercase text-lg">ROBERTO DÍAZ ROJAS</span>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- 3. Capacity -->
+            <tr>
+                <td colspan="4">
+                    <div class="flex items-center">
+                        <span class="label-text w-1/3 block">
+                            3. quien actúa en calidad de:
+                            <span class="sub-label">(acting in the capacity of / agissant en qualité de)</span>
+                        </span>
+                        <span class="value-text w-2/3 pl-10">Enc. de Despacho</span>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- 4. Seal/Stamp Ref -->
+            <tr>
+                <td colspan="4">
+                    <div class="flex items-start">
+                        <span class="label-text w-1/3 block pt-1">
+                            4. y está revestido del sello / timbre de:
+                            <span class="sub-label">(bears the seal/stamp of / est revêtu du sceau / timbre)</span>
+                        </span>
+                        <span class="value-text w-2/3 pl-10 pt-1">
+                            Corte Suprema de<br>Justicia-Poder Judicial
+                        </span>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- Certified Block Header -->
+            <tr>
+                <td colspan="4" class="text-center py-1">
+                    <span class="font-bold text-sm">Certificado</span><br>
+                    <span class="text-xs font-bold">(Certified - Attesté)</span>
+                </td>
+            </tr>
+
+            <!-- 5. Place & 6. Date -->
+            <tr>
+                <td colspan="2" class="w-1/2">
+                    <div class="flex items-center">
+                        <span class="label-text w-16 block">
+                            5. en:
+                            <span class="sub-label">(at / à)</span>
+                        </span>
+                        <span class="value-text uppercase flex-1">ASUNCION</span>
+                    </div>
+                </td>
+                <td colspan="2" class="w-1/2">
+                    <div class="flex items-center">
+                        <span class="label-text w-16 block">
+                            6. el día:
+                            <span class="sub-label">(the / le)</span>
+                        </span>
+                        <span class="value-text flex-1">2/1/2026 14:58:03</span>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- 7. By Authority -->
+            <tr>
+                <td colspan="4">
+                    <div class="flex items-start">
+                        <span class="label-text w-16 block pt-1">
+                            7. por:
+                            <span class="sub-label">(by / par)</span>
+                        </span>
+                        <div class="flex-1 pl-2">
+                            <span class="value-text uppercase font-bold block">MINISTERIO DE RELACIONES EXTERIORES DEL PARAGUAY</span>
+                            <span class="text-[8pt] text-gray-700 block">Ministry of Foreign Affairs of Paraguay / Ministère des Affaires étrangères du Paraguay</span>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- 8. Number -->
+            <tr>
+                <td colspan="4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center w-2/3">
+                            <span class="label-text w-32 block">
+                                8. bajo el número:
+                                <span class="sub-label">(nº / sous nº)</span>
+                            </span>
+                            <span class="value-text font-bold">449/2026</span>
+                        </div>
+                        <div class="w-1/3 text-right">
+                             <span class="value-text">C-2889201</span>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- 9. Seal & 10. Signature -->
+            <tr>
+                <td colspan="2" class="w-1/2 h-32 align-bottom pb-4">
+                    <span class="label-text block">
+                        9. Sello / timbre
+                        <span class="sub-label">(seal/stamp / sceau/timbre )</span>
+                    </span>
+                </td>
+                <td colspan="2" class="w-1/2 h-32 align-bottom pb-4 pl-4 text-center">
+                    <div class="mb-8">
+                        <span class="value-text font-bold block uppercase mb-6">CYNTHIA BRAY</span>
+                    </div>
+                    <span class="label-text block text-left">
+                        10. Firma:
+                        <span class="sub-label">(signature)</span>
+                    </span>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Document Type Meta -->
+        <div class="flex mb-4">
+            <div class="w-1/3 font-bold text-sm">
+                Tipo de Documento:<br>
+                <span class="text-xs font-normal text-gray-600">(type of document / type d'acte:)</span>
+            </div>
+            <div class="w-2/3 font-bold text-sm uppercase">
+                CERTIFICADO DE ANTECEDENTES JUDICIALES - 45874662
+            </div>
+        </div>
+
+        <!-- Disclaimers (Trilingual) -->
+        <div class="space-y-2 mb-6 border-t-2 border-dashed border-gray-400 pt-4">
+            <p class="disclaimer-text">
+                Esta Apostilla certifica únicamente la autenticidad de la firma, la calidad en que el signatario del documento haya actuado y, en su caso, la identidad del sello o timbre del que el documento público esté revestido. Esta Apostilla no certifica el contenido del documento para el cual se expidió. Esta Apostilla se puede verificar en la dirección siguiente: <strong>www.mre.gov.py/legalizaciones</strong>.
+            </p>
+            <p class="disclaimer-text border-t border-dashed border-gray-300 pt-1 mt-1">
+                This Apostille only certifies the authenticity of the signature and the capacity of the person who has signed the public document, and, where appropriate, the identity of the seal or stamp which the public document bears. This Apostille does not certify the content of the document for which it was issued. To verify the issuance of this Apostille, see <strong>www.mre.gov.py/legalizaciones</strong>.
+            </p>
+            <p class="disclaimer-text border-t border-dashed border-gray-300 pt-1 mt-1">
+                Cette Apostille atteste uniquement la véracité de la signature, la qualité en laquelle le signataire de l'acte a agi et, le cas échéant, l'identité du sceau ou timbre dont cet acte public est revêtu. Cette Apostille ne certifie pas le contenu de l'acte pour lequel elle a été émise. Cette Apostille peut être vérifiée à l'adresse suivante : <strong>www.mre.gov.py/legalizaciones</strong>.
+            </p>
+        </div>
+
+        <!-- Footer / QR Section -->
+        <div class="flex items-start mt-8">
+            <!-- Simulated QR Code -->
+            <div class="w-32 h-32 flex-shrink-0 mr-6">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="w-full h-full border border-gray-900">
+                    <rect width="100" height="100" fill="white"/>
+                    <rect x="0" y="0" width="25" height="25" fill="black"/>
+                    <rect x="5" y="5" width="15" height="15" fill="white"/>
+                    <rect x="10" y="10" width="5" height="5" fill="black"/>
+                    
+                    <rect x="75" y="0" width="25" height="25" fill="black"/>
+                    <rect x="80" y="5" width="15" height="15" fill="white"/>
+                    <rect x="85" y="10" width="5" height="5" fill="black"/>
+                    
+                    <rect x="0" y="75" width="25" height="25" fill="black"/>
+                    <rect x="5" y="80" width="15" height="15" fill="white"/>
+                    <rect x="10" y="85" width="5" height="5" fill="black"/>
+
+                    <!-- Random data blocks simulation -->
+                    <rect x="30" y="0" width="10" height="10" fill="black"/>
+                    <rect x="50" y="0" width="5" height="5" fill="black"/>
+                    <rect x="30" y="20" width="5" height="5" fill="black"/>
+                    <rect x="40" y="15" width="15" height="5" fill="black"/>
+                    <rect x="60" y="30" width="10" height="10" fill="black"/>
+                    <rect x="80" y="40" width="10" height="10" fill="black"/>
+                    <rect x="40" y="60" width="10" height="10" fill="black"/>
+                    <rect x="70" y="70" width="10" height="5" fill="black"/>
+                    <rect x="30" y="80" width="15" height="15" fill="black"/>
+                    <rect x="60" y="85" width="10" height="10" fill="black"/>
+                </svg>
+            </div>
+
+            <!-- Footer Details -->
+            <div class="flex-1 text-xs font-sans text-gray-800">
+                <div class="mb-4">
+                     <span class="block text-xl font-bold mb-1">Observacion:</span>
+                </div>
+                
+                <div class="mb-6">
+                    <span class="block text-xl font-bold">Código: 4130534</span>
+                </div>
+
+                <div class="border-t border-gray-400 pt-2 grid grid-cols-1 gap-1">
+                    <div class="font-bold">Nombre del Titular: RITA MAGALI RIQUETTI ACOSTA</div>
+                    
+                    <div class="grid grid-cols-2 gap-4 mt-2">
+                        <div>
+                            <span class="block text-gray-600">Cobrado Por: <span class="text-black font-semibold">CYNTHIA BRAY</span></span>
+                            <span class="block text-gray-600 mt-1">Fecha Impresión : <span class="text-black ml-4">6/1/2026</span></span>
+                        </div>
+                        <div>
+                             <span class="block text-gray-600">Registrado Por: <span class="text-black font-semibold">JORGE LUIS NUÑEZ</span></span>
+                             <span class="block text-gray-600 mt-1">11:40:19 <span class="text-black ml-2 uppercase">Néstor Fabián Gómez</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
