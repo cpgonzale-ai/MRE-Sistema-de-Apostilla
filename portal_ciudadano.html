@@ -1358,6 +1358,9 @@
             } else if (status === 'Finalizados') { // APOSTILLA TAB LOGIC
                 // CAMBIO: Se eliminó 'adjunto' de esta lista
                 tabKeys = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'action', 'payment_proof', 'apostille_leg'];
+            } else if (status === 'Archivada') {
+                // Mismas columnas que análisis
+                tabKeys = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'status', 'download', 'action'];
             } else {
                 tabKeys = ['id', 'doc', 'status', 'date'];
             }
@@ -1614,7 +1617,7 @@
                     }
                     // CAMBIO: Renombrado a "Comprobante de Pago" y cambio a icono de descarga directa
                     if(c.id === 'payment_proof') {
-                        row += `<td class="text-center"><i data-lucide="file-down" style="width:18px; cursor:pointer; color:var(--mre-blue)" title="Descargar Comprobante de Pago" onclick="alert('Descargando comprobante...')"></i></td>`;
+                        row += `<td class="text-center"><i data-lucide="file-down" style="width:18px; cursor:pointer; color:var(--mre-blue)" title="Descargar Comprobante de Pago" onclick="window.open('https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/comprobante_electronico.html', '_blank')"></i></td>`;
                     }
                     // CAMBIO: Botón con texto descriptivo visible y enlace externo
                     if(c.id === 'apostille_leg') {
@@ -1725,37 +1728,13 @@
 
         // --- NUEVA FUNCIÓN DE NAVEGACIÓN ---
         function goToApostillaTab() {
-        function initColsMenu(status) {
-            const menu = document.getElementById('colsMenu');
-            let tabKeys = [];
-            if (status === 'Análisis') {
-                // CAMBIO: Se agregó 'action' a las columnas de Análisis
-                tabKeys = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'status', 'download', 'action'];
-            } else if (status === 'Aprobado') {
-                tabKeys = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'status', 'importe', 'download', 'action'];
-            } else if (status === 'Rechazado') {
-                tabKeys = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'download', 'reason', 'action'];
-            } else if (status === 'Devuelto') {
-                tabKeys = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'download', 'obs', 'action'];
-            } else if (status === 'Finalizados') { // APOSTILLA TAB LOGIC
-                // CAMBIO: Se eliminó 'adjunto' de esta lista
-                tabKeys = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'action', 'payment_proof', 'apostille_leg'];
-            } else if (status === 'Archivada') {
-                // Mismas columnas que análisis
-                tabKeys = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'status', 'download', 'action'];
-            } else {
-                tabKeys = ['id', 'doc', 'status', 'date'];
+            const btn = document.getElementById('btnFinalizado');
+            if (btn) {
+                // Navegar a la pestaña Finalizados (Apostilla)
+                filterTable('Finalizados', btn);
+                // Scroll para asegurar visibilidad en móviles
+                btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
             }
-
-            const filteredCols = columnsConfig.filter(c => tabKeys.includes(c.id));
-
-            menu.innerHTML = filteredCols.map(c => `
-                <div class="col-toggle-item" onclick="toggleColumn('${c.id}')">
-                    <input type="checkbox" ${c.visible ? 'checked' : ''} id="chk_${c.id}" onchange="toggleColumn('${c.id}')">
-                    <label for="chk_${c.id}">${c.label}</label>
-                </div>
-            `).join('');
-        }
         }
 
         // --- RESTAURADO: INFORMACIÓN DE PAGO DETALLADA ---
@@ -2182,6 +2161,56 @@
             lucide.createIcons();
         }
 
+        // CONFIRMACIÓN PARA CORRECCIÓN
+        function confirmCorrection() {
+            const popupTitle = document.getElementById('popupTitle');
+            const popupContent = document.getElementById('popupContent');
+            const popupActions = document.getElementById('popupActions');
+
+            popupTitle.innerText = "Confirmar Devolución";
+            popupContent.innerHTML = `
+                <div class="p-3 text-center">
+                    <div class="mb-3 text-primary d-flex justify-content-center">
+                        <i data-lucide="corner-up-left" style="width:48px; height:48px"></i>
+                    </div>
+                    <p class="fw-bold mb-2">¿Desea enviar la corrección de esta solicitud?</p>
+                    <p class="small text-muted">La solicitud volverá a ingresar al flujo de análisis.</p>
+                </div>
+            `;
+            popupActions.innerHTML = `
+                <div class="d-flex gap-2">
+                    <button class="btn btn-light w-50 border fw-bold" onclick="closePopup()">Cancelar</button>
+                    <button class="btn-main w-50" onclick="submitCorrection()">Enviar</button>
+                </div>
+            `;
+            document.getElementById('genericPopup').style.display = 'flex';
+            lucide.createIcons();
+        }
+
+        function submitCorrection() {
+            // Simular envío de corrección
+            const req = mockRequests.find(r => r.id === editingId);
+            if(req) {
+                req.status = "Análisis"; // Cambiar estado a análisis
+                // Aquí se actualizarían los datos reales del objeto req con los del formulario
+            }
+
+            const popupTitle = document.getElementById('popupTitle');
+            const popupContent = document.getElementById('popupContent');
+            const popupActions = document.getElementById('popupActions');
+
+            popupTitle.innerText = "Corrección Enviada";
+            popupContent.innerHTML = `
+                <div class="text-center p-3">
+                    <div class="text-success mb-2 d-flex justify-content-center"><i data-lucide="check-circle" style="width:48px; height:48px"></i></div>
+                    <p class="fw-bold mb-0">La solicitud #${editingId} ha sido corregida correctamente.</p>
+                </div>
+            `;
+            popupActions.innerHTML = `<button class="btn-main w-100" onclick="closePopup(); navigateTo('dashboard')">Aceptar</button>`;
+            
+            lucide.createIcons();
+        }
+
         // --- GESTIÓN DE FLUJO ---
         function initiateAddProcess() {
             const signature = document.getElementById('reqSignature').value;
@@ -2581,549 +2610,6 @@
             lucide.createIcons();
         }
 
-        // --- NUEVA FUNCIÓN: MOSTRAR DETALLES DE SOLICITUD ---
-        function showRequestDetails(id) {
-            const req = mockRequests.find(r => r.id === id);
-            if (!req) return;
-
-            const popupTitle = document.getElementById('popupTitle');
-            const popupContent = document.getElementById('popupContent');
-            const popupActions = document.getElementById('popupActions');
-
-            popupTitle.innerText = `Detalle de Solicitud #${req.id}`;
-            
-            // Botón de descarga condicional
-            let attachmentBtn = '';
-            if (req.hasAttachment) {
-                attachmentBtn = `
-                    <div class="mt-2 pt-2 border-top border-light-subtle">
-                        <button class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-2 w-100 justify-content-center" onclick="alert('Descargando documento adjunto...')">
-                            <i data-lucide="file-down" style="width:14px"></i> Descargar Documento Adjunto
-                        </button>
-                    </div>`;
-            }
-
-            // Datos adicionales (Certificado y Funcionario)
-            // Se muestran solo si existen en el registro mock (agregados en submitFinalRequest)
-            let extraFields = '';
-            if (req.certNum) {
-                extraFields += `
-                    <div class="col-6">
-                        <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">Nro. Certificado</span>
-                        <strong class="text-dark" style="font-size:0.8rem">${req.certNum}</strong>
-                    </div>`;
-            }
-            if (req.official) {
-                extraFields += `
-                    <div class="col-6">
-                        <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">Funcionario</span>
-                        <strong class="text-dark" style="font-size:0.8rem">${req.official}</strong>
-                    </div>`;
-            }
-
-
-            // Construcción del contenido del modal
-            const detailsHtml = `
-                <div class="bg-white border rounded-3 p-3 text-start shadow-sm mb-0">
-                    <div class="row g-3">
-                        <div class="col-12 border-bottom pb-2 mb-2">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="text-muted small fw-bold text-uppercase">Estado Actual</span>
-                                <span class="badge ${req.status === 'Aprobado' ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-dark border border-warning-subtle'}">${req.status}</span>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">Fecha Solicitud</span>
-                            <strong class="text-dark" style="font-size:0.8rem">${req.date}</strong>
-                        </div>
-                        <div class="col-6">
-                            <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">Trámite</span>
-                            <strong class="text-dark" style="font-size:0.8rem">${req.type}</strong>
-                        </div>
-                        <div class="col-6">
-                            <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">País Destino</span>
-                            <strong class="text-dark" style="font-size:0.8rem">${req.country}</strong>
-                        </div>
-                        <div class="col-6">
-                            <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">Institución</span>
-                            <strong class="text-dark" style="font-size:0.8rem">${req.institution}</strong>
-                        </div>
-                        <div class="col-12 border-top pt-2 mt-2">
-                            <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">Documento</span>
-                            <strong class="text-primary" style="font-size:0.85rem">${req.doc}</strong>
-                            ${attachmentBtn}
-                        </div>
-                        <div class="col-6">
-                            <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">Tipo de Firma</span>
-                            <strong class="text-dark" style="font-size:0.8rem">${req.signatureType}</strong>
-                        </div>
-                        <div class="col-6">
-                            <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">Titular</span>
-                            <strong class="text-dark" style="font-size:0.8rem">${req.titularName || 'Juan Román Pérez'}</strong>
-                        </div>
-                        ${extraFields}
-                        <div class="col-12 border-top pt-2 mt-2">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="text-muted small fw-bold text-uppercase">Importe Arancel</span>
-                                <span class="fw-black text-primary fs-5">Gs. ${req.importe ? req.importe.toLocaleString('es-PY') : '0'}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            popupContent.innerHTML = detailsHtml;
-            popupActions.innerHTML = `<button class="btn-main w-100" onclick="closePopup()">Cerrar</button>`;
-            
-            document.getElementById('genericPopup').style.display = 'flex';
-            lucide.createIcons();
-        }
-
-        // CONFIRMACIÓN PARA CORRECCIÓN
-        function confirmCorrection() {
-            const popupTitle = document.getElementById('popupTitle');
-            const popupContent = document.getElementById('popupContent');
-            const popupActions = document.getElementById('popupActions');
-
-            popupTitle.innerText = "Confirmar Devolución";
-            popupContent.innerHTML = `
-                <div class="p-3 text-center">
-                    <div class="mb-3 text-primary d-flex justify-content-center">
-                        <i data-lucide="corner-up-left" style="width:48px; height:48px"></i>
-                    </div>
-                    <p class="fw-bold mb-2">¿Desea enviar la corrección de esta solicitud?</p>
-                    <p class="small text-muted">La solicitud volverá a ingresar al flujo de análisis.</p>
-                </div>
-            `;
-            popupActions.innerHTML = `
-                <div class="d-flex gap-2">
-                    <button class="btn btn-light w-50 border fw-bold" onclick="closePopup()">Cancelar</button>
-                    <button class="btn-main w-50" onclick="submitCorrection()">Enviar</button>
-                </div>
-            `;
-            document.getElementById('genericPopup').style.display = 'flex';
-            lucide.createIcons();
-        }
-
-        function submitCorrection() {
-            // Simular envío de corrección
-            const req = mockRequests.find(r => r.id === editingId);
-            if(req) {
-                req.status = "Análisis"; // Cambiar estado a análisis
-                // Aquí se actualizarían los datos reales del objeto req con los del formulario
-            }
-
-            const popupTitle = document.getElementById('popupTitle');
-            const popupContent = document.getElementById('popupContent');
-            const popupActions = document.getElementById('popupActions');
-
-            popupTitle.innerText = "Corrección Enviada";
-            popupContent.innerHTML = `
-                <div class="text-center p-3">
-                    <div class="text-success mb-2 d-flex justify-content-center"><i data-lucide="check-circle" style="width:48px; height:48px"></i></div>
-                    <p class="fw-bold mb-0">La solicitud #${editingId} ha sido corregida correctamente.</p>
-                </div>
-            `;
-            popupActions.innerHTML = `<button class="btn-main w-100" onclick="closePopup(); navigateTo('dashboard')">Aceptar</button>`;
-            
-            lucide.createIcons();
-        }
-
-        // --- GESTIÓN DE FLUJO ---
-        function initiateAddProcess() {
-            const signature = document.getElementById('reqSignature').value;
-            // Si es electrónica, vamos al modal de validación
-            if (signature.includes('Electrónica')) {
-                startValidationProcess();
-            } else {
-                // Si es ológrafa, vamos directo a la grilla (validación previa)
-                addToGrid('Previa', null);
-            }
-        }
-
-        // --- LÓGICA DE VALIDACIÓN ---
-        function startValidationProcess() {
-            const popupTitle = document.getElementById('popupTitle');
-            const popupContent = document.getElementById('popupContent');
-            const popupActions = document.getElementById('popupActions');
-
-            popupTitle.innerText = "Validando Documento...";
-            popupContent.innerHTML = `
-                <div class="text-center p-4">
-                    <div class="spinner-border text-primary mb-3" role="status"></div>
-                    <p class="text-muted small fw-bold">Conectando con servicio de firma electrónica o verificable...</p>
-                </div>
-            `;
-            popupActions.innerHTML = ''; // Hide buttons
-
-            setTimeout(() => {
-                showValidationResult();
-            }, 1500); 
-        }
-
-        function showValidationResult() {
-            electronicSigCount++;
-            let scenario = ''; 
-            
-            // Rotación de escenarios para demo: 1=OK, 2=ConnError, 3=Invalid
-            const demoIndex = (electronicSigCount % 3);
-            if (demoIndex === 1) scenario = 'SUCCESS';
-            else if (demoIndex === 2) scenario = 'CONN_ERROR';
-            else scenario = 'INVALID'; 
-
-            currentValidationState = scenario;
-
-            const popupTitle = document.getElementById('popupTitle');
-            const popupContent = document.getElementById('popupContent');
-            const popupActions = document.getElementById('popupActions');
-
-            let icon = '';
-            let title = '';
-            let message = '';
-
-            if (scenario === 'SUCCESS') {
-                icon = '<div class="bg-success-subtle text-success p-3 rounded-circle d-inline-flex mb-3"><i data-lucide="check-circle-2" style="width:40px; height:40px"></i></div>';
-                title = 'Validación Exitosa';
-                message = '<p class="fw-bold text-success">El documento ha sido validado correctamente.</p><p class="small text-muted">La firma electrónica o verificable es válida y corresponde a la autoridad emisora.</p>';
-            } else if (scenario === 'CONN_ERROR') {
-                icon = '<div class="bg-warning-subtle text-warning-emphasis p-3 rounded-circle d-inline-flex mb-3"><i data-lucide="wifi-off" style="width:40px; height:40px"></i></div>';
-                title = 'Error de Conexión';
-                message = `
-                    <p class="fw-bold text-warning-emphasis">No se pudo conectar con el servicio de validación.</p>
-                    <div class="alert alert-warning border-warning-subtle small text-start">
-                        <i data-lucide="info" style="width:14px; margin-right:4px; vertical-align:text-bottom"></i>
-                        El documento es válido en formato, pero falla la conexión con el servicio externo. Si presiona <strong>Aceptar</strong>, la solicitud pasará a estado "Validación Previa".
-                    </div>`;
-            } else if (scenario === 'INVALID') {
-                icon = '<div class="bg-danger-subtle text-danger p-3 rounded-circle d-inline-flex mb-3"><i data-lucide="x-circle" style="width:40px; height:40px"></i></div>';
-                title = 'Documento No Válido';
-                message = `
-                    <p class="fw-bold text-danger">No se pudo validar el documento.</p>
-                    <div class="alert alert-danger border-danger-subtle small text-start">
-                        <i data-lucide="alert-triangle" style="width:14px; margin-right:4px; vertical-align:text-bottom"></i>
-                        La firma electrónica no es reconocida o el archivo está dañado. Puede <strong>Volver a la Solicitud</strong> para corregir, o presionar <strong>Aceptar</strong> para enviarlo a revisión manual (Validación Previa).
-                    </div>`;
-            }
-
-            popupTitle.innerText = title;
-            popupContent.innerHTML = `
-                <div class="text-center p-2">
-                    ${icon}
-                    ${message}
-                </div>
-            `;
-
-            // Botones: Se agrega "Volver a Solicitud" y "Aceptar" siempre lleva a la grilla
-            popupActions.innerHTML = `
-                <div class="d-flex flex-column gap-2 w-100">
-                    <div class="d-flex gap-2 w-100">
-                        <button class="btn btn-light w-50 border fw-bold" onclick="closePopup()">Volver a Solicitud</button>
-                        <button class="btn btn-light w-50 border fw-bold" onclick="startValidationProcess()">Reintentar</button>
-                    </div>
-                    <button class="btn-main w-100" onclick="handleValidationDecision('${scenario}')">Aceptar</button>
-                </div>
-            `;
-            lucide.createIcons();
-        }
-
-        function handleValidationDecision(scenario) {
-            closePopup();
-            if (scenario === 'SUCCESS') {
-                addToGrid('Automática', true);
-            } else {
-                // CONN_ERROR o INVALID -> Se agrega como Previa / No Validado
-                addToGrid('Previa', false); 
-            }
-        }
-
-        function addToGrid(forceValidationType = null, forceValidatedStatus = null) {
-            closePopup(); // Asegura cerrar cualquier modal abierto
-
-            // Generic fields
-            const country = document.getElementById('reqCountry').value;
-            const institution = document.getElementById('reqInstitution').value;
-            const type = document.getElementById('reqType').value;
-            const docType = document.getElementById('reqDocType').value;
-            const signature = document.getElementById('reqSignature').value;
-            const fileInput = document.getElementById('reqFile');
-            const hasFile = signature.includes('Electrónica') && fileInput.files.length > 0;
-
-            // Titular fields
-            const titularName = document.getElementById('titularName').value;
-            const titularCertNum = document.getElementById('titularCertNum').value; 
-            
-            // Determinar estado final
-            let validationType = 'Previa'; 
-            let isValidated = null;
-
-            if (signature.includes('Electrónica')) {
-                if (forceValidationType) {
-                    validationType = forceValidationType;
-                    isValidated = forceValidatedStatus;
-                } else {
-                    // Fallback (solo si algo falla en el flujo)
-                    validationType = 'Previa';
-                    isValidated = false;
-                }
-            } else {
-                // Firma Ológrafa siempre es previa
-                validationType = 'Previa';
-                isValidated = null;
-            }
-
-            const newItem = {
-                country,
-                institution,
-                type,
-                docType,
-                signature: signature.includes('Electrónica') ? 'Electrónica' : 'Ológrafa',
-                hasFile,
-                titularName,
-                titularDocNum: titularCertNum, 
-                actaNum: "N/A", 
-                actaYear: "N/A", 
-                validationType, 
-                isValidated
-            };
-
-            tempRequestsList.push(newItem);
-            renderLoadedDocuments();
-            
-            // OCULTAR FORMULARIO Y MOSTRAR LISTA
-            document.getElementById('requestFormContainer').classList.add('hidden');
-            document.getElementById('loadedDocsSection').classList.remove('hidden');
-        }
-
-        function renderLoadedDocuments() {
-            const tbody = document.getElementById('loadedDocsBody');
-            const fixedRate = 80100; // Arancel fijo
-
-            tbody.innerHTML = tempRequestsList.map((item, index) => {
-                // Badge Tipo Validación
-                let validationBadge = '';
-                if (item.validationType === 'Automática') {
-                    validationBadge = `<span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.65rem; text-transform: uppercase; font-weight: 700;">Automática</span>`;
-                } else {
-                    validationBadge = `<span class="badge bg-warning-subtle text-dark border border-warning-subtle" style="font-size: 0.65rem; text-transform: uppercase; font-weight: 700;">Validación Previa</span>`;
-                }
-
-                // Columna Validado (Si/No)
-                let validatedStatus = ''; 
-                if (item.signature.includes('Electrónica')) {
-                    if (item.isValidated === true) {
-                        validatedStatus = `<span class="badge bg-success text-white" style="font-size: 0.65rem;">SÍ</span>`;
-                    } else if (item.isValidated === false) {
-                        validatedStatus = `<span class="badge bg-danger text-white" style="font-size: 0.65rem;">NO</span>`;
-                    }
-                }
-
-                // Columna Importe (Solo si es Automática/Validada)
-                let amountDisplay = '<span class="text-muted opacity-25">-</span>';
-                if (item.validationType === 'Automática') {
-                    amountDisplay = `<span class="fw-black text-primary">Gs. ${fixedRate.toLocaleString('es-PY')}</span>`;
-                }
-
-                return `
-                <tr>
-                    <td><span class="badge bg-light text-dark border">${item.signature}</span></td> <!-- Tipo de Firma -->
-                    <td class="small fw-semibold">${item.institution}</td>
-                    <td class="fw-bold text-navy">${item.docType}</td>
-                    <td>${validationBadge}</td>
-                    <td class="text-center">${validatedStatus}</td>
-                    <td class="text-end">${amountDisplay}</td> <!-- Importe -->
-                    <td class="text-center">
-                        ${item.hasFile ? `<i data-lucide="file-check" class="text-success" style="width:18px; cursor:pointer;" title="Descargar Adjunto"></i>` : `<span class="text-muted opacity-25">-</span>`}
-                    </td>
-                    <td class="text-center">
-                        <button class="btn btn-sm btn-link text-danger p-0" onclick="removeFromGrid(${index})" title="Eliminar">
-                            <i data-lucide="trash-2" style="width:18px;"></i>
-                        </button>
-                    </td>
-                </tr>
-            `}).join('');
-            lucide.createIcons();
-        }
-
-        function removeFromGrid(index) {
-            tempRequestsList.splice(index, 1);
-            renderLoadedDocuments();
-            if (tempRequestsList.length === 0) {
-                document.getElementById('loadedDocsSection').classList.add('hidden');
-                document.getElementById('requestFormContainer').classList.remove('hidden'); // Show form if list is empty
-            }
-        }
-
-        // Función llamada al presionar "Generar Solicitud" en la grilla de carga
-        function submitFinalRequest() {
-            if(tempRequestsList.length === 0) {
-                alert("No hay documentos cargados.");
-                return;
-            }
-            
-            // 1. GENERAR IDS Y FECHAS
-            const now = new Date();
-            const dateStr = now.toLocaleString('es-PY');
-            const generatedBatch = tempRequestsList.map((item, index) => {
-                const newId = `2026-${String(Math.floor(Math.random() * 100000)).padStart(5, '0')}`;
-                return {
-                    ...item,
-                    id: newId,
-                    date: dateStr,
-                    status: item.validationType === 'Automática' ? 'Aprobado' : 'Análisis',
-                    importe: 80100 // Arancel fijo
-                };
-            });
-
-            // Guardar en la "base de datos" mock
-            generatedBatch.forEach(req => {
-                mockRequests.push({
-                    id: req.id,
-                    date: req.date,
-                    type: req.type,
-                    country: req.country,
-                    institution: req.institution,
-                    doc: req.docType,
-                    signatureType: req.signature,
-                    status: req.status,
-                    importe: req.importe,
-                    hasAttachment: req.hasFile,
-                    titularName: req.titularName
-                });
-            });
-
-            // Separar listas
-            const autoList = generatedBatch.filter(i => i.validationType === 'Automática');
-            const manualList = generatedBatch.filter(i => i.validationType === 'Previa');
-            
-            let htmlContent = '';
-            let initialTotal = 0;
-
-            // 1. SECCIÓN VALIDACIÓN AUTOMÁTICA
-            if (autoList.length > 0) {
-                const autoRows = autoList.map(item => {
-                    initialTotal += item.importe;
-                    return `
-                    <tr>
-                        <td class="p-3 text-center">
-                            <input type="checkbox" class="form-check-input auto-check" value="${item.id}" data-amount="${item.importe}" checked onchange="updateLiquidationButton()">
-                        </td>
-                        <td class="p-3 fw-black text-navy">${item.id}</td>
-                        <td class="p-3 small text-muted">${item.date}</td>
-                        <td class="p-3"><span class="badge bg-light text-dark border">${item.signature}</span></td>
-                        <td class="p-3 fw-bold">${item.docType}</td>
-                        <td class="p-3 text-uppercase small fw-bold">${item.titularName}</td>
-                        <td class="p-3 text-end fw-black text-primary">Gs. ${item.importe.toLocaleString('es-PY')}</td>
-                    </tr>
-                    `;
-                }).join('');
-
-                htmlContent += `
-                    <div class="mb-5 animate-fade bg-white border rounded-3 shadow-sm overflow-hidden">
-                        <div class="p-3 bg-primary-subtle border-bottom border-primary-subtle d-flex justify-content-between align-items-center">
-                            <h6 class="fw-black text-primary m-0 d-flex align-items-center gap-2">
-                                <i data-lucide="zap" style="width:18px"></i> Verificación Automática
-                            </h6>
-                            <span class="badge bg-white text-primary border">Listo para Pago</span>
-                        </div>
-                        <div class="p-3 bg-light border-bottom small text-muted">
-                            <i data-lucide="info" style="width:14px; margin-bottom:2px" class="me-1"></i>
-                            Puede proceder al pago de las solicitudes verificadas automaticamente o puede pagar desde la bandeja de solicitudes aprobadas
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0" style="font-size: 0.85rem;">
-                                <thead class="bg-light">
-                                    <tr>
-                                        <th class="p-3 text-center" style="width: 40px;">
-                                            <input type="checkbox" class="form-check-input" id="checkAllAuto" checked onchange="toggleAllAuto(this)">
-                                        </th>
-                                        <th class="p-3 text-muted small fw-bold text-uppercase">Nro. Solicitud</th>
-                                        <th class="p-3 text-muted small fw-bold text-uppercase">Fecha Generación</th>
-                                        <th class="p-3 text-muted small fw-bold text-uppercase">Tipo Firma</th>
-                                        <th class="p-3 text-muted small fw-bold text-uppercase">Documento</th>
-                                        <th class="p-3 text-muted small fw-bold text-uppercase">Titular</th>
-                                        <th class="p-3 text-muted small fw-bold text-uppercase text-end">Importe</th>
-                                    </tr>
-                                </thead>
-                                <tbody>${autoRows}</tbody>
-                            </table>
-                        </div>
-                        <div class="p-3 bg-light border-top d-flex justify-content-end">
-                            <button id="btnGenLiq" class="btn-main px-4 py-2 d-flex align-items-center gap-2" onclick="goToLiquidationSelected()">
-                                <i data-lucide="receipt" style="width:18px"></i> Generar Liquidación (Gs. ${initialTotal.toLocaleString('es-PY')})
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }
-
-            // 2. SECCIÓN VALIDACIÓN MANUAL / PREVIA
-            if (manualList.length > 0) {
-                const manualRows = manualList.map(item => {
-                    let legend = '';
-                    let legendStyle = '';
-                    let icon = '';
-
-                    // CORRECCIÓN: Validar contra el valor guardado 'Electrónica'
-                    if (item.signature === 'Electrónica') {
-                        // Lógica: Electrónica pero cayó en manual (no validada)
-                        icon = 'file-clock';
-                        legendStyle = 'background-color: #fff8c5; color: #664d03; border: 1px solid #ffecb5;'; 
-                        legend = 'La solicitud requiere análisis manual. Se le notificará cuando cambien de estado o puede consultar el estado desde su sistema de gestión.';
-                    } else {
-                        // Lógica: Ológrafa
-                        icon = 'map-pin';
-                        legendStyle = 'background-color: #f8d7da; color: #842029; border: 1px solid #f5c2c7;'; 
-                        legend = 'La solicitud requiere presentación física en el local MRE para validación del documento.';
-                    }
-
-                    return `
-                    <tr>
-                        <td class="p-3 fw-black text-dark">${item.id}</td>
-                        <td class="p-3 small text-muted">${item.date}</td>
-                        <td class="p-3"><span class="badge bg-light text-dark border">${item.signature}</span></td>
-                        <td class="p-3">
-                            <div class="fw-bold mb-2">${item.docType}</div>
-                            <div class="small p-2 rounded d-flex gap-2 align-items-start" style="${legendStyle}">
-                                <i data-lucide="${icon}" style="width:16px; min-width:16px; margin-top:2px;"></i>
-                                <span>${legend}</span>
-                            </div>
-                        </td>
-                        <td class="p-3 text-uppercase small fw-bold">${item.titularName}</td>
-                    </tr>
-                    `;
-                }).join('');
-
-                htmlContent += `
-                    <div class="mb-4 animate-fade bg-white border rounded-3 shadow-sm overflow-hidden" style="animation-delay: 0.1s">
-                        <div class="p-3 bg-warning-subtle border-bottom border-warning-subtle d-flex justify-content-between align-items-center">
-                            <h6 class="fw-black text-dark m-0 d-flex align-items-center gap-2">
-                                <i data-lucide="clock" style="width:18px"></i> Verificación Previa Requerida
-                            </h6>
-                            <span class="badge bg-white text-dark border">En Análisis / Pendiente</span>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0" style="font-size: 0.85rem;">
-                                <thead class="bg-light">
-                                    <tr>
-                                        <th class="p-3 text-muted small fw-bold text-uppercase">Nro. Solicitud</th>
-                                        <th class="p-3 text-muted small fw-bold text-uppercase">Fecha Generación</th>
-                                        <th class="p-3 text-muted small fw-bold text-uppercase">Tipo Firma</th>
-                                        <th class="p-3 text-muted small fw-bold text-uppercase" style="min-width: 300px;">Documento / Instrucciones</th>
-                                        <th class="p-3 text-muted small fw-bold text-uppercase">Titular</th>
-                                    </tr>
-                                </thead>
-                                <tbody>${manualRows}</tbody>
-                            </table>
-                        </div>
-                    </div>
-                `;
-            }
-
-            document.getElementById('validationTablesContainer').innerHTML = htmlContent;
-            navigateTo('validation'); // Ir a pantalla "Solicitudes Generadas"
-            lucide.createIcons();
-        }
-
         // --- FUNCIONES PARA LA SELECCIÓN DE PAGOS ---
         function toggleAllAuto(source) {
             const checkboxes = document.querySelectorAll('.auto-check');
@@ -3298,6 +2784,102 @@
             } else {
                 container.scrollLeft += scrollAmount;
             }
+        }
+        
+        // --- FUNCIÓN AGREGADA PARA MOSTRAR DETALLES DE SOLICITUD ---
+        function showRequestDetails(id) {
+            const req = mockRequests.find(r => r.id === id);
+            if (!req) return;
+
+            const popupTitle = document.getElementById('popupTitle');
+            const popupContent = document.getElementById('popupContent');
+            const popupActions = document.getElementById('popupActions');
+
+            popupTitle.innerText = `Detalle de Solicitud #${req.id}`;
+            
+            // Botón de descarga condicional
+            let attachmentBtn = '';
+            if (req.hasAttachment) {
+                attachmentBtn = `
+                    <div class="mt-2 pt-2 border-top border-light-subtle">
+                        <button class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-2 w-100 justify-content-center" onclick="alert('Descargando documento adjunto...')">
+                            <i data-lucide="file-down" style="width:14px"></i> Descargar Documento Adjunto
+                        </button>
+                    </div>`;
+            }
+
+            // Datos adicionales (Certificado y Funcionario)
+            let extraFields = '';
+            if (req.certNum) {
+                extraFields += `
+                    <div class="col-6">
+                        <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">Nro. Certificado</span>
+                        <strong class="text-dark" style="font-size:0.8rem">${req.certNum}</strong>
+                    </div>`;
+            }
+            if (req.official) {
+                extraFields += `
+                    <div class="col-6">
+                        <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">Funcionario</span>
+                        <strong class="text-dark" style="font-size:0.8rem">${req.official}</strong>
+                    </div>`;
+            }
+
+            // Construcción del contenido del modal
+            const detailsHtml = `
+                <div class="bg-white border rounded-3 p-3 text-start shadow-sm mb-0">
+                    <div class="row g-3">
+                        <div class="col-12 border-bottom pb-2 mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted small fw-bold text-uppercase">Estado Actual</span>
+                                <span class="badge ${req.status === 'Aprobado' ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-dark border border-warning-subtle'}">${req.status}</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">Fecha Solicitud</span>
+                            <strong class="text-dark" style="font-size:0.8rem">${req.date}</strong>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">Trámite</span>
+                            <strong class="text-dark" style="font-size:0.8rem">${req.type}</strong>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">País Destino</span>
+                            <strong class="text-dark" style="font-size:0.8rem">${req.country}</strong>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">Institución</span>
+                            <strong class="text-dark" style="font-size:0.8rem">${req.institution}</strong>
+                        </div>
+                        <div class="col-12 border-top pt-2 mt-2">
+                            <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">Documento</span>
+                            <strong class="text-primary" style="font-size:0.85rem">${req.doc}</strong>
+                            ${attachmentBtn}
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">Tipo de Firma</span>
+                            <strong class="text-dark" style="font-size:0.8rem">${req.signatureType}</strong>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted d-block text-uppercase" style="font-size:0.6rem; font-weight:800">Titular</span>
+                            <strong class="text-dark" style="font-size:0.8rem">${req.titularName || 'Juan Román Pérez'}</strong>
+                        </div>
+                        ${extraFields}
+                        <div class="col-12 border-top pt-2 mt-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted small fw-bold text-uppercase">Importe Arancel</span>
+                                <span class="fw-black text-primary fs-5">Gs. ${req.importe ? req.importe.toLocaleString('es-PY') : '0'}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            popupContent.innerHTML = detailsHtml;
+            popupActions.innerHTML = `<button class="btn-main w-100" onclick="closePopup()">Cerrar</button>`;
+            
+            document.getElementById('genericPopup').style.display = 'flex';
+            lucide.createIcons();
         }
     </script>
 </body>
