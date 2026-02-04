@@ -147,8 +147,16 @@
         }
 
         .mre-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-        .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 0.85rem 1rem; border-bottom: 2px solid #E2E8F0; }
+        .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 0.85rem 1rem; border-bottom: 2px solid #E2E8F0; vertical-align: bottom; }
         .mre-table td { padding: 0.85rem 1rem; font-size: 0.8rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
+
+        /* Filtros en Grilla */
+        .filter-row th { padding: 0.5rem 1rem; background-color: #F8FAFC; border-bottom: 1px solid #E2E8F0; }
+        .filter-input { 
+            width: 100%; padding: 4px 8px; font-size: 0.75rem; border: 1px solid #CBD5E1; 
+            border-radius: 6px; background-color: white; transition: all 0.2s;
+        }
+        .filter-input:focus { outline: none; border-color: var(--mre-blue); box-shadow: 0 0 0 2px rgba(0, 40, 85, 0.1); }
 
         .btn-action-icon {
             width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center;
@@ -334,12 +342,9 @@
         <aside class="main-sidebar animate-fade">
             <nav class="nav-menu">
                 <p class="px-3 mb-2 text-muted fw-bold uppercase" style="font-size: 0.7rem; letter-spacing: 1.2px;">Administración</p>
-                <a href="#" class="nav-link-mre" title="Tipos de documentos"><i data-lucide="file-text" style="width: 18px;"></i> <span>Tipos de documentos</span></a>
-                <a href="javascript:void(0)" onclick="showListView()" class="nav-link-mre active" title="Gestión de Usuarios"><i data-lucide="users" style="width: 18px;"></i> <span>Gestión de usuarios</span></a>
-                <a href="#" class="nav-link-mre" title="Grupos y Permisos"><i data-lucide="shield-check" style="width: 18px;"></i> <span>Grupos y Permisos</span></a>
-                <a href="#" class="nav-link-mre" title="Configuración de referencia"><i data-lucide="settings-2" style="width: 18px;"></i> <span>Configuración de referencia</span></a>
-                <a href="#" class="nav-link-mre" title="Configuración de campos"><i data-lucide="layout-grid" style="width: 18px;"></i> <span>Configuración de campos</span></a>
-                <a href="#" class="nav-link-mre" title="Configuración de documentos"><i data-lucide="settings" style="width: 18px;"></i> <span>Configuración de documentos</span></a>
+                <a href="javascript:void(0)" onclick="showListView()" class="nav-link-mre active" title="Módulo principal de gestión de cuentas">
+                    <i data-lucide="users" style="width: 18px;"></i> <span>Gestión de usuarios</span>
+                </a>
             </nav>
         </aside>
 
@@ -363,10 +368,6 @@
                             <button class="btn-tool-generic" onclick="alert('Configurando columnas...')" title="Personalizar columnas visibles"><i data-lucide="layout-columns" style="width: 16px;"></i> Columnas</button>
                             <button class="btn-tool-generic" onclick="alert('Exportando a Excel...')" title="Descargar reporte en formato XLSX"><i data-lucide="file-spreadsheet" style="width: 16px;"></i> Excel</button>
                             <button class="btn-tool-generic" onclick="alert('Exportando a PDF...')" title="Descargar reporte en formato PDF"><i data-lucide="file-text" style="width: 16px;"></i> PDF</button>
-                            <div class="position-relative" style="width: 250px;">
-                                <i data-lucide="search" class="position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:#94A3B8; width:16px;"></i>
-                                <input type="text" class="form-control-mre ps-5" placeholder="Filtrar por nombre o cuenta..." title="Criterio de búsqueda rápida">
-                            </div>
                         </div>
                     </div>
 
@@ -383,6 +384,17 @@
                                     <th>Estado</th>
                                     <th>Expiración</th>
                                     <th width="140" class="text-end">Acciones</th>
+                                </tr>
+                                <tr class="filter-row">
+                                    <th></th>
+                                    <th><input type="text" class="filter-input" data-col="1" onkeyup="filterGrid()" placeholder="ID"></th>
+                                    <th><input type="text" class="filter-input" data-col="2" onkeyup="filterGrid()" placeholder="Usuario"></th>
+                                    <th><input type="text" class="filter-input" data-col="3" onkeyup="filterGrid()" placeholder="Nombre"></th>
+                                    <th><input type="text" class="filter-input" data-col="4" onkeyup="filterGrid()" placeholder="Email"></th>
+                                    <th><input type="text" class="filter-input" data-col="5" onkeyup="filterGrid()" placeholder="Grupo"></th>
+                                    <th><input type="text" class="filter-input" data-col="6" onkeyup="filterGrid()" placeholder="Estado"></th>
+                                    <th><input type="text" class="filter-input" data-col="7" onkeyup="filterGrid()" placeholder="Fecha"></th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody id="userTableBody">
@@ -493,7 +505,7 @@
                     </div>
 
                     <div class="grid-footer">
-                        <div><span class="text-muted small fw-bold" id="paginationInfo">Mostrando 1 a 5 de 5 registros</span></div>
+                        <div><span class="text-muted small fw-bold" id="paginationInfo">Mostrando 1 a 6 de 6 registros</span></div>
                         <div class="d-flex gap-2">
                             <button class="btn-outline-mre-danger" id="btnMassAction" disabled onclick="showModalInactivateMass()" title="Inactivar registros seleccionados (Requisito: estado Activo)">
                                 <i data-lucide="power" style="width: 14px;"></i> Inactivar
@@ -637,6 +649,10 @@
         </main>
     </div>
 
+    <footer class="mre-footer">
+        <div class="footer-left">&copy; 2026 Ministerio de Relaciones Exteriores - Dirección de Informática</div>
+    </footer>
+
     <!-- MODALES -->
     <div class="mre-modal-overlay" id="modalDelete">
         <div class="mre-modal animate-fade text-center" style="max-width: 450px;">
@@ -732,6 +748,7 @@
             userSearch.readOnly = false;
             statusField.disabled = false;
             
+            // Restaurar visibilidad por defecto
             statusContainer.style.display = '';
 
             const allInputs = form.querySelectorAll('input, select');
@@ -744,6 +761,7 @@
             if (mode === 'add') {
                 headerTitle.innerText = "Agregar Usuario";
                 statusField.value = "Activo";
+                // Ocultar campo estado en modo agregar
                 statusContainer.style.display = 'none';
                 currentEditingId = null;
             } 
@@ -788,7 +806,7 @@
             document.getElementById('f_name_detail').value = user.n;
             document.getElementById('f_last_detail').value = user.l;
             document.getElementById('f_status_detail').value = user.s;
-            document.getElementById('f_exp_detail').value = user.exp || ""; 
+            document.getElementById('f_exp_detail').value = user.exp || ""; // Cargar fecha
             document.getElementById('assignedGroupsDetail').innerHTML = `<div class="list-item" onclick="moveGroup(this, 'availGroupsBox')">${user.g}</div>`;
         }
 
@@ -842,7 +860,7 @@
 
         function toggleSelectAll() {
             const check = document.getElementById('selectAll').checked;
-            document.querySelectorAll('.record-check:not(:disabled)').forEach(c => c.checked = check);
+            document.querySelectorAll('.record-check').forEach(c => c.checked = check);
             updateSelectionUI();
         }
 
@@ -895,8 +913,9 @@
                 document.getElementById('f_doc_detail').value = "3.456.789";
                 document.getElementById('f_email_detail').value = "jperon@mre.gov.py";
                 document.getElementById('f_phone_detail').value = "+595 981 123 456";
-                document.getElementById('f_exp_detail').value = ""; 
+                document.getElementById('f_exp_detail').value = ""; // Expiración vacía
                 
+                // Excluimos f_phone_detail del bloqueo para permitir edición
                 ['f_name_detail', 'f_last_detail', 'f_doc_detail', 'f_email_detail'].forEach(id => {
                     document.getElementById(id).readOnly = true;
                     document.getElementById(id).style.backgroundColor = "#F1F5F9";
@@ -913,6 +932,8 @@
             hideSearchError();
             document.getElementById('f_name_detail').value = "Funcionario";
             document.getElementById('f_last_detail').value = "MRE";
+            
+            // Excluimos f_phone_detail del bloqueo
             ['f_name_detail', 'f_last_detail', 'f_type_detail', 'f_doc_detail', 'f_email_detail'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el && el.tagName === 'SELECT') el.disabled = true; else el.readOnly = true;
@@ -943,9 +964,9 @@
 
             const actionsHtml = `
                 <div class="actions-cell-container">
-                    <button class="btn-action-icon" title="Visualizar" onclick="showFormView('view', 9999)"><i data-lucide="eye" style="width:18px"></i></button>
-                    <button class="btn-action-icon" title="Editar" onclick="showFormView('edit', 9999)"><i data-lucide="edit-3" style="width:18px"></i></button>
-                    <button class="btn-action-icon btn-action-delete" title="Eliminar" onclick="requestDeletion(9999, '${fullName}')"><i data-lucide="trash-2" style="width:18px"></i></button>
+                    <button class="btn-action-icon" title="Visualizar" onclick="showFormView('view', ${currentEditingId || 9999})"><i data-lucide="eye" style="width:18px"></i></button>
+                    <button class="btn-action-icon" title="Editar" onclick="showFormView('edit', ${currentEditingId || 9999})"><i data-lucide="edit-3" style="width:18px"></i></button>
+                    <button class="btn-action-icon btn-action-delete" title="Eliminar" onclick="requestDeletion(${currentEditingId || 9999}, '${fullName}')"><i data-lucide="trash-2" style="width:18px"></i></button>
                 </div>
             `;
 
@@ -1009,6 +1030,27 @@
         function updatePaginationInfo() {
              const count = document.getElementById('userTableBody').rows.length;
              document.getElementById('paginationInfo').innerText = `Mostrando 1 a ${count} de ${count} registros`;
+        }
+
+        function filterGrid() {
+            const inputs = document.querySelectorAll('.filter-input, .filter-select');
+            const rows = document.querySelectorAll('#userTableBody tr');
+
+            rows.forEach(row => {
+                let show = true;
+                inputs.forEach(input => {
+                    const colIndex = parseInt(input.dataset.col);
+                    const cell = row.cells[colIndex];
+                    if (cell && input.value) {
+                        const cellText = cell.innerText.toLowerCase();
+                        const filterText = input.value.toLowerCase();
+                        if (!cellText.includes(filterText)) {
+                            show = false;
+                        }
+                    }
+                });
+                row.style.display = show ? '' : 'none';
+            });
         }
 
         function initSidebarPopups() {
