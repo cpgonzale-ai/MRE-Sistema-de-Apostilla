@@ -562,9 +562,10 @@
                         </div>
 
                         <div class="row g-4 mb-5">
+                            <!-- CAMPO TELÉFONO HABILITADO PARA EDICIÓN -->
                             <div class="col-md-4">
                                 <label class="form-label">Teléfono</label>
-                                <input type="text" id="f_phone_detail" class="form-control-mre" readonly placeholder="021 414..." title="Número de contacto">
+                                <input type="text" id="f_phone_detail" class="form-control-mre" placeholder="021 414..." title="Número de contacto (Editable)">
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label">Fecha de Expiración</label>
@@ -759,7 +760,8 @@
                 if(mode === 'view') {
                     allInputs.forEach(i => { i.disabled = true; i.style.backgroundColor = "#F1F5F9"; });
                 } else {
-                    ['f_name_detail', 'f_last_detail', 'f_type_detail', 'f_doc_detail', 'f_email_detail', 'f_phone_detail', 'u_search_detail'].forEach(fid => {
+                    // Teléfono excluido del bloqueo en modo edición
+                    ['f_name_detail', 'f_last_detail', 'f_type_detail', 'f_doc_detail', 'f_email_detail', 'u_search_detail'].forEach(fid => {
                         const el = document.getElementById(fid);
                         if(el && el.tagName === 'SELECT') el.disabled = true; else el.readOnly = true;
                         if(el) el.style.backgroundColor = "#F1F5F9";
@@ -878,7 +880,8 @@
                 document.getElementById('f_phone_detail').value = "+595 981 123 456";
                 document.getElementById('f_exp_detail').value = ""; // Expiración vacía
                 
-                ['f_name_detail', 'f_last_detail', 'f_doc_detail', 'f_email_detail', 'f_phone_detail'].forEach(id => {
+                // Teléfono excluido del bloqueo post-búsqueda
+                ['f_name_detail', 'f_last_detail', 'f_doc_detail', 'f_email_detail'].forEach(id => {
                     document.getElementById(id).readOnly = true;
                     document.getElementById(id).style.backgroundColor = "#F1F5F9";
                 });
@@ -894,7 +897,8 @@
             hideSearchError();
             document.getElementById('f_name_detail').value = "Funcionario";
             document.getElementById('f_last_detail').value = "MRE";
-            ['f_name_detail', 'f_last_detail', 'f_type_detail', 'f_doc_detail', 'f_email_detail', 'f_phone_detail'].forEach(id => {
+            // Teléfono excluido del bloqueo post-búsqueda
+            ['f_name_detail', 'f_last_detail', 'f_type_detail', 'f_doc_detail', 'f_email_detail'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el && el.tagName === 'SELECT') el.disabled = true; else el.readOnly = true;
                 if(el) el.style.backgroundColor = "#F1F5F9";
