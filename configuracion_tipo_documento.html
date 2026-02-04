@@ -741,10 +741,6 @@
                                 </tbody>
                             </table>
                         </div>
-                        
-                        <div class="d-flex justify-content-end gap-2 mt-4">
-                            <button type="button" class="btn btn-light btn-sm rounded-pill px-4 border fw-bold" onclick="closeModal('modalDoc')">Cerrar</button>
-                        </div>
                     </div>
                 </div>
 
@@ -954,9 +950,8 @@
         function openDocModal(mode, id) {
             const modal = document.getElementById('modalDoc');
             const form = document.getElementById('formDoc');
-            const auditSection = document.getElementById('apartado6');
+            const auditSection = document.getElementById('apartado5');
             const nextToAudit = document.getElementById('nextToAuditBtn');
-            const nextToAudit2 = document.getElementById('nextToAuditBtn2'); 
             
             modal.style.display = 'flex';
             toggleApartado(1);
@@ -968,7 +963,6 @@
             // Lógica de visibilidad para secciones
             if(auditSection) auditSection.style.display = isView ? 'block' : 'none';
             if(nextToAudit) nextToAudit.style.display = isView ? 'block' : 'none';
-            if(nextToAudit2) nextToAudit2.style.display = isView ? 'block' : 'none';
 
             document.querySelectorAll('.action-col').forEach(el => el.style.display = isView ? 'none' : '');
             
@@ -1055,10 +1049,6 @@
                 const adjList = document.getElementById('listAvailableAdj');
                 const adjItem = adjList.querySelector('[data-id="a1"]'); // Mueve 'Cédula'
                 if(adjItem) moveItem(adjItem, 'adj');
-
-                // 6. CARGAR WEB SERVICES
-                document.getElementById('ws_endpoint').value = "https://api.servicios.gov.py/v1/validar";
-                document.getElementById('ws_token_auth').value = "dummy_token_secure_123";
 
                 // Si es modo view, ocultar acciones de las filas inyectadas manualmente
                 if (isView) {
