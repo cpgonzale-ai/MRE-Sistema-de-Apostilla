@@ -82,8 +82,13 @@
         }
 
         .mre-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-        .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 0.85rem 1.5rem; border-bottom: 2px solid #E2E8F0; }
+        .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 0.85rem 1.5rem; border-bottom: 2px solid #E2E8F0; vertical-align: middle; }
         .mre-table td { padding: 0.85rem 1.5rem; font-size: 0.8rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
+
+        /* Estilos fila de filtros */
+        .filter-row th { padding: 0.5rem 1.5rem; background-color: #F8FAFC; border-bottom: 2px solid #E2E8F0; }
+        .filter-input { font-size: 0.75rem; border-radius: 6px; border: 1px solid #CBD5E1; padding: 0.4rem 0.6rem; width: 100%; }
+        .filter-input:focus { outline: none; border-color: var(--mre-blue); box-shadow: 0 0 0 2px rgba(0, 40, 85, 0.1); }
 
         /* --- BOTONES --- */
         .btn-main { 
@@ -118,6 +123,7 @@
         .btn-action-icon:hover { background: #F1F5F9; color: var(--mre-blue); border-color: var(--mre-blue); }
         .btn-action-view:hover { color: var(--mre-blue-light); border-color: var(--mre-blue-light); }
         .btn-action-edit:hover { color: var(--mre-green); border-color: var(--mre-green); }
+        .btn-action-pdf:hover { color: var(--mre-amber); border-color: var(--mre-amber); }
         .btn-action-delete:hover { color: var(--mre-red); border-color: var(--mre-red); }
 
         .grid-footer {
@@ -233,10 +239,6 @@
                         <button class="btn-tool-generic" onclick="alert('Exportando listado completo a PDF...')" title="Descargar como PDF">
                             <i data-lucide="file-text" style="width:16px;"></i> PDF
                         </button>
-                        <div class="position-relative">
-                            <i data-lucide="search" class="position-absolute" style="left:10px; top:50%; transform:translateY(-50%); width:14px; color:#94A3B8;"></i>
-                            <input type="text" class="form-control form-control-sm border ps-4" placeholder="Buscar documento..." style="width:320px; border-radius: 8px;" title="Filtrar por nombre o código">
-                        </div>
                     </div>
                 </div>
                 <div class="table-responsive">
@@ -253,6 +255,17 @@
                                 <th class="text-center">Tam. Máx</th>
                                 <th>Estado</th>
                                 <th class="text-center action-cell">Acciones</th>
+                            </tr>
+                            <!-- Fila de Filtros -->
+                            <tr class="filter-row">
+                                <th></th>
+                                <th><input type="text" class="filter-input" placeholder="Filtrar..." onkeyup="filterGrid()"></th>
+                                <th><input type="text" class="filter-input" placeholder="Filtrar..." onkeyup="filterGrid()"></th>
+                                <th><input type="text" class="filter-input" placeholder="Filtrar..." onkeyup="filterGrid()"></th>
+                                <th><input type="text" class="filter-input" placeholder="Filtrar..." onkeyup="filterGrid()"></th>
+                                <th><input type="text" class="filter-input" placeholder="Filtrar..." onkeyup="filterGrid()"></th>
+                                <th><input type="text" class="filter-input" placeholder="Filtrar..." onkeyup="filterGrid()"></th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody id="docsTable">
@@ -439,6 +452,28 @@
             codeInput.value = finalId;
         }
 
+        function filterGrid() {
+            const inputs = document.querySelectorAll('.filter-input');
+            const rows = document.querySelectorAll('#docsTable tr');
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                let show = true;
+                // Columnas mapeadas: 1:Code, 2:Name, 3:Format, 4:Req, 5:Size, 6:Status
+                // Inputs: 0:Code, 1:Name, 2:Format, 3:Req, 4:Size, 5:Status
+                if (inputs[0].value && !row.cells[1].textContent.toLowerCase().includes(inputs[0].value.toLowerCase())) show = false;
+                if (inputs[1].value && !row.cells[2].textContent.toLowerCase().includes(inputs[1].value.toLowerCase())) show = false;
+                if (inputs[2].value && !row.cells[3].textContent.toLowerCase().includes(inputs[2].value.toLowerCase())) show = false;
+                if (inputs[3].value && !row.cells[4].textContent.toLowerCase().includes(inputs[3].value.toLowerCase())) show = false;
+                if (inputs[4].value && !row.cells[5].textContent.toLowerCase().includes(inputs[4].value.toLowerCase())) show = false;
+                if (inputs[5].value && !row.cells[6].textContent.toLowerCase().includes(inputs[5].value.toLowerCase())) show = false;
+
+                row.style.display = show ? '' : 'none';
+                if(show) visibleCount++;
+            });
+            document.getElementById('paginationInfo').innerText = `Mostrando ${visibleCount} de ${documents.length} registros`;
+        }
+
         function render() {
             const body = document.getElementById('docsTable');
             body.innerHTML = documents.map(d => `
@@ -473,7 +508,8 @@
                 </tr>
             `).join('');
             lucide.createIcons();
-            document.getElementById('paginationInfo').innerText = `Mostrando 1 a ${documents.length} de ${documents.length} registros`;
+            // Re-aplicar filtros si existen
+            filterGrid();
             updateSelectionUI();
         }
 
