@@ -35,6 +35,8 @@
             min-height: 100vh;
         }
 
+        .hidden { display: none !important; }
+
         /* FONDO */
         .elegant-background { 
             position: fixed; inset: 0; z-index: -1; 
@@ -133,6 +135,21 @@
         .summary-label { font-size: 0.8rem; font-weight: 700; color: #64748B; text-transform: uppercase; }
         .summary-value { font-size: 0.9rem; font-weight: 700; color: var(--mre-blue); }
 
+        /* ESTILOS TICKET CONFIRMACIÓN */
+        .ticket-cutout {
+            position: absolute; top: 50%; width: 24px; height: 24px; background-color: var(--soft-bg); /* Mismo color que el fondo body */
+            border-radius: 50%; transform: translateY(-50%); z-index: 10;
+            border: 1px solid #E2E8F0;
+        }
+        .ticket-cutout.left { left: -12px; border-right-color: transparent; border-top-color: transparent; border-bottom-color: transparent; transform: translateY(-50%) rotate(45deg); } /* Hack borde */
+        /* Mejor implementación visual simple */
+        .ticket-notch {
+            position: absolute; top: 58%; width: 24px; height: 24px; background-color: var(--soft-bg);
+            border-radius: 50%;
+        }
+        .ticket-notch-l { left: -12px; box-shadow: inset -2px 0 3px -2px rgba(0,0,0,0.1); }
+        .ticket-notch-r { right: -12px; box-shadow: inset 2px 0 3px -2px rgba(0,0,0,0.1); }
+
         /* BOTONES */
         .btn-main { 
             background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); 
@@ -220,11 +237,12 @@
         </div>
     </header>
 
-    <div class="container pb-5" style="max-width: 1200px;">
+    <!-- SECCIÓN DE SELECCIÓN DE PAGO (VISIBLE POR DEFECTO) -->
+    <div class="container pb-5 animate-fade" style="max-width: 1200px;" id="gatewaySection">
         <div class="row g-4">
             
             <!-- COLUMNA IZQUIERDA: MÉTODOS DE PAGO -->
-            <div class="col-lg-8 animate-fade">
+            <div class="col-lg-8">
                 <div class="grid-frame h-100">
                     <div class="section-header">
                         <h5 class="fw-black text-navy m-0">Seleccione el Medio de Pago</h5>
@@ -274,7 +292,7 @@
             </div>
 
             <!-- COLUMNA DERECHA: RESUMEN (STICKY) -->
-            <div class="col-lg-4 animate-fade" style="animation-delay: 0.1s;">
+            <div class="col-lg-4">
                 <div class="grid-frame summary-sticky">
                     <div class="section-header bg-white">
                         <h6 class="fw-black text-navy m-0">Resumen de la Orden</h6>
@@ -338,6 +356,143 @@
         </div>
     </div>
 
+    <!-- SECCIÓN DE CONFIRMACIÓN (OCULTA POR DEFECTO) -->
+    <div class="container pb-5 hidden animate-fade" style="max-width: 800px;" id="confirmationSection">
+        <div class="grid-frame p-5 text-center">
+            <!-- Icono Success -->
+            <div class="mb-4">
+                <div class="bg-success-subtle text-success p-4 rounded-circle d-inline-flex shadow-sm" style="width:100px; height:100px; align-items:center; justify-content:center;">
+                    <i data-lucide="check" style="width: 48px; height: 48px; stroke-width: 4px;"></i>
+                </div>
+            </div>
+            
+            <h2 class="fw-black text-navy mb-2">¡Pago Realizado con Éxito!</h2>
+            <p class="text-muted mb-5 fw-medium">Su transacción ha sido procesada correctamente.</p>
+    
+            <!-- Ticket Card -->
+            <div class="bg-light border rounded-3 text-start mx-auto mb-5 shadow-sm overflow-hidden" style="max-width: 500px; position: relative; border-color: #CBD5E1 !important;">
+                
+                <!-- Decoración notches -->
+                <div class="ticket-notch ticket-notch-l"></div>
+                <div class="ticket-notch ticket-notch-r"></div>
+
+                <!-- Cabecera Ticket -->
+                <div class="p-4 bg-white border-bottom border-dashed" style="border-color: #CBD5E1 !important;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle mb-1">APROBADO</span>
+                            <div class="small fw-bold text-muted">ID: TRX-SESSION-998877</div>
+                        </div>
+                        <div class="text-end">
+                            <i data-lucide="receipt" class="text-muted opacity-50" style="width:32px; height:32px"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cuerpo Ticket -->
+                <div class="p-4 pt-5">
+                    <div class="row g-4">
+                        <div class="col-6">
+                            <small class="text-muted text-uppercase fw-bold d-block mb-1" style="font-size: 0.65rem;">Medio de Pago</small>
+                            <span class="fw-bold text-dark d-flex align-items-center gap-2" id="confMethod">
+                                <i data-lucide="credit-card" style="width:16px"></i> Bancard
+                            </span>
+                        </div>
+                        <div class="col-6 text-end">
+                            <small class="text-muted text-uppercase fw-bold d-block mb-1" style="font-size: 0.65rem;">Fecha y Hora</small>
+                            <span class="fw-bold text-dark" id="confDate">--/--/---- --:--</span>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted text-uppercase fw-bold d-block mb-1" style="font-size: 0.65rem;">Nro. de Orden</small>
+                            <span class="fw-bold text-dark font-monospace" id="confOrderId">2026-XXXX</span>
+                        </div>
+                        <div class="col-6 text-end">
+                            <small class="text-muted text-uppercase fw-bold d-block mb-1" style="font-size: 0.65rem;">Código Autorización</small>
+                            <span class="font-monospace text-dark bg-white border px-2 py-1 rounded small" id="confAuthCode">123456</span>
+                        </div>
+                        
+                        <div class="col-12 pt-3 border-top border-dashed" style="border-color: #CBD5E1 !important;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted text-uppercase fw-bold" style="font-size: 0.75rem;">Total Pagado</small>
+                                <span class="fw-black text-primary fs-4" id="confAmount">Gs. 160.200</span>
+                            </div>
+                        </div>
+
+                        <!-- NUEVA SECCIÓN DE DESCARGAS DENTRO DEL TICKET -->
+                        <div class="col-12 pt-3 border-top border-dashed" style="border-color: #CBD5E1 !important;">
+                            <small class="text-muted text-uppercase fw-bold d-block mb-2" style="font-size: 0.65rem;">Documentos Generados</small>
+                            <div class="d-grid gap-2">
+                                <a href="https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/apostilla.html" target="_blank" class="btn btn-white bg-white border text-navy fw-bold d-flex justify-content-between align-items-center" style="font-size: 0.8rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                                    <span class="d-flex align-items-center"><i data-lucide="file-badge" style="width: 16px; margin-right: 8px; color: var(--mre-blue);"></i> Imprimir Apostilla</span>
+                                    <i data-lucide="external-link" style="width: 14px; color: #94a3b8;"></i>
+                                </a>
+                                <a href="https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/comprobante_electronico.html" target="_blank" class="btn btn-white bg-white border text-navy fw-bold d-flex justify-content-between align-items-center" style="font-size: 0.8rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                                    <span class="d-flex align-items-center"><i data-lucide="printer" style="width: 16px; margin-right: 8px; color: var(--mre-blue);"></i> Imprimir Comprobante Electrónico</span>
+                                    <i data-lucide="download" style="width: 14px; color: #94a3b8;"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Footer Ticket -->
+                <div class="p-3 bg-light border-top small text-center text-muted fw-bold" style="font-size: 0.7rem;">
+                    SIA-PY - Sistema Integrado de Apostilla
+                </div>
+            </div>
+    
+            <!-- Actions -->
+            <div class="d-flex justify-content-center gap-3">
+                <button class="btn-main w-auto px-5" onclick="alert('Volviendo al listado principal...'); window.location.reload();">
+                    Finalizar y Volver al Inicio
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN PENDIENTE MITIC (NUEVA) -->
+    <div class="container pb-5 hidden animate-fade" style="max-width: 800px;" id="miticPendingSection">
+        <div class="grid-frame p-5 text-center">
+            <!-- Icono Pending -->
+            <div class="mb-4">
+                <div class="bg-warning-subtle text-warning p-4 rounded-circle d-inline-flex shadow-sm" style="width:100px; height:100px; align-items:center; justify-content:center;">
+                    <i data-lucide="clock" style="width: 48px; height: 48px; stroke-width: 3px;"></i>
+                </div>
+            </div>
+            
+            <h2 class="fw-black text-navy mb-3">Pago en Proceso</h2>
+            
+            <div class="alert alert-info border-info-subtle text-start mx-auto mb-5 shadow-sm" style="max-width: 600px;">
+                <div class="d-flex gap-3 align-items-start">
+                    <i data-lucide="info" class="text-info flex-shrink-0 mt-1" style="width: 24px; height: 24px;"></i>
+                    <div>
+                        <p class="mb-2 fw-bold text-navy">Confirmación de Transacción</p>
+                        <p class="mb-0 small text-muted" style="line-height: 1.6;">
+                            Hemos registrado la operación. La confirmación final desde la red de cobranzas puede demorar unos instantes.<br><br>
+                            <strong>Apenas se confirme el pago se le notificará por correo electrónico y se realizará la generación automática de la apostilla.</strong>
+                        </p>
+                        <hr class="border-info-subtle my-3 opacity-50">
+                        <p class="mb-0 small text-muted d-flex align-items-center gap-2">
+                            <i data-lucide="layout-dashboard" style="width: 14px;"></i>
+                            También puede seguir el estado de su solicitud dentro del <strong>sistema de gestión</strong>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-muted small mb-5">
+                Verifique su bandeja de entrada: <strong>juan.perez@email.com</strong>
+            </div>
+
+            <!-- Actions -->
+            <div class="d-flex justify-content-center gap-3">
+                <button class="btn-main w-auto px-5" onclick="alert('Volviendo al listado principal...'); window.location.reload();">
+                    Volver al Inicio
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Init Icons
         lucide.createIcons();
@@ -379,13 +534,39 @@
                 redirectText.innerText = "Redirigiendo a Botón de Pago MITIC...";
             }
 
-            // Simulación de Redirección (En producción esto sería un form submit o window.location)
+            // Simulación de Redirección y Retorno
             setTimeout(() => {
-                // Aquí iría la lógica real de redirección al ente externo
-                alert(`[SIMULACIÓN] Redireccionando a la URL del proveedor: ${selectedMethod.toUpperCase()}\n\nParams: Total=160200, OrderID=2026-XXXX`);
-                
-                // Reset para demo
+                // 1. Ocultar Overlay
                 overlay.style.display = 'none';
+                
+                // 2. Ocultar Pasarela
+                document.getElementById('gatewaySection').classList.add('hidden');
+                
+                if (selectedMethod === 'bancard') {
+                    // LÓGICA BANCARD (Ticket Inmediato)
+                    const now = new Date();
+                    const authCode = Math.floor(100000 + Math.random() * 900000); 
+                    const orderId = "2026-" + Math.floor(10000 + Math.random() * 90000);
+                    
+                    document.getElementById('confDate').innerText = now.toLocaleString('es-PY');
+                    document.getElementById('confAuthCode').innerText = authCode;
+                    document.getElementById('confOrderId').innerText = orderId;
+                    
+                    const methodEl = document.getElementById('confMethod');
+                    methodEl.innerHTML = `<i data-lucide="credit-card" style="width:16px"></i> Bancard - Tarjeta`;
+                    
+                    document.getElementById('confirmationSection').classList.remove('hidden');
+                } else {
+                    // LÓGICA MITIC (Mensaje Diferido)
+                    document.getElementById('miticPendingSection').classList.remove('hidden');
+                }
+                
+                // Re-render icons
+                lucide.createIcons();
+
+                // Scroll to top
+                window.scrollTo(0,0);
+
             }, 2000);
         }
     </script>
