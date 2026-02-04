@@ -148,8 +148,20 @@
         .grid-header-frame { background-color: #F1F5F9; padding: 1rem 1.5rem; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; }
 
         .mre-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-        .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 0.85rem 1.5rem; border-bottom: 2px solid #E2E8F0; }
+        .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 0.85rem 1.5rem; border-bottom: 2px solid #E2E8F0; vertical-align: middle; }
         .mre-table td { padding: 0.85rem 1.5rem; font-size: 0.8rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
+
+        /* Inputs de filtro en tabla */
+        .filter-row th { background-color: #F8FAFC; padding: 0.5rem 1.5rem; border-bottom: 1px solid #E2E8F0; }
+        .form-control-filter {
+            font-size: 0.75rem;
+            padding: 0.4rem 0.6rem;
+            border-radius: 6px;
+            border: 1px solid #CBD5E1;
+            background-color: #fff;
+            width: 100%;
+        }
+        .form-control-filter:focus { outline: none; border-color: var(--mre-blue-light); box-shadow: 0 0 0 2px rgba(0, 56, 168, 0.05); }
 
         .btn-main { background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); color: #ffffff; border: none; border-radius: 12px; padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.85rem; transition: var(--transition); }
         .btn-main:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 40, 85, 0.2); color: white; }
@@ -319,10 +331,6 @@
                         <button class="btn-tool-generic" data-bs-toggle="tooltip" title="Generar PDF">
                             <i data-lucide="file-text" style="width: 16px;"></i> PDF
                         </button>
-                        <div class="position-relative" style="max-width: 250px;">
-                            <i data-lucide="search" class="position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:#94A3B8; width:16px;"></i>
-                            <input type="text" class="form-control-mre ps-5" placeholder="Filtrar grupos...">
-                        </div>
                     </div>
                 </div>
 
@@ -337,6 +345,15 @@
                                 <th>Permisos</th>
                                 <th>Estado</th>
                                 <th width="160" class="text-center">Acciones</th>
+                            </tr>
+                            <tr class="filter-row">
+                                <th></th>
+                                <th><input type="text" id="filterId" class="form-control-filter" placeholder="Filtro ID..." onkeyup="filterGroups()"></th>
+                                <th><input type="text" id="filterName" class="form-control-filter" placeholder="Filtro Nombre..." onkeyup="filterGroups()"></th>
+                                <th><input type="text" id="filterDesc" class="form-control-filter" placeholder="Filtro Descripción..." onkeyup="filterGroups()"></th>
+                                <th><input type="text" id="filterPerms" class="form-control-filter" placeholder="Filtro Permisos..." onkeyup="filterGroups()"></th>
+                                <th><input type="text" id="filterStatus" class="form-control-filter" placeholder="Filtro Estado..." onkeyup="filterGroups()"></th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody id="groupsTableBody"></tbody>
@@ -520,9 +537,17 @@
 
         let idToDelete = null;
 
-        function renderGroups() {
+        function renderGroups(dataToRender = null) {
+            const groups = dataToRender || mockGroups;
             const body = document.getElementById('groupsTableBody');
-            body.innerHTML = mockGroups.map(g => `
+            
+            if (groups.length === 0) {
+                body.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">No se encontraron registros coincidentes.</td></tr>';
+                document.getElementById('paginationInfo').innerText = 'Mostrando 0 registros';
+                return;
+            }
+
+            body.innerHTML = groups.map(g => `
                 <tr data-id="${g.id}" class="${g.status === 'INAC' ? 'opacity-75 bg-light' : ''}">
                     <td class="text-center"><input type="checkbox" class="record-check" onchange="updateSelectionUI()" ${g.status === 'INAC' ? 'disabled' : ''}></td>
                     <td class="text-center fw-bold text-navy">${g.id}</td>
@@ -540,8 +565,29 @@
                 </tr>
             `).join('');
             lucide.createIcons();
-            document.getElementById('paginationInfo').innerText = `Mostrando ${mockGroups.length} registros`;
+            document.getElementById('paginationInfo').innerText = `Mostrando ${groups.length} registros`;
             updateSelectionUI();
+        }
+
+        function filterGroups() {
+            const idFilter = document.getElementById('filterId').value.toLowerCase();
+            const nameFilter = document.getElementById('filterName').value.toLowerCase();
+            const descFilter = document.getElementById('filterDesc').value.toLowerCase();
+            const permsFilter = document.getElementById('filterPerms').value.toLowerCase();
+            const statusFilter = document.getElementById('filterStatus').value.toLowerCase();
+
+            const filtered = mockGroups.filter(g => {
+                const statusText = g.status === 'ACTI' ? 'activo' : 'inactivo';
+                return (
+                    g.id.toString().includes(idFilter) &&
+                    g.name.toLowerCase().includes(nameFilter) &&
+                    g.desc.toLowerCase().includes(descFilter) &&
+                    g.perms.toString().includes(permsFilter) &&
+                    statusText.includes(statusFilter)
+                );
+            });
+
+            renderGroups(filtered);
         }
 
         function updateSelectionUI() {
