@@ -136,8 +136,26 @@
         .grid-header-frame { background-color: #F1F5F9; padding: 1rem 1.5rem; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; }
 
         .mre-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-        .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 0.85rem 1.5rem; border-bottom: 2px solid #E2E8F0; }
+        .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 0.85rem 1.5rem; border-bottom: 2px solid #E2E8F0; vertical-align: top; }
         .mre-table td { padding: 0.85rem 1.5rem; font-size: 0.8rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
+
+        /* Estilos para los filtros de columna */
+        .filter-input {
+            font-size: 0.75rem;
+            padding: 0.4rem 0.6rem;
+            border-radius: 8px;
+            border: 1px solid #E2E8F0;
+            background-color: #FFFFFF;
+            width: 100%;
+            margin-top: 8px;
+            color: var(--text-main);
+            transition: var(--transition);
+        }
+        .filter-input:focus {
+            outline: none;
+            border-color: var(--mre-blue-light);
+            box-shadow: 0 0 0 2px rgba(0, 56, 168, 0.05);
+        }
 
         /* --- BOTONES DE ACCIÓN --- */
         .action-wrapper { display: flex; justify-content: center; gap: 6px; width: 100%; }
@@ -168,7 +186,7 @@
 
         /* --- MODALES --- */
         .mre-modal-overlay { position: fixed; inset: 0; background: rgba(0, 40, 85, 0.4); backdrop-filter: blur(4px); z-index: 4000; display: none; align-items: center; justify-content: center; padding: 20px; }
-        .mre-modal { background: white; border-radius: 24px; max-width: 950px; width: 100%; padding: 2.5rem; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.2); max-height: 95vh; overflow-y: auto; }
+        .mre-modal { background: white; border-radius: 24px; max-width: 900px; width: 100%; padding: 2.5rem; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.2); max-height: 95vh; overflow-y: auto; }
         
         .section-title { font-size: 0.95rem; font-weight: 900; color: var(--mre-blue); text-transform: uppercase; display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; }
         .section-title::after { content: ''; flex: 1; height: 1px; background: #E2E8F0; }
@@ -294,10 +312,6 @@
                         <button class="btn-tool-generic" data-bs-toggle="tooltip" title="Generar PDF">
                             <i data-lucide="file-text" style="width: 16px;"></i> PDF
                         </button>
-                        <div class="position-relative" style="max-width: 250px;">
-                            <i data-lucide="search" class="position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:#94A3B8; width:16px;"></i>
-                            <input type="text" id="masterFieldSearch" class="form-control-mre ps-5" placeholder="Filtrar..." onkeyup="handleMasterFieldSearch()" data-bs-toggle="tooltip" title="Buscar por nombre o etiqueta">
-                        </div>
                     </div>
                 </div>
 
@@ -306,11 +320,26 @@
                         <thead>
                             <tr>
                                 <th width="40" class="text-center"><input type="checkbox" id="selectAllFields" onchange="toggleSelectAllItems()" data-bs-toggle="tooltip" title="Marcar todos"></th>
-                                <th width="80" class="text-center">ID</th>
-                                <th>Etiqueta</th>
-                                <th>Nombre Técnico</th>
-                                <th>Tipo</th>
-                                <th>Estado</th>
+                                <th width="80" class="text-center">
+                                    ID
+                                    <input type="text" class="filter-input" placeholder="Filtro ID" onkeyup="handleColumnFilter(1, this.value)">
+                                </th>
+                                <th>
+                                    Etiqueta
+                                    <input type="text" class="filter-input" placeholder="Filtro Etiqueta" onkeyup="handleColumnFilter(2, this.value)">
+                                </th>
+                                <th>
+                                    Nombre Técnico
+                                    <input type="text" class="filter-input" placeholder="Filtro Nombre" onkeyup="handleColumnFilter(3, this.value)">
+                                </th>
+                                <th>
+                                    Tipo
+                                    <input type="text" class="filter-input" placeholder="Filtro Tipo" onkeyup="handleColumnFilter(4, this.value)">
+                                </th>
+                                <th>
+                                    Estado
+                                    <input type="text" class="filter-input" placeholder="Filtro Estado" onkeyup="handleColumnFilter(5, this.value)">
+                                </th>
                                 <th width="160" class="text-center action-cell">Acciones</th>
                             </tr>
                         </thead>
@@ -508,6 +537,9 @@
         let idToDelete = null;
         let editingId = null;
 
+        // Filtros de Columna
+        const columnFilters = { 1: '', 2: '', 3: '', 4: '', 5: '' };
+
         function initTooltips() {
             var triggerEls = document.querySelectorAll('[data-bs-toggle="tooltip"]');
             triggerEls.forEach(function (el) {
@@ -521,8 +553,27 @@
             });
         }
 
+        function handleColumnFilter(index, value) {
+            columnFilters[index] = value.toLowerCase();
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const rows = document.querySelectorAll('#masterFieldsTableBody tr');
+            rows.forEach(row => {
+                let visible = true;
+                for (const [colIndex, filterValue] of Object.entries(columnFilters)) {
+                    if (!filterValue) continue;
+                    let cellText = row.cells[colIndex].innerText.toLowerCase();
+                    if (!cellText.includes(filterValue)) visible = false;
+                }
+                row.style.display = visible ? '' : 'none';
+            });
+        }
+
         function renderMasterFields() {
             const body = document.getElementById('masterFieldsTableBody');
+            disposeTooltipsIn(body);
             body.innerHTML = mockMasterFields.map(f => `
                 <tr class="${f.status === 'INAC' ? 'row-inactive opacity-75' : ''}" data-id="${f.id}">
                     <td class="text-center"><input type="checkbox" class="record-check doc-check" onchange="updateSelectionUI()" ${f.status === 'INAC' ? 'disabled' : ''}></td>
@@ -543,6 +594,17 @@
             lucide.createIcons();
             document.getElementById('paginationInfo').innerText = `Mostrando 1 a ${mockMasterFields.length} de ${mockMasterFields.length} registros`;
             updateSelectionUI();
+            applyFilters(); 
+            initTooltips();
+        }
+
+        function disposeTooltipsIn(container) {
+            if (!container) return;
+            const tooltips = container.querySelectorAll('[data-bs-toggle="tooltip"]');
+            tooltips.forEach(el => {
+                const instance = bootstrap.Tooltip.getInstance(el);
+                if (instance) instance.dispose();
+            });
         }
 
         function handleDeleteClick(id) {
