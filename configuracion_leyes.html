@@ -126,11 +126,15 @@
 
         /* --- TABLA --- */
         .mre-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-        .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 1rem 1.5rem; border-bottom: 2px solid #E2E8F0; }
+        .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 0.75rem 1.5rem; border-bottom: 2px solid #E2E8F0; vertical-align: bottom; }
         .mre-table td { padding: 1rem 1.5rem; font-size: 0.85rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
         .mre-table tr:hover { background-color: #F8FAFC; }
-        /* Estado inactivo visual */
         .row-inactive { opacity: 0.7; background-color: #f8fafc; }
+
+        /* Estilo para los inputs de filtro */
+        .filter-row th { background-color: #F8FAFC; padding: 0.5rem 1.5rem; border-bottom: 1px solid #E2E8F0; }
+        .filter-input { font-size: 0.75rem; padding: 0.35rem 0.5rem; border-radius: 6px; border: 1px solid #CBD5E1; width: 100%; }
+        .filter-input:focus { outline: none; border-color: var(--mre-blue); box-shadow: 0 0 0 2px rgba(0, 40, 85, 0.1); }
 
         /* --- BOTONES --- */
         .btn-main { background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); color: #ffffff; border: none; border-radius: 12px; padding: 0.65rem 1.25rem; font-weight: 700; font-size: 0.85rem; transition: var(--transition); display: inline-flex; align-items: center; gap: 8px; }
@@ -254,7 +258,7 @@
                 <div class="grid-header-frame">
                     <h4 class="fw-black text-uppercase m-0" style="color: var(--mre-blue); font-size: 0.85rem;">Listado de Leyes Vigentes</h4>
                     <div class="d-flex align-items-center gap-2">
-                        <div class="d-flex gap-2 me-2">
+                        <div class="d-flex gap-2">
                             <button class="btn-tool-generic" data-bs-toggle="tooltip" title="Configurar Columnas">
                                 <i data-lucide="layout-columns" style="width: 16px;"></i> Columnas
                             </button>
@@ -264,10 +268,6 @@
                             <button class="btn-tool-generic" data-bs-toggle="tooltip" title="Generar PDF">
                                 <i data-lucide="file-text" style="width: 16px;"></i> PDF
                             </button>
-                        </div>
-                        <div class="position-relative" style="width: 320px;">
-                            <i data-lucide="search" class="position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:#94A3B8; width:16px;"></i>
-                            <input type="text" class="form-control-mre ps-5" placeholder="Filtrar por número, descripción..." data-bs-toggle="tooltip" title="Busque por Número de Ley, Párrafo o Descripción">
                         </div>
                     </div>
                 </div>
@@ -285,6 +285,18 @@
                                 <th width="120">Fecha</th>
                                 <th width="100">Estado</th>
                                 <th width="150" class="text-center">Acciones</th>
+                            </tr>
+                            <!-- FILA DE FILTROS: Todos son texto y combinados -->
+                            <tr class="filter-row">
+                                <th></th>
+                                <th><input type="text" id="filterId" class="filter-input" placeholder="ID" onkeyup="applyFilters()"></th>
+                                <th><input type="text" id="filterNumero" class="filter-input" placeholder="Número" onkeyup="applyFilters()"></th>
+                                <th><input type="text" id="filterDesc" class="filter-input" placeholder="Descripción" onkeyup="applyFilters()"></th>
+                                <th><input type="text" id="filterValor" class="filter-input" placeholder="Valor" onkeyup="applyFilters()"></th>
+                                <th><input type="text" id="filterTipo" class="filter-input" placeholder="Tipo" onkeyup="applyFilters()"></th>
+                                <th><input type="text" id="filterFecha" class="filter-input" placeholder="Fecha" onkeyup="applyFilters()"></th>
+                                <th><input type="text" id="filterEstado" class="filter-input" placeholder="Estado" onkeyup="applyFilters()"></th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody id="leyesTableBody"></tbody>
@@ -358,8 +370,8 @@
                     <div class="col-md-6 condicional-field">
                         <label class="form-label">Tipo de valor</label>
                         <select id="leyTipoValor" class="form-control-mre" data-bs-toggle="tooltip" title="Unidad monetaria del arancel">
-                            <option value="Jornal en Gs.">Jornal en Gs.</option>
-                            <option value="Jornal en USD">Jornal en USD</option>
+                            <option value="Jornal">Jornal</option>
+                            <option value="Dolar">Dolar</option>
                         </select>
                     </div>
                     <div class="col-md-6 condicional-field">
@@ -433,19 +445,19 @@
     <script>
         let leyes = [
             { 
-                id: 1, numero: '1030/97', desc: 'Ley Nº 1030 Certificado Nacimiento - N', valor: '0,5', tipo: 'Jornal en Gs.', fecha: '1997-01-13', parrafo: 'Art 1ro.', tipoReg: 'LEY', status: 'ACTI',
+                id: 1, numero: '1030/97', desc: 'Ley Nº 1030 Certificado Nacimiento - N', valor: '0,5', tipo: 'Jornal', fecha: '1997-01-13', parrafo: 'Art 1ro.', tipoReg: 'LEY', status: 'ACTI',
                 history: [
                     { date: '15/01/2026 08:30', action: 'CREATE', user: 'cgonzalez', desc: 'Migración inicial de datos.' },
                     { date: '20/01/2026 14:15', action: 'UPDATE', user: 'admin_mre', desc: 'Ajuste de valor por resolución 14/2026.' }
                 ]
             },
             { 
-                id: 2, numero: '4033/10', desc: 'Ley Nº 4033 Arancel Consular', valor: '1', tipo: 'Jornal en Gs.', fecha: '2010-09-08', parrafo: 'Art 5°.', tipoReg: 'LEY', status: 'ACTI',
+                id: 2, numero: '4033/10', desc: 'Ley Nº 4033 Arancel Consular', valor: '1', tipo: 'Jornal', fecha: '2010-09-08', parrafo: 'Art 5°.', tipoReg: 'LEY', status: 'ACTI',
                 history: [{ date: '10/01/2026 09:00', action: 'CREATE', user: 'sys_root', desc: 'Registro manual.' }]
             },
-            { id: 3, numero: '5230/14', desc: 'Ley Nº 5230 Modernización de tasas', valor: '0,5', tipo: 'Jornal en USD', fecha: '2014-06-25', parrafo: 'Art 2°.', tipoReg: 'LEY', status: 'INAC', history: [] },
-            { id: 4, numero: '6102/18', desc: 'Ley Nº 6102 Excepción de Visas', valor: '0,5', tipo: 'Jornal en Gs.', fecha: '2018-11-30', parrafo: 'Art 1ro.', tipoReg: 'LEY', status: 'ACTI', history: [] },
-            { id: 5, numero: '3321/09', desc: 'Ley Nº 3321 Poderes Notariales', valor: '1', tipo: 'Jornal en USD', fecha: '2009-04-12', parrafo: 'Art 10.', tipoReg: 'LEY', status: 'ACTI', history: [] }
+            { id: 3, numero: '5230/14', desc: 'Ley Nº 5230 Modernización de tasas', valor: '0,5', tipo: 'Dolar', fecha: '2014-06-25', parrafo: 'Art 2°.', tipoReg: 'LEY', status: 'INAC', history: [] },
+            { id: 4, numero: '6102/18', desc: 'Ley Nº 6102 Excepción de Visas', valor: '0,5', tipo: 'Jornal', fecha: '2018-11-30', parrafo: 'Art 1ro.', tipoReg: 'LEY', status: 'ACTI', history: [] },
+            { id: 5, numero: '3321/09', desc: 'Ley Nº 3321 Poderes Notariales', valor: '1', tipo: 'Dolar', fecha: '2009-04-12', parrafo: 'Art 10.', tipoReg: 'LEY', status: 'ACTI', history: [] }
         ];
 
         let deleteId = null;
@@ -458,9 +470,44 @@
             });
         }
 
-        function renderLeyes() {
+        // Nueva función para filtrado en cliente
+        function applyFilters() {
+            const id = document.getElementById('filterId').value.toLowerCase();
+            const num = document.getElementById('filterNumero').value.toLowerCase();
+            const desc = document.getElementById('filterDesc').value.toLowerCase();
+            const val = document.getElementById('filterValor').value.toLowerCase();
+            const tipo = document.getElementById('filterTipo').value.toLowerCase();
+            const fec = document.getElementById('filterFecha').value.toLowerCase();
+            const estInput = document.getElementById('filterEstado').value.toLowerCase();
+
+            const filtered = leyes.filter(l => {
+                const matchId = l.id.toString().includes(id);
+                const matchNum = l.numero.toLowerCase().includes(num);
+                const matchDesc = l.desc.toLowerCase().includes(desc);
+                const matchVal = (l.valor || '').toString().toLowerCase().includes(val);
+                const matchTipo = (l.tipo || '').toLowerCase().includes(tipo);
+                const matchFec = (l.fecha || '').includes(fec);
+                
+                // Mapeo de estado para búsqueda textual
+                const estadoTexto = l.status === 'ACTI' ? 'activo' : 'inactivo';
+                const matchEst = estadoTexto.includes(estInput);
+
+                return matchId && matchNum && matchDesc && matchVal && matchTipo && matchFec && matchEst;
+            });
+
+            renderLeyes(filtered);
+        }
+
+        function renderLeyes(data = leyes) {
             const body = document.getElementById('leyesTableBody');
-            body.innerHTML = leyes.map(l => `
+            
+            if(data.length === 0) {
+                body.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-muted fw-bold">No se encontraron registros coincidentes</td></tr>';
+                document.getElementById('paginationInfo').innerText = 'Sin resultados';
+                return;
+            }
+
+            body.innerHTML = data.map(l => `
                 <tr data-id="${l.id}" class="${l.status === 'INAC' ? 'row-inactive' : ''}">
                     <td class="text-center">
                         ${l.status === 'ACTI' ? `<input type="checkbox" class="row-check" onchange="updateBulkUI()">` : ''}
@@ -475,7 +522,7 @@
                         </div>
                     </td>
                     <td class="fw-bold">${l.tipoReg === 'EXCEPCION' ? '-' : (l.valor || '-')}</td>
-                    <td class="text-capitalize fw-bold ${l.tipo === 'dolar' ? 'text-primary' : 'text-muted'}">${l.tipoReg === 'EXCEPCION' ? '-' : (l.tipo || '-')}</td>
+                    <td class="text-capitalize fw-bold ${l.tipo === 'Dolar' ? 'text-primary' : 'text-muted'}">${l.tipoReg === 'EXCEPCION' ? '-' : (l.tipo || '-')}</td>
                     <td class="text-muted small">${l.tipoReg === 'EXCEPCION' ? '-' : (l.fecha ? l.fecha.split('-').reverse().join('/') : '-')}</td>
                     <td>
                         <span class="badge ${l.status === 'ACTI' ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary'} border">
@@ -491,7 +538,7 @@
                     </td>
                 </tr>
             `).join('');
-            document.getElementById('paginationInfo').innerText = `Mostrando ${leyes.length} de ${leyes.length} registros`;
+            document.getElementById('paginationInfo').innerText = `Mostrando ${data.length} de ${leyes.length} registros`;
             lucide.createIcons();
             initTooltips(); 
         }
@@ -542,7 +589,7 @@
                 form.reset();
                 document.getElementById('leyTipoRegistro').value = 'LEY';
                 document.getElementById('leyEstado').value = 'ACTI';
-                document.getElementById('leyTipoValor').value = 'Jornal en Gs.'; // Valor por defecto
+                document.getElementById('leyTipoValor').value = 'Jornal'; // Valor por defecto
                 
                 // Ocultar campo estado en creación
                 if(containerLeyEstado) containerLeyEstado.classList.add('d-none');
@@ -562,7 +609,7 @@
                 document.getElementById('leyEstado').value = l.status || 'ACTI';
                 document.getElementById('leyFecha').value = l.fecha || '';
                 document.getElementById('leyDescripcion').value = l.desc || '';
-                document.getElementById('leyTipoValor').value = l.tipo || 'Jornal en Gs.';
+                document.getElementById('leyTipoValor').value = l.tipo || 'Jornal';
                 document.getElementById('leyValor').value = l.valor || '';
 
                 handleRegistroTypeChange();
