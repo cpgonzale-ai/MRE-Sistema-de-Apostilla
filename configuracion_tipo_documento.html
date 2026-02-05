@@ -200,6 +200,7 @@
         .form-control-mre { background-color: var(--input-bg); border: 1px solid #E2E8F0; border-radius: 8px; padding: 0.45rem 0.75rem; font-size: 0.8rem; width: 100%; transition: var(--transition); }
         .form-control-mre:focus { outline: none; border-color: var(--mre-blue-light); box-shadow: 0 0 0 3px rgba(0, 56, 168, 0.08); }
         .form-control-mre:disabled { background-color: #F1F5F9; color: #1E293B; border-color: #CBD5E1; opacity: 0.8; }
+        .form-control-mre[readonly] { background-color: #F1F5F9; color: #475569; }
 
         .sub-section-title { font-size: 0.7rem; font-weight: 800; color: var(--mre-blue-light); text-transform: uppercase; margin: 1rem 0 0.75rem 0; padding-left: 0.5rem; border-left: 3px solid var(--mre-blue-light); }
 
@@ -401,6 +402,7 @@
                     </div>
                     <div class="apartado-content">
                         <div class="row g-3">
+                            <!-- Fila 1: Nombre (75%) y Trámite (25%) -->
                             <div class="col-md-9">
                                 <label class="form-label">Nombre del Documento <span class="text-danger">*</span></label>
                                 <input type="text" id="docName" class="form-control-mre" placeholder="Ej: Certificado de Antecedentes Penales" required>
@@ -413,21 +415,22 @@
                                 </select>
                             </div>
                             
-                            <div class="col-md-2">
+                            <!-- Fila 2: 4 columnas iguales de 25% -->
+                            <div class="col-md-3">
                                 <label class="form-label">Origen <span class="text-danger">*</span></label>
                                 <select id="docOrigen" class="form-control-mre" required>
                                     <option value="EXT">Extranjero</option>
                                     <option value="NAC">Nacional</option>
                                 </select>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <label class="form-label">Género <span class="text-danger">*</span></label>
                                 <select id="docGenero" class="form-control-mre" required>
                                     <option value="PERSONAL">Personal</option>
                                     <option value="COMERCIAL">Comercial</option>
                                 </select>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <label class="form-label">Grupo <span class="text-danger">*</span></label>
                                 <select id="docGrupo" class="form-control-mre" required>
                                     <option value="NAC">Nacionales</option>
@@ -443,6 +446,8 @@
                                     <option value="VER_PRE">Verificación previa</option>
                                 </select>
                             </div>
+
+                            <!-- Fila 3: Columnas alineadas con la fila anterior -->
                             <div class="col-md-3">
                                 <label class="form-label">Tipo de Firma <span class="text-danger">*</span></label>
                                 <select id="docFirma" class="form-control-mre" required>
@@ -452,6 +457,13 @@
                                     <option value="OLO">Ológrafa</option>
                                 </select>
                             </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Validar contra registro de firma</label>
+                                <select id="docValidarFirma" class="form-control-mre">
+                                    <option value="S">Si</option>
+                                    <option value="N" selected>No</option>
+                                </select>
+                            </div>
                             <div class="col-md-3 d-none" id="containerDocEstado">
                                 <label class="form-label">Estado Registro <span class="text-danger">*</span></label>
                                 <select id="docEstado" class="form-control-mre fw-bold" required>
@@ -459,6 +471,7 @@
                                     <option value="INACTIVO">INACTIVO</option>
                                 </select>
                             </div>
+                            <!-- Espacio vacío col-md-3 restante para completar la grilla visualmente si es necesario -->
                         </div>
 
                         <div class="sub-section-title mode-edit-only">Oficinas y Entidades Vinculadas</div>
@@ -586,10 +599,15 @@
                                     <table class="mre-table mb-0">
                                         <thead>
                                             <tr>
-                                                <th width="70">ID</th><th>Referencia Ley</th><th>Cuenta</th><th width="40" class="action-col"></th>
+                                                <th width="70">ID</th>
+                                                <th>Referencia Ley</th>
+                                                <th width="100">Tipo Valor</th>
+                                                <th width="80" class="text-center">Valor</th>
+                                                <th>Cuenta</th>
+                                                <th width="40" class="action-col"></th>
                                             </tr>
                                         </thead>
-                                        <tbody id="lawsTableBody"><tr><td colspan="4" class="text-center text-muted small py-2">Sin leyes asignadas</td></tr></tbody>
+                                        <tbody id="lawsTableBody"><tr><td colspan="6" class="text-center text-muted small py-2">Sin leyes asignadas</td></tr></tbody>
                                     </table>
                                 </div>
                             </div>
@@ -741,6 +759,10 @@
                                 </tbody>
                             </table>
                         </div>
+                        
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <button type="button" class="btn btn-light btn-sm rounded-pill px-4 border fw-bold" onclick="closeModal('modalDoc')">Cerrar</button>
+                        </div>
                     </div>
                 </div>
 
@@ -803,9 +825,9 @@
 
     <script>
         let mockData = [
-            { id: 1030, name: 'Certificado de Antecedentes E', origen: 'Extranjero', emision: 'MANUAL', firma: 'OLÓGRAFA', estado: 'ACTIVO' },
-            { id: 1031, name: 'Certificado de Nacimiento N', origen: 'Nacional', emision: 'AUTOMÁTICA', firma: 'ELECTRÓNICA', estado: 'ACTIVO' },
-            { id: 1032, name: 'Certificado de Defunción N', origen: 'Nacional', emision: 'VAL. PREVIA', firma: 'ELECTRÓNICA', estado: 'ACTIVO' }
+            { id: 1030, name: 'Certificado de Antecedentes E', origen: 'Extranjero', emision: 'MANUAL', firma: 'OLÓGRAFA', validarFirma: 'N', estado: 'ACTIVO' },
+            { id: 1031, name: 'Certificado de Nacimiento N', origen: 'Nacional', emision: 'AUTOMÁTICA', firma: 'ELECTRÓNICA', validarFirma: 'S', estado: 'ACTIVO' },
+            { id: 1032, name: 'Certificado de Defunción N', origen: 'Nacional', emision: 'VAL. PREVIA', firma: 'ELECTRÓNICA', validarFirma: 'N', estado: 'ACTIVO' }
         ];
 
         let selectedDocForDelete = null;
@@ -937,7 +959,7 @@
                 officeSelect.disabled = true;
             }
         }
-
+        
         function toggleApartado(num) {
             document.querySelectorAll('.apartado-container').forEach(el => el.classList.remove('active'));
             const target = document.getElementById('apartado' + num);
@@ -950,18 +972,22 @@
         function openDocModal(mode, id) {
             const modal = document.getElementById('modalDoc');
             const form = document.getElementById('formDoc');
-            const auditSection = document.getElementById('apartado5');
+            const auditSection = document.getElementById('apartado6'); // Previamente 6, ahora 5? No, Web Services removed so Auditoria is 5
             const nextToAudit = document.getElementById('nextToAuditBtn');
-            
+            // const nextToAudit2 = document.getElementById('nextToAuditBtn2'); // WebServices removed
+
+            // Re-verificar ID de sección de auditoría
+            const auditSectionEl = document.getElementById('apartado5'); // En el último cambio "ocultar webservices", auditoría quedó como 5
+
             modal.style.display = 'flex';
             toggleApartado(1);
             
             const isView = mode === 'view';
-            const elements = form.querySelectorAll('input, select, textarea'); 
+            const elements = form.querySelectorAll('input, select, textarea, .btn-transfer');
             elements.forEach(el => el.disabled = isView);
             
-            // Lógica de visibilidad para secciones
-            if(auditSection) auditSection.style.display = isView ? 'block' : 'none';
+            // Visibilidad Auditoría
+            if(auditSectionEl) auditSectionEl.style.display = isView ? 'block' : 'none';
             if(nextToAudit) nextToAudit.style.display = isView ? 'block' : 'none';
 
             document.querySelectorAll('.action-col').forEach(el => el.style.display = isView ? 'none' : '');
@@ -975,7 +1001,7 @@
             // RESETEAR FORMULARIO
             form.reset();
             document.getElementById('officesTableBody').innerHTML = '<tr><td colspan="5" class="text-center text-muted italic p-2 small">No hay oficinas vinculadas</td></tr>';
-            document.getElementById('lawsTableBody').innerHTML = '<tr><td colspan="4" class="text-center text-muted small py-2">Sin leyes asignadas</td></tr>';
+            document.getElementById('lawsTableBody').innerHTML = '<tr><td colspan="6" class="text-center text-muted small py-2">Sin leyes asignadas</td></tr>';
             document.getElementById('excTableBody').innerHTML = '<tr><td colspan="4" class="text-center text-muted small py-2">Sin excepciones asignadas</td></tr>';
             
             // Resetear listas duales
@@ -1002,8 +1028,8 @@
                 // 1. CARGAR DATOS PRINCIPALES
                 document.getElementById('docName').value = item.name;
                 document.getElementById('docEstado').value = item.estado;
+                document.getElementById('docValidarFirma').value = item.validarFirma || 'N';
                 
-                // Mapeo básico de valores para demo
                 const emisionMap = { 'AUTOMÁTICA': 'AUT', 'MANUAL': 'PRE', 'VAL. PREVIA': 'VAL', 'VERIFICACIÓN PREVIA': 'VER_PRE' };
                 const firmaMap = { 'OLÓGRAFA': 'OLO', 'ELECTRÓNICA': 'ELE' };
                 const origenMap = { 'Extranjero': 'EXT', 'Nacional': 'NAC' };
@@ -1012,12 +1038,11 @@
                 if(item.firma in firmaMap) document.getElementById('docFirma').value = firmaMap[item.firma];
                 if(item.origen in origenMap) document.getElementById('docOrigen').value = origenMap[item.origen];
                 
-                // Datos simulados obligatorios para que el formulario sea válido al abrir
                 document.getElementById('docEvento').value = 'LEG';
                 document.getElementById('docGenero').value = 'PERSONAL';
                 document.getElementById('docGrupo').value = 'NAC';
 
-                // 2. CARGAR OFICINAS (Simulado)
+                // 2. CARGAR OFICINAS
                 const officeBody = document.getElementById('officesTableBody');
                 officeBody.innerHTML = `
                     <tr>
@@ -1029,28 +1054,30 @@
                     </tr>
                 `;
 
-                // 3. CARGAR LEYES (Obligatorio)
+                // 3. CARGAR LEYES (CON NUEVAS COLUMNAS)
                 const lawBody = document.getElementById('lawsTableBody');
                 lawBody.innerHTML = `
                     <tr>
                         <td class="text-center fw-bold text-navy">49</td>
                         <td>Ley 1030 - Antecedentes</td>
+                        <td class="fw-bold text-navy">JORNAL</td>
+                        <td class="text-center fw-bold">1</td>
                         <td class="small fw-bold">00000094555551442</td>
                         <td class="text-center action-col"><button type="button" class="btn btn-sm text-danger border-0 p-0" onclick="this.closest('tr').remove()"><i data-lucide="trash-2" style="width:14px"></i></button></td>
                     </tr>
                 `;
 
-                // 4. CARGAR CAMPOS ESPECÍFICOS (Obligatorio)
+                // 4. CARGAR CAMPOS ESPECÍFICOS
                 const fieldList = document.getElementById('listAvailableFields');
-                const fieldItem = fieldList.querySelector('[data-id="f1"]'); // Mueve 'Número de referencia'
+                const fieldItem = fieldList.querySelector('[data-id="f1"]'); 
                 if(fieldItem) moveItem(fieldItem, 'fields');
 
-                // 5. CARGAR ADJUNTOS (Opcional pero común)
+                // 5. CARGAR ADJUNTOS
                 const adjList = document.getElementById('listAvailableAdj');
-                const adjItem = adjList.querySelector('[data-id="a1"]'); // Mueve 'Cédula'
+                const adjItem = adjList.querySelector('[data-id="a1"]'); 
                 if(adjItem) moveItem(adjItem, 'adj');
 
-                // Si es modo view, ocultar acciones de las filas inyectadas manualmente
+                // Si es modo view, ocultar acciones
                 if (isView) {
                     document.querySelectorAll('.action-col').forEach(el => el.style.display = 'none');
                 }
@@ -1061,6 +1088,7 @@
                 document.getElementById('modalTitle').innerText = 'Nuevo Tipo de Documento';
                 currentEditingId = null; 
                 document.getElementById('docEstado').value = 'ACTIVO';
+                document.getElementById('docValidarFirma').value = 'N';
             }
             lucide.createIcons();
         }
@@ -1086,16 +1114,11 @@
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
         function toggleItem(el) { 
-            const listContainer = el.closest('.list-container');
-            if(!listContainer) return;
-            const form = listContainer.closest('form');
-            if(!form) return;
-            const input = form.querySelector('input');
-            if(input && input.disabled) return; // Readonly check
-            
+            const isReadonly = el.closest('.list-container')?.closest('form')?.querySelector('input').disabled;
+            if (isReadonly) return;
             el.classList.toggle('selected'); 
         }
-
+        
         function transferGeneric(type, direction) {
             const listId = type === 'fields' ? 'listAvailableFields' : 'listAvailableAdj';
             const tableId = type === 'fields' ? 'tableFields' : 'tableAdj';
@@ -1164,12 +1187,10 @@
                     </td>
                 `;
                 
-                // Evento click para seleccionar
+                // Evento click para seleccionar (en tabla de asociados, click selecciona para mover de vuelta con flechas si se desea, o dblclick mueve)
                 row.onclick = function(e) {
-                    // Evitar seleccionar si se hace click en inputs
                     if(e.target.tagName === 'INPUT') return;
-                    // toggleItem logic but for table rows
-                    this.classList.toggle('selected');
+                    toggleItem(this); 
                 };
 
                 // Evento doble click para mover de vuelta
@@ -1218,22 +1239,42 @@
                         return;
                     }
                 } else {
-                    // Para excepciones u otros, validación básica del select
+                    // Para excepciones
                     if(!select.value) return;
                 }
 
                 if(body.rows.length === 1 && body.rows[0].cells.length === 1) body.innerHTML = '';
                 const row = document.createElement('tr');
                 const info = select.options[select.selectedIndex].text.split(' - ');
-                row.innerHTML = `
-                    <td class="text-center fw-bold text-navy">${select.value}</td>
-                    <td>${info[0]}</td>
-                    <td class="small fw-bold">${account.value || '---'}</td>
-                    <td class="text-center action-col"><button type="button" class="btn btn-sm text-danger border-0 p-0" onclick="this.closest('tr').remove()"><i data-lucide="trash-2" style="width:14px"></i></button></td>
-                `;
+
+                if (type === 'law') {
+                    // Valores por defecto al agregar en la grilla
+                    const defaultTipoValor = "JORNAL";
+                    const defaultValor = "1";
+                    
+                    row.innerHTML = `
+                        <td class="text-center fw-bold text-navy">${select.value.split('_')[0]}</td>
+                        <td>${info[0]}</td>
+                        <td class="fw-bold text-navy">${defaultTipoValor}</td>
+                        <td class="text-center fw-bold">${defaultValor}</td>
+                        <td class="small fw-bold">${account.value || '---'}</td>
+                        <td class="text-center action-col"><button type="button" class="btn btn-sm text-danger border-0 p-0" onclick="this.closest('tr').remove()"><i data-lucide="trash-2" style="width:14px"></i></button></td>
+                    `;
+                } else {
+                    // Excepciones
+                     row.innerHTML = `
+                        <td class="text-center fw-bold text-navy">${select.value}</td>
+                        <td>${info[0]}</td>
+                        <td class="small fw-bold">${account.value || '---'}</td>
+                        <td class="text-center action-col"><button type="button" class="btn btn-sm text-danger border-0 p-0" onclick="this.closest('tr').remove()"><i data-lucide="trash-2" style="width:14px"></i></button></td>
+                    `;
+                }
+
                 body.appendChild(row);
+                
+                // Limpiar inputs
                 select.value = "";
-                account.value = "";
+                if(account) account.value = "";
             }
             lucide.createIcons();
         }
@@ -1295,6 +1336,7 @@
             const origenSelect = document.getElementById('docOrigen');
             const emisionSelect = document.getElementById('docEmision');
             const firmaSelect = document.getElementById('docFirma');
+            const validarFirmaSelect = document.getElementById('docValidarFirma');
             const estadoSelect = document.getElementById('docEstado');
 
             if (!nombreInput || !origenSelect || !emisionSelect || !firmaSelect || !estadoSelect) {
@@ -1306,6 +1348,7 @@
             const origenText = origenSelect.options[origenSelect.selectedIndex].text;
             const emisionText = emisionSelect.options[emisionSelect.selectedIndex].text.toUpperCase();
             const firmaText = firmaSelect.options[firmaSelect.selectedIndex].text.toUpperCase();
+            const validarFirmaVal = validarFirmaSelect.value;
             const estadoVal = estadoSelect.value;
 
             if (currentEditingId) {
@@ -1318,6 +1361,7 @@
                         origen: origenText,
                         emision: emisionText,
                         firma: firmaText,
+                        validarFirma: validarFirmaVal,
                         estado: estadoVal
                     };
                 }
@@ -1330,6 +1374,7 @@
                     origen: origenText,
                     emision: emisionText,
                     firma: firmaText,
+                    validarFirma: validarFirmaVal,
                     estado: 'ACTIVO' // Nuevo siempre nace activo a menos que se especifique lo contrario
                 });
             }
