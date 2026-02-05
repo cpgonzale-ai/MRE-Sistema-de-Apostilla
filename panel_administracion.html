@@ -167,12 +167,12 @@
     <div class="app-container">
         <aside class="main-sidebar animate-fade" id="mainSidebar">
             <nav class="nav-menu p-3">
-                <!-- Redirección del Portal Ciudadano RAC a Pantalla Principal -->
                 <a href="https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/pantalla_principal.html" class="nav-link-mre mb-4">
                     <i data-lucide="user-round" style="width: 18px;"></i> <span>Portal del Ciudadano (RAC)</span>
                 </a>
                 
-                <div class="nav-section">
+                <!-- SECCIÓN ADMINISTRACIÓN -->
+                <div class="nav-section mb-3">
                     <button class="nav-section-toggle px-3 mb-2 d-flex align-items-center justify-content-between w-100 border-0 bg-transparent text-muted fw-bold uppercase p-0" 
                             style="font-size: 0.7rem; letter-spacing: 1.2px;" 
                             onclick="toggleNavSection('adminSubmenu', this)">
@@ -210,6 +210,29 @@
                         </a>
                         <a href="https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/portal_funcionario.html" class="nav-link-mre">
                             <i data-lucide="briefcase" style="width: 18px;"></i> <span>Portal del Funcionario</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN REPORTES -->
+                <div class="nav-section">
+                    <button class="nav-section-toggle px-3 mb-2 d-flex align-items-center justify-content-between w-100 border-0 bg-transparent text-muted fw-bold uppercase p-0" 
+                            style="font-size: 0.7rem; letter-spacing: 1.2px;" 
+                            onclick="toggleNavSection('reportsSubmenu', this)">
+                        <span>Reportes</span>
+                        <i data-lucide="chevron-down" class="section-chevron" style="width: 14px;"></i>
+                    </button>
+                    
+                    <div id="reportsSubmenu" class="nav-submenu">
+                        <a href="https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/reporte_rendicion_ingresos.html" class="nav-link-mre">
+                            <i data-lucide="file-text" style="width: 18px;"></i> <span>Rendicion de comprobante de ingresos</span>
+                        </a>
+                        <!-- Opción sin icono -->
+                        <a href="https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/reporte_extracto_bcp.html" class="nav-link-mre">
+                            <span>Extracto del BCP</span>
+                        </a>
+                        <a href="https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/reporte_deposito_recaudaciones.html" class="nav-link-mre">
+                            <i data-lucide="file-text" style="width: 18px;"></i> <span>Deposito de las recaudaciones</span>
                         </a>
                     </div>
                 </div>
