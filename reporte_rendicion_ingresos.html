@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rendición de Comprobantes de Ingresos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap');
+
+        :root {
+            --border-black: #000000;
+            --bg-gray: #f3f4f6;
+            --table-header-bg: #e5e5e5;
+        }
+
+        body {
+            font-family: 'Arimo', Arial, sans-serif;
+            background-color: var(--bg-gray);
+            -webkit-print-color-adjust: exact;
+            color: #000;
+        }
+
+        .sheet {
+            background: white;
+            width: 297mm; /* A4 Landscape */
+            height: 210mm; /* A4 Landscape */
+            margin: 2rem auto;
+            padding: 10mm 10mm; /* Reduced padding for density */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Prevent spillover in preview */
+        }
+
+        /* Typography */
+        .header-org {
+            font-size: 9pt;
+            font-weight: 400;
+            text-transform: uppercase;
+            line-height: 1.1;
+        }
+
+        .header-title {
+            font-size: 12pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            text-align: center;
+            margin-top: 5px;
+            margin-bottom: 10px;
+        }
+
+        .meta-label {
+            font-size: 8pt;
+            font-weight: 400;
+            color: #000;
+        }
+
+        .meta-value {
+            font-size: 8pt;
+            font-weight: 700;
+        }
+
+        /* Table Styling */
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #000;
+            font-size: 6pt; /* Very small font for high density */
+        }
+
+        .report-table th {
+            background-color: #d1d5db; /* Gray-300 matches image grey header */
+            border: 1px solid #000;
+            padding: 2px 1px;
+            font-weight: 700;
+            text-align: center;
+            vertical-align: middle;
+            text-transform: uppercase;
+            line-height: 1;
+        }
+
+        .report-table td {
+            border: 1px solid #000;
+            padding: 2px 2px;
+            vertical-align: middle;
+            line-height: 1;
+        }
+
+        .col-text-center { text-align: center; }
+        .col-text-left { text-align: left; }
+        .col-number { 
+            text-align: right; 
+            font-family: 'Roboto Mono', monospace; 
+            letter-spacing: -0.5px;
+        }
+
+        /* Footer */
+        .footer-text {
+            font-size: 7pt;
+            font-family: 'Arimo', sans-serif;
+            color: #4b5563;
+        }
+
+        /* Print Settings */
+        @page {
+            size: landscape;
+            margin: 5mm;
+        }
+
+        @media print {
+            body { background: none; }
+            .sheet {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 5mm;
+                box-shadow: none;
+                border: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sheet">
+        
+        <!-- Header Section -->
+        <header class="mb-2">
+            <div class="flex justify-between items-start">
+                <!-- Left: Ministry Info -->
+                <div class="w-1/3 header-org text-left">
+                    MINISTERIO DE HACIENDA<br>
+                    SUB-SRIA. DE ESTADO DE ADM. FINANCIERA<br>
+                    DIRECCIÓN GENERAL DEL TESORO PÚBLICO
+                </div>
+                
+                <!-- Right: Date & Logo -->
+                <div class="w-1/3 text-right flex flex-col items-end">
+                    <span class="text-[8pt] font-bold mb-1">Asunción, 7 de enero de 2026</span>
+                    <!-- Logo SIL Mockup -->
+                    <div class="flex items-center">
+                         <div class="flex flex-col items-end mr-1">
+                            <span class="font-bold text-2xl italic leading-none" style="font-family: serif;">SIL</span>
+                            <span class="text-[5px] uppercase">Sistema Integral de Legalizaciones</span>
+                         </div>
+                         <!-- Abstract Icon -->
+                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="black"/>
+                            <path d="M2 17L12 22L22 17" stroke="black" stroke-width="2"/>
+                            <path d="M2 12L12 17L22 12" stroke="black" stroke-width="2"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <h1 class="header-title">RENDICIÓN DE COMPROBANTES DE INGRESOS</h1>
+            
+            <!-- Context Rows -->
+            <div class="flex justify-between items-end border-b border-black pb-1 mb-1">
+                <div class="w-2/3">
+                    <div class="flex">
+                        <span class="meta-label mr-1">CORRESPONDIENTE AL MES DE:</span>
+                        <span class="meta-value">diciembre del 01/12/2025 al 31/12/2025</span>
+                    </div>
+                    <div class="flex mt-1">
+                        <span class="meta-label mr-1">Sucursal SIL:</span>
+                        <span class="meta-value">Legalizaciones Central</span>
+                    </div>
+                </div>
+                <div class="w-1/3 text-right">
+                    <div class="flex justify-end">
+                        <span class="meta-label mr-1">INSTITUCIÓN:</span>
+                        <span class="meta-value">MINISTERIO DE RELACIONES EXTERIORES</span>
+                    </div>
+                    <div class="flex justify-end">
+                        <span class="meta-label mr-1">DEPENDENCIA:</span>
+                        <span class="meta-value">DIRECCIÓN DE LEGALIZACIONES</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Data Table -->
+        <div class="flex-grow overflow-hidden">
+            <table class="report-table">
+                <thead>
+                    <!-- Header Row 1 -->
+                    <tr>
+                        <th rowspan="2" class="w-[5%]">DESCRIPCION<br>DE<br>COMPROBANTE</th>
+                        <th rowspan="2" class="w-[5%]">FECHA DE<br>EXPEDICION<br>DEL<br>COMPROBANTE</th>
+                        <th rowspan="2" class="w-[4%]">CONCEPTO</th>
+                        <th rowspan="2" class="w-[2%]">SERIE</th>
+                        <th colspan="2" class="w-[8%]">NUMERACIÓN DE<br>COMPROBANTES<br>UTILIZADOS</th>
+                        
+                        <!-- LEY 1635 Group -->
+                        <th colspan="3" class="w-[18%]">LEY 1635</th>
+                        
+                        <!-- REPOSICION CONSULAR Group -->
+                        <th colspan="3" class="w-[18%]">REPOSICION CONSULAR</th>
+                        
+                        <!-- TOTALS Group -->
+                        <th rowspan="2" class="w-[6%]">TOTAL<br>1000009480776</th>
+                        <th rowspan="2" class="w-[6%]">TOTAL PI<br>1000009480776</th>
+                        <th rowspan="2" class="w-[6%]">TOTAL P/ 063<br>(B+E)<br>G</th>
+                        <th rowspan="2" class="w-[6%]">MULTAS<br>CTA.<br>100000948079<br>H</th>
+                        <th rowspan="2" class="w-[6%]">TOTAL<br>(A+D+H)</th>
+                    </tr>
+                    
+                    <!-- Header Row 2 (Sub-headers) -->
+                    <tr>
+                        <!-- Numeracion Sub -->
+                        <th>DESDE</th>
+                        <th>HASTA</th>
+                        
+                        <!-- LEY 1635 Sub -->
+                        <th>CTA<br>1000009480776<br>A</th>
+                        <th>P/ CTA 063<br>B</th>
+                        <th>P/ CTA<br>1000009480776<br>(A-B) C</th>
+                        
+                        <!-- Reposicion Sub -->
+                        <th>CTA<br>1000009480776<br>D</th>
+                        <th>P/ CTA<br>063<br>E</th>
+                        <th>P/ CTA<br>1000009480776<br>(D-E) F</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Row 1 -->
+                    <tr>
+                        <td class="col-text-left">HSSYC</td>
+                        <td class="col-text-center">01/12/2025</td>
+                        <td class="col-text-left">VARIOS</td>
+                        <td class="col-text-center">EL</td>
+                        <td class="col-number">2.866.261</td>
+                        <td class="col-number">2.866.300</td>
+                        <td class="col-number">3.456.500,00</td>
+                        <td class="col-number">172.825,00</td>
+                        <td class="col-number">3.283.675,00</td>
+                        <td class="col-number">0,00</td>
+                        <td class="col-number">0,00</td>
+                        <td class="col-number">0,00</td>
+                        <td class="col-number">3.456.500,00</td>
+                        <td class="col-number">3.283.675,00</td>
+                        <td class="col-number">172.825,00</td>
+                        <td class="col-number">0</td>
+                        <td class="col-number">3.456.500</td>
+                    </tr>
+                    
+                    <!-- Row 2 -->
+                    <tr>
+                        <td class="col-text-left">HSSYC</td>
+                        <td class="col-text-center">01/12/2025</td>
+                        <td class="col-text-left">VARIOS</td>
+                        <td class="col-text-center">EL</td>
+                        <td class="col-number">2.866.410</td>
+                        <td class="col-number">2.866.495</td>
+                        <td class="col-number">17.672.750,00</td>
+                        <td class="col-number">883.637,50</td>
+                        <td class="col-number">16.789.112,50</td>
+                        <td class="col-number">0,00</td>
+                        <td class="col-number">0,00</td>
+                        <td class="col-number">0,00</td>
+                        <td class="col-number">17.672.750,00</td>
+                        <td class="col-number">16.789.112,50</td>
+                        <td class="col-number">883.637,50</td>
+                        <td class="col-number">0</td>
+                        <td class="col-number">17.672.750</td>
+                    </tr>
+
+                    <!-- Row 3 -->
+                    <tr>
+                        <td class="col-text-left">HSSYC</td>
+                        <td class="col-text-center">01/12/2025</td>
+                        <td class="col-text-left">VARIOS</td>
+                        <td class="col-text-center">EL</td>
+                        <td class="col-number">2.866.573</td>
+                        <td class="col-number">2.866.577</td>
+                        <td class="col-number">1.115.000,00</td>
+                        <td class="col-number">55.750,00</td>
+                        <td class="col-number">1.059.250,00</td>
+                        <td class="col-number">0,00</td>
+                        <td class="col-number">0,00</td>
+                        <td class="col-number">0,00</td>
+                        <td class="col-number">1.115.000,00</td>
+                        <td class="col-number">1.059.250,00</td>
+                        <td class="col-number">55.750,00</td>
+                        <td class="col-number">0</td>
+                        <td class="col-number">1.115.000</td>
+                    </tr>
+
+                    <!-- Row 4 -->
+                    <tr>
+                        <td class="col-text-left">HSSYC</td>
+                        <td class="col-text-center">01/12/2025</td>
+                        <td class="col-text-left">VARIOS</td>
+                        <td class="col-text-center">EL</td>
+                        <td class="col-number">2.866.643</td>
+                        <td class="col-number">2.866.700</td>
+                        <td class="col-number">3.512.250,00</td>
+                        <td class="col-number">175.612,50</td>
+                        <td class="col-number">3.336.637,50</td>
+                        <td class="col-number">0,00</td>
+                        <td class="col-number">0,00</td>
+                        <td class="col-number">0,00</td>
+                        <td class="col-number">3.512.250,00</td>
+                        <td class="col-number">3.336.637,50</td>
+                        <td class="col-number">175.612,50</td>
+                        <td class="col-number">0</td>
+                        <td class="col-number">3.512.250</td>
+                    </tr>
+
+                    <!-- Row 5 -->
+                    <tr>
+                        <td class="col-text-left">HSSYC</td>
+                        <td class="col-text-center">01/12/2025</td>
+                        <td class="col-text-left">VARIOS</td>
+                        <td class="col-text-center">EL</td>
+                        <td class="col-number">2.866.717</td>
+                        <td class="col-number">2.866.750</td>
+                        <td class="col-number">6.244.000,00</td>
+                        <td class="col-number">312.200,00</td>
+                        <td class="col-number">5.931.800,00</td>
+                        <td class="col-number">0,00</td>
+                        <td class="col-number">0,00</td>
+                        <td class="col-number">0,00</td>
+                        <td class="col-number">6.244.000,00</td>
+                        <td class="col-number">5.931.800,00</td>
+                        <td class="col-number">312.200,00</td>
+                        <td class="col-number">0</td>
+                        <td class="col-number">6.244.000</td>
+                    </tr>
+                    
+                    <!-- Row 6 -->
+                    <tr>
+                        <td class="col-text-left">HSSYC</td>
+                        <td class="col-text-center">01/12/2025</td>
+                        <td class="col-text-left">VARIOS</td>
+                        <td class="col-text-center">EL</td>
+                        <td class="col-number">2.866.951</td>
+                        <td class="col-number">2.867.074</td>
+                        <td class="col-number">24.474.250,00</td>
+                        <td class="col-number">1.223.712,50</td>
+                        <td class="col-number">23.250.537,50</td>
+                        <td class="col-number">0,00</td>
+                        <td class="col-number">0,00</td>
+                        <td class="col-number">0,00</td>
+                        <td class="col-number">24.474.250,00</td>
+                        <td class="col-number">23.250.537,50</td>
+                        <td class="col-number">1.223.712,50</td>
+                        <td class="col-number">0</td>
+                        <td class="col-number">24.474.250</td>
+                    </tr>
+
+                    <!-- Row 7 -->
+                    <tr>
+                        <td class="col-text-left">HSSYC</td>
+                        <td class="col-text-center">01/12/2025</td>
+                        <td class="col-text-left">VARIOS</td>
+                        <td class="col-text-center">EL</td>
+                        <td class="col-number">2.867.201</td>
+                        <td class="col-number">2.867.257</td>
+                        <td class="col-number">3.233.500,00</td>
+                        <td class="col-number">161.675,00</td>
+                        <td class="col-number">3.071.825,00</td>
+                        <td class="col-number">0,00</td>
+                        <td class="col-number">0,00</td>
+                        <td class="col-number">0,00</td>
+                        <td class="col-number">3.233.500,00</td>
+                        <td class="col-number">3.071.825,00</td>
+                        <td class="col-number">161.675,00</td>
+                        <td class="col-number">0</td>
+                        <td class="col-number">3.233.500</td>
+                    </tr>
+
+                    <!-- Row 8 -->
+                    <tr>
+                        <td class="col-text-left">HSSYC</td>
+                        <td class="col-text-center">02/12/2025</td>
+                        <td class="col-text-left">VARIOS</td>
+                        <td class="col-text-center">EL</td>
+                        <td class="col-number">2.866.496</td>
+                        <td class="col-number">2.866.500</td>
+                        <td class="col-number">947.750,00</td>
+                        <td class="col-number">47.387,50</td>
+                        <td class="col-number">900.362,50</td>
+                        <td class="col-number">0,00</td>
+                        <td class="col-number">0,00</td>
+                        <td class="col-number">0,00</td>
+                        <td class="col-number">947.750,00</td>
+                        <td class="col-number">900.362,50</td>
+                        <td class="col-number">47.387,50</td>
+                        <td class="col-number">0</td>
+                        <td class="col-number">947.750</td>
+                    </tr>
+
+                     <!-- Row 9 -->
+                     <tr>
+                        <td class="col-text-left">HSSYC</td>
+                        <td class="col-text-center">02/12/2025</td>
+                        <td class="col-text-left">VARIOS</td>
+                        <td class="col-text-center">EL</td>
+                        <td class="col-number">2.866.751</td>
+                        <td class="col-number">2.866.845</td>
+                        <td class="col-number">19.958.500,00</td>
+                        <td class="col-number">997.925,00</td>
+                        <td class="col-number">18.960.575,00</td>
+                        <td class="col-number">0,00</td>
+                        <td class="col-number">0,00</td>
+                        <td class="col-number">0,00</td>
+                        <td class="col-number">19.958.500,00</td>
+                        <td class="col-number">18.960.575,00</td>
+                        <td class="col-number">997.925,00</td>
+                        <td class="col-number">0</td>
+                        <td class="col-number">19.958.500</td>
+                    </tr>
+
+                     <!-- Row 10 Example with Reposition values -->
+                     <tr>
+                        <td class="col-text-left">HSSYC</td>
+                        <td class="col-text-center">02/12/2025</td>
+                        <td class="col-text-left">VARIOS</td>
+                        <td class="col-text-center">EL</td>
+                        <td class="col-number">2.866.847</td>
+                        <td class="col-number">2.866.919</td>
+                        <td class="col-number">14.216.250,00</td>
+                        <td class="col-number">710.812,50</td>
+                        <td class="col-number">13.505.437,50</td>
+                        <td class="col-number">112.470,00</td>
+                        <td class="col-number">5.623,50</td>
+                        <td class="col-number">106.846,50</td>
+                        <td class="col-number">14.328.720,00</td>
+                        <td class="col-number">13.612.284,00</td>
+                        <td class="col-number">716.436,10</td>
+                        <td class="col-number">0</td>
+                        <td class="col-number">14.328.720</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-auto pt-2 flex justify-between items-end footer-text">
+            <div class="italic">
+                Impreso por JUAN C. FERREIRA 7/1/2026 16:20:29
+            </div>
+            <div class="uppercase text-center">
+                HSSYC: HOJAS SERIADAS DE SEGURIDAD Y COMPROBANTES DE INGRESO
+            </div>
+            <div>
+                Página 1 de 8
+            </div>
+        </footer>
+
+    </div>
+
+</body>
+</html>
