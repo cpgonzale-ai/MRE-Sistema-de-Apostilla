@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&display=swap');
 
         :root {
             --border-color: #000000;
@@ -64,13 +65,69 @@
         .section-header {
             text-align: center;
             font-weight: 700;
-            background-color: #e5e5e5; /* Simulate slight tint if needed, usually white in scan */
+            background-color: #e5e5e5;
         }
 
         .disclaimer-text {
             font-size: 8pt;
             text-align: justify;
             line-height: 1.1;
+        }
+
+        /* Sello Institucional SVG Container */
+        .digital-stamp {
+            /* Width/Height controlled by SVG responsiveness, max-width constrained */
+            width: 130px; 
+            height: 130px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: rotate(-5deg); /* Slight natural rotation */
+            opacity: 0.9;
+        }
+
+        /* Bloque de Firma Digital Estándar Paraguay (PKI Box) - BLACK MONOCHROME UPDATE */
+        .pki-signature-box {
+            border: 2px solid #000000;
+            background-color: #ffffff;
+            padding: 4px;
+            display: inline-flex;
+            align-items: center;
+            width: 95%;
+            max-width: 280px;
+            margin: 0 auto;
+        }
+
+        .pki-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #e5e5e5; /* Light Gray */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+            color: #000000;
+        }
+
+        .pki-details {
+            text-align: left;
+            font-family: 'Roboto Mono', monospace;
+            line-height: 1.1;
+        }
+        
+        .pki-name {
+            font-size: 9pt;
+            font-weight: 700;
+            color: #000000;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .pki-meta {
+            font-size: 6pt;
+            color: #000000;
+            display: block;
         }
 
         /* Print Override */
@@ -81,6 +138,10 @@
                 margin: 0;
                 padding: 10mm;
                 box-shadow: none;
+            }
+            .pki-signature-box, .digital-stamp {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
         }
     </style>
@@ -221,19 +282,102 @@
                 </td>
             </tr>
 
-            <!-- 9. Seal & 10. Signature -->
+            <!-- 9. Seal & 10. Signature (UPDATED COLOR: BLACK) -->
             <tr>
-                <td colspan="2" class="w-1/2 h-32 align-bottom pb-4">
-                    <span class="label-text block">
+                <!-- Section 9: Sello -->
+                <td colspan="2" class="w-1/2 align-top pb-4 relative h-40">
+                    <span class="label-text block mb-2">
                         9. Sello / timbre
                         <span class="sub-label">(seal/stamp / sceau/timbre )</span>
                     </span>
-                </td>
-                <td colspan="2" class="w-1/2 h-32 align-bottom pb-4 pl-4 text-center">
-                    <div class="mb-8">
-                        <span class="value-text font-bold block uppercase mb-6">CYNTHIA BRAY</span>
+                    
+                    <!-- Sello Institucional SVG (Vectorized for quality - Black) -->
+                    <div class="w-full flex justify-center mt-4">
+                        <div class="digital-stamp">
+                             <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <path id="textCurveTop" d="M 30,100 A 70,70 0 1,1 170,100" />
+                                    <path id="textCurveBottom" d="M 35,100 A 65,65 0 0,0 165,100" />
+                                </defs>
+
+                                <!-- Outer Rings -->
+                                <circle cx="100" cy="100" r="95" fill="none" stroke="#000000" stroke-width="3"/>
+                                <circle cx="100" cy="100" r="88" fill="none" stroke="#000000" stroke-width="1.5"/>
+                                
+                                <!-- Curved Text Top -->
+            <!-- 9. Seal & 10. Signature (UPDATED: E-SEAL FOR MINISTRY) -->
+            <tr>
+                <!-- Section 9: Sello (Modified to Electronic Seal Style) -->
+                <td colspan="2" class="w-1/2 align-top pb-4 pl-4 relative h-40">
+                    <!-- Text removed as requested -->
+                    
+                    <!-- Sello Electrónico Institucional (PKI Style) -->
+                    <div class="pki-signature-box shadow-sm mt-6">
+                         <!-- Icono de Institución -->
+                         <div class="pki-icon">
+                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z" />
+                             </svg>
+                         </div>
+                         <div class="pki-details">
+                             <span class="pki-meta">Sello Digital Institucional:</span>
+                             <span class="pki-name">MINISTERIO DE RELACIONES EXTERIORES</span>
+                             <span class="pki-meta">Fecha: 2026.01.02 14:58:03 -03'00'</span>
+                             <span class="pki-meta">Autenticidad: VERIFICADA</span>
+                         </div>
                     </div>
-                    <span class="label-text block text-left">
+                </td>
+
+                <!-- Section 10: Firma -->
+                <td colspan="2" class="w-1/2 align-top pb-4 pl-4 text-center relative h-40">
+                    <div class="mb-2 mt-4">
+                        <!-- Nombre en texto plano (como en documento original) -->
+                        <span class="value-text font-bold block uppercase mb-3">CYNTHIA BRAY</span>
+                    </div>
+                    
+                    <!-- Representación Visual de Firma Electrónica Cualificada -->
+                    <div class="pki-signature-box shadow-sm">
+                         <!-- Icono QR de verificación -->
+                         <div class="pki-icon" style="padding: 4px;">
+                             <svg viewBox="0 0 33 33" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+                                <rect x="0" y="0" width="33" height="33" fill="white"/>
+                                <!-- Finder Patterns (Corners) -->
+                                <rect x="3" y="3" width="9" height="9" fill="black"/>
+                                <rect x="4" y="4" width="7" height="7" fill="white"/>
+                                <rect x="5" y="5" width="5" height="5" fill="black"/>
+                                
+                                <rect x="21" y="3" width="9" height="9" fill="black"/>
+                                <rect x="22" y="4" width="7" height="7" fill="white"/>
+                                <rect x="23" y="5" width="5" height="5" fill="black"/>
+                                
+                                <rect x="3" y="21" width="9" height="9" fill="black"/>
+                                <rect x="4" y="22" width="7" height="7" fill="white"/>
+                                <rect x="5" y="23" width="5" height="5" fill="black"/>
+                                
+                                <!-- Random Data Matrix Simulation -->
+                                <rect x="15" y="3" width="3" height="3" fill="black"/>
+                                <rect x="15" y="9" width="3" height="3" fill="black"/>
+                                <rect x="3" y="15" width="3" height="3" fill="black"/>
+                                <rect x="9" y="15" width="3" height="3" fill="black"/>
+                                <rect x="15" y="15" width="9" height="3" fill="black"/>
+                                <rect x="21" y="15" width="3" height="3" fill="black"/>
+                                <rect x="27" y="15" width="3" height="3" fill="black"/>
+                                <rect x="15" y="21" width="3" height="3" fill="black"/>
+                                <rect x="21" y="21" width="3" height="3" fill="black"/>
+                                <rect x="27" y="21" width="3" height="3" fill="black"/>
+                                <rect x="15" y="27" width="3" height="3" fill="black"/>
+                                <rect x="21" y="27" width="9" height="3" fill="black"/>
+                             </svg>
+                         </div>
+                         <div class="pki-details">
+                             <span class="pki-meta">Firmado digitalmente por:</span>
+                             <span class="pki-name">CYNTHIA BRAY</span>
+                             <span class="pki-meta">Fecha: 2026.01.02 14:58:03 -03'00'</span>
+                             <span class="pki-meta">Ubicación: Asunción, Paraguay</span>
+                         </div>
+                    </div>
+
+                    <span class="label-text block text-left absolute bottom-2 left-4">
                         10. Firma:
                         <span class="sub-label">(signature)</span>
                     </span>
