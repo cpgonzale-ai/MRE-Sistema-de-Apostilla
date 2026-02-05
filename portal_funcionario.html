@@ -249,6 +249,10 @@
             display: flex; justify-content: space-between; align-items: center; margin-top: auto;
         }
 
+        /* --- VALIDATION --- */
+        .invalid-feedback { display: none; width: 100%; margin-top: .25rem; font-size: .875em; color: #dc3545; font-weight: bold; }
+        .is-invalid ~ .invalid-feedback { display: block; }
+
         @media (max-width: 992px) {
             .split-screen-container { flex-direction: column; height: auto; }
             .split-side-a { height: 400px; }
@@ -320,7 +324,7 @@
                     <i data-lucide="file-badge" style="width:18px"></i> <span>Gestión de Apostilla</span>
                 </a>
                 <a href="#" class="nav-link-mre" onclick="event.preventDefault()">
-                    <i data-lucide="users" style="width:18px"></i> <span>Configuración Usuarios</span>
+                    <i data-lucide="users" style="width:18px"></i> <span>Gestión de Usuarios</span>
                 </a>
                 <a href="#" class="nav-link-mre" onclick="event.preventDefault()">
                     <i data-lucide="bar-chart-3" style="width:18px"></i> <span>Reportes</span>
@@ -382,6 +386,13 @@
                                     <span class="fw-bold text-navy">Apostillas y Legalizaciones</span>
                                 </div>
                                 <span class="fs-5 fw-black text-dark">02</span>
+                            </div>
+                            <div class="status-btn" id="btn-archivado" onclick="filterTable('Archivado', this)">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="bg-secondary-subtle p-2 rounded-circle text-secondary"><i data-lucide="archive" style="width: 16px;"></i></div>
+                                    <span class="fw-bold text-navy">Archivadas</span>
+                                </div>
+                                <span class="fs-5 fw-black text-secondary">03</span>
                             </div>
                         </div>
                     </div>
@@ -495,6 +506,17 @@
                                         <div class="p-3 bg-light border rounded-3 border-dashed" style="border-style: dashed !important; border-color: #cbd5e1 !important;">
                                             <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2 text-primary">Adjuntar Documento (PDF)</label>
                                             <input type="file" class="form-control-mre" id="reqFile" accept=".pdf">
+                                            
+                                            <!-- NUEVO TEXTO LLAMATIVO DE REQUISITOS (FONDO BLANCO, BORDE AZUL, TEXTO AZUL) -->
+                                            <div class="mt-3 p-3 bg-white border rounded text-center shadow-sm" style="border-color: var(--mre-blue) !important; border-width: 1px; border-style: solid;">
+                                                <h6 class="fw-black text-uppercase mb-2" style="color: var(--mre-blue); font-size: 0.9rem; letter-spacing: 0.5px;">
+                                                    <i data-lucide="alert-circle" style="width:18px; vertical-align: text-bottom; margin-right: 5px;"></i> Requisito Obligatorio
+                                                </h6>
+                                                <div class="d-flex flex-column gap-1">
+                                                    <span class="fw-bold text-dark" style="font-size: 0.9rem;">El documento debe tener firma electrónica o verificable.</span>
+                                                    <span class="fw-bold text-dark" style="font-size: 0.9rem;">Formato .pdf, Máx 50MB.</span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -517,7 +539,8 @@
                                         </div>
                                     </div>
                                     
-                                    <div id="additionalDataTabs" class="col-12 mt-4 hidden animate-fade">
+                                    <!-- MODIFICADO: Agregado z-index explícito para evitar solapamiento del dropdown con el siguiente bloque -->
+                                    <div id="additionalDataTabs" class="col-12 mt-4 hidden animate-fade" style="position: relative; z-index: 50;">
                                         <div class="p-4 bg-light border rounded-3">
                                             <h6 class="fw-black text-navy small mb-3 border-bottom pb-2">Datos del Documento Seleccionado</h6>
                                             <div class="row g-3">
@@ -548,6 +571,30 @@
                                                         </div>
                                                         <input type="hidden" id="reqOfficial">
                                                     </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- NUEVO BLOQUE: REQUISITOS ANTECEDENTES POLICIALES -->
+                                    <!-- MODIFICADO: z-index menor para quedar por debajo del dropdown anterior -->
+                                    <div id="policeRecordRequirements" class="col-12 mt-3 hidden animate-fade" style="position: relative; z-index: 10;">
+                                        <div class="p-4 bg-white border border-warning-subtle rounded-3 shadow-sm" style="border-left: 4px solid #f59e0b !important;">
+                                            <h6 class="fw-black text-navy small mb-3 border-bottom pb-2 d-flex align-items-center gap-2">
+                                                <i data-lucide="alert-circle" class="text-warning-emphasis" style="width:16px"></i> 
+                                                Requisitos Adicionales Obligatorios
+                                            </h6>
+                                            <div class="alert alert-light border small text-muted mb-3">
+                                                Para el trámite de <strong>Antecedentes Policiales</strong>, es indispensable adjuntar la documentación de respaldo del titular.
+                                            </div>
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <label class="form-label text-muted small fw-bold text-uppercase">Fotocopia de Cédula de Identidad <span class="text-danger">*</span></label>
+                                                    <input type="file" class="form-control-mre" id="reqFileCI" accept=".pdf,.jpg,.jpeg,.png">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label text-muted small fw-bold text-uppercase">Certificado de Vida y Residencia <span class="text-danger">*</span></label>
+                                                    <input type="file" class="form-control-mre" id="reqFileVidaResidencia" accept=".pdf,.jpg,.jpeg,.png">
                                                 </div>
                                             </div>
                                         </div>
@@ -668,7 +715,7 @@
                             <div class="d-inline-flex bg-success p-3 rounded-circle text-white shadow mb-3">
                                 <i data-lucide="check" style="width:40px; height:40px;"></i>
                             </div>
-                            <h3 class="fw-black text-navy">Liquidación Generada</h3>
+                            <h3 class="fw-black text-navy">¡Pago Realizado!</h3>
                             <p class="text-muted">La transacción ha sido registrada correctamente.</p>
                         </div>
 
@@ -687,10 +734,10 @@
                                         </ul>
 
                                         <div class="mt-auto d-grid gap-2 col-md-10 mx-auto">
-                                            <button class="btn btn-outline-dark fw-bold py-2" onclick="alert('Imprimiendo comprobante...')">
+                                            <button class="btn btn-outline-dark fw-bold py-2" onclick="window.open('https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/comprobante_electronico.html', '_blank')">
                                                 <i data-lucide="printer" style="width:16px; margin-right:5px"></i> Imprimir Comprobante
                                             </button>
-                                            <button class="btn btn-main py-2" onclick="alert('Imprimiendo etiquetas...')">
+                                            <button class="btn btn-main py-2" onclick="window.open('https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/apostilla.html', '_blank')">
                                                 <i data-lucide="qr-code" style="width:16px; margin-right:5px"></i> Imprimir Apostillas
                                             </button>
                                             <button class="btn btn-light text-muted fw-bold mt-2" onclick="backToDashboard()">
@@ -797,6 +844,24 @@
         </div>
     </div>
 
+    <!-- NUEVO: Modal Confirmación Desbloqueo (Supervisor) -->
+    <div class="mre-popup-overlay" id="unlockConfirmModal">
+        <div class="mre-popup">
+            <h5 class="fw-black text-navy mb-3 d-flex align-items-center gap-2">
+                <span class="text-danger"><i data-lucide="lock-open"></i></span> Confirmar Desbloqueo
+            </h5>
+            <div class="alert alert-warning border-warning-subtle small mb-3">
+                <strong>Atención:</strong> Está a punto de liberar una solicitud asignada a otro funcionario.
+                <br>Esta acción permitirá que otros operadores tomen la solicitud inmediatamente.
+            </div>
+            <p class="small text-muted mb-4">¿Está seguro de realizar esta acción?</p>
+            <div class="d-flex gap-2 justify-content-end">
+                <button class="btn btn-light border fw-bold" onclick="document.getElementById('unlockConfirmModal').style.display='none'">Cancelar</button>
+                <button class="btn btn-main-danger fw-bold border-0 px-4" onclick="processUnlock()">Confirmar Desbloqueo</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Aprobación -->
     <div class="mre-popup-overlay" id="approveModal">
         <div class="mre-popup">
@@ -826,6 +891,18 @@
                 <i data-lucide="info" style="width:14px; margin-right:5px; vertical-align:text-bottom"></i>
                 Al exonerar, el costo del trámite se actualizará a <strong>Gs. 0</strong>. Este cambio requiere una justificación obligatoria para auditoría.
             </div>
+            
+            <!-- NUEVO: Campo Ley de Excepción -->
+            <div class="mb-3">
+                <label class="form-label small fw-bold text-uppercase">Ley de Excepción <span class="text-danger">*</span></label>
+                <select class="form-select" id="exonerationLaw" onchange="this.classList.remove('is-invalid')">
+                    <option value="">Seleccione...</option>
+                    <option value="Resol Nº 162">Resol Nº 162 Fuero de pobreza para documentos personales de paraguayos</option>
+                    <option value="Ley Nº 431">Ley Nº 431 Art. 20 Excombatientes y esposas</option>
+                </select>
+                <div class="invalid-feedback fw-bold">Debe seleccionar una ley de excepción.</div>
+            </div>
+
             <div class="mb-3">
                 <label class="form-label small fw-bold text-uppercase">Justificación <span class="text-danger">*</span></label>
                 <!-- AGREGADO: oninput para limpiar error y div invalid-feedback -->
@@ -931,6 +1008,8 @@
             { id: '2026-10445', date: '21/01/2026 09:30', name: 'Ana Gómez', ci: '1.222.333', doc: 'Antecedentes Policiales', physicalNumber: 'PN-44120', signature: 'Ológrafa', country: 'Argentina', amount: 80100, status: 'Análisis', lockedBy: 'OtroFuncionario', origin: 'Web' },
             // NUEVO REGISTRO: Para que el perfil Externo vea 2 items (Firma Ológrafa + Estado Análisis)
             { id: '2026-10500', date: '22/01/2026 11:00', name: 'Lucia Fernandez', ci: '5.555.666', doc: 'Acta de Matrimonio', physicalNumber: 'RC-5544', signature: 'Ológrafa', country: 'Francia', amount: 80100, status: 'Análisis', lockedBy: null, origin: 'Web' },
+            // REGISTRO ARCHIVADO DE EJEMPLO
+            { id: '2025-99887', date: '15/12/2025 10:00', name: 'Roberto Carlos', ci: '3.333.111', doc: 'Título', physicalNumber: 'OLD-001', signature: 'Electrónica', country: 'Alemania', amount: 80100, status: 'Archivado', lockedBy: null, origin: 'Web' },
             
             { id: '2026-10448', date: '21/01/2026 10:05', name: 'Carlos Ruiz', ci: '3.444.555', doc: 'Título Universitario', physicalNumber: 'UNI-8812', signature: 'Electrónica', country: 'Alemania', amount: 80100, status: 'Análisis', lockedBy: null, origin: 'Web' },
             { id: '2026-10400', date: '19/01/2026 08:00', name: 'Maria Lopez', ci: '1.111.111', doc: 'Título', physicalNumber: 'UNI-4455', signature: 'Electrónica', country: 'Uruguay', amount: 80100, status: 'Devuelto', lockedBy: null, origin: 'Web' },
@@ -1115,272 +1194,6 @@
             `;
         }
 
-        function changeProfile(select) {
-            currentProfile = select.value;
-            
-            const btnDevuelto = document.getElementById('btn-devuelto');
-            const btnFinalizados = document.getElementById('btn-finalizados');
-            const btnCreate = document.getElementById('btn-create-request'); // Referencia al botón
-            const sidebar = document.getElementById('supervisorSidebar'); // Referencia a la barra lateral
-            
-            // Lógica para mostrar/ocultar barra lateral de supervisor
-            if (currentProfile === 'supervisor') {
-                sidebar.classList.remove('hidden');
-            } else {
-                sidebar.classList.add('hidden');
-            }
-
-            // Restricciones para funcionario externo
-            if (currentProfile === 'externo') {
-                btnDevuelto.classList.add('hidden');
-                btnFinalizados.classList.add('hidden');
-                if(btnCreate) btnCreate.classList.add('hidden'); // Ocultar botón crear
-                
-                // Si la vista actual es una de las prohibidas, volver a Análisis
-                if (currentStatus === 'Devuelto' || currentStatus === 'Finalizados') {
-                    filterTable('Análisis', document.getElementById('btn-analisis'));
-                } else {
-                    filterTable(currentStatus, document.querySelector('.status-btn.active'));
-                }
-            } else {
-                btnDevuelto.classList.remove('hidden');
-                btnFinalizados.classList.remove('hidden');
-                if(btnCreate) btnCreate.classList.remove('hidden'); // Mostrar botón crear
-                filterTable(currentStatus, document.querySelector('.status-btn.active'));
-            }
-        }
-
-        function filterTable(status, btn) {
-            currentStatus = status;
-            document.querySelectorAll('.status-btn').forEach(b => b.classList.remove('active'));
-            if(btn) btn.classList.add('active');
-
-            const thead = document.getElementById('tableHeadRow');
-            
-            // Lógica para mostrar columna Turno:
-            // Mostrar si el perfil no es ológrafo (es decir, maneja electrónicas) y no es bandeja histórica
-            // Esto cubre: Perfil Electrónico (todo) y Perfil Supervisor (filas electrónicas)
-            let showTurno = (currentProfile !== 'olografo') && (status !== 'Finalizados');
-
-            // CONFIGURACION DE COLUMNAS SEGUN ESTADO
-            if (status === 'Finalizados') {
-                // ACTUALIZADO: Se eliminaron las columnas 'Tipo' e 'Institución'
-                thead.innerHTML = `
-                    <th>Nro. Solicitud</th>
-                    <th class="text-center">Documento Final</th>
-                    <th class="text-center">Comprobante</th>
-                    <th>Fecha</th>
-                    <th>Titular</th>
-                    <th>CI Solicitante</th>
-                    <th>Nro. de Certificado</th>
-                    <th>Documento</th>
-                    <th>Tipo Firma</th>
-                    <th class="text-center">Acción</th>
-                `;
-            } else {
-                let checkCol = status === 'Aprobado' ? `<th class="text-center" style="width: 60px;"><input type="checkbox" class="form-check-input" onclick="toggleSelectAll(this)"></th>` : '';
-                let importeCol = status === 'Aprobado' ? `<th class="text-end">Importe</th>` : '';
-                
-                // Columna Turno condicional
-                let turnoCol = showTurno ? `<th>Nro Turno</th>` : '';
-
-                thead.innerHTML = `
-                    ${checkCol}
-                    ${turnoCol}
-                    <th>Nro. Solicitud</th>
-                    <th>Fecha</th>
-                    <th>Titular</th>
-                    <th>CI Solicitante</th>
-                    <th>Nro. de Certificado</th>
-                    <th>Documento</th>
-                    <th>Tipo Firma</th>
-                    ${importeCol}
-                    <th class="text-center">Acción</th>
-                `;
-            }
-
-            const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = '';
-
-            // Normalización de filtro por perfil
-            let filtered = requests.filter(r => r.status === status);
-            // Normalizar propiedad signature para filtrado seguro
-            filtered = filtered.filter(r => {
-                const sig = r.signature || r.signatureType || '';
-                if (currentProfile === 'olografo') return sig.includes('Ológrafa');
-                if (currentProfile === 'electronico') return sig.includes('Electrónica');
-                if (currentProfile === 'externo') return sig.includes('Ológrafa'); // Agregado: Externo solo ve Ológrafa
-                return true; // Supervisor ve todo
-            });
-
-            filtered.sort((a, b) => parseDateStr(a.date) - parseDateStr(b.date));
-            
-            let nextAvailableId = null;
-            const myLockedRequest = requests.find(r => r.lockedBy === 'Me');
-
-            if (currentProfile === 'electronico' && status === 'Análisis') {
-                const next = filtered.find(r => !r.lockedBy || r.lockedBy === 'Me');
-                if (next) nextAvailableId = next.id;
-            }
-
-            const batchActions = document.getElementById('batchActions');
-            batchActions.style.setProperty('display', (status === 'Aprobado' ? 'flex' : 'none'), 'important');
-
-            if (filtered.length === 0) {
-                // Ajustar colspan dinámicamente si se muestra turno
-                let colCount = 9; // Base count + 1 CI column
-                if (status === 'Finalizados') colCount = 10;
-                if (status === 'Aprobado') colCount = 11;
-                if (showTurno) colCount++; 
-
-                tbody.innerHTML = `<tr><td colspan="${colCount}" class="text-center py-5 text-muted">No hay registros en esta bandeja.</td></tr>`;
-                return;
-            }
-
-            // Contador para turnos electrónicos
-            let electronicCounter = 0;
-
-            filtered.forEach((req, index) => {
-                const sig = req.signature || req.signatureType || 'N/A';
-                // Si es firma electrónica, incrementamos el contador global de esta vista
-                if (sig.includes('Electrónica')) electronicCounter++;
-
-                let row = '';
-                if (status === 'Finalizados') {
-                    row = `
-                        <tr>
-                            <td class="fw-black text-navy p-3">${req.id}</td>
-                            <td class="text-center p-3"><button class="btn-ver-pago d-inline-flex align-items-center gap-2" onclick="alert('Descargando documento final...')"><i data-lucide="download" style="width:14px;"></i> ${req.type === 'Apostilla' ? 'Descargar Apostilla' : 'Descargar Legalización'}</button></td>
-                            <td class="text-center p-3"><i data-lucide="file-down" style="width:18px; cursor:pointer; color:var(--mre-blue)" title="Descargar Comprobante de Pago" onclick="generateReceiptPDF('${req.id}')"></i></td>
-                            <td class="small text-muted p-3">${req.date}</td>
-                            <td class="text-uppercase small fw-bold p-3">${req.name}</td>
-                            <td class="p-3 text-muted fw-bold">${req.ci || 'N/A'}</td>
-                            <td class="fw-bold text-primary p-3">${req.physicalNumber || '-'}</td>
-                            <td class="fw-bold text-navy p-3">${req.doc}</td>
-                            <td class="p-3"><span class="badge bg-light text-dark border">${sig}</span></td>
-                            <td class="text-center p-3"><button class="btn-ver-detalle" onclick="showRequestDetails('${req.id}')" title="Ver detalles completos">Ver Detalle</button></td>
-                        </tr>
-                    `;
-                } else {
-                    let checkCell = status === 'Aprobado' ? `<td class="text-center p-3"><input type="checkbox" class="form-check-input pay-check" value="${req.id}" checked></td>` : '';
-                    let importeCell = status === 'Aprobado' ? `<td class="text-end fw-black text-primary p-3">Gs. ${(req.amount || 0).toLocaleString('es-PY')}</td>` : '';
-                    
-                    // Lógica Celda de Turno
-                    let turnoCell = '';
-                    if (showTurno) {
-                        let turnoValue = '';
-                        // Mostrar número si es electrónica
-                        if (sig.includes('Electrónica')) {
-                            turnoValue = `#${electronicCounter}`;
-                        } else {
-                            // Si es ológrafa (visto por Supervisor), no lleva turno de cola digital
-                            turnoValue = '<span class="text-muted opacity-25">-</span>';
-                        }
-                        turnoCell = `<td class="fw-black text-primary p-3">${turnoValue}</td>`;
-                    }
-
-                    let rowClass = '';
-                    let isNext = false;
-                    const isTakenByMe = req.lockedBy === 'Me';
-                    const isLockedByOther = req.lockedBy === 'OtroFuncionario';
-                    
-                    if (status === 'Análisis') {
-                        if (isLockedByOther) {
-                            // MODIFICADO: Para Supervisor, NO aplicar estilo de bloqueo (opacidad)
-                            // para reflejar visualmente que tiene control administrativo ("no debe controlar").
-                            if (currentProfile !== 'supervisor') {
-                                rowClass = 'row-locked-other';
-                            }
-                        }
-                        else if (isTakenByMe) { isNext = true; rowClass = 'taken-by-me-highlight'; }
-                        else if (currentProfile === 'electronico' && req.id === nextAvailableId) { rowClass = 'next-turn-highlight'; isNext = true; }
-                    }
-
-                    let actionBtn = '';
-                    if (status === 'Análisis') {
-                        const hasOtherLocked = myLockedRequest && myLockedRequest.id !== req.id;
-                        let isDisabled = false;
-
-                        if (currentProfile === 'supervisor') {
-                            // LÓGICA DE CONTROL SUPERVISOR:
-                            // 1. "No debe controlar": Ignora si está bloqueado por otro (puede entrar y tomar).
-                            // 2. "Solo bloquear tomas... cuando ya tomó uno": hasOtherLocked bloquea el acceso.
-                            isDisabled = hasOtherLocked && !isTakenByMe;
-                        } else {
-                            // Lógica estándar para otros perfiles
-                            isDisabled = isLockedByOther || (currentProfile === 'electronico' && !isNext) || hasOtherLocked;
-                        }
-
-                        const titleText = hasOtherLocked ? "Ya tiene una solicitud en curso" : "Ver Detalle";
-                        const actionDisabled = !isTakenByMe;
-                        
-                        // Lógica para ocultar botón devolver a perfil externo
-                        let returnBtnHtml = '';
-                        if (currentProfile !== 'externo') {
-                            returnBtnHtml = `<button class="btn btn-sm btn-warning text-white" onclick="openReturnModal('${req.id}')" ${actionDisabled ? 'disabled' : ''} title="Devolver"><i data-lucide="rotate-ccw" style="width:14px"></i></button>`;
-                        }
-
-                        // Lógica para botón de desbloqueo (Solo Supervisor y si está bloqueado por otro)
-                        // Este botón permite liberar la solicitud sin tomarla.
-                        let unlockBtnHtml = '';
-                        if (isTakenByMe) {
-                            unlockBtnHtml = `<button class="btn btn-sm btn-outline-secondary" onclick="unlockRequest('${req.id}')" title="Desbloquear Solicitud"><i data-lucide="unlock" style="width:14px"></i></button>`;
-                        } else if (currentProfile === 'supervisor' && isLockedByOther) {
-                            unlockBtnHtml = `<button class="btn btn-sm btn-outline-danger border-danger text-danger" onclick="unlockRequest('${req.id}')" title="Desbloquear (Admin)"><i data-lucide="lock-open" style="width:14px"></i></button>`;
-                        }
-
-                        actionBtn = `<div class="d-flex gap-1 justify-content-center">
-                            <button class="btn btn-sm btn-primary" onclick="handleDetailClick('${req.id}')" ${isDisabled ? 'disabled' : ''} title="${titleText}"><i data-lucide="eye" style="width:14px"></i></button>
-                            <button class="btn btn-sm btn-success" onclick="openApproveModal('${req.id}')" ${actionDisabled ? 'disabled' : ''} title="Aprobar"><i data-lucide="check" style="width:14px"></i></button>
-                            ${returnBtnHtml}
-                            <button class="btn btn-sm btn-danger" onclick="openRejectModal('${req.id}')" ${actionDisabled ? 'disabled' : ''} title="Rechazar"><i data-lucide="x" style="width:14px"></i></button>
-                            ${unlockBtnHtml}
-                        </div>`;
-                    } else if (status === 'Aprobado') {
-                         // ACTUALIZADO: Ocultar botón exonerar si el importe es 0
-                         const val = req.amount !== undefined ? req.amount : 0;
-                         if (val === 0) {
-                             actionBtn = `<span class="badge bg-info text-white border-0">Exonerado</span>`;
-                         } else {
-                             // CAMBIO: Lógica ajustada para mostrar SOLO si es perfil supervisor
-                             actionBtn = currentProfile === 'supervisor' ? `<button class="btn-exonerate" onclick="exonerateRequest('${req.id}')">Exonerar</button>` : `<span class="badge bg-success">Listo para Pago</span>`;
-                         }
-                    } else if (status === 'Devuelto') {
-                        if (req.origin === 'Funcionario') {
-                             actionBtn = `<button class="btn btn-sm btn-warning text-dark fw-bold border-0 shadow-sm" onclick="completeRequest('${req.id}')"><i data-lucide="edit" style="width:14px; margin-right:4px"></i> Corregir</button>`;
-                        } else {
-                             actionBtn = `<span class="badge bg-warning text-dark">Pendiente Ciudadano</span>`;
-                        }
-                    } else if (status === 'Rechazado') {
-                         if (currentProfile === 'supervisor') {
-                             actionBtn = `<button class="btn btn-sm btn-outline-secondary fw-bold text-dark" onclick="reconsiderRequest('${req.id}')" title="Volver a Análisis"><i data-lucide="rotate-ccw" style="width:14px; margin-right:4px"></i> Reconsiderar</button>`;
-                         } else {
-                             actionBtn = `<span class="badge bg-danger">Rechazado</span>`;
-                         }
-                    }
-
-                    row = `
-                        <tr class="${rowClass}">
-                            ${checkCell}
-                            ${turnoCell}
-                            <td class="fw-black text-navy p-3">${req.id}</td>
-                            <td class="small text-muted p-3">${req.date}</td>
-                            <td class="text-uppercase fw-bold p-3">${req.name}</td>
-                            <td class="p-3 text-muted fw-bold">${req.ci || 'N/A'}</td>
-                            <td class="fw-bold text-primary p-3">${req.physicalNumber || '-'}</td>
-                            <td class="p-3 small">${req.doc}</td>
-                            <td class="p-3"><span class="badge bg-light text-dark border">${sig}</span></td>
-                            ${importeCell}
-                            <td class="text-center p-3">${actionBtn}</td>
-                        </tr>
-                    `;
-                }
-                tbody.insertAdjacentHTML('beforeend', row);
-            });
-            lucide.createIcons();
-        }
-
-        // --- FUNCIONES NUEVA PANTALLA ---
         function createManualRequest() {
             document.getElementById('dashboardView').classList.add('hidden');
             document.getElementById('newRequestView').classList.remove('hidden');
@@ -1388,7 +1201,7 @@
             // Reset state
             isEditing = false;
             editingId = null;
-            electronicSigCount = 0; // RESET COUNTER FOR FRESH DEMO EXPERIENCE
+            electronicSigCount = 0; 
             document.getElementById('formTitle').innerText = "Crear Solicitud Manual";
             document.getElementById('formBadge').innerText = "Nuevo Trámite";
             document.getElementById('btnSubmitForm').innerHTML = `<i data-lucide="plus-circle" style="width:16px;"></i> Añadir`;
@@ -1397,7 +1210,7 @@
             renderLoadedDocuments();
             document.getElementById('newRequestForm').reset();
             
-            // LIMPIEZA EXPLÍCITA DE CAMPOS OCULTOS
+            // Explicit clear
             document.getElementById('reqCountry').value = '';
             document.getElementById('reqInstitution').value = '';
             document.getElementById('reqType').value = '';
@@ -1405,14 +1218,19 @@
             document.getElementById('reqDocType').value = '';
             document.getElementById('reqOfficial').value = '';
 
+            // Clean files
+            const fileCI = document.getElementById('reqFileCI');
+            const fileVida = document.getElementById('reqFileVidaResidencia');
+            if(fileCI) { fileCI.value = ''; fileCI.required = false; }
+            if(fileVida) { fileVida.value = ''; fileVida.required = false; }
+            document.getElementById('policeRecordRequirements').classList.add('hidden');
+
             document.querySelectorAll('.selected-value').forEach(el => {
                 el.innerText = "Seleccione...";
                 el.classList.add('text-muted');
             });
             
-            // ASEGURAR QUE EL APARTADO DE DATOS ESTÉ OCULTO AL INICIO
             document.getElementById('additionalDataTabs').classList.add('hidden');
-
             document.getElementById('requestFormContainer').classList.remove('hidden');
             document.getElementById('loadedDocsSection').classList.add('hidden');
             
@@ -1421,39 +1239,93 @@
             lucide.createIcons();
         }
 
-        // --- LÓGICA DE CORRECCIÓN ---
-        function completeRequest(id) {
-            const req = requests.find(r => r.id === id);
-            if (!req) return;
-
-            document.getElementById('dashboardView').classList.add('hidden');
-            document.getElementById('newRequestView').classList.remove('hidden');
-            document.getElementById('requestFormContainer').classList.remove('hidden');
-            document.getElementById('loadedDocsSection').classList.add('hidden');
-
-            // Set Editing Mode
-            isEditing = true;
-            editingId = id;
-            document.getElementById('formTitle').innerText = `Corregir Solicitud #${id}`;
-            document.getElementById('formBadge').innerText = "Modificación";
-            document.getElementById('btnSubmitForm').innerHTML = `<i data-lucide="save" style="width:16px;"></i> Guardar Cambios`;
-
-            // Populate Form (Simplified)
-            setOption('reqCountry', req.country, document.getElementById('div_reqCountry'));
-            setOption('reqSignature', req.signature, document.getElementById('div_reqSignature'));
-            document.getElementById('titularName').value = req.name;
-            document.getElementById('titularCertNum').value = "123456"; // Dummy
-            // document.getElementById('titularCI').value = req.ci; // ELIMINADO: Ya no existe el campo en el DOM
-
-            handleSignatureChange();
+        // Dependencies
+        function setOption(inputId, value, element) {
+             document.getElementById(inputId).value = value;
+             const display = element.closest('.custom-select').querySelector('.selected-value');
+             display.innerText = value;
+             display.classList.remove('text-muted');
         }
 
+        function handleSignatureChange() {
+            const sig = document.getElementById('reqSignature').value;
+            const attach = document.getElementById('attachmentField');
+            const official = document.getElementById('officialField');
+            const btnDoc = document.getElementById('btn_reqDocType');
+            
+            // Resetear Tipo de Documento al cambiar Firma para ocultar Datos
+            document.getElementById('reqDocType').value = ""; // Clear value
+            const docDisplay = document.getElementById('div_reqDocType').querySelector('.selected-value');
+            if (docDisplay) {
+                docDisplay.innerText = "Seleccione primero el tipo de firma...";
+                docDisplay.classList.add('text-muted');
+            }
+            handleDocTypeChange(); // Force hide tabs
+
+            attach.classList.add('hidden');
+            official.classList.add('hidden');
+            document.getElementById('reqFile').required = false;
+            document.getElementById('reqOfficial').required = false;
+
+            if (sig.includes('Electrónica')) {
+                // MODIFICADO: No solicitar adjunto para firma electrónica
+                // attach.classList.remove('hidden');
+                // document.getElementById('reqFile').required = true;
+                
+                // MODIFICADO: Mostrar campo funcionario firmante para firma Electrónica (solicitud actual)
+                official.classList.remove('hidden');
+            } else if (sig.includes('Ológrafa')) {
+                official.classList.remove('hidden');
+            }
+            btnDoc.disabled = !sig;
+            if (sig && docDisplay) {
+                docDisplay.innerText = "Seleccione...";
+            }
+        }
+
+        function handleDocTypeChange() {
+             const doc = document.getElementById('reqDocType').value;
+             const tabs = document.getElementById('additionalDataTabs');
+             const policeReqs = document.getElementById('policeRecordRequirements');
+             if(doc) tabs.classList.remove('hidden');
+             else tabs.classList.add('hidden');
+
+             if (doc === 'Antecedentes Policiales') {
+                policeReqs.classList.remove('hidden');
+                document.getElementById('reqFileCI').required = true;
+                document.getElementById('reqFileVidaResidencia').required = true;
+                lucide.createIcons(); 
+             } else {
+                policeReqs.classList.add('hidden');
+                document.getElementById('reqFileCI').required = false;
+                document.getElementById('reqFileVidaResidencia').required = false;
+                document.getElementById('reqFileCI').value = '';
+                document.getElementById('reqFileVidaResidencia').value = '';
+             }
+        }
+
+        function renderLoadedDocuments() {
+            const tbody = document.getElementById('loadedDocsBody');
+            tbody.innerHTML = tempRequestsList.map((item, i) => `
+                <tr>
+                    <td><span class="badge bg-light text-dark border">${item.signature}</span></td>
+                    <td class="small">${item.institution}</td>
+                    <td class="fw-bold text-navy">${item.docType}</td>
+                    <td>${item.validationType === 'Automática' ? '<span class="badge bg-primary-subtle text-primary border border-primary-subtle">Automática</span>' : '<span class="badge bg-warning-subtle text-dark border border-warning-subtle">Validación Previa</span>'}</td>
+                    <td class="text-center">${item.isValidated === true ? '<span class="badge bg-success">SÍ</span>' : (item.isValidated === false ? '<span class="badge bg-danger">NO</span>' : '-')}</td>
+                    <td class="text-end fw-bold">Gs. ${item.amount.toLocaleString('es-PY')}</td>
+                    <td class="text-center">${item.hasFile ? '<i data-lucide="file-check" class="text-success"></i>' : '-'}</td>
+                    <td class="text-center"><button class="btn btn-sm text-danger" onclick="removeFromGrid(${i})"><i data-lucide="trash-2"></i></button></td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+        }
+        
         function submitFormAction() {
             if (isEditing) {
-                // Logic for editing
                 const req = requests.find(r => r.id === editingId);
                 if(req) {
-                    req.status = 'Análisis'; // Return to Analysis
+                    req.status = 'Análisis';
                     alert(`Solicitud #${editingId} corregida y enviada a Análisis.`);
                     backToDashboard();
                 }
@@ -1463,28 +1335,48 @@
         }
 
         function initiateAddProcess() {
-            const signature = document.getElementById('reqSignature').value;
-            
-            // LÓGICA:
-            // 1. Si es Firma Electrónica:
-            //    - Si el perfil es 'electronico' (Operador verificación previa): NO validar, guardar directo (Comportamiento Ológrafo).
-            //    - Cualquier otro perfil: Iniciar validación (Simulación).
-            // 2. Si es Firma Ológrafa: Guardar directo.
-            
-            if (signature.includes('Electrónica')) {
-                if (currentProfile === 'electronico') {
-                    // Perfil Verificación Previa: Salta validación (Mismo comportamiento que Ológrafo)
-                    addToGrid('Previa', null); 
-                } else {
-                    // Otros perfiles: Validación obligatoria para Electrónica
-                    startValidationProcess();
-                }
-            } else {
-                // Ológrafa siempre va directo
-                addToGrid('Previa', null);
-            }
+            // MODIFICADO: Se elimina la validación automática simulada.
+            // Al crear una solicitud manual electrónica sin archivo, no se realiza validación contra servicio externo.
+            addToGrid('Previa', null);
         }
 
+        function addToGrid(valType, isValid) {
+            const name = document.getElementById('titularName').value;
+            const cert = document.getElementById('titularCertNum').value;
+            const doc = document.getElementById('reqDocType').value;
+            const sig = document.getElementById('reqSignature').value;
+            const inst = document.getElementById('reqInstitution').value;
+            const type = document.getElementById('reqType').value; 
+            const country = document.getElementById('reqCountry').value; 
+            const official = document.getElementById('reqOfficial').value; 
+
+            if(!name || !cert) return;
+
+            // MODIFICADO: Verificar si realmente hay un archivo cargado
+            const fileInput = document.getElementById('reqFile');
+            const hasRealFile = fileInput && fileInput.files.length > 0;
+
+            tempRequestsList.push({
+                titularName: name, 
+                titularDocNum: cert, 
+                titularCI: '', 
+                docType: doc, 
+                signature: sig, 
+                institution: inst, 
+                type: type, 
+                country: country,
+                official: official,
+                validationType: valType, 
+                isValidated: isValid, 
+                hasFile: hasRealFile, // MODIFICADO: Solo true si hay archivo físico levantado
+                amount: 80100
+            });
+
+            renderLoadedDocuments();
+            document.getElementById('requestFormContainer').classList.add('hidden');
+            document.getElementById('loadedDocsSection').classList.remove('hidden');
+        }
+        
         function startValidationProcess() {
             const popupTitle = document.getElementById('popupTitle');
             const popupContent = document.getElementById('popupContent');
@@ -1506,7 +1398,7 @@
         }
 
         function showValidationResult() {
-            electronicSigCount++;
+             electronicSigCount++;
             let scenario = ''; 
             const demoIndex = (electronicSigCount % 3);
             if (demoIndex === 1) scenario = 'SUCCESS';
@@ -1550,677 +1442,319 @@
             else addToGrid('Previa', false); 
         }
 
-        function setOption(inputId, value, element) {
-            document.getElementById(inputId).value = value;
-            const display = element.closest('.custom-select').querySelector('.selected-value');
-            display.innerText = value;
-            display.classList.remove('text-muted');
-        }
-
-        function filterOptions(input) {
-            const filter = input.value.toUpperCase();
-            const items = input.nextElementSibling.getElementsByClassName('dropdown-item');
-            for (let i = 0; i < items.length; i++) {
-                items[i].style.display = items[i].innerText.toUpperCase().includes(filter) ? "" : "none";
-            }
-        }
-
-        function handleSignatureChange() {
-            const sig = document.getElementById('reqSignature').value;
-            const attach = document.getElementById('attachmentField');
-            const official = document.getElementById('officialField');
-            const btnDoc = document.getElementById('btn_reqDocType');
+        function changeProfile(select) {
+            currentProfile = select.value;
             
-            // MODIFICADO: Resetear Tipo de Documento al cambiar Firma para ocultar Datos
-            document.getElementById('reqDocType').value = ""; // Clear value
-            const docDisplay = document.getElementById('div_reqDocType').querySelector('.selected-value');
-            if (docDisplay) {
-                docDisplay.innerText = "Seleccione primero el tipo de firma...";
-                docDisplay.classList.add('text-muted');
-            }
-            handleDocTypeChange(); // Force hide tabs
-
-            attach.classList.add('hidden');
-            official.classList.add('hidden');
-            document.getElementById('reqFile').required = false;
-            document.getElementById('reqOfficial').required = false;
-
-            if (sig.includes('Electrónica')) {
-                // MODIFICADO: Se eliminó la restricción para el perfil 'electronico'.
-                // Ahora, si es Electrónica, SIEMPRE muestra el campo de adjuntar archivo,
-                // independientemente del perfil.
-                attach.classList.remove('hidden');
-                document.getElementById('reqFile').required = true;
-                
-            } else if (sig.includes('Ológrafa')) {
-                official.classList.remove('hidden');
-            }
-
-            btnDoc.disabled = !sig;
-            // Update prompt text if sig is valid
-            if (sig && docDisplay) {
-                docDisplay.innerText = "Seleccione...";
-            }
-        }
-
-        function handleDocTypeChange() {
-            const doc = document.getElementById('reqDocType').value;
-            const tabs = document.getElementById('additionalDataTabs');
-            if(doc) tabs.classList.remove('hidden');
-            else tabs.classList.add('hidden');
-        }
-
-        function addToBatchGrid() {
-            // Lógica interna llamada por initiateAddProcess -> addToGrid
-        }
-
-        function addToGrid(valType, isValid) {
-            const name = document.getElementById('titularName').value;
-            const cert = document.getElementById('titularCertNum').value;
-            const doc = document.getElementById('reqDocType').value;
-            const sig = document.getElementById('reqSignature').value;
-            const inst = document.getElementById('reqInstitution').value;
-            const type = document.getElementById('reqType').value; 
-            const country = document.getElementById('reqCountry').value; 
-            const official = document.getElementById('reqOfficial').value; 
-
-            if(!name || !cert) return;
-
-            tempRequestsList.push({
-                titularName: name, 
-                titularDocNum: cert, 
-                titularCI: '', // Se deja vacío ya que no se carga manualmente
-                docType: doc, 
-                signature: sig, 
-                institution: inst, 
-                type: type,
-                country: country,
-                official: official,
-                validationType: valType, 
-                isValidated: isValid, 
-                hasFile: sig.includes('Electrónica'), 
-                amount: 80100
-            });
-
-            renderLoadedDocuments();
-            document.getElementById('requestFormContainer').classList.add('hidden');
-            document.getElementById('loadedDocsSection').classList.remove('hidden');
-        }
-
-        function renderLoadedDocuments() {
-            const tbody = document.getElementById('loadedDocsBody');
-            tbody.innerHTML = tempRequestsList.map((item, i) => `
-                <tr>
-                    <td><span class="badge bg-light text-dark border">${item.signature}</span></td>
-                    <td class="small">${item.institution}</td>
-                    <td class="fw-bold text-navy">${item.docType}</td>
-                    <td>${item.validationType === 'Automática' ? '<span class="badge bg-primary-subtle text-primary border border-primary-subtle">Automática</span>' : '<span class="badge bg-warning-subtle text-dark border border-warning-subtle">Validación Previa</span>'}</td>
-                    <td class="text-center">${item.isValidated === true ? '<span class="badge bg-success">SÍ</span>' : (item.isValidated === false ? '<span class="badge bg-danger">NO</span>' : '-')}</td>
-                    <td class="text-end fw-bold">Gs. ${item.amount.toLocaleString('es-PY')}</td> <!-- CORREGIDO: item.importe a item.amount -->
-                    <td class="text-center">${item.hasFile ? '<i data-lucide="file-check" class="text-success"></i>' : '-'}</td>
-                    <td class="text-center"><button class="btn btn-sm text-danger" onclick="removeFromGrid(${i})"><i data-lucide="trash-2"></i></button></td>
-                </tr>
-            `).join('');
-            lucide.createIcons();
-        }
-
-        function removeFromGrid(index) { 
-            tempRequestsList.splice(index, 1); 
-            renderLoadedDocuments(); 
-            if(tempRequestsList.length === 0) {
-                document.getElementById('loadedDocsSection').classList.add('hidden');
-                document.getElementById('requestFormContainer').classList.remove('hidden');
-            }
-        }
-
-        function submitFinalRequest() {
-            tempRequestsList.forEach(item => {
-                // Determinar estado: Por defecto 'Aprobado' si es Auto, 'Análisis' si no.
-                let initialStatus = item.validationType === 'Automática' ? 'Aprobado' : 'Análisis';
-                
-                // MODIFICADO: Para el perfil Supervisor (Administrador), siempre enviar a 'Análisis'
-                if (currentProfile === 'supervisor') {
-                    initialStatus = 'Análisis';
-                }
-
-                requests.push({ 
-                    id: `2026-${Math.floor(Math.random()*90000)}`, 
-                    date: '28/01/2026 20:30', 
-                    ...item, 
-                    name: item.titularName, 
-                    ci: item.titularCI || 'N/A', 
-                    doc: item.docType, 
-                    physicalNumber: item.titularDocNum, // MAPEO CORRECTO
-                    signatureType: item.signature,
-                    status: initialStatus, 
-                    lockedBy: null,
-                    origin: 'Funcionario' 
-                });
-            });
-
-            // Si es Supervisor, forzar la vista a Análisis para ver el nuevo registro
+            const btnDevuelto = document.getElementById('btn-devuelto');
+            const btnFinalizados = document.getElementById('btn-finalizados');
+            const btnCreate = document.getElementById('btn-create-request'); // Referencia al botón
+            const sidebar = document.getElementById('supervisorSidebar'); // Referencia a la barra lateral
+            
+            // Lógica para mostrar/ocultar barra lateral de supervisor
             if (currentProfile === 'supervisor') {
-                currentStatus = 'Análisis';
-            }
-
-            backToDashboard();
-        }
-
-        function showRequestForm() {
-            document.getElementById('newRequestForm').reset();
-            
-            // LIMPIEZA EXPLÍCITA
-            document.getElementById('reqCountry').value = '';
-            document.getElementById('reqInstitution').value = '';
-            document.getElementById('reqType').value = '';
-            document.getElementById('reqSignature').value = '';
-            document.getElementById('reqDocType').value = '';
-            document.getElementById('reqOfficial').value = '';
-
-            document.querySelectorAll('.selected-value').forEach(e => {
-                e.innerText = 'Seleccione...';
-                e.classList.add('text-muted');
-            });
-
-            document.getElementById('requestFormContainer').classList.remove('hidden');
-            document.getElementById('loadedDocsSection').classList.add('hidden');
-            // ASEGURAR QUE EL APARTADO DE DATOS ESTÉ OCULTO
-            document.getElementById('additionalDataTabs').classList.add('hidden');
-            
-            handleSignatureChange();
-        }
-
-        function showCertHelp(e) {
-            e.preventDefault();
-            const popupTitle = document.getElementById('popupTitle');
-            const popupContent = document.getElementById('popupContent');
-            popupTitle.innerText = "Ayuda";
-            popupContent.innerHTML = `<div class="p-3 text-center">Aquí va la imagen de ayuda del certificado.</div>`;
-            document.getElementById('genericPopup').style.display = 'flex';
-        }
-
-        function handleDetailClick(id) {
-            // VERIFICACIÓN DE SEGURIDAD: Impedir tomar más de una solicitud
-            const myLocked = requests.find(r => r.lockedBy === 'Me');
-            if (myLocked && myLocked.id !== id) {
-                alert(`Usted ya está procesando la solicitud #${myLocked.id}. Debe finalizarla o liberarla antes de tomar otra.`);
-                return;
-            }
-
-            const req = requests.find(r => r.id === id);
-            actionTargetId = id;
-            document.getElementById('detailModalContent').innerHTML = getRequestSummaryHTML(req);
-            
-            const footer = document.getElementById('detailModalFooter');
-            if (req.lockedBy === 'Me') {
-                footer.innerHTML = `
-                    <button class="btn btn-light border fw-bold" onclick="closePopup()">Cancelar</button>
-                    <button class="btn btn-outline-secondary fw-bold" onclick="unlockRequest('${req.id}'); closePopup()">Liberar</button>
-                    <button class="btn-main px-4" onclick="takeRequestFromModal()">Continuar</button>
-                `;
+                sidebar.classList.remove('hidden');
             } else {
-                footer.innerHTML = `
-                    <button class="btn btn-light border fw-bold" onclick="closePopup()">Cancelar</button>
-                    <button class="btn-main px-4" onclick="takeRequestFromModal()">Tomar Solicitud</button>
-                `;
+                sidebar.classList.add('hidden');
             }
 
-            document.getElementById('detailModal').style.display = 'flex';
-        }
-
-        // AGREGADA: Función para mostrar detalles en la bandeja de Finalizados
-        function showRequestDetails(id) {
-            const req = requests.find(r => r.id === id);
-            if (!req) return;
-
-            // Construcción del HTML con TODOS los datos disponibles
-            const detailsHTML = `
-                <div class="row g-3 text-start">
-                    <div class="col-12 border-bottom pb-2 mb-2">
-                        <h6 class="fw-bold text-primary mb-0">Información General</h6>
-                    </div>
-                    <div class="col-6">
-                        <span class="fw-bold text-muted small text-uppercase d-block">Nro. Solicitud</span>
-                        <strong class="text-navy">${req.id}</strong>
-                    </div>
-                    <div class="col-6">
-                        <span class="fw-bold text-muted small text-uppercase d-block">Fecha</span>
-                        <span class="text-dark">${req.date}</span>
-                    </div>
-                    <div class="col-6">
-                        <span class="fw-bold text-muted small text-uppercase d-block">Estado</span>
-                        <span class="badge bg-dark">${req.status}</span>
-                    </div>
-                    <div class="col-6">
-                        <span class="fw-bold text-muted small text-uppercase d-block">Origen</span>
-                        <span class="text-dark">${req.origin || 'Web'}</span>
-                    </div>
-
-                    <div class="col-12 border-bottom pb-2 mb-2 mt-3">
-                        <h6 class="fw-bold text-primary mb-0">Datos del Titular</h6>
-                    </div>
-                    <div class="col-8">
-                        <span class="fw-bold text-muted small text-uppercase d-block">Nombre Completo</span>
-                        <strong class="text-dark text-uppercase">${req.name}</strong>
-                    </div>
-                    <div class="col-4">
-                        <span class="fw-bold text-muted small text-uppercase d-block">C.I. / Documento</span>
-                        <span class="text-dark">${req.ci || 'N/A'}</span>
-                    </div>
-
-                    <div class="col-12 border-bottom pb-2 mb-2 mt-3">
-                        <h6 class="fw-bold text-primary mb-0">Detalles del Documento</h6>
-                    </div>
-                    <div class="col-6">
-                        <span class="fw-bold text-muted small text-uppercase d-block">País de Destino</span>
-                        <strong class="text-dark">${req.country || '-'}</strong>
-                    </div>
-                    <div class="col-6">
-                        <span class="fw-bold text-muted small text-uppercase d-block">Tipo de Trámite</span>
-                        <strong class="text-dark">${req.type || 'Apostilla'}</strong>
-                    </div>
-                    <div class="col-12">
-                        <span class="fw-bold text-muted small text-uppercase d-block">Institución Emisora</span>
-                        <span class="text-dark">${req.institution || '-'}</span>
-                    </div>
-                    <div class="col-12">
-                        <span class="fw-bold text-muted small text-uppercase d-block">Tipo de Documento</span>
-                        <strong class="text-navy">${req.doc}</strong>
-                    </div>
-                    <div class="col-6">
-                        <span class="fw-bold text-muted small text-uppercase d-block">Nro. Físico / Certificado</span>
-                        <strong class="text-primary">${req.physicalNumber || 'NO ASIGNADO'}</strong>
-                    </div>
-                    <div class="col-6">
-                        <span class="fw-bold text-muted small text-uppercase d-block">Tipo de Firma</span>
-                        <span class="badge bg-light text-dark border">${req.signature || req.signatureType || '-'}</span>
-                    </div>
-                    ${req.official ? `
-                    <div class="col-12">
-                        <span class="fw-bold text-muted small text-uppercase d-block">Funcionario Firmante</span>
-                        <span class="text-dark text-uppercase">${req.official}</span>
-                    </div>` : ''}
-
-                    <div class="col-12 border-top pt-2 mt-2">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="fw-bold text-muted small text-uppercase">Importe</span>
-                            <strong class="text-success fs-5">Gs. ${(req.amount || 0).toLocaleString('es-PY')}</strong>
-                        </div>
-                        ${req.amount === 0 ? '<small class="text-info d-block text-end fst-italic">* Exonerado</small>' : ''}
-                    </div>
-                </div>
-            `;
-
-            document.getElementById('detailModalContent').innerHTML = detailsHTML;
-            
-            const footer = document.getElementById('detailModalFooter');
-            // MODIFICADO: Solo mostrar botón Cerrar, ocultando Tomar y Cancelar
-            footer.innerHTML = `
-                <button class="btn btn-light border fw-bold w-100" onclick="closePopup()">Cerrar</button>
-            `;
-
-            document.getElementById('detailModal').style.display = 'flex';
-        }
-
-        function takeRequestFromModal() {
-            const req = requests.find(r => r.id === actionTargetId);
-            
-            // VERIFICAR SI ES SUPERVISOR, SI ROMPE LA COLA FIFO Y SI ES FIRMA ELECTRÓNICA
-            // Se agrega la condición (req.signature || '').includes('Electrónica')
-            if (currentProfile === 'supervisor' && (req.signature || '').includes('Electrónica')) {
-                // Obtener el siguiente turno lógico
-                let filtered = requests.filter(r => r.status === 'Análisis');
-                filtered.sort((a, b) => parseDateStr(a.date) - parseDateStr(b.date));
-                const next = filtered.find(r => !r.lockedBy || r.lockedBy === 'Me');
-                
-                // Si existe un siguiente y NO es el que intentamos tomar
-                if (next && next.id !== actionTargetId) {
-                    // Cerrar detalle y abrir modal de excepción
-                    document.getElementById('detailModal').style.display = 'none';
-                    // Limpiar y resetear validación
-                    const txt = document.getElementById('forceTakeObs');
-                    txt.value = '';
-                    txt.classList.remove('is-invalid');
-                    
-                    document.getElementById('forceTakeModal').style.display = 'flex';
-                    lucide.createIcons();
-                    return; // Detener flujo estándar
-                }
-            }
-
-            // LÓGICA 2: VERIFICACIÓN PREVIA PARA FUNCIONARIO EXTERNO
+            // Restricciones para funcionario externo
             if (currentProfile === 'externo') {
-                document.getElementById('detailModal').style.display = 'none';
+                btnDevuelto.classList.add('hidden');
+                btnFinalizados.classList.add('hidden');
+                if(btnCreate) btnCreate.classList.add('hidden'); // Ocultar botón crear
                 
-                // Poblar datos del modal previo
-                const content = document.getElementById('preVerifyContent');
-                content.innerHTML = `
-                    <div class="row g-2">
-                        <div class="col-12 border-bottom pb-2 mb-2">
-                            <span class="text-muted d-block" style="font-size:0.7rem">NRO. DOCUMENTO FÍSICO / CERTIFICADO</span>
-                            <strong class="fs-5 text-primary">${req.physicalNumber || 'N/A'}</strong>
-                        </div>
-                        <div class="col-6">
-                            <span class="text-muted d-block" style="font-size:0.7rem">TITULAR</span>
-                            <strong class="text-dark text-uppercase">${req.name}</strong>
-                        </div>
-                        <div class="col-6">
-                            <span class="text-muted d-block" style="font-size:0.7rem">TIPO DOCUMENTO</span>
-                            <strong class="text-dark">${req.doc}</strong>
-                        </div>
-                    </div>
-                `;
-                
-                // Resetear checkbox
-                document.getElementById('checkPreVerify').checked = false;
-                
-                document.getElementById('preVerificationModal').style.display = 'flex';
-                lucide.createIcons();
-                return; // Detener flujo para esperar confirmación
-            }
-
-            // Flujo estándar (para Ológrafas o toma en turno correcto)
-            if (req.lockedBy !== 'Me') req.lockedBy = 'Me';
-            document.getElementById('detailModal').style.display = 'none';
-            openVerification(req.id);
-        }
-
-        // AGREGADA: Función faltante para confirmar verificación previa
-        function confirmPreVerification() {
-            const isChecked = document.getElementById('checkPreVerify').checked;
-            if (!isChecked) {
-                alert("Debe confirmar que ha verificado el documento físico.");
-                return;
-            }
-
-            document.getElementById('preVerificationModal').style.display = 'none';
-            const req = requests.find(r => r.id === actionTargetId);
-            if (req.lockedBy !== 'Me') req.lockedBy = 'Me';
-            openVerification(req.id);
-        }
-
-        function openVerification(id) {
-            const req = requests.find(r => r.id === id);
-            currentVerificationId = id; // Guardar ID actual para lógica interna
-            
-            // Header Info
-            document.getElementById('verifyReqId').innerText = `Solicitud #${req.id}`;
-            document.getElementById('verifyReqName').innerText = `${req.name} (CI: ${req.ci})`;
-
-            // Populate Data Container
-            const container = document.getElementById('verifyDataContainer');
-            
-            const type = req.type || 'Apostilla';
-            const inst = req.institution || 'N/A';
-            const phys = req.physicalNumber || 'N/A';
-            const sig = req.signature || req.signatureType || 'N/A'; 
-            
-            // Lógica de Exoneración
-            const currentAmount = req.amount !== undefined ? req.amount : 80100;
-            const isExonerated = currentAmount === 0;
-
-            let officialHtml = '';
-            if (req.official) {
-                officialHtml = `
-                <div class="col-12 bg-light p-2 rounded border mt-2">
-                    <label class="small text-muted fw-bold text-uppercase d-block">Funcionario Firmante Detectado</label>
-                    <strong class="text-dark text-uppercase">${req.official}</strong>
-                </div>`;
-            }
-
-            // Lógica condicional para mostrar control de exoneración solo a supervisor
-            let exonerationControlHtml = '';
-            if (currentProfile === 'supervisor') {
-                exonerationControlHtml = `
-                <div class="col-6">
-                    <label class="small text-muted fw-bold text-uppercase d-block mb-1">¿Exonerar Pago?</label>
-                    <select class="form-select form-select-sm border-secondary-subtle fw-bold text-dark" id="verifyExonerateSelect" onchange="handleExonerationChange(this)">
-                        <option value="No" ${!isExonerated ? 'selected' : ''}>No</option>
-                        <option value="Si" ${isExonerated ? 'selected' : ''}>Sí</option>
-                    </select>
-                </div>`;
-            }
-
-            container.innerHTML = `
-                <div class="col-6">
-                    <label class="small text-muted fw-bold text-uppercase d-block">País Destino</label>
-                    <strong class="text-dark">${req.country}</strong>
-                </div>
-                <div class="col-6">
-                    <label class="small text-muted fw-bold text-uppercase d-block">Trámite</label>
-                    <strong class="text-dark">${type}</strong>
-                </div>
-                <div class="col-12">
-                    <label class="small text-muted fw-bold text-uppercase d-block">Institución Emisora</label>
-                    <strong class="text-dark">${inst}</strong>
-                </div>
-                <div class="col-12">
-                    <label class="small text-muted fw-bold text-uppercase d-block">Tipo Documento</label>
-                    <strong class="text-primary fs-5">${req.doc}</strong>
-                </div>
-                <div class="col-6">
-                    <label class="small text-muted fw-bold text-uppercase d-block">Nro. Físico / Certificado</label>
-                    <strong class="text-dark">${phys}</strong>
-                </div>
-                <div class="col-6">
-                    <label class="small text-muted fw-bold text-uppercase d-block">Firma</label>
-                    <span class="badge ${sig.includes('Electrónica') ? 'bg-primary-subtle text-primary border border-primary-subtle' : 'bg-light text-dark border'}">${sig}</span>
-                </div>
-                <div class="col-12">
-                    <label class="small text-muted fw-bold text-uppercase d-block">Titular del Documento</label>
-                    <strong class="text-dark text-uppercase">${req.name || req.titularName}</strong>
-                    <div class="small text-muted">CI: ${req.ci || 'N/A'}</div>
-                </div>
-
-                <!-- SECCIÓN DE EXONERACIÓN -->
-                <div class="col-12 border-top pt-2 mt-1"></div>
-                <div class="col-6">
-                    <label class="small text-muted fw-bold text-uppercase d-block mb-1">Importe a Pagar</label>
-                    <strong class="text-primary fs-5" id="verifyAmountDisplay">Gs. ${currentAmount.toLocaleString('es-PY')}</strong>
-                </div>
-                ${exonerationControlHtml}
-
-                ${officialHtml}
-            `;
-
-            const splitContainer = document.querySelector('.split-screen-container');
-            const viewerContainer = document.querySelector('.split-side-a');
-            const physicalBanner = document.getElementById('physicalVerificationBanner');
-
-            // 1. Limpiar estados previos
-            splitContainer.classList.remove('single-mode');
-            viewerContainer.classList.remove('hidden');
-            physicalBanner.classList.add('hidden');
-
-            // 2. Lógica de visualización
-            // MODIFICADO: Solo mostrar visualizador (split screen) si es Electrónica.
-            // Para todo lo demás (Ológrafa), usar Single Mode con banner físico.
-            if (sig.includes('Electrónica')) {
-                // Modo Pantalla Dividida con Visualizador PDF
-                viewerContainer.innerHTML = `
-                    <div class="pdf-viewer-placeholder">
-                        <i data-lucide="file-text" style="width: 64px; height: 64px; opacity: 0.5;"></i>
-                        <p class="mt-3 fw-bold">Visualizador de Documento</p>
-                        <small class="text-white-50">Aquí se cargará el PDF digital o escaneado</small>
-                        <button class="btn btn-sm btn-outline-light mt-3" onclick="alert('Simulando zoom...')"><i data-lucide="maximize"></i> Ampliar</button>
-                    </div>
-                `;
-            } else {
-                // Modo Pantalla Única (Física) - Aplica para Ológrafa (cualquier perfil)
-                splitContainer.classList.add('single-mode');
-                physicalBanner.classList.remove('hidden');
-            }
-
-            document.getElementById('dashboardView').classList.add('hidden');
-            document.getElementById('verificationView').classList.remove('hidden');
-            
-            // Lógica para ocultar botón devolver en vista de verificación
-            const btnReturn = document.getElementById('btn-verify-return');
-            const btnReject = document.getElementById('btn-verify-reject');
-            
-            if(currentProfile === 'externo') {
-                btnReturn.classList.add('hidden');
-                btnReject.classList.remove('w-50');
-                btnReject.classList.add('w-100');
-            } else {
-                btnReturn.classList.remove('hidden');
-                btnReject.classList.remove('w-100');
-                btnReject.classList.add('w-50');
-            }
-
-            lucide.createIcons();
-        }
-
-        function handleExonerationChange(select) {
-            if (select.value === 'Si') {
-                // Abrir modal de motivo
-                document.getElementById('exonerationObs').value = '';
-                document.getElementById('exonerationModal').style.display = 'flex';
-                lucide.createIcons();
-            } else {
-                // Revertir precio (Reset a 80100 por defecto)
-                const req = requests.find(r => r.id === currentVerificationId);
-                if(req) {
-                    req.amount = 80100; 
-                    req.exonerationReason = null;
-                    document.getElementById('verifyAmountDisplay').innerText = `Gs. ${req.amount.toLocaleString('es-PY')}`;
-                }
-            }
-        }
-
-        // NUEVA FUNCIÓN PARA EL BOTÓN DE LA GRILLA (DASHBOARD)
-        function exonerateRequest(id) {
-            actionTargetId = id; // Guardamos el ID para usarlo en confirmExoneration
-            const txt = document.getElementById('exonerationObs');
-            txt.value = '';
-            txt.classList.remove('is-invalid'); // Limpiar estado de error previo
-            document.getElementById('exonerationModal').style.display = 'flex';
-            lucide.createIcons();
-        }
-
-        // FUNCIÓN CONFIRMAR ACTUALIZADA (SOPORTA AMBOS CONTEXTOS)
-        function confirmExoneration() {
-            const obsInput = document.getElementById('exonerationObs');
-            const obs = obsInput.value;
-            
-            // VALIDACIÓN VISUAL
-            if(!obs.trim()) {
-                obsInput.classList.add('is-invalid');
-                return;
-            }
-            obsInput.classList.remove('is-invalid');
-
-            // Detectar contexto: ¿Estamos en Verificación o en Dashboard?
-            const isVerificationContext = !document.getElementById('verificationView').classList.contains('hidden');
-            
-            // Determinar ID objetivo
-            const targetId = isVerificationContext ? currentVerificationId : actionTargetId;
-            const req = requests.find(r => r.id === targetId);
-
-            if(req) {
-                // --- ACCIÓN PRINCIPAL: CERAR EL IMPORTE ---
-                req.amount = 0; 
-                req.exonerationReason = obs;
-                
-                // MODIFICADO: Ya NO cambia el estado a 'Finalizados' automáticamente.
-                // Se mantiene en el estado actual para que el funcionario continúe el flujo (Aprobar).
-                
-                if (isVerificationContext) {
-                    // Lógica para pantalla de verificación (Solo actualiza visualmente el monto)
-                    const display = document.getElementById('verifyAmountDisplay');
-                    if(display) display.innerText = "Gs. 0";
+                // Si la vista actual es una de las prohibidas, volver a Análisis
+                if (currentStatus === 'Devuelto' || currentStatus === 'Finalizados') {
+                    filterTable('Análisis', document.getElementById('btn-analisis'));
                 } else {
-                    // Lógica para pantalla dashboard (Si se usara desde allí)
-                    filterTable(currentStatus); 
+                    filterTable(currentStatus, document.querySelector('.status-btn.active'));
                 }
+            } else {
+                btnDevuelto.classList.remove('hidden');
+                btnFinalizados.classList.remove('hidden');
+                if(btnCreate) btnCreate.classList.remove('hidden'); // Mostrar botón crear
+                filterTable(currentStatus, document.querySelector('.status-btn.active'));
             }
-            
-            document.getElementById('exonerationModal').style.display = 'none';
         }
 
-        // FUNCIÓN CANCELAR ACTUALIZADA
-        function cancelExoneration() {
-            document.getElementById('exonerationModal').style.display = 'none';
-            document.getElementById('exonerationObs').classList.remove('is-invalid'); // Limpiar error
+        function filterTable(status, btn) {
+            currentStatus = status;
+            document.querySelectorAll('.status-btn').forEach(b => b.classList.remove('active'));
+            if(btn) btn.classList.add('active');
+
+            const thead = document.getElementById('tableHeadRow');
             
-            // Solo si estamos en verificación revertimos el select
-            const isVerificationContext = !document.getElementById('verificationView').classList.contains('hidden');
-            if (isVerificationContext) {
-                const select = document.getElementById('verifyExonerateSelect');
-                if(select) select.value = 'No';
+            // Lógica para mostrar columna Turno
+            let showTurno = (currentProfile !== 'olografo') && (status !== 'Finalizados');
+
+            // CONFIGURACION DE COLUMNAS
+            if (status === 'Finalizados') {
+                thead.innerHTML = `
+                    <th>Nro. Solicitud</th>
+                    <th class="text-center">Documento Final</th>
+                    <th class="text-center">Comprobante</th>
+                    <th>Fecha</th>
+                    <th>Titular</th>
+                    <th>CI Solicitante</th>
+                    <th>Nro. de Certificado</th>
+                    <th>Documento</th>
+                    <th>Tipo Firma</th>
+                    <th class="text-center">Acción</th>
+                `;
+            } else {
+                let checkCol = status === 'Aprobado' ? `<th class="text-center" style="width: 60px;"><input type="checkbox" class="form-check-input" onclick="toggleSelectAll(this)"></th>` : '';
+                let importeCol = status === 'Aprobado' ? `<th class="text-end">Importe</th>` : '';
+                let turnoCol = showTurno ? `<th>Nro Turno</th>` : '';
+
+                let headers = `
+                    ${checkCol}
+                    ${turnoCol}
+                    <th>Nro. Solicitud</th>
+                    <th>Fecha</th>
+                    <th>Titular</th>
+                    <th>CI Solicitante</th>
+                    <th>Nro. de Certificado</th>
+                    <th>Documento</th>
+                    <th>Tipo Firma</th>
+                `;
+
+                if (currentProfile === 'supervisor' && (status === 'Análisis' || status === 'Archivado')) {
+                    headers += `<th>Funcionario</th>`;
+                }
+
+                headers += `${importeCol}<th class="text-center">Acción</th>`;
+                thead.innerHTML = headers;
             }
-            // En dashboard no hace falta revertir nada visual extra
-        }
 
-        function backToDashboard() {
-            document.getElementById('verificationView').classList.add('hidden');
-            document.getElementById('liquidationView').classList.add('hidden');
-            document.getElementById('newRequestView').classList.add('hidden');
-            document.getElementById('dashboardView').classList.remove('hidden');
-            
-            // MODIFICADO: Asegurar que el tab correcto esté activo visualmente
-            let btnId = '';
-            if (currentStatus === 'Análisis') btnId = 'btn-analisis';
-            else if (currentStatus === 'Aprobado') btnId = 'btn-aprobado';
-            else if (currentStatus === 'Devuelto') btnId = 'btn-devuelto';
-            else if (currentStatus === 'Rechazado') btnId = 'btn-rechazado';
-            else if (currentStatus === 'Finalizados') btnId = 'btn-finalizados';
-            
-            const btn = document.getElementById(btnId);
-            filterTable(currentStatus, btn);
-        }
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
 
-        function processApprove() {
-            const req = requests.find(r => r.id === actionTargetId || r.lockedBy === 'Me');
-            req.status = 'Aprobado';
-            req.lockedBy = null;
-            closePopup();
-            backToDashboard();
-        }
+            let filtered = requests.filter(r => r.status === status);
+            filtered = filtered.filter(r => {
+                const sig = r.signature || r.signatureType || '';
+                if (currentProfile === 'olografo') return sig.includes('Ológrafa');
+                if (currentProfile === 'electronico') return sig.includes('Electrónica');
+                if (currentProfile === 'externo') return sig.includes('Ológrafa');
+                return true;
+            });
 
-        function processReturn() {
-            const obsInput = document.getElementById('returnObs');
-            const obs = obsInput.value;
+            filtered.sort((a, b) => parseDateStr(a.date) - parseDateStr(b.date));
             
-            // VALIDACIÓN VISUAL
-            if(!obs.trim()) {
-                obsInput.classList.add('is-invalid');
+            let nextAvailableId = null;
+            const myLockedRequest = requests.find(r => r.lockedBy === 'Me');
+
+            // Identificar siguiente disponible para electronico
+            if (currentProfile === 'electronico' && status === 'Análisis') {
+                const next = filtered.find(r => !r.lockedBy); // El primero no bloqueado por nadie
+                if (next) nextAvailableId = next.id;
+            }
+
+            // --- GESTIÓN DE BOTONES DE ACCIÓN EN CABECERA ---
+            const batchActions = document.getElementById('batchActions');
+            batchActions.innerHTML = ''; // Limpiar contenido previo
+            
+            if (status === 'Aprobado') {
+                batchActions.style.setProperty('display', 'flex', 'important');
+                batchActions.innerHTML = `
+                    <button class="btn btn-sm btn-main d-flex align-items-center gap-2" onclick="openPaymentModal()">
+                        <i data-lucide="credit-card" style="width:16px"></i> Generar Liquidación / Cobrar
+                    </button>
+                `;
+            } 
+            // MODIFICADO: Se oculta el botón "Llamar Siguiente Ticket" según solicitud
+            /*
+            else if (currentProfile === 'electronico' && status === 'Análisis' && !myLockedRequest && nextAvailableId) {
+                batchActions.style.setProperty('display', 'flex', 'important');
+                batchActions.innerHTML = `
+                    <button class="btn btn-sm btn-main-success d-flex align-items-center gap-2 animate-fade shadow-sm" onclick="callNextTicket()">
+                        <i data-lucide="play" style="width:16px; fill:currentColor"></i> Llamar Siguiente Ticket
+                    </button>
+                `;
+            } 
+            */
+            else {
+                batchActions.style.setProperty('display', 'none', 'important');
+            }
+            // -----------------------------------------------
+
+            if (filtered.length === 0) {
+                let colCount = 9; 
+                if (status === 'Finalizados') colCount = 10;
+                if (status === 'Aprobado') colCount = 11;
+                if (showTurno) colCount++; 
+                if (currentProfile === 'supervisor' && (status === 'Análisis' || status === 'Archivado')) colCount++;
+
+                tbody.innerHTML = `<tr><td colspan="${colCount}" class="text-center py-5 text-muted">No hay registros en esta bandeja.</td></tr>`;
+                // Importante actualizar iconos si se inyectó el botón
+                lucide.createIcons();
                 return;
             }
-            obsInput.classList.remove('is-invalid');
 
-            const req = requests.find(r => r.id === actionTargetId || r.lockedBy === 'Me');
-            req.status = 'Devuelto';
-            req.lockedBy = null;
-            closePopup();
-            backToDashboard();
-        }
+            let electronicCounter = 0;
 
-        function processReject() {
-            const obsInput = document.getElementById('rejectObs');
-            const obs = obsInput.value;
-            
-            // VALIDACIÓN VISUAL
-            if(!obs.trim()) {
-                obsInput.classList.add('is-invalid');
-                return;
-            }
-            obsInput.classList.remove('is-invalid');
+            filtered.forEach((req, index) => {
+                const sig = req.signature || req.signatureType || 'N/A';
+                if (sig.includes('Electrónica')) electronicCounter++;
 
-            const req = requests.find(r => r.id === actionTargetId || r.lockedBy === 'Me');
-            req.status = 'Rechazado';
-            req.lockedBy = null;
-            closePopup();
-            backToDashboard();
-        }
+                let row = '';
+                if (status === 'Finalizados') {
+                    // ... (Lógica Finalizados igual)
+                    row = `
+                        <tr>
+                            <td class="fw-black text-navy p-3">${req.id}</td>
+                            <td class="text-center p-3">
+                                <button class="btn-ver-pago d-inline-flex align-items-center gap-2" onclick="window.open('https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/apostilla.html', '_blank')">
+                                    <i data-lucide="download" style="width:14px;"></i> ${req.type === 'Apostilla' ? 'Descargar Apostilla' : 'Descargar Legalización'}
+                                </button>
+                            </td>
+                            <td class="text-center p-3"><i data-lucide="file-down" style="width:18px; cursor:pointer; color:var(--mre-blue)" title="Descargar Comprobante de Pago" onclick="window.open('https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/comprobante_electronico.html', '_blank')"></i></td>
+                            <td class="small text-muted p-3">${req.date}</td>
+                            <td class="text-uppercase small fw-bold p-3">${req.name}</td>
+                            <td class="p-3 text-muted fw-bold">${req.ci || 'N/A'}</td>
+                            <td class="fw-bold text-primary p-3">${req.physicalNumber || '-'}</td>
+                            <td class="fw-bold text-navy p-3">${req.doc}</td>
+                            <td class="p-3"><span class="badge bg-light text-dark border">${sig}</span></td>
+                            <td class="text-center p-3"><button class="btn-ver-detalle" onclick="showRequestDetails('${req.id}')" title="Ver detalles completos">Ver Detalle</button></td>
+                        </tr>
+                    `;
+                } else {
+                    // ... (Configuración de columnas igual)
+                    let checkCell = status === 'Aprobado' ? `<td class="text-center p-3"><input type="checkbox" class="form-check-input pay-check" value="${req.id}" checked></td>` : '';
+                    let importeCell = status === 'Aprobado' ? `<td class="text-end fw-black text-primary p-3">Gs. ${(req.amount || 0).toLocaleString('es-PY')}</td>` : '';
+                    let turnoCell = '';
+                    if (showTurno) {
+                        let turnoValue = sig.includes('Electrónica') ? `#${electronicCounter}` : '<span class="text-muted opacity-25">-</span>';
+                        turnoCell = `<td class="fw-black text-primary p-3">${turnoValue}</td>`;
+                    }
 
-        function reconsiderRequest(id) {
-            actionTargetId = id; // Guardamos el ID para usarlo en confirmReconsideration
-            const txt = document.getElementById('reconsiderObs');
-            txt.value = '';
-            txt.classList.remove('is-invalid'); // Limpiar estado de error previo
-            document.getElementById('reconsiderModal').style.display = 'flex';
+                    let rowClass = '';
+                    let isNext = false;
+                    const isTakenByMe = req.lockedBy === 'Me';
+                    const isLockedByOther = req.lockedBy === 'OtroFuncionario';
+                    
+                    if (status === 'Análisis') {
+                        if (isLockedByOther) {
+                            if (currentProfile !== 'supervisor') rowClass = 'row-locked-other';
+                        }
+                        else if (isTakenByMe) { isNext = true; rowClass = 'taken-by-me-highlight'; }
+                        else if (currentProfile === 'electronico' && req.id === nextAvailableId) { rowClass = 'next-turn-highlight'; isNext = true; }
+                    }
+
+                    let actionBtn = '';
+                    if (status === 'Archivado') {
+                        actionBtn = `<button class="btn btn-sm btn-primary" onclick="showRequestDetails('${req.id}')" title="Ver Detalle"><i data-lucide="eye" style="width:14px"></i></button>`;
+                    }
+                    else if (status === 'Análisis') {
+                        const hasOtherLocked = myLockedRequest && myLockedRequest.id !== req.id;
+                        let isDisabled = false;
+
+                        if (currentProfile === 'supervisor') {
+                            isDisabled = hasOtherLocked && !isTakenByMe;
+                        } else if (currentProfile === 'electronico') {
+                            // LOGICA FIFO ESTRICTA
+                            if (myLockedRequest) {
+                                // Ocupado: solo mi ticket habilitado
+                                isDisabled = req.id !== myLockedRequest.id;
+                            } else {
+                                // Libre: solo el siguiente disponible habilitado
+                                // nextAvailableId se calculó antes del loop
+                                isDisabled = req.id !== nextAvailableId;
+                            }
+                        } else {
+                            // Lógica otros perfiles
+                            const isManualAndMine = req.origin === 'Funcionario';
+                            if (isManualAndMine) isDisabled = isLockedByOther || hasOtherLocked;
+                            else {
+                                const isFirstRecord = index === 0;
+                                isDisabled = isLockedByOther || hasOtherLocked || (isFirstRecord && !isTakenByMe);
+                            }
+                        }
+
+                        const titleText = hasOtherLocked ? "Ya tiene una solicitud en curso" : "Ver Detalle";
+                        const actionDisabled = !isTakenByMe;
+                        
+                        let returnBtnHtml = currentProfile !== 'externo' ? `<button class="btn btn-sm btn-warning text-white" onclick="openReturnModal('${req.id}')" ${actionDisabled ? 'disabled' : ''} title="Devolver"><i data-lucide="rotate-ccw" style="width:14px"></i></button>` : '';
+                        let unlockBtnHtml = '';
+                        if (isTakenByMe) unlockBtnHtml = `<button class="btn btn-sm btn-outline-secondary" onclick="unlockRequest('${req.id}')" title="Desbloquear Solicitud"><i data-lucide="unlock" style="width:14px"></i></button>`;
+                        else if (currentProfile === 'supervisor' && isLockedByOther) unlockBtnHtml = `<button class="btn btn-sm btn-outline-danger border-danger text-danger" onclick="unlockRequest('${req.id}')" title="Desbloquear (Admin)"><i data-lucide="lock-open" style="width:14px"></i></button>`;
+
+                        actionBtn = `<div class="d-flex gap-1 justify-content-center">
+                            <button class="btn btn-sm btn-primary" onclick="handleDetailClick('${req.id}')" ${isDisabled ? 'disabled' : ''} title="${titleText}"><i data-lucide="eye" style="width:14px"></i></button>
+                            <button class="btn btn-sm btn-success" onclick="openApproveModal('${req.id}')" ${actionDisabled ? 'disabled' : ''} title="Aprobar"><i data-lucide="check" style="width:14px"></i></button>
+                            ${returnBtnHtml}
+                            <button class="btn btn-sm btn-danger" onclick="openRejectModal('${req.id}')" ${actionDisabled ? 'disabled' : ''} title="Rechazar"><i data-lucide="x" style="width:14px"></i></button>
+                            ${unlockBtnHtml}
+                        </div>`;
+                    } 
+                    // ... (Resto de estados igual)
+                    else if (status === 'Aprobado') {
+                         const val = req.amount !== undefined ? req.amount : 0;
+                         if (val === 0) actionBtn = `<span class="badge bg-info text-white border-0">Exonerado</span>`;
+                         else actionBtn = currentProfile === 'supervisor' ? `<button class="btn-exonerate" onclick="exonerateRequest('${req.id}')">Exonerar</button>` : `<span class="badge bg-success">Listo para Pago</span>`;
+                    } else if (status === 'Devuelto') {
+                        if (req.origin === 'Funcionario') actionBtn = `<button class="btn btn-sm btn-warning text-dark fw-bold border-0 shadow-sm" onclick="completeRequest('${req.id}')"><i data-lucide="edit" style="width:14px; margin-right:4px"></i> Corregir</button>`;
+                        else actionBtn = `<span class="badge bg-warning text-dark">Pendiente Ciudadano</span>`;
+                    } else if (status === 'Rechazado') {
+                         if (currentProfile === 'supervisor') actionBtn = `<button class="btn btn-sm btn-outline-secondary fw-bold text-dark" onclick="reconsiderRequest('${req.id}')" title="Volver a Análisis"><i data-lucide="rotate-ccw" style="width:14px; margin-right:4px"></i> Reconsiderar</button>`;
+                         else actionBtn = `<span class="badge bg-danger">Rechazado</span>`;
+                    }
+
+                    let funcionarioCell = '';
+                    if (currentProfile === 'supervisor' && (status === 'Análisis' || status === 'Archivado')) {
+                        let funcText = '<span class="text-muted opacity-25">-</span>';
+                        if (isTakenByMe) funcText = '<span class="fw-bold text-primary">Yo</span>';
+                        else if (isLockedByOther) funcText = '<span class="fw-bold text-danger">Ana López</span>';
+                        funcionarioCell = `<td>${funcText}</td>`;
+                    }
+
+                    row = `
+                        <tr class="${rowClass}">
+                            ${checkCell}
+                            ${turnoCell}
+                            <td class="fw-black text-navy p-3">${req.id}</td>
+                            <td class="small text-muted p-3">${req.date}</td>
+                            <td class="text-uppercase fw-bold p-3">${req.name}</td>
+                            <td class="p-3 text-muted fw-bold">${req.ci || 'N/A'}</td>
+                            <td class="fw-bold text-primary p-3">${req.physicalNumber || '-'}</td>
+                            <td class="p-3 small">${req.doc}</td>
+                            <td class="p-3"><span class="badge bg-light text-dark border">${sig}</span></td>
+                            ${funcionarioCell}
+                            ${importeCell}
+                            <td class="text-center p-3">${actionBtn}</td>
+                        </tr>
+                    `;
+                }
+                tbody.insertAdjacentHTML('beforeend', row);
+            });
             lucide.createIcons();
+        }
+
+        // NUEVA FUNCIÓN PARA LLAMAR SIGUIENTE TICKET
+        function callNextTicket() {
+            // Reutilizar lógica de filtrado para encontrar el correcto
+            let filtered = requests.filter(r => r.status === 'Análisis');
+            // Filtrar solo electrónicas si es el perfil
+            filtered = filtered.filter(r => (r.signature || r.signatureType || '').includes('Electrónica'));
+            filtered.sort((a, b) => parseDateStr(a.date) - parseDateStr(b.date));
+            
+            const next = filtered.find(r => !r.lockedBy);
+            
+            if (next) {
+                if (next.lockedBy !== 'Me') next.lockedBy = 'Me';
+                openVerification(next.id);
+            } else {
+                alert("No hay más tickets disponibles por el momento.");
+                filterTable('Análisis'); // Refrescar UI por si acaso
+            }
+        }
+
+        // FALTABA ESTA FUNCIÓN: reconsiderRequest
+        function reconsiderRequest(id) {
+            actionTargetId = id;
+            const txt = document.getElementById('reconsiderObs');
+            txt.value = ''; // Reset input
+            txt.classList.remove('is-invalid'); // Reset validation state
+            document.getElementById('reconsiderModal').style.display = 'flex';
         }
 
         function confirmReconsideration() {
@@ -2247,11 +1781,10 @@
 
         function unlockRequest(id) {
             if (currentProfile === 'supervisor') {
-                if(confirm('¿Está seguro de desbloquear esta solicitud asignada a otro funcionario?')) {
-                    const req = requests.find(r => r.id === id);
-                    req.lockedBy = null;
-                    filterTable(currentStatus);
-                }
+                // MODIFICADO: Usar modal en lugar de confirm nativo
+                actionTargetId = id;
+                document.getElementById('unlockConfirmModal').style.display = 'flex';
+                lucide.createIcons();
             } else {
                 const req = requests.find(r => r.id === id);
                 req.lockedBy = null;
@@ -2259,157 +1792,15 @@
             }
         }
 
-        // NUEVA FUNCIÓN PARA EL BOTÓN DE LA GRILLA (DASHBOARD)
-        function exonerateRequest(id) {
-            actionTargetId = id; // Guardamos el ID para usarlo en confirmExoneration
-            const txt = document.getElementById('exonerationObs');
-            txt.value = '';
-            txt.classList.remove('is-invalid'); // Limpiar estado de error previo
-            document.getElementById('exonerationModal').style.display = 'flex';
-            lucide.createIcons();
-        }
-
-        // FUNCIÓN CONFIRMAR ACTUALIZADA (SOPORTA AMBOS CONTEXTOS)
-        function confirmExoneration() {
-            const obsInput = document.getElementById('exonerationObs');
-            const obs = obsInput.value;
-            
-            // VALIDACIÓN VISUAL
-            if(!obs.trim()) {
-                obsInput.classList.add('is-invalid');
-                return;
-            }
-            obsInput.classList.remove('is-invalid');
-
-            // Detectar contexto: ¿Estamos en Verificación o en Dashboard?
-            const isVerificationContext = !document.getElementById('verificationView').classList.contains('hidden');
-            
-            // Determinar ID objetivo
-            const targetId = isVerificationContext ? currentVerificationId : actionTargetId;
-            const req = requests.find(r => r.id === targetId);
-
-            if(req) {
-                // --- ACCIÓN PRINCIPAL: CERAR EL IMPORTE ---
-                req.amount = 0; 
-                req.exonerationReason = obs;
-                
-                // MODIFICADO: Ya NO cambia el estado a 'Finalizados' automáticamente.
-                // Se mantiene en el estado actual para que el funcionario continúe el flujo (Aprobar).
-                
-                if (isVerificationContext) {
-                    // Lógica para pantalla de verificación (Solo actualiza visualmente el monto)
-                    const display = document.getElementById('verifyAmountDisplay');
-                    if(display) display.innerText = "Gs. 0";
-                } else {
-                    // Lógica para pantalla dashboard (Si se usara desde allí)
-                    filterTable(currentStatus); 
-                }
-            }
-            
-            document.getElementById('exonerationModal').style.display = 'none';
-        }
-
-        // FUNCIÓN CANCELAR ACTUALIZADA
-        function cancelExoneration() {
-            document.getElementById('exonerationModal').style.display = 'none';
-            document.getElementById('exonerationObs').classList.remove('is-invalid'); // Limpiar error
-            
-            // Solo si estamos en verificación revertimos el select
-            const isVerificationContext = !document.getElementById('verificationView').classList.contains('hidden');
-            if (isVerificationContext) {
-                const select = document.getElementById('verifyExonerateSelect');
-                if(select) select.value = 'No';
-            }
-            // En dashboard no hace falta revertir nada visual extra
-        }
-
-        function backToDashboard() {
-            document.getElementById('verificationView').classList.add('hidden');
-            document.getElementById('liquidationView').classList.add('hidden');
-            document.getElementById('newRequestView').classList.add('hidden');
-            document.getElementById('dashboardView').classList.remove('hidden');
-            filterTable(currentStatus);
-        }
-
-        function processApprove() {
-            const req = requests.find(r => r.id === actionTargetId || r.lockedBy === 'Me');
-            req.status = 'Aprobado';
-            req.lockedBy = null;
-            closePopup();
-            backToDashboard();
-        }
-
-        function processReturn() {
-            const obsInput = document.getElementById('returnObs');
-            const obs = obsInput.value;
-            
-            // VALIDACIÓN VISUAL
-            if(!obs.trim()) {
-                obsInput.classList.add('is-invalid');
-                return;
-            }
-            obsInput.classList.remove('is-invalid');
-
-            const req = requests.find(r => r.id === actionTargetId || r.lockedBy === 'Me');
-            req.status = 'Devuelto';
-            req.lockedBy = null;
-            closePopup();
-            backToDashboard();
-        }
-
-        function processReject() {
-            const obsInput = document.getElementById('rejectObs');
-            const obs = obsInput.value;
-            
-            // VALIDACIÓN VISUAL
-            if(!obs.trim()) {
-                obsInput.classList.add('is-invalid');
-                return;
-            }
-            obsInput.classList.remove('is-invalid');
-
-            const req = requests.find(r => r.id === actionTargetId || r.lockedBy === 'Me');
-            req.status = 'Rechazado';
-            req.lockedBy = null;
-            closePopup();
-            backToDashboard();
-        }
-
-        function reconsiderRequest(id) {
-            actionTargetId = id; // Guardamos el ID para usarlo en confirmReconsideration
-            const txt = document.getElementById('reconsiderObs');
-            txt.value = '';
-            txt.classList.remove('is-invalid'); // Limpiar estado de error previo
-            document.getElementById('reconsiderModal').style.display = 'flex';
-            lucide.createIcons();
-        }
-
-        function confirmReconsideration() {
-            const obsInput = document.getElementById('reconsiderObs');
-            const obs = obsInput.value;
-            
-            // VALIDACIÓN VISUAL
-            if (!obs.trim()) {
-                obsInput.classList.add('is-invalid');
-                return;
-            }
-            obsInput.classList.remove('is-invalid');
-
-            const req = requests.find(r => r.id === actionTargetId);
-            if (req) {
-                req.status = 'Análisis';
-                req.lockedBy = null; // Se libera el bloqueo para que cualquiera pueda tomarla
-                // Aquí se podría guardar 'obs' en el historial de la solicitud
-                console.log(`Solicitud #${req.id} reconsiderada. Motivo: ${obs}`);
-                filterTable(currentStatus); // Se refresca la tabla actual (el item desaparecerá de Rechazados)
-            }
-            document.getElementById('reconsiderModal').style.display = 'none';
-        }
-
-        function unlockRequest(id) {
-            const req = requests.find(r => r.id === id);
-            req.lockedBy = null;
-            filterTable(currentStatus);
+        // NUEVA FUNCIÓN: Procesa el desbloqueo tras confirmar en el modal
+        function processUnlock() {
+             const req = requests.find(r => r.id === actionTargetId);
+             if (req) {
+                 req.lockedBy = null;
+                 console.log(`Solicitud #${req.id} desbloqueada administrativamente.`);
+                 filterTable(currentStatus);
+             }
+             document.getElementById('unlockConfirmModal').style.display = 'none';
         }
 
         function unlockRequestFromVerification() { unlockRequest(actionTargetId); backToDashboard(); }
@@ -2626,6 +2017,580 @@
             document.getElementById('detailModal').style.display = 'none';
             openVerification(req.id);
         }
+
+        // AGREGADA: Función faltante para confirmar verificación previa
+        function confirmPreVerification() {
+            const isChecked = document.getElementById('checkPreVerify').checked;
+            if (!isChecked) {
+                alert("Debe confirmar que ha verificado el documento físico.");
+                return;
+            }
+
+            document.getElementById('preVerificationModal').style.display = 'none';
+            const req = requests.find(r => r.id === actionTargetId);
+            if (req.lockedBy !== 'Me') req.lockedBy = 'Me';
+            openVerification(req.id);
+        }
+
+        function openVerification(id) {
+            const req = requests.find(r => r.id === id);
+            currentVerificationId = id; // Guardar ID actual para lógica interna
+            
+            // Header Info
+            document.getElementById('verifyReqId').innerText = `Solicitud #${req.id}`;
+            document.getElementById('verifyReqName').innerText = `${req.name} (CI: ${req.ci})`;
+
+            // Populate Data Container
+            const container = document.getElementById('verifyDataContainer');
+            
+            const type = req.type || 'Apostilla';
+            const inst = req.institution || 'N/A';
+            const phys = req.physicalNumber || 'N/A';
+            const sig = req.signature || req.signatureType || 'N/A'; 
+            
+            // Lógica de Exoneración
+            const currentAmount = req.amount !== undefined ? req.amount : 80100;
+            const isExonerated = currentAmount === 0;
+
+            let officialHtml = '';
+            if (req.official) {
+                officialHtml = `
+                <div class="col-12 bg-light p-2 rounded border mt-2">
+                    <label class="small text-muted fw-bold text-uppercase d-block">Funcionario Firmante Detectado</label>
+                    <strong class="text-dark text-uppercase">${req.official}</strong>
+                </div>`;
+            }
+
+            // Lógica condicional para mostrar control de exoneración solo a supervisor
+            let exonerationControlHtml = '';
+            if (currentProfile === 'supervisor') {
+                exonerationControlHtml = `
+                <div class="col-6">
+                    <label class="small text-muted fw-bold text-uppercase d-block mb-1">¿Exonerar Pago?</label>
+                    <select class="form-select form-select-sm border-secondary-subtle fw-bold text-dark" id="verifyExonerateSelect" onchange="handleExonerationChange(this)">
+                        <option value="No" ${!isExonerated ? 'selected' : ''}>No</option>
+                        <option value="Si" ${isExonerated ? 'selected' : ''}>Sí</option>
+                    </select>
+                </div>`;
+            }
+
+            // Lógica condicional para mostrar SELECT de funcionario firmante solo a 'electronico' (Operador Verificación Previa)
+            let officialSelectHtml = '';
+            if (currentProfile === 'electronico') {
+                officialSelectHtml = `
+                <div class="col-12 mt-3">
+                    <label class="small text-muted fw-bold text-uppercase d-block mb-1">Funcionario Firmante (Verificación)</label>
+                    <select class="form-select form-select-sm border-secondary-subtle fw-bold text-dark" id="verifyOfficialSelect">
+                        <option value="">Seleccione un funcionario...</option>
+                        <option value="Juan Pérez (REC)" ${req.official === 'Juan Pérez (REC)' ? 'selected' : ''}>Juan Pérez (REC)</option>
+                        <option value="María González (MEC)" ${req.official === 'María González (MEC)' ? 'selected' : ''}>María González (MEC)</option>
+                        <option value="Pedro Ruiz (CSJ)" ${req.official === 'Pedro Ruiz (CSJ)' ? 'selected' : ''}>Pedro Ruiz (CSJ)</option>
+                        <option value="Ana López (MRE)" ${req.official === 'Ana López (MRE)' ? 'selected' : ''}>Ana López (MRE)</option>
+                    </select>
+                </div>`;
+            }
+
+            container.innerHTML = `
+                <div class="col-6">
+                    <label class="small text-muted fw-bold text-uppercase d-block">País Destino</label>
+                    <strong class="text-dark">${req.country}</strong>
+                </div>
+                <div class="col-6">
+                    <label class="small text-muted fw-bold text-uppercase d-block">Trámite</label>
+                    <strong class="text-dark">${type}</strong>
+                </div>
+                <div class="col-12">
+                    <label class="small text-muted fw-bold text-uppercase d-block">Institución Emisora</label>
+                    <strong class="text-dark">${inst}</strong>
+                </div>
+                <div class="col-12">
+                    <label class="small text-muted fw-bold text-uppercase d-block">Tipo Documento</label>
+                    <strong class="text-primary fs-5">${req.doc}</strong>
+                </div>
+                <div class="col-6">
+                    <label class="small text-muted fw-bold text-uppercase d-block">Nro. Físico / Certificado</label>
+                    <strong class="text-dark">${phys}</strong>
+                </div>
+                <div class="col-6">
+                    <label class="small text-muted fw-bold text-uppercase d-block">Firma</label>
+                    <span class="badge ${sig.includes('Electrónica') ? 'bg-primary-subtle text-primary border border-primary-subtle' : 'bg-light text-dark border'}">${sig}</span>
+                </div>
+                <div class="col-12">
+                    <label class="small text-muted fw-bold text-uppercase d-block">Titular del Documento</label>
+                    <strong class="text-dark text-uppercase">${req.name || req.titularName}</strong>
+                    <div class="small text-muted">CI: ${req.ci || 'N/A'}</div>
+                </div>
+
+                <!-- SECCIÓN DE EXONERACIÓN -->
+                <div class="col-12 border-top pt-2 mt-1"></div>
+                <div class="col-6">
+                    <label class="small text-muted fw-bold text-uppercase d-block mb-1">Importe a Pagar</label>
+                    <strong class="text-primary fs-5" id="verifyAmountDisplay">Gs. ${currentAmount.toLocaleString('es-PY')}</strong>
+                </div>
+                ${exonerationControlHtml}
+                
+                <!-- SECCIÓN FUNCIONARIO FIRMANTE (SOLO VERIFICACIÓN PREVIA) -->
+                ${officialSelectHtml}
+
+                ${(currentProfile !== 'electronico' ? officialHtml : '')} 
+            `;
+            // Nota: He ocultado el bloque officialHtml (solo lectura) si se muestra el select para evitar duplicidad visual para el operador.
+
+            const splitContainer = document.querySelector('.split-screen-container');
+            const viewerContainer = document.querySelector('.split-side-a');
+            const physicalBanner = document.getElementById('physicalVerificationBanner');
+
+            // 1. Limpiar estados previos
+            splitContainer.classList.remove('single-mode');
+            viewerContainer.classList.remove('hidden');
+            physicalBanner.classList.add('hidden');
+
+            // 2. Lógica de visualización
+            // MODIFICADO: Mostrar visualizador SOLO si es Electrónica Y NO es origen Funcionario (Manual)
+            // Esto evita mostrar el placeholder vacío cuando el funcionario crea la solicitud sin adjuntar archivo.
+            const showViewer = sig.includes('Electrónica') && req.origin !== 'Funcionario';
+
+            if (showViewer) {
+                // Modo Pantalla Dividida con Visualizador PDF
+                viewerContainer.innerHTML = `
+                    <div class="pdf-viewer-placeholder">
+                        <i data-lucide="file-text" style="width: 64px; height: 64px; opacity: 0.5;"></i>
+                        <p class="mt-3 fw-bold">Visualizador de Documento</p>
+                        <small class="text-white-50">Aquí se cargará el PDF digital o escaneado</small>
+                        <button class="btn btn-sm btn-outline-light mt-3" onclick="alert('Simulando zoom...')"><i data-lucide="maximize"></i> Ampliar</button>
+                    </div>
+                `;
+            } else {
+                // Modo Pantalla Única (Física o Manual sin adjunto)
+                splitContainer.classList.add('single-mode');
+                
+                // Mostrar banner de verificación física solo si es Ológrafa (NO Electrónica)
+                if (!sig.includes('Electrónica')) {
+                    physicalBanner.classList.remove('hidden');
+                }
+            }
+
+            document.getElementById('dashboardView').classList.add('hidden');
+            document.getElementById('verificationView').classList.remove('hidden');
+            
+            // Lógica para ocultar botón devolver en vista de verificación
+            const btnReturn = document.getElementById('btn-verify-return');
+            const btnReject = document.getElementById('btn-verify-reject');
+            
+            if(currentProfile === 'externo') {
+                btnReturn.classList.add('hidden');
+                btnReject.classList.remove('w-50');
+                btnReject.classList.add('w-100');
+            } else {
+                btnReturn.classList.remove('hidden');
+                btnReject.classList.remove('w-100');
+                btnReject.classList.add('w-50');
+            }
+
+            lucide.createIcons();
+        }
+
+        function handleExonerationChange(select) {
+            if (select.value === 'Si') {
+                // Abrir modal de motivo
+                document.getElementById('exonerationObs').value = '';
+                document.getElementById('exonerationModal').style.display = 'flex';
+                lucide.createIcons();
+            } else {
+                // Revertir precio (Reset a 80100 por defecto)
+                const req = requests.find(r => r.id === currentVerificationId);
+                if(req) {
+                    req.amount = 80100; 
+                    req.exonerationReason = null;
+                    document.getElementById('verifyAmountDisplay').innerText = `Gs. ${req.amount.toLocaleString('es-PY')}`;
+                }
+            }
+        }
+
+        // NUEVA FUNCIÓN PARA EL BOTÓN DE LA GRILLA (DASHBOARD)
+        function exonerateRequest(id) {
+            actionTargetId = id; // Guardamos el ID para usarlo en confirmExoneration
+            const txt = document.getElementById('exonerationObs');
+            txt.value = '';
+            txt.classList.remove('is-invalid'); // Limpiar estado de error previo
+            document.getElementById('exonerationModal').style.display = 'flex';
+            lucide.createIcons();
+        }
+
+        // FUNCIÓN CONFIRMAR ACTUALIZADA (SOPORTA AMBOS CONTEXTOS)
+        function confirmExoneration() {
+            const obsInput = document.getElementById('exonerationObs');
+            const obs = obsInput.value;
+            
+            // VALIDACIÓN VISUAL
+            if(!obs.trim()) {
+                obsInput.classList.add('is-invalid');
+                return;
+            }
+            obsInput.classList.remove('is-invalid');
+
+            // Detectar contexto: ¿Estamos en Verificación o en Dashboard?
+            const isVerificationContext = !document.getElementById('verificationView').classList.contains('hidden');
+            
+            // Determinar ID objetivo
+            const targetId = isVerificationContext ? currentVerificationId : actionTargetId;
+            const req = requests.find(r => r.id === targetId);
+
+            if(req) {
+                // --- ACCIÓN PRINCIPAL: CERAR EL IMPORTE ---
+                req.amount = 0; 
+                req.exonerationReason = obs;
+                
+                // MODIFICADO: Ya NO cambia el estado a 'Finalizados' automáticamente.
+                // Se mantiene en el estado actual para que el funcionario continúe el flujo (Aprobar).
+                
+                if (isVerificationContext) {
+                    // Lógica para pantalla de verificación (Solo actualiza visualmente el monto)
+                    const display = document.getElementById('verifyAmountDisplay');
+                    if(display) display.innerText = "Gs. 0";
+                } else {
+                    // Lógica para pantalla dashboard (Si se usara desde allí)
+                    filterTable(currentStatus); 
+                }
+            }
+            
+            document.getElementById('exonerationModal').style.display = 'none';
+        }
+
+        // FUNCIÓN CANCELAR ACTUALIZADA
+        function cancelExoneration() {
+            document.getElementById('exonerationModal').style.display = 'none';
+            document.getElementById('exonerationObs').classList.remove('is-invalid'); // Limpiar error
+            
+            // Solo si estamos en verificación revertimos el select
+            const isVerificationContext = !document.getElementById('verificationView').classList.contains('hidden');
+            if (isVerificationContext) {
+                const select = document.getElementById('verifyExonerateSelect');
+                if(select) select.value = 'No';
+            }
+            // En dashboard no hace falta revertir nada visual extra
+        }
+
+        function backToDashboard() {
+            document.getElementById('verificationView').classList.add('hidden');
+            document.getElementById('liquidationView').classList.add('hidden');
+            document.getElementById('newRequestView').classList.add('hidden');
+            document.getElementById('dashboardView').classList.remove('hidden');
+            
+            // MODIFICADO: Asegurar que el tab correcto esté activo visualmente
+            let btnId = '';
+            if (currentStatus === 'Análisis') btnId = 'btn-analisis';
+            else if (currentStatus === 'Aprobado') btnId = 'btn-aprobado';
+            else if (currentStatus === 'Devuelto') btnId = 'btn-devuelto';
+            else if (currentStatus === 'Rechazado') btnId = 'btn-rechazado';
+            else if (currentStatus === 'Archivado') btnId = 'btn-archivado'; // Nuevo mapeo
+            else if (currentStatus === 'Finalizados') btnId = 'btn-finalizados';
+            
+            const btn = document.getElementById(btnId);
+            filterTable(currentStatus, btn);
+        }
+
+        function showRequestDetails(id) {
+            const req = requests.find(r => r.id === id);
+            if (!req) return;
+
+            // Construcción del HTML con TODOS los datos disponibles
+            const detailsHTML = `
+                <div class="row g-3 text-start">
+                    <div class="col-12 border-bottom pb-2 mb-2">
+                        <h6 class="fw-bold text-primary mb-0">Información General</h6>
+                    </div>
+                    <div class="col-6">
+                        <span class="fw-bold text-muted small text-uppercase d-block">Nro. Solicitud</span>
+                        <strong class="text-navy">${req.id}</strong>
+                    </div>
+                    <div class="col-6">
+                        <span class="fw-bold text-muted small text-uppercase d-block">Fecha</span>
+                        <span class="text-dark">${req.date}</span>
+                    </div>
+                    <div class="col-6">
+                        <span class="fw-bold text-muted small text-uppercase d-block">Estado</span>
+                        <span class="badge bg-dark">${req.status}</span>
+                    </div>
+                    <div class="col-6">
+                        <span class="fw-bold text-muted small text-uppercase d-block">Origen</span>
+                        <span class="text-dark">${req.origin || 'Web'}</span>
+                    </div>
+
+                    <div class="col-12 border-bottom pb-2 mb-2 mt-3">
+                        <h6 class="fw-bold text-primary mb-0">Datos del Titular</h6>
+                    </div>
+                    <div class="col-8">
+                        <span class="fw-bold text-muted small text-uppercase d-block">Nombre Completo</span>
+                        <strong class="text-dark text-uppercase">${req.name}</strong>
+                    </div>
+                    <div class="col-4">
+                        <span class="fw-bold text-muted small text-uppercase d-block">C.I. / Documento</span>
+                        <span class="text-dark">${req.ci || 'N/A'}</span>
+                    </div>
+
+                    <div class="col-12 border-bottom pb-2 mb-2 mt-3">
+                        <h6 class="fw-bold text-primary mb-0">Detalles del Documento</h6>
+                    </div>
+                    <div class="col-6">
+                        <span class="fw-bold text-muted small text-uppercase d-block">País de Destino</span>
+                        <strong class="text-dark">${req.country || '-'}</strong>
+                    </div>
+                    <div class="col-6">
+                        <span class="fw-bold text-muted small text-uppercase d-block">Tipo de Trámite</span>
+                        <strong class="text-dark">${req.type || 'Apostilla'}</strong>
+                    </div>
+                    <div class="col-12">
+                        <span class="fw-bold text-muted small text-uppercase d-block">Institución Emisora</span>
+                        <span class="text-dark">${req.institution || '-'}</span>
+                    </div>
+                    <div class="col-12">
+                        <span class="fw-bold text-muted small text-uppercase d-block">Tipo de Documento</span>
+                        <strong class="text-navy">${req.doc}</strong>
+                    </div>
+                    <div class="col-6">
+                        <span class="fw-bold text-muted small text-uppercase d-block">Nro. Físico / Certificado</span>
+                        <strong class="text-primary">${req.physicalNumber || 'NO ASIGNADO'}</strong>
+                    </div>
+                    <div class="col-6">
+                        <span class="fw-bold text-muted small text-uppercase d-block">Tipo de Firma</span>
+                        <span class="badge bg-light text-dark border">${req.signature || req.signatureType || '-'}</span>
+                    </div>
+                    ${req.official ? `
+                    <div class="col-12">
+                        <span class="fw-bold text-muted small text-uppercase d-block">Funcionario Firmante</span>
+                        <span class="text-dark text-uppercase">${req.official}</span>
+                    </div>` : ''}
+
+                    <div class="col-12 border-top pt-2 mt-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold text-muted small text-uppercase">Importe</span>
+                            <strong class="text-success fs-5">Gs. ${(req.amount || 0).toLocaleString('es-PY')}</strong>
+                        </div>
+                        ${req.amount === 0 ? '<small class="text-info d-block text-end fst-italic">* Exonerado</small>' : ''}
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('detailModalContent').innerHTML = detailsHTML;
+            
+            const footer = document.getElementById('detailModalFooter');
+            // MODIFICADO: Solo mostrar botón Cerrar, ocultando Tomar y Cancelar
+            footer.innerHTML = `
+                <button class="btn btn-light border fw-bold w-100" onclick="closePopup()">Cerrar</button>
+            `;
+
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+
+        function handleDetailClick(id) {
+            // VERIFICACIÓN DE SEGURIDAD: Impedir tomar más de una solicitud
+            const myLocked = requests.find(r => r.lockedBy === 'Me');
+            if (myLocked && myLocked.id !== id) {
+                alert(`Usted ya está procesando la solicitud #${myLocked.id}. Debe finalizarla o liberarla antes de tomar otra.`);
+                return;
+            }
+
+            const req = requests.find(r => r.id === id);
+            actionTargetId = id;
+            document.getElementById('detailModalContent').innerHTML = getRequestSummaryHTML(req);
+            
+            const footer = document.getElementById('detailModalFooter');
+            if (req.lockedBy === 'Me') {
+                footer.innerHTML = `
+                    <button class="btn btn-light border fw-bold" onclick="closePopup()">Cancelar</button>
+                    <button class="btn btn-outline-secondary fw-bold" onclick="unlockRequest('${req.id}'); closePopup()">Liberar</button>
+                    <button class="btn-main px-4" onclick="takeRequestFromModal()">Continuar</button>
+                `;
+            } else {
+                footer.innerHTML = `
+                    <button class="btn btn-light border fw-bold" onclick="closePopup()">Cancelar</button>
+                    <button class="btn-main px-4" onclick="takeRequestFromModal()">Tomar Solicitud</button>
+                `;
+            }
+
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+
+        function completeRequest(id) {
+            const req = requests.find(r => r.id === id);
+            if (!req) return;
+
+            document.getElementById('dashboardView').classList.add('hidden');
+            document.getElementById('newRequestView').classList.remove('hidden');
+            document.getElementById('requestFormContainer').classList.remove('hidden');
+            document.getElementById('loadedDocsSection').classList.add('hidden');
+
+            // Set Editing Mode
+            isEditing = true;
+            editingId = id;
+            document.getElementById('formTitle').innerText = `Corregir Solicitud #${id}`;
+            document.getElementById('formBadge').innerText = "Modificación";
+            document.getElementById('btnSubmitForm').innerHTML = `<i data-lucide="save" style="width:16px;"></i> Guardar Cambios`;
+
+            // Populate Form (Simplified)
+            setOption('reqCountry', req.country, document.getElementById('div_reqCountry'));
+            setOption('reqSignature', req.signature || req.signatureType, document.getElementById('div_reqSignature'));
+            setOption('reqType', req.type, document.getElementById('div_reqType'));
+            setOption('reqInstitution', req.institution, document.getElementById('div_reqInstitution'));
+            
+            // Populate Doc Type and Data
+            setOption('reqDocType', req.doc, document.getElementById('div_reqDocType'));
+
+            document.getElementById('titularName').value = req.name;
+            document.getElementById('titularCertNum').value = req.physicalNumber || ""; 
+            
+            if(req.official) {
+                setOption('reqOfficial', req.official, document.getElementById('div_reqOfficial'));
+            }
+
+            handleSignatureChange();
+            handleDocTypeChange();
+        }
+
+        function removeFromGrid(index) { 
+            tempRequestsList.splice(index, 1); 
+            renderLoadedDocuments(); 
+            if(tempRequestsList.length === 0) {
+                document.getElementById('loadedDocsSection').classList.add('hidden');
+                document.getElementById('requestFormContainer').classList.remove('hidden');
+            }
+        }
+
+        function submitFinalRequest() {
+            tempRequestsList.forEach(item => {
+                // Determinar estado: Por defecto 'Aprobado' si es Auto, 'Análisis' si no.
+                let initialStatus = item.validationType === 'Automática' ? 'Aprobado' : 'Análisis';
+                
+                // MODIFICADO: Para el perfil Supervisor (Administrador), siempre enviar a 'Análisis'
+                if (currentProfile === 'supervisor') {
+                    initialStatus = 'Análisis';
+                }
+
+                requests.push({ 
+                    id: `2026-${Math.floor(Math.random()*90000)}`, 
+                    date: '28/01/2026 20:30', 
+                    ...item, 
+                    name: item.titularName, 
+                    ci: item.titularCI || 'N/A', 
+                    doc: item.docType, 
+                    physicalNumber: item.titularDocNum, // MAPEO CORRECTO
+                    signatureType: item.signature,
+                    status: initialStatus, 
+                    lockedBy: null,
+                    origin: 'Funcionario' 
+                });
+            });
+
+            // MODIFICADO: Si es Supervisor u Operador Verificación Previa, forzar la vista a Análisis
+            // Esto asegura que vean el nuevo registro disponible.
+            if (currentProfile === 'supervisor' || currentProfile === 'electronico') {
+                currentStatus = 'Análisis';
+            }
+
+            backToDashboard();
+        }
+
+        function showRequestForm() {
+            document.getElementById('newRequestForm').reset();
+            
+            // LIMPIEZA EXPLÍCITA
+            document.getElementById('reqCountry').value = '';
+            document.getElementById('reqInstitution').value = '';
+            document.getElementById('reqType').value = '';
+            document.getElementById('reqSignature').value = '';
+            document.getElementById('reqDocType').value = '';
+            document.getElementById('reqOfficial').value = '';
+
+            // LIMPIEZA DE ARCHIVOS ADICIONALES
+            const fileCI = document.getElementById('reqFileCI');
+            const fileVida = document.getElementById('reqFileVidaResidencia');
+            if(fileCI) { fileCI.value = ''; fileCI.required = false; }
+            if(fileVida) { fileVida.value = ''; fileVida.required = false; }
+            document.getElementById('policeRecordRequirements').classList.add('hidden');
+
+            document.querySelectorAll('.selected-value').forEach(e => {
+                e.innerText = 'Seleccione...';
+                e.classList.add('text-muted');
+            });
+
+            document.getElementById('requestFormContainer').classList.remove('hidden');
+            document.getElementById('loadedDocsSection').classList.add('hidden');
+            // ASEGURAR QUE EL APARTADO DE DATOS ESTÉ OCULTO
+            document.getElementById('additionalDataTabs').classList.add('hidden');
+            
+            handleSignatureChange();
+        }
+
+        function showCertHelp(e) {
+            e.preventDefault();
+            const popupTitle = document.getElementById('popupTitle');
+            const popupContent = document.getElementById('popupContent');
+            popupTitle.innerText = "Ayuda";
+            popupContent.innerHTML = `<div class="p-3 text-center">Aquí va la imagen de ayuda del certificado.</div>`;
+            document.getElementById('genericPopup').style.display = 'flex';
+        }
+
+        // --- LÓGICA DE PROCESOS (APROBAR, RECHAZAR, DEVOLVER) ---
+        function processApprove() {
+            // Lógica existente (se asume que existe en el bloque original o es trivial)
+             const req = requests.find(r => r.id === actionTargetId);
+             if (req) {
+                 req.status = 'Aprobado';
+                 // IMPORTANTE: Liberar el bloqueo al aprobar para permitir tomar la siguiente solicitud inmediatamente
+                 req.lockedBy = null;
+
+                 // Si fue exonerado previamente en verificación, mantener el monto en 0.
+                 // Si no, mantener 80100.
+                 // La lógica ya está en el objeto 'req'.
+             }
+             closePopup();
+             // Si estaba en verificación, volver al dashboard
+             if (!document.getElementById('verificationView').classList.contains('hidden')) {
+                 backToDashboard();
+             } else {
+                 filterTable(currentStatus);
+             }
+        }
+
+        function processReturn() {
+             const obsInput = document.getElementById('returnObs');
+             if (!obsInput.value.trim()) {
+                 obsInput.classList.add('is-invalid');
+                 return;
+             }
+             const req = requests.find(r => r.id === actionTargetId);
+             if (req) {
+                 req.status = 'Devuelto';
+                 req.lockedBy = null;
+             }
+             closePopup();
+             if (!document.getElementById('verificationView').classList.contains('hidden')) {
+                 backToDashboard();
+             } else {
+                 filterTable(currentStatus);
+             }
+        }
+
+        function processReject() {
+             const obsInput = document.getElementById('rejectObs');
+             if (!obsInput.value.trim()) {
+                 obsInput.classList.add('is-invalid');
+                 return;
+             }
+             const req = requests.find(r => r.id === actionTargetId);
+             if (req) {
+                 req.status = 'Rechazado';
+                 req.lockedBy = null;
+             }
+             closePopup();
+             if (!document.getElementById('verificationView').classList.contains('hidden')) {
+                 backToDashboard();
+             } else {
+                 filterTable(currentStatus);
+             }
+        }
+
     </script>
 </body>
 </html>
