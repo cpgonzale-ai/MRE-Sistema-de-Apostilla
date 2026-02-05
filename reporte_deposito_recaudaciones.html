@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Depósitos - SIL</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SheetJS para Excel -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <!-- html2pdf para PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: #525659; /* Fondo gris oscuro tipo visor PDF */
+        }
+
+        .sheet {
+            background: white;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 2rem auto;
+            padding: 15mm 15mm;
+            position: relative;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        /* Estilos específicos para la tabla para igualar la imagen */
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px; /* Ajuste fino para densidad de datos */
+        }
+
+        .report-table th {
+            text-align: left;
+            font-weight: 700;
+            padding: 4px 2px;
+            color: #000;
+        }
+
+        .report-table td {
+            padding: 2px 2px;
+            color: #1a1a1a;
+            vertical-align: top;
+        }
+
+        /* Utilidades de impresión */
+        @media print {
+            body {
+                background: none;
+                margin: 0;
+            }
+            .sheet {
+                margin: 0;
+                box-shadow: none;
+                width: 100%;
+                padding: 10mm;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+
+        /* Control de alineación numérica */
+        .tabular-nums {
+            font-feature-settings: "tnum";
+            font-variant-numeric: tabular-nums;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Panel de Control (No imprimible) -->
+    <div class="no-print fixed top-0 left-0 w-full bg-white border-b border-gray-300 p-4 shadow-md z-50 flex justify-between items-center">
+        <div>
+            <h2 class="font-bold text-gray-700">Prototipo: Depósitos de Recaudaciones</h2>
+            <p class="text-xs text-gray-500">Vista previa de impresión A4</p>
+        </div>
+        <div class="space-x-2">
+            <button onclick="exportToExcel()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-medium transition flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2v-4M17 9l-5 5-5-5M12 12.8V2.5"/></svg>
+                Descargar Excel
+            </button>
+            <button onclick="exportToPDF()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium transition flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                Descargar PDF
+            </button>
+        </div>
+    </div>
+
+    <!-- Espaciador para el panel fijo -->
+    <div class="h-20 no-print"></div>
+
+    <!-- Documento A4 -->
+    <div class="sheet" id="report-content">
+        
+        <!-- Header Superior -->
+        <div class="flex justify-between items-start mb-6">
+            <!-- Bloque Izquierdo: Ministerio Hacienda -->
+            <div class="text-[10px] leading-tight text-gray-800 uppercase font-medium">
+                Ministerio de Hacienda<br>
+                Sub-Sria. de Estado de Adm. Financiera<br>
+                Dirección General del Tesoro Público
+            </div>
+
+            <!-- Bloque Derecho: Fecha y Logo -->
+            <div class="text-right flex flex-col items-end">
+                <div class="text-[11px] font-bold mb-2">Asunción, 7 de enero de 2026</div>
+                <!-- Logo SIA Simulado (SVG) -->
+                <div class="flex items-center gap-2">
+                    <svg width="40" height="30" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 60 Q 30 10 50 40 T 90 20" stroke="#000" stroke-width="8" fill="none"/>
+                        <path d="M15 70 Q 35 20 55 50 T 95 30" stroke="#333" stroke-width="4" fill="none"/>
+                        <text x="50" y="75" font-family="Arial" font-weight="bold" font-size="24" text-anchor="middle" fill="#000">SIA</text>
+                    </svg>
+                    <div class="text-[8px] text-left leading-none uppercase">
+                        Sistema Integrado de<br>Apostilla electrónica del Paraguay
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Título Principal -->
+        <div class="text-center mb-6">
+            <h1 class="text-sm font-bold uppercase tracking-wide">Depósitos de las Recaudaciones</h1>
+        </div>
+
+        <!-- Metadatos del Reporte -->
+        <div class="mb-4 text-[11px] leading-relaxed">
+            <div class="grid grid-cols-12">
+                <div class="col-span-12">
+                    <span class="font-normal text-gray-700">Correspondiente al Mes:</span>
+                    <span class="font-bold ml-1">diciembre del 01/12/2025 al 31/12/2025</span>
+                </div>
+                
+                <div class="col-span-8 mt-1">
+                    <span class="font-normal text-gray-700">Institución:</span>
+                    <span class="font-bold ml-1">MINISTERIO DE RELACIONES EXTERIORES</span>
+                </div>
+                
+                <div class="col-span-4 mt-1 text-right">
+                    <span class="font-normal text-gray-700">Cuenta:</span>
+                    <span class="font-bold ml-1">000009480776 - 1030</span>
+                </div>
+
+                <div class="col-span-12 mt-1">
+                    <span class="font-normal text-gray-700">Dependencia:</span>
+                    <span class="font-bold ml-1">DIRECCIÓN DE LEGALIZACIONES</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de Datos -->
+        <table class="report-table" id="dataTable">
+            <thead>
+                <!-- Fila especial de encabezado de cuenta sobre Boleta Fiscal -->
+                <tr>
+                    <th class="w-24"></th> <!-- Fecha -->
+                    <th class="w-auto"></th> <!-- Sucursal -->
+                    <th class="w-32 text-right pb-1 text-[10px]">000009480776 - 1030</th> <!-- Cuenta repetida -->
+                    <th class="w-32"></th> <!-- Importe -->
+                </tr>
+                <tr class="border-b border-transparent">
+                    <th class="pb-2">Fecha de Depósito</th>
+                    <th class="pb-2">Sucursal</th>
+                    <th class="pb-2 text-right">Nº Boleta Fiscal</th>
+                    <th class="pb-2 text-right">Importe de Valores</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- Los datos se generan vía JS para mantener el código limpio -->
+            </tbody>
+        </table>
+
+        <!-- Footer -->
+        <div class="mt-8 pt-4 border-t border-transparent text-[10px] italic text-gray-600 flex justify-between">
+            <div>
+                Impreso por JUAN C. FERREIRA 7/1/2026 16:22:25
+            </div>
+            <div>
+                Página 1 de 3
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Datos extraídos de la imagen (Muestra representativa)
+        const reportData = [
+            { fecha: "02/12/2025", sucursal: "Legalizaciones VUP", boleta: "1143166", importe: "48.502.500" },
+            { fecha: "03/12/2025", sucursal: "Legalizaciones Central", boleta: "2397614", importe: "59.708.250" },
+            { fecha: "03/12/2025", sucursal: "Legalizaciones DGREC", boleta: "1143168", importe: "26.035.250" },
+            { fecha: "04/12/2025", sucursal: "Legalizaciones Central", boleta: "1304477", importe: "20.460.250" },
+            { fecha: "04/12/2025", sucursal: "Legalizaciones VUP", boleta: "2397615", importe: "111.667.250" },
+            { fecha: "04/12/2025", sucursal: "Legalizaciones DGREC", boleta: "1143169", importe: "23.192.000" },
+            { fecha: "05/12/2025", sucursal: "Legalizaciones Central", boleta: "1304478", importe: "25.477.750" },
+            { fecha: "05/12/2025", sucursal: "Legalizaciones DGREC", boleta: "2397617", importe: "119.360.750" },
+            { fecha: "09/12/2025", sucursal: "Legalizaciones Central", boleta: "1304479", importe: "27.206.000" },
+            { fecha: "09/12/2025", sucursal: "Legalizaciones VUP", boleta: "2397619", importe: "133.577.000" },
+            { fecha: "09/12/2025", sucursal: "Legalizaciones VUP", boleta: "1143170", importe: "26.815.750" },
+            { fecha: "09/12/2025", sucursal: "Legalizaciones DGREC", boleta: "1143171", importe: "36.293.250" },
+            { fecha: "09/12/2025", sucursal: "Legalizaciones DGREC", boleta: "1304482", importe: "31.108.500" },
+            { fecha: "10/12/2025", sucursal: "Legalizaciones Central", boleta: "1304480", importe: "34.174.750" },
+            { fecha: "10/12/2025", sucursal: "Legalizaciones VUP", boleta: "2397621", importe: "126.218.000" },
+            { fecha: "11/12/2025", sucursal: "Legalizaciones Central", boleta: "1143172", importe: "57.812.750" },
+            { fecha: "11/12/2025", sucursal: "Legalizaciones VUP", boleta: "2397623", importe: "94.552.000" },
+            { fecha: "11/12/2025", sucursal: "Legalizaciones DGREC", boleta: "1143173", importe: "29.157.250" },
+            { fecha: "12/12/2025", sucursal: "Legalizaciones Central", boleta: "1304483", importe: "23.638.000" },
+            { fecha: "12/12/2025", sucursal: "Legalizaciones VUP", boleta: "2397624", importe: "121.423.500" },
+            { fecha: "12/12/2025", sucursal: "Legalizaciones DGREC", boleta: "1143174", importe: "22.969.000" },
+            { fecha: "15/12/2025", sucursal: "Legalizaciones Central", boleta: "1304484", importe: "30.049.250" },
+            { fecha: "15/12/2025", sucursal: "Legalizaciones DGREC", boleta: "2397626", importe: "154.483.250" },
+            { fecha: "16/12/2025", sucursal: "Legalizaciones Central", boleta: "1304485", importe: "27.986.500" },
+            { fecha: "16/12/2025", sucursal: "Legalizaciones VUP", boleta: "2397628", importe: "108.879.750" },
+            { fecha: "16/12/2025", sucursal: "Legalizaciones VUP", boleta: "1143175", importe: "35.624.250" },
+            { fecha: "16/12/2025", sucursal: "Legalizaciones VUP", boleta: "1143176", importe: "10.927.000" },
+            { fecha: "16/12/2025", sucursal: "Legalizaciones DGREC", boleta: "1143177", importe: "64.112.500" },
+            { fecha: "16/12/2025", sucursal: "Legalizaciones DGREC", boleta: "1304487", importe: "26.983.000" },
+            { fecha: "17/12/2025", sucursal: "Legalizaciones Central", boleta: "1304486", importe: "17.784.250" },
+            { fecha: "18/12/2025", sucursal: "Legalizaciones Central", boleta: "2397629", importe: "107.095.750" },
+            { fecha: "18/12/2025", sucursal: "Legalizaciones VUP", boleta: "2397630", importe: "103.695.000" },
+            { fecha: "18/12/2025", sucursal: "Legalizaciones VUP", boleta: "1143178", importe: "22.467.250" },
+            { fecha: "18/12/2025", sucursal: "Legalizaciones DGREC", boleta: "1143179", importe: "23.192.000" },
+            { fecha: "19/12/2025", sucursal: "Legalizaciones Central", boleta: "1304488", importe: "25.031.750" },
+            { fecha: "19/12/2025", sucursal: "Legalizaciones VUP", boleta: "2397631", importe: "128.726.750" },
+            { fecha: "19/12/2025", sucursal: "Legalizaciones DGREC", boleta: "1143180", importe: "26.815.750" },
+            { fecha: "22/12/2025", sucursal: "Legalizaciones Central", boleta: "1304489", importe: "20.070.000" },
+            { fecha: "22/12/2025", sucursal: "Legalizaciones VUP", boleta: "2397633", importe: "113.172.500" },
+            { fecha: "22/12/2025", sucursal: "Legalizaciones VUP", boleta: "1143181", importe: "42.091.250" },
+            { fecha: "22/12/2025", sucursal: "Legalizaciones DGREC", boleta: "01143182", importe: "10.871.250" },
+            { fecha: "23/12/2025", sucursal: "Legalizaciones Central", boleta: "1304490", importe: "28.878.500" },
+            { fecha: "23/12/2025", sucursal: "Legalizaciones DGREC", boleta: "2397147", importe: "127.054.250" },
+            { fecha: "24/12/2025", sucursal: "Legalizaciones Central", boleta: "1304491", importe: "26.537.000" },
+            { fecha: "24/12/2025", sucursal: "Legalizaciones VUP", boleta: "2397149", importe: "119.026.250" },
+            { fecha: "24/12/2025", sucursal: "Legalizaciones DGREC", boleta: "1143183", importe: "65.785.000" },
+            { fecha: "29/12/2025", sucursal: "Legalizaciones Central", boleta: "1304492", importe: "30.829.750" },
+            { fecha: "29/12/2025", sucursal: "Legalizaciones VUP", boleta: "2397150", importe: "121.479.250" },
+            { fecha: "30/12/2025", sucursal: "Legalizaciones Central", boleta: "1143184", importe: "30.439.500" },
+            { fecha: "30/12/2025", sucursal: "Legalizaciones Central", boleta: "2397152", importe: "11.986.250" },
+        ];
+
+        const tableBody = document.getElementById('tableBody');
+
+        reportData.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${row.fecha}</td>
+                <td>${row.sucursal}</td>
+                <td class="text-right tabular-nums pr-2">${row.boleta}</td>
+                <td class="text-right tabular-nums">${row.importe}</td>
+            `;
+            tableBody.appendChild(tr);
+        });
+
+        // Funcionalidad: Exportar a Excel
+        function exportToExcel() {
+            // Preparamos los datos con el formato de encabezado correcto
+            const wsData = [
+                ["MINISTERIO DE HACIENDA"],
+                ["DEPÓSITOS DE LAS RECAUDACIONES"],
+                ["Correspondiente al Mes: diciembre del 01/12/2025 al 31/12/2025"],
+                ["Institución: MINISTERIO DE RELACIONES EXTERIORES", "Cuenta: 000009480776 - 1030"],
+                [],
+                ["Fecha de Depósito", "Sucursal", "Nº Boleta Fiscal", "Importe de Valores"]
+            ];
+            
+            reportData.forEach(row => {
+                wsData.push([row.fecha, row.sucursal, row.boleta, row.importe]);
+            });
+
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(wsData);
+            
+            // Ajustar anchos de columna
+            ws['!cols'] = [{wch: 15}, {wch: 30}, {wch: 20}, {wch: 20}];
+
+            XLSX.utils.book_append_sheet(wb, ws, "Recaudaciones");
+            XLSX.writeFile(wb, "Reporte_Depositos_Recaudaciones.xlsx");
+        }
+
+        // Funcionalidad: Exportar a PDF
+        function exportToPDF() {
+            const element = document.getElementById('report-content');
+            const opt = {
+                margin:       0,
+                filename:     'Reporte_Depositos_Recaudaciones.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+    </script>
+</body>
+</html>
