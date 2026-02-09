@@ -402,10 +402,14 @@
                     </div>
                     <div class="apartado-content">
                         <div class="row g-3">
-                            <!-- Fila 1: Nombre (75%) y Trámite (25%) -->
-                            <div class="col-md-9">
+                            <!-- Fila 1: Nombre (30%), Descripción (45%), Trámite (25%) -->
+                            <div class="col-md-3">
                                 <label class="form-label">Nombre del Documento <span class="text-danger">*</span></label>
-                                <input type="text" id="docName" class="form-control-mre" placeholder="Ej: Certificado de Antecedentes Penales" required>
+                                <input type="text" id="docName" class="form-control-mre" placeholder="Ej: Certificado de Antecedentes" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Descripción</label>
+                                <input type="text" id="docDesc" class="form-control-mre" placeholder="Descripción detallada del documento (Opcional)">
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Tipo de trámite <span class="text-danger">*</span></label>
@@ -825,9 +829,9 @@
 
     <script>
         let mockData = [
-            { id: 1030, name: 'Certificado de Antecedentes E', origen: 'Extranjero', emision: 'MANUAL', firma: 'OLÓGRAFA', validarFirma: 'N', estado: 'ACTIVO' },
-            { id: 1031, name: 'Certificado de Nacimiento N', origen: 'Nacional', emision: 'AUTOMÁTICA', firma: 'ELECTRÓNICA', validarFirma: 'S', estado: 'ACTIVO' },
-            { id: 1032, name: 'Certificado de Defunción N', origen: 'Nacional', emision: 'VAL. PREVIA', firma: 'ELECTRÓNICA', validarFirma: 'N', estado: 'ACTIVO' }
+            { id: 1030, name: 'Certificado de Antecedentes E', desc: 'Certificado para trámites consulares', origen: 'Extranjero', emision: 'MANUAL', firma: 'OLÓGRAFA', validarFirma: 'N', estado: 'ACTIVO' },
+            { id: 1031, name: 'Certificado de Nacimiento N', desc: '', origen: 'Nacional', emision: 'AUTOMÁTICA', firma: 'ELECTRÓNICA', validarFirma: 'S', estado: 'ACTIVO' },
+            { id: 1032, name: 'Certificado de Defunción N', desc: 'Requiere validación de salud', origen: 'Nacional', emision: 'VAL. PREVIA', firma: 'ELECTRÓNICA', validarFirma: 'N', estado: 'ACTIVO' }
         ];
 
         let selectedDocForDelete = null;
@@ -1027,9 +1031,11 @@
                 
                 // 1. CARGAR DATOS PRINCIPALES
                 document.getElementById('docName').value = item.name;
+                document.getElementById('docDesc').value = item.desc || ''; // Cargar descripción
                 document.getElementById('docEstado').value = item.estado;
                 document.getElementById('docValidarFirma').value = item.validarFirma || 'N';
                 
+                // Mapeo básico de valores para demo
                 const emisionMap = { 'AUTOMÁTICA': 'AUT', 'MANUAL': 'PRE', 'VAL. PREVIA': 'VAL', 'VERIFICACIÓN PREVIA': 'VER_PRE' };
                 const firmaMap = { 'OLÓGRAFA': 'OLO', 'ELECTRÓNICA': 'ELE' };
                 const origenMap = { 'Extranjero': 'EXT', 'Nacional': 'NAC' };
@@ -1333,6 +1339,7 @@
             // LÓGICA DE GUARDADO (CREAR / EDITAR)
             // Verificamos existencia de elementos antes de acceder a .value
             const nombreInput = document.getElementById('docName');
+            const descInput = document.getElementById('docDesc'); // Referencia a descripción
             const origenSelect = document.getElementById('docOrigen');
             const emisionSelect = document.getElementById('docEmision');
             const firmaSelect = document.getElementById('docFirma');
@@ -1345,6 +1352,7 @@
             }
 
             const nombre = nombreInput.value;
+            const desc = descInput.value; // Valor descripción
             const origenText = origenSelect.options[origenSelect.selectedIndex].text;
             const emisionText = emisionSelect.options[emisionSelect.selectedIndex].text.toUpperCase();
             const firmaText = firmaSelect.options[firmaSelect.selectedIndex].text.toUpperCase();
@@ -1358,6 +1366,7 @@
                     mockData[docIndex] = {
                         ...mockData[docIndex],
                         name: nombre,
+                        desc: desc,
                         origen: origenText,
                         emision: emisionText,
                         firma: firmaText,
@@ -1371,6 +1380,7 @@
                 mockData.push({
                     id: newId,
                     name: nombre,
+                    desc: desc,
                     origen: origenText,
                     emision: emisionText,
                     firma: firmaText,
