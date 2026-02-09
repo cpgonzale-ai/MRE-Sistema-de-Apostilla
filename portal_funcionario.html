@@ -408,10 +408,8 @@
                         </div>
                         <div class="table-responsive">
                             <table class="mre-table" id="requestsTable">
-                                <thead>
-                                    <tr id="tableHeadRow">
-                                        <!-- JS Header injection -->
-                                    </tr>
+                                <thead id="tableHeadContainer">
+                                    <!-- JS Header & Filter injection -->
                                 </thead>
                                 <tbody id="tableBody"></tbody>
                             </table>
@@ -1482,49 +1480,108 @@
             document.querySelectorAll('.status-btn').forEach(b => b.classList.remove('active'));
             if(btn) btn.classList.add('active');
 
-            const thead = document.getElementById('tableHeadRow');
+            const thead = document.getElementById('tableHeadContainer');
             
             // Lógica para mostrar columna Turno
             let showTurno = (currentProfile !== 'olografo') && (status !== 'Finalizados');
 
+            // --- CONSTRUCCIÓN DE ENCABEZADOS Y FILTROS ---
+            let headerHTML = '';
+            let filterHTML = '';
+            
+            // Helpers para generar celdas de filtro rápidamente
+            const filterInput = (ph) => `<th><input type="text" class="form-control form-control-sm" placeholder="${ph}"></th>`;
+            const filterDisabled = () => `<th><input type="text" class="form-control form-control-sm" disabled style="background-color: transparent; border: none;"></th>`;
+            const filterEmpty = `<th></th>`;
+
             // CONFIGURACION DE COLUMNAS
             if (status === 'Finalizados') {
-                thead.innerHTML = `
-                    <th>Nro. Solicitud</th>
-                    <th class="text-center">Documento Final</th>
-                    <th class="text-center">Comprobante</th>
-                    <th>Fecha</th>
-                    <th>Titular</th>
-                    <th>CI Solicitante</th>
-                    <th>Nro. de Certificado</th>
-                    <th>Documento</th>
-                    <th>Tipo Firma</th>
-                    <th class="text-center">Acción</th>
+                // Títulos
+                headerHTML = `
+                    <tr>
+                        <th>Nro. Solicitud</th>
+                        <th class="text-center">Documento Final</th>
+                        <th class="text-center">Comprobante</th>
+                        <th>Fecha</th>
+                        <th>Titular</th>
+                        <th>CI Solicitante</th>
+                        <th>Nro. de Certificado</th>
+                        <th>Documento</th>
+                        <th>Tipo Firma</th>
+                        <th class="text-center">Acción</th>
+                    </tr>
+                `;
+                
+                // Filtros para Finalizados
+                filterHTML = `
+                    <tr class="bg-light">
+                        ${filterInput('Buscar Nro...')}
+                        ${filterEmpty} <!-- Doc Final -->
+                        ${filterEmpty} <!-- Comprobante -->
+                        ${filterInput('Buscar Fecha...')}
+                        ${filterInput('Buscar Titular...')}
+                        ${filterInput('Buscar CI...')}
+                        ${filterInput('Buscar Cert...')}
+                        ${filterInput('Buscar Doc...')}
+                        ${filterInput('Buscar Firma...')}
+                        ${filterEmpty} <!-- Acción -->
+                    </tr>
                 `;
             } else {
+                // Definición de columnas variables
                 let checkCol = status === 'Aprobado' ? `<th class="text-center" style="width: 60px;"><input type="checkbox" class="form-check-input" onclick="toggleSelectAll(this)"></th>` : '';
                 let importeCol = status === 'Aprobado' ? `<th class="text-end">Importe</th>` : '';
                 let turnoCol = showTurno ? `<th>Nro Turno</th>` : '';
-
-                let headers = `
-                    ${checkCol}
-                    ${turnoCol}
-                    <th>Nro. Solicitud</th>
-                    <th>Fecha</th>
-                    <th>Titular</th>
-                    <th>CI Solicitante</th>
-                    <th>Nro. de Certificado</th>
-                    <th>Documento</th>
-                    <th>Tipo Firma</th>
-                `;
-
+                let funcionarioCol = '';
+                
                 if (currentProfile === 'supervisor' && (status === 'Análisis' || status === 'Archivado')) {
-                    headers += `<th>Funcionario</th>`;
+                    funcionarioCol = `<th>Funcionario</th>`;
                 }
 
-                headers += `${importeCol}<th class="text-center">Acción</th>`;
-                thead.innerHTML = headers;
+                // Fila de Títulos Genérica
+                headerHTML = `
+                    <tr>
+                        ${checkCol}
+                        ${turnoCol}
+                        <th>Nro. Solicitud</th>
+                        <th>Fecha</th>
+                        <th>Titular</th>
+                        <th>CI Solicitante</th>
+                        <th>Nro. de Certificado</th>
+                        <th>Documento</th>
+                        <th>Tipo Firma</th>
+                        ${funcionarioCol}
+                        ${importeCol}
+                        <th class="text-center">Acción</th>
+                    </tr>
+                `;
+
+                // Fila de Filtros Genérica (Adaptada a las columnas visibles)
+                let checkFilter = status === 'Aprobado' ? filterEmpty : '';
+                let turnoFilter = showTurno ? `<th><input type="text" class="form-control form-control-sm" placeholder="#" disabled></th>` : '';
+                let funcionarioFilter = funcionarioCol ? filterInput('Filtrar...') : '';
+                let importeFilter = importeCol ? filterDisabled() : ''; // Importe no suele filtrarse por texto simple, o se deja deshabilitado visualmente
+
+                filterHTML = `
+                    <tr class="bg-light">
+                        ${checkFilter}
+                        ${turnoFilter}
+                        ${filterInput('Buscar Solicitud...')}
+                        ${filterInput('Buscar Fecha...')}
+                        ${filterInput('Buscar Titular...')}
+                        ${filterInput('Buscar CI...')}
+                        ${filterInput('Buscar Cert...')}
+                        ${filterInput('Buscar Doc...')}
+                        ${filterInput('Buscar Firma...')}
+                        ${funcionarioFilter}
+                        ${importeFilter}
+                        ${filterEmpty} <!-- Acción -->
+                    </tr>
+                `;
             }
+
+            // Inyectar Headers y Filtros
+            thead.innerHTML = headerHTML + filterHTML;
 
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
