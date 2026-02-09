@@ -577,16 +577,24 @@
                         </div>
 
                         <div class="row g-4 mb-5">
-                            <!-- CAMPO TELÉFONO HABILITADO PARA EDICIÓN -->
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label class="form-label">Teléfono</label>
                                 <input type="text" id="f_phone_detail" class="form-control-mre" placeholder="021 414..." title="Número de contacto (Editable)">
                             </div>
-                            <div class="col-md-4">
+                            <!-- NUEVO CAMPO SUCURSAL -->
+                            <div class="col-md-3">
+                                <label class="form-label">Sucursal <span class="text-danger">*</span></label>
+                                <select id="f_branch_detail" class="form-control-mre" title="Sucursal operativa asignada">
+                                    <option value="">Seleccione...</option>
+                                    <option value="Legalizaciones Central">Legalizaciones Central</option>
+                                    <option value="Legalizaciones VUP">Legalizaciones VUP</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
                                 <label class="form-label">Fecha de Expiración</label>
                                 <input type="date" id="f_exp_detail" class="form-control-mre" title="Vencimiento de la vigencia de la cuenta">
                             </div>
-                            <div class="col-md-4" id="statusFieldContainer">
+                            <div class="col-md-3" id="statusFieldContainer">
                                 <label class="form-label">Estado <span class="text-danger">*</span></label>
                                 <select id="f_status_detail" class="form-control-mre" title="Estado de acceso al sistema">
                                     <option value="Activo">Activo</option>
@@ -735,6 +743,7 @@
             const userSearch = document.getElementById('u_search_detail');
             const statusField = document.getElementById('f_status_detail');
             const statusContainer = document.getElementById('statusFieldContainer');
+            const branchField = document.getElementById('f_branch_detail');
 
             document.getElementById('viewList').style.display = 'none';
             viewForm.style.display = 'block';
@@ -747,6 +756,7 @@
             searchBtn.classList.remove('d-none');
             userSearch.readOnly = false;
             statusField.disabled = false;
+            branchField.disabled = false; // Asegurar habilitado por defecto
             
             // Restaurar visibilidad por defecto
             statusContainer.style.display = '';
@@ -778,14 +788,16 @@
                 if(mode === 'view') {
                     allInputs.forEach(i => { i.disabled = true; i.style.backgroundColor = "#F1F5F9"; });
                 } else {
-                    // Teléfono excluido del bloqueo en modo edición
+                    // Teléfono y Sucursal excluidos del bloqueo en modo edición
                     ['f_name_detail', 'f_last_detail', 'f_type_detail', 'f_doc_detail', 'f_email_detail', 'u_search_detail'].forEach(fid => {
                         const el = document.getElementById(fid);
                         if(el && el.tagName === 'SELECT') el.disabled = true; else el.readOnly = true;
                         if(el) el.style.backgroundColor = "#F1F5F9";
                     });
                     statusField.disabled = false;
+                    branchField.disabled = false;
                     statusField.style.backgroundColor = "var(--input-bg)";
+                    branchField.style.backgroundColor = "var(--input-bg)";
                 }
                 checkCitizen();
             }
@@ -794,19 +806,20 @@
 
         function loadMockData(id) {
             const data = {
-                1001: { u: 'cgonzalez', n: 'Carlos', l: 'González', g: 'Administrador de sistema', s: 'Activo', exp: '2026-12-31' },
-                1002: { u: 'mriquelme', n: 'Marta', l: 'Riquelme', g: 'Operador Ológrafo', s: 'Activo', exp: '2026-08-15' },
-                1003: { u: 'jsalinas', n: 'Jorge', l: 'Salinas', g: 'Operador verificación previa', s: 'Inactivo', exp: '2026-12-20' },
-                1004: { u: 'lortiz', n: 'Luis', l: 'Ortiz', g: 'Administrador de legalizaciones', s: 'Activo', exp: '2026-11-10' },
-                1005: { u: 'amartinez', n: 'Alberto', l: 'Martínez', g: 'Ciudadano', s: 'Activo', exp: '2027-01-01' },
-                1006: { u: 'lperon', n: 'Lucía', l: 'Perón', g: 'Ciudadano', s: 'Activo', exp: '2026-12-15' }
+                1001: { u: 'cgonzalez', n: 'Carlos', l: 'González', g: 'Administrador de sistema', s: 'Activo', exp: '2026-12-31', b: 'Legalizaciones Central' },
+                1002: { u: 'mriquelme', n: 'Marta', l: 'Riquelme', g: 'Operador Ológrafo', s: 'Activo', exp: '2026-08-15', b: 'Legalizaciones VUP' },
+                1003: { u: 'jsalinas', n: 'Jorge', l: 'Salinas', g: 'Operador verificación previa', s: 'Inactivo', exp: '2026-12-20', b: 'Legalizaciones Central' },
+                1004: { u: 'lortiz', n: 'Luis', l: 'Ortiz', g: 'Administrador de legalizaciones', s: 'Activo', exp: '2026-11-10', b: 'Legalizaciones Central' },
+                1005: { u: 'amartinez', n: 'Alberto', l: 'Martínez', g: 'Ciudadano', s: 'Activo', exp: '2027-01-01', b: '' },
+                1006: { u: 'lperon', n: 'Lucía', l: 'Perón', g: 'Ciudadano', s: 'Activo', exp: '2026-12-15', b: '' }
             };
             const user = data[id] || data[1001];
             document.getElementById('u_search_detail').value = user.u;
             document.getElementById('f_name_detail').value = user.n;
             document.getElementById('f_last_detail').value = user.l;
             document.getElementById('f_status_detail').value = user.s;
-            document.getElementById('f_exp_detail').value = user.exp || ""; // Cargar fecha
+            document.getElementById('f_exp_detail').value = user.exp || ""; 
+            document.getElementById('f_branch_detail').value = user.b || "";
             document.getElementById('assignedGroupsDetail').innerHTML = `<div class="list-item" onclick="moveGroup(this, 'availGroupsBox')">${user.g}</div>`;
         }
 
@@ -950,9 +963,7 @@
             const expDate = document.getElementById('f_exp_detail').value || '-';
             const status = document.getElementById('f_status_detail').value;
             
-            const groupsContainer = document.getElementById('assignedGroupsDetail');
-            const groups = Array.from(groupsContainer.querySelectorAll('.list-item')).map(div => div.innerText);
-            const mainGroup = groups.length > 0 ? groups[0] : 'Sin grupo';
+            // ... validaciones ...
             
             if(!user || !name) {
                 alert("Debe completar los datos del usuario mediante la búsqueda.");
