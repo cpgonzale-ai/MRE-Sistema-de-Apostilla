@@ -1037,14 +1037,8 @@
                                     </button>
                                     <div class="dropdown-menu w-100 p-2 border-0 shadow-sm" style="border:1px solid var(--border-color)!important">
                                         <input type="text" class="form-control form-control-sm mb-2" placeholder="Buscar..." onkeyup="filterOptions(this)">
-                                        <div class="options-container" style="max-height: 200px; overflow-y: auto;">
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqCountry', 'Argentina', this)">Argentina</a>
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqCountry', 'Brasil', this)">Brasil</a>
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqCountry', 'España', this)">España</a>
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqCountry', 'Estados Unidos', this)">Estados Unidos</a>
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqCountry', 'Uruguay', this)">Uruguay</a>
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqCountry', 'Alemania', this)">Alemania</a>
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqCountry', 'Francia', this)">Francia</a>
+                                        <div class="options-container" id="container_reqCountry" style="max-height: 200px; overflow-y: auto;">
+                                            <!-- Dynamically Populated -->
                                         </div>
                                     </div>
                                     <!-- Hidden Input for Logic -->
@@ -1056,18 +1050,14 @@
                             <div class="col-md-6">
                                 <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Institución Emisora <span class="text-danger">*</span></label>
                                 <div class="dropdown custom-select" id="div_reqInstitution" title="Seleccione la institución que emitió el documento">
-                                    <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <span class="selected-value text-muted">Seleccione...</span>
+                                    <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false" disabled id="btn_reqInstitution">
+                                        <span class="selected-value text-muted">Seleccione primero el país...</span>
                                         <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
                                     </button>
                                     <div class="dropdown-menu w-100 p-2 border-0 shadow-sm" style="border:1px solid var(--border-color)!important">
                                         <input type="text" class="form-control form-control-sm mb-2" placeholder="Buscar..." onkeyup="filterOptions(this)">
-                                        <div class="options-container" style="max-height: 200px; overflow-y: auto;">
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqInstitution', 'REC - Registro del Estado Civil', this)">REC - Registro del Estado Civil</a>
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqInstitution', 'MEC - Ministerio de Educación y Ciencias', this)">MEC - Ministerio de Educación y Ciencias</a>
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqInstitution', 'CSJ - Corte Suprema de Justicia', this)">CSJ - Corte Suprema de Justicia</a>
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqInstitution', 'UP - Universidad Privada', this)">UP - Universidad Privada</a>
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqInstitution', 'DNIT - Dirección Nacional de Ingresos Tributarios', this)">DNIT - Dirección Nacional de Ingresos Tributarios</a>
+                                        <div class="options-container" id="container_reqInstitution" style="max-height: 200px; overflow-y: auto;">
+                                            <!-- Dynamically Populated -->
                                         </div>
                                     </div>
                                     <input type="hidden" id="reqInstitution" required style="opacity:0; position:absolute; pointer-events:none; top:0; left:0; height:100%; width:100%; z-index:-1">
@@ -1078,15 +1068,14 @@
                             <div class="col-md-6">
                                 <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Tipo de Trámite <span class="text-danger">*</span></label>
                                 <div class="dropdown custom-select" id="div_reqType" title="Seleccione si es Apostilla o Legalización">
-                                    <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <span class="selected-value text-muted">Seleccione...</span>
+                                    <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false" disabled id="btn_reqType">
+                                        <span class="selected-value text-muted">Seleccione primero la institución...</span>
                                         <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
                                     </button>
                                     <div class="dropdown-menu w-100 p-2 border-0 shadow-sm" style="border:1px solid var(--border-color)!important">
                                         <input type="text" class="form-control form-control-sm mb-2" placeholder="Buscar..." onkeyup="filterOptions(this)">
-                                        <div class="options-container" style="max-height: 200px; overflow-y: auto;">
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqType', 'Apostilla', this)">Apostilla</a>
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqType', 'Legalización', this)">Legalización</a>
+                                        <div class="options-container" id="container_reqType" style="max-height: 200px; overflow-y: auto;">
+                                            <!-- Dynamically Populated -->
                                         </div>
                                     </div>
                                     <input type="hidden" id="reqType" required style="opacity:0; position:absolute; pointer-events:none; top:0; left:0; height:100%; width:100%; z-index:-1">
@@ -1097,15 +1086,14 @@
                             <div class="col-md-6">
                                 <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">Tipo de firma del documento <span class="text-danger">*</span></label>
                                 <div class="dropdown custom-select" id="div_reqSignature" title="Seleccione el tipo de firma del documento">
-                                    <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <span class="selected-value text-muted">Seleccione...</span>
+                                    <button class="custom-select-trigger" type="button" data-bs-toggle="dropdown" aria-expanded="false" disabled id="btn_reqSignature">
+                                        <span class="selected-value text-muted">Seleccione primero el trámite...</span>
                                         <i data-lucide="chevron-down" style="width:14px; opacity:0.5"></i>
                                     </button>
                                     <div class="dropdown-menu w-100 p-2 border-0 shadow-sm" style="border:1px solid var(--border-color)!important">
                                         <input type="text" class="form-control form-control-sm mb-2" placeholder="Buscar..." onkeyup="filterOptions(this)">
-                                        <div class="options-container" style="max-height: 200px; overflow-y: auto;">
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqSignature', 'Electrónica o verificable en línea', this); handleSignatureChange()">Electrónica o verificable en línea</a>
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqSignature', 'Ológrafa (Manuscrita)', this); handleSignatureChange()">Ológrafa (Manuscrita)</a>
+                                        <div class="options-container" id="container_reqSignature" style="max-height: 200px; overflow-y: auto;">
+                                            <!-- Dynamically Populated -->
                                         </div>
                                     </div>
                                     <input type="hidden" id="reqSignature" required style="opacity:0; position:absolute; pointer-events:none; top:0; left:0; height:100%; width:100%; z-index:-1">
@@ -1144,16 +1132,21 @@
                                     </button>
                                     <div class="dropdown-menu w-100 p-2 border-0 shadow-sm" style="border:1px solid var(--border-color)!important">
                                         <input type="text" class="form-control form-control-sm mb-2" placeholder="Buscar..." onkeyup="filterOptions(this)">
-                                        <div class="options-container" style="max-height: 200px; overflow-y: auto;">
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqDocType', 'Certificado de Nacimiento', this); handleDocTypeChange()">Certificado de Nacimiento</a>
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqDocType', 'Certificado de Matrimonio', this); handleDocTypeChange()">Certificado de Matrimonio</a>
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqDocType', 'Certificado de Defunción', this); handleDocTypeChange()">Certificado de Defunción</a>
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqDocType', 'Antecedentes Policiales', this); handleDocTypeChange()">Antecedentes Policiales</a>
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqDocType', 'Certificado de Estudios', this); handleDocTypeChange()">Certificado de Estudios</a>
-                                            <a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="setOption('reqDocType', 'Título Universitario', this); handleDocTypeChange()">Título Universitario</a>
+                                        <div class="options-container" id="container_reqDocType" style="max-height: 200px; overflow-y: auto;">
+                                            <!-- Dynamically Populated -->
                                         </div>
                                     </div>
                                     <input type="hidden" id="reqDocType" required style="opacity:0; position:absolute; pointer-events:none; top:0; left:0; height:100%; width:100%; z-index:-1">
+                                </div>
+                                <!-- NUEVO: Contenedor de Descripción del Documento -->
+                                <div id="docTypeDescription" class="mt-3 p-3 rounded-3 hidden animate-fade" style="border: 1px solid var(--mre-blue); background-color: white; color: var(--mre-blue);">
+                                    <div class="d-flex gap-2">
+                                        <i data-lucide="info" style="width: 20px; min-width: 20px;"></i>
+                                        <div>
+                                            <span class="fw-bold d-block text-uppercase" style="font-size: 0.75rem;">Descripción del Documento</span>
+                                            <span id="docTypeDescText" class="small fw-semibold"></span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -1201,15 +1194,15 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- BOTONES -->
-                            <div class="col-12 mt-4 d-flex justify-content-end gap-3 border-top pt-4">
-                                <button type="button" class="btn btn-light border fw-bold px-4" onclick="navigateTo('dashboard')" title="Cancelar y volver al listado">Cancelar</button>
-                                <!-- ID agregado al botón -->
-                                <button type="submit" class="btn-main px-5 shadow-sm d-flex align-items-center gap-2" id="btnSubmitForm" title="Agregar este trámite a la lista de carga">
-                                    <i data-lucide="plus-circle" style="width:16px;"></i> Añadir
-                                </button>
-                            </div>
+                        <!-- BOTONES -->
+                        <div class="col-12 mt-4 d-flex justify-content-end gap-3 border-top pt-4">
+                            <button type="button" class="btn btn-light border fw-bold px-4" onclick="navigateTo('dashboard')" title="Cancelar y volver al listado">Cancelar</button>
+                            <!-- ID agregado al botón -->
+                            <button type="submit" class="btn-main px-5 shadow-sm d-flex align-items-center gap-2" id="btnSubmitForm" title="Agregar este trámite a la lista de carga">
+                                <i data-lucide="plus-circle" style="width:16px;"></i> Añadir
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -1308,11 +1301,144 @@
     </footer>
 
     <script>
+        // --- DATA MOCK FOR CASCADING DROPDOWNS ---
+        const cascadeData = {
+            institutionsByCountry: {
+                'Argentina': ['REC - Registro del Estado Civil', 'MEC - Ministerio de Educación y Ciencias'],
+                'Brasil': ['CSJ - Corte Suprema de Justicia', 'DNIT - Dirección Nacional de Ingresos Tributarios'],
+                'España': ['REC - Registro del Estado Civil', 'MEC - Ministerio de Educación y Ciencias', 'UP - Universidad Privada'],
+                'Estados Unidos': ['UP - Universidad Privada', 'CSJ - Corte Suprema de Justicia'],
+                'Uruguay': ['REC - Registro del Estado Civil'],
+                'Alemania': ['MEC - Ministerio de Educación y Ciencias'],
+                'Francia': ['DNIT - Dirección Nacional de Ingresos Tributarios']
+            },
+            signaturesByType: {
+                'Apostilla': ['Electrónica o verificable en línea', 'Ológrafa (Manuscrita)'],
+                'Legalización': ['Ológrafa (Manuscrita)'] 
+            },
+            docTypesBySignature: {
+                'Electrónica o verificable en línea': ['Certificado de Nacimiento', 'Certificado de Matrimonio', 'Certificado de Defunción', 'Antecedentes Policiales'],
+                'Ológrafa (Manuscrita)': ['Certificado de Estudios', 'Título Universitario', 'Certificado de Nacimiento (Físico)']
+            },
+            countries: ['Argentina', 'Brasil', 'España', 'Estados Unidos', 'Uruguay', 'Alemania', 'Francia'],
+            types: ['Apostilla', 'Legalización']
+        };
+
+        // --- FUNCIONES CASCADA ---
+        function updateOptions(containerId, options, clickCallbackName) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = options.map(opt => 
+                `<a class="dropdown-item rounded small fw-semibold py-2" href="javascript:void(0)" onclick="${clickCallbackName}('${opt}', this)">${opt}</a>`
+            ).join('');
+        }
+
+        function resetField(fieldId, defaultText) {
+            const hiddenInput = document.getElementById(fieldId);
+            const containerDiv = document.getElementById('div_' + fieldId);
+            const displaySpan = containerDiv.querySelector('.selected-value');
+            const triggerBtn = containerDiv.querySelector('.custom-select-trigger');
+
+            hiddenInput.value = "";
+            displaySpan.innerText = defaultText;
+            displaySpan.classList.add('text-muted');
+            displaySpan.classList.remove('text-dark');
+            triggerBtn.disabled = true;
+        }
+
+        function enableField(fieldId) {
+            const containerDiv = document.getElementById('div_' + fieldId);
+            const triggerBtn = containerDiv.querySelector('.custom-select-trigger');
+            triggerBtn.disabled = false;
+        }
+
+        // WRAPPER HANDLERS
+        function onCountrySelect(value, element) {
+            setOption('reqCountry', value, element);
+            
+            // 1. Reset Institution (Next)
+            resetField('reqInstitution', 'Seleccione...');
+            
+            // 2. Reset Downstream (Type, Signature, DocType) to ensure clean chain
+            resetField('reqType', 'Seleccione primero la institución...');
+            resetField('reqSignature', 'Seleccione primero el trámite...');
+            resetField('reqDocType', 'Seleccione primero el tipo de firma...');
+            document.getElementById('additionalDataTabs').classList.add('hidden');
+            document.getElementById('docTypeDescription').classList.add('hidden');
+
+            // 3. Populate Institution based on Country
+            const institutions = cascadeData.institutionsByCountry[value] || [];
+            updateOptions('container_reqInstitution', institutions, 'onInstitutionSelect');
+            
+            // 4. Enable Institution
+            enableField('reqInstitution');
+        }
+
+        function onInstitutionSelect(value, element) {
+            setOption('reqInstitution', value, element);
+
+            // 1. Reset Type (Next)
+            resetField('reqType', 'Seleccione...');
+
+            // 2. Reset Downstream
+            resetField('reqSignature', 'Seleccione primero el trámite...');
+            resetField('reqDocType', 'Seleccione primero el tipo de firma...');
+            document.getElementById('additionalDataTabs').classList.add('hidden');
+            document.getElementById('docTypeDescription').classList.add('hidden');
+
+            // 3. Populate Type (All types available)
+            updateOptions('container_reqType', cascadeData.types, 'onTypeSelect');
+
+            // 4. Enable Type
+            enableField('reqType');
+        }
+
+        function onTypeSelect(value, element) {
+            setOption('reqType', value, element);
+
+            // 1. Reset Signature
+            resetField('reqSignature', 'Seleccione...');
+            
+            // 2. Reset DocType (Grandchild)
+            resetField('reqDocType', 'Seleccione primero el tipo de firma...');
+            document.getElementById('additionalDataTabs').classList.add('hidden'); // Hide details
+            document.getElementById('docTypeDescription').classList.add('hidden'); // NEW: Hide description
+
+            // 3. Populate Signature based on Type
+            const signatures = cascadeData.signaturesByType[value] || [];
+            updateOptions('container_reqSignature', signatures, 'onSignatureSelect');
+
+            // 4. Enable Signature
+            enableField('reqSignature');
+        }
+
+        function onSignatureSelect(value, element) {
+            setOption('reqSignature', value, element);
+            
+            // 1. Reset DocType
+            resetField('reqDocType', 'Seleccione...');
+            document.getElementById('additionalDataTabs').classList.add('hidden');
+            document.getElementById('docTypeDescription').classList.add('hidden'); // NEW: Hide description
+
+            // 2. Populate DocType based on Signature
+            const docs = cascadeData.docTypesBySignature[value] || [];
+            updateOptions('container_reqDocType', docs, 'onDocTypeSelect');
+
+            // 3. Enable DocType
+            enableField('reqDocType');
+
+            // 4. Trigger UI changes (Attachment, etc.)
+            handleSignatureChange(); 
+        }
+
+        function onDocTypeSelect(value, element) {
+            setOption('reqDocType', value, element);
+            handleDocTypeChange();
+        }
+
         document.addEventListener('DOMContentLoaded', () => { 
             lucide.createIcons(); 
             initAccessibility();
             
-            // Configuración inicial: Mostrar bandeja 'En Análisis'
             const defaultBtn = document.getElementById('btnAnalisis');
             if (defaultBtn) defaultBtn.classList.add('active');
             renderTable('Análisis'); 
@@ -1320,12 +1446,11 @@
             populateYears();
         });
 
-        // Configuración unificada de columnas para control de visibilidad
+        // ... existing code (columnsConfig, toggleCols, etc) ...
+        // [MANTENER EL CÓDIGO EXISTENTE DE TABLAS Y FILTROS]
         let columnsConfig = [
             { id: 'id', label: 'Nro. de Solicitud', visible: true },
-            // CAMBIO: Columna movida aquí para mostrarse al lado del ID
             { id: 'apostille_leg', label: 'Apostilla/Legalización', visible: true },
-            // CAMBIO: Columna movida aquí para mostrarse al lado de Apostilla/Legalización
             { id: 'payment_proof', label: 'Comprobante de Pago', visible: true },
             { id: 'date', label: 'Fecha de Solicitud', visible: true },
             { id: 'type', label: 'Tipo', visible: true },
@@ -1338,7 +1463,6 @@
             { id: 'download', label: 'Descargar', visible: true },
             { id: 'reason', label: 'Motivo', visible: true }, 
             { id: 'obs', label: 'Obs', visible: true }, 
-            // CAMBIO: Orden ajustado, Adjunto antes de Acción
             { id: 'adjunto', label: 'Adjunto', visible: true },
             { id: 'action', label: 'Acción', visible: true }
         ];
@@ -1347,7 +1471,6 @@
             const menu = document.getElementById('colsMenu');
             let tabKeys = [];
             if (status === 'Análisis') {
-                // CAMBIO: Se agregó 'action' a las columnas de Análisis
                 tabKeys = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'status', 'download', 'action'];
             } else if (status === 'Aprobado') {
                 tabKeys = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'status', 'importe', 'download', 'action'];
@@ -1355,11 +1478,9 @@
                 tabKeys = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'download', 'reason', 'action'];
             } else if (status === 'Devuelto') {
                 tabKeys = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'download', 'obs', 'action'];
-            } else if (status === 'Finalizados') { // APOSTILLA TAB LOGIC
-                // CAMBIO: Se eliminó 'adjunto' de esta lista
+            } else if (status === 'Finalizados') { 
                 tabKeys = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'action', 'payment_proof', 'apostille_leg'];
             } else if (status === 'Archivada') {
-                // Mismas columnas que análisis
                 tabKeys = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'status', 'download', 'action'];
             } else {
                 tabKeys = ['id', 'doc', 'status', 'date'];
@@ -1423,13 +1544,13 @@
             id: "202600001", date: "08/01/2026 09:15:30", type: "Apostilla", country: "España", 
             institution: "Registro del Estado Civil", doc: "Certificado de Nacimiento", 
             signatureType: "Electrónica", status: "Análisis", hasAttachment: true, verPago: false, importe: 0,
-            takenByOfficial: false // No tomada: Mostrar botón eliminar
+            takenByOfficial: false 
         });
         mockRequests.push({
             id: "202600002", date: "08/01/2026 10:20:45", type: "Legalización", country: "Argentina", 
             institution: "Registro del Estado Civil", doc: "Certificado de Nacimiento", 
             signatureType: "Ológrafa", status: "Análisis", hasAttachment: false, verPago: false, importe: 0,
-            takenByOfficial: true // Tomada: Ocultar botón eliminar
+            takenByOfficial: true 
         });
 
         // --- 2. REGISTROS PARA APROBADOS ---
@@ -1482,7 +1603,7 @@
         mockRequests.push({
             id: "202600007", date: "08/01/2026 08:30:15", type: "Apostilla", 
             country: "Paraguay", institution: "Registro del Estado Civil", doc: "Certificado de Nacimiento", 
-            status: "Finalizados", importe: 80100, hasAttachment: true, signatureType: "Electrónica" // CAMBIO: hasAttachment true para mostrar botón
+            status: "Finalizados", importe: 80100, hasAttachment: true, signatureType: "Electrónica"
         });
         mockRequests.push({
             id: "202600008", date: "08/01/2026 08:45:42", type: "Legalización", 
@@ -1527,7 +1648,6 @@
 
             let tabColumns = [];
             if (status === 'Análisis') {
-                // CAMBIO: Se agregó 'action' a las columnas de Análisis
                 tabColumns = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'status', 'download', 'action'];
             } else if (status === 'Aprobado') {
                 tabColumns = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'status', 'importe', 'download', 'action'];
@@ -1535,11 +1655,9 @@
                 tabColumns = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'download', 'reason', 'action'];
             } else if (status === 'Devuelto') {
                 tabColumns = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'download', 'obs', 'action'];
-            } else if (status === 'Finalizados') { // APOSTILLA TAB LOGIC
-                // CAMBIO: Se agrega 'action' a la lista de columnas visibles
+            } else if (status === 'Finalizados') { 
                 tabColumns = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'adjunto', 'action', 'payment_proof', 'apostille_leg'];
             } else if (status === 'Archivada') {
-                // Mismas columnas que En Análisis
                 tabColumns = ['id', 'date', 'type', 'country', 'institution', 'doc', 'signatureType', 'status', 'download', 'action'];
             } else {
                 tabColumns = ['id', 'doc', 'status', 'date'];
@@ -1552,7 +1670,6 @@
             tableHeader.innerHTML = `<tr>${headerHTML}</tr>`;
 
             const filtered = mockRequests.filter(r => {
-                // CAMBIO: Mostrar 'Aprobado' y 'Pendiente de confirmación de Pago', ocultando 'Pagado'
                 if(status === 'Aprobado') return r.status === 'Aprobado' || r.status === 'Pendiente de confirmación de Pago';
                 return r.status === status;
             });
@@ -1574,7 +1691,6 @@
             tableContent.innerHTML = pageData.map(r => {
                 let row = '';
                 if(status === 'Aprobado') {
-                    // Checkbox para selección (deshabilitado si no está en estado Aprobado puro para pago masivo)
                     const chkDisabled = r.status !== 'Aprobado' ? 'disabled' : '';
                     row += `<td><input type="checkbox" onchange="toggleSelect('${r.id}', ${r.importe}, this)" ${selectedIds.has(r.id) ? 'checked' : ''} ${chkDisabled}></td>`;
                 }
@@ -1593,9 +1709,7 @@
                         else if (r.status === 'Análisis') badgeClass = 'bg-analisis';
                         else if (r.status === 'Aprobado') badgeClass = 'bg-success-subtle text-success';
                         else if (r.status === 'Devuelto') badgeClass = 'bg-devuelto';
-                        // Estilo amarillo para pendiente
                         else if (r.status === 'Pendiente de confirmación de Pago') badgeClass = 'bg-warning-subtle text-dark border border-warning-subtle';
-                        // Archivada
                         else if (r.status === 'Archivada') badgeClass = 'bg-secondary-subtle text-secondary';
                         
                         row += `<td><span class="badge-status ${badgeClass}">${r.status}</span></td>`;
@@ -1604,22 +1718,18 @@
                         row += `<td class="text-center fw-black text-primary">${r.importe > 0 ? `Gs. ${r.importe.toLocaleString('es-PY')}` : '-'}</td>`;
                     }
                     
-                    // Columnas de descargas para otras pestañas
                     if(c.id === 'download') {
                         let showDownload = (r.signatureType === 'Electrónica');
                         row += `<td class="text-center">${showDownload ? `<i data-lucide="file-down" style="width:18px; cursor:pointer; color:var(--mre-blue)" title="Descargar documento"></i>` : `<span class="text-muted opacity-25">-</span>`}</td>`;
                     }
 
-                    // Columnas específicas para Apostilla
                     if(c.id === 'adjunto') {
                         let showAdjunto = (r.signatureType === 'Electrónica');
                         row += `<td class="text-center">${showAdjunto ? `<i data-lucide="file-down" style="width:18px; cursor:pointer; color:var(--mre-blue)" title="Descargar Adjunto"></i>` : `<span class="text-muted opacity-25">-</span>`}</td>`;
                     }
-                    // CAMBIO: Renombrado a "Comprobante de Pago" y cambio a icono de descarga directa
                     if(c.id === 'payment_proof') {
                         row += `<td class="text-center"><i data-lucide="file-down" style="width:18px; cursor:pointer; color:var(--mre-blue)" title="Descargar Comprobante de Pago" onclick="window.open('https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/comprobante_electronico.html', '_blank')"></i></td>`;
                     }
-                    // CAMBIO: Botón con texto descriptivo visible y enlace externo
                     if(c.id === 'apostille_leg') {
                         const label = r.type === 'Apostilla' ? 'Descargar Apostilla' : 'Descargar Legalización';
                         const link = "https://cpgonzale-ai.github.io/MRE-Sistema-de-Apostilla/apostilla.html";
@@ -1642,21 +1752,16 @@
                                 row += `<td class="text-center"><button class="btn-ver-detalle" onclick="showRequestDetails('${r.id}')" title="Ver detalles completos">Ver Detalle</button></td>`;
                             }
                         } else if (status === 'Análisis') {
-                            // CAMBIO: Lógica para mostrar botón eliminar condicionalmente
                             let buttonsHtml = `<button class="btn-ver-detalle" onclick="showRequestDetails('${r.id}')" title="Ver detalles completos">Ver Detalle</button>`;
-                            
-                            // Solo mostrar eliminar si NO ha sido tomada por funcionario
                             if (!r.takenByOfficial) {
                                 buttonsHtml += `<button class="btn btn-sm btn-outline-danger ms-2" onclick="deleteRequest('${r.id}')" title="Eliminar solicitud"><i data-lucide="trash-2" style="width:14px;"></i></button>`;
                             }
-                            
                             row += `<td class="text-center d-flex justify-content-center align-items-center">${buttonsHtml}</td>`;
                         } else if (status === 'Rechazado') {
                             row += `<td class="text-center"><button class="btn-revision" onclick="showReview('${r.id}')" title="Solicitar reconsideración del caso">Reconsideración</button></td>`;
                         } else if (status === 'Devuelto') {
                             row += `<td class="text-center"><button class="btn-completar" onclick="completeRequest('${r.id}')" title="Corregir datos de la solicitud">Corregir</button></td>`;
                         } else if (status === 'Finalizados') {
-                            // CAMBIO: Botón "Ver Detalle" para la bandeja de Finalizados (Apostillas y Legalizaciones)
                             row += `<td class="text-center"><button class="btn-ver-detalle" onclick="showRequestDetails('${r.id}')" title="Ver detalles completos">Ver Detalle</button></td>`;
                         } else if (status === 'Archivada') {
                              row += `<td class="text-center"><button class="btn-ver-detalle" onclick="showRequestDetails('${r.id}')" title="Ver detalles completos">Ver Detalle</button></td>`;
@@ -1785,14 +1890,11 @@
             const req = mockRequests.find(r => r.id === id);
             if (!req) return;
 
-            // 1. Ir a la pantalla de formulario
-            navigateTo('newRequest'); // Esto limpia el form por defecto en navigateTo, pero lo sobreescribiremos abajo
+            navigateTo('newRequest'); 
             
-            // Forzar visualización del formulario (por si estaba en la grilla de carga)
             document.getElementById('requestFormContainer').classList.remove('hidden');
             document.getElementById('loadedDocsSection').classList.add('hidden');
 
-            // 2. Configurar modo edición
             isEditing = true;
             editingId = id;
             
@@ -1801,25 +1903,34 @@
             document.getElementById('btnSubmitForm').innerHTML = `<i data-lucide="corner-up-left" style="width:16px;"></i> Devolver`;
             
             // 3. Precargar Datos (Usando datos del mock o defaults)
+            // Need to manually set enable for correction mode
+            enableField('reqInstitution');
+            enableField('reqSignature');
+            enableField('reqDocType');
+
+            // Populate options first
+            updateOptions('container_reqCountry', cascadeData.countries, 'onCountrySelect');
+            updateOptions('container_reqInstitution', cascadeData.institutionsByCountry[req.country] || [], 'onInstitutionSelect');
+            updateOptions('container_reqType', cascadeData.types, 'onTypeSelect');
+            updateOptions('container_reqSignature', cascadeData.signaturesByType[req.type] || [], 'onSignatureSelect');
+            // Mock map for signature value back to key
+            const sigKey = req.signatureType.includes('Electrónica') ? 'Electrónica o verificable en línea' : 'Ológrafa (Manuscrita)';
+            updateOptions('container_reqDocType', cascadeData.docTypesBySignature[sigKey] || [], 'onDocTypeSelect');
+
             setOption('reqCountry', req.country, document.getElementById('div_reqCountry'));
             setOption('reqInstitution', req.institution, document.getElementById('div_reqInstitution'));
             setOption('reqType', req.type, document.getElementById('div_reqType'));
             
-            // Mapeo de Firma
-            const sigVal = req.signatureType.includes('Electrónica') ? 'Electrónica o verificable en línea' : 'Ológrafa (Manuscrita)';
-            setOption('reqSignature', sigVal, document.getElementById('div_reqSignature'));
-            handleSignatureChange(); // Disparar lógica visual
+            setOption('reqSignature', sigKey, document.getElementById('div_reqSignature'));
+            handleSignatureChange(); 
 
-            // Mapeo de Documento
             setOption('reqDocType', req.doc, document.getElementById('div_reqDocType'));
-            handleDocTypeChange(); // Disparar lógica visual
+            handleDocTypeChange(); 
 
-            // Campos de texto
-            document.getElementById('titularName').value = req.titularName || 'JUAN PÉREZ'; // Usar valor mock o default
-            document.getElementById('titularCertNum').value = '123456'; // Valor simulado ya que no está en la tabla principal
+            document.getElementById('titularName').value = req.titularName || 'JUAN PÉREZ'; 
+            document.getElementById('titularCertNum').value = '123456'; 
 
-            // Funcionario (si es ológrafa)
-            if (sigVal.includes('Ológrafa')) {
+            if (sigKey.includes('Ológrafa')) {
                 setOption('reqOfficial', 'Juan Pérez (REC)', document.getElementById('div_reqOfficial'));
             }
 
@@ -1874,16 +1985,28 @@
             document.getElementById('btnSubmitForm').innerHTML = `<i data-lucide="plus-circle" style="width:16px;"></i> Añadir`;
 
             document.getElementById('newRequestForm').reset();
-            // Reset Custom Selects Text
-            document.querySelectorAll('.custom-select .selected-value').forEach(el => {
-                el.innerText = "Seleccione...";
-                el.classList.add('text-muted');
-                el.classList.remove('text-dark');
-            });
-            document.querySelectorAll('.custom-select input[type=hidden]').forEach(el => el.value = "");
             
+            // RESET FIELDS TO INITIAL STATE
+            resetField('reqCountry', 'Seleccione...');
+            enableField('reqCountry'); // Root enabled
+            
+            resetField('reqInstitution', 'Seleccione primero el país...');
+            
+            // CORRECCIÓN: El tipo de trámite debe estar bloqueado al inicio
+            resetField('reqType', 'Seleccione primero la institución...');
+            // enableField('reqType') ELIMINADO para cumplir cascada
+            
+            resetField('reqSignature', 'Seleccione primero el trámite...');
+            
+            resetField('reqDocType', 'Seleccione primero el tipo de firma...');
+            
+            // Populate Roots
+            updateOptions('container_reqCountry', cascadeData.countries, 'onCountrySelect');
+            // updateOptions('container_reqType'...) ELIMINADO: Se puebla en onInstitutionSelect
+
             handleSignatureChange();
             document.getElementById('additionalDataTabs').classList.add('hidden');
+            document.getElementById('docTypeDescription').classList.add('hidden');
             
             document.getElementById('requestFormContainer').classList.remove('hidden');
             document.getElementById('loadedDocsSection').classList.add('hidden');
@@ -1961,8 +2084,7 @@
             const signature = document.getElementById('reqSignature').value;
             const attachmentField = document.getElementById('attachmentField');
             const officialField = document.getElementById('officialField');
-            const docTypeBtn = document.getElementById('btn_reqDocType');
-            const docTypeDisplay = document.querySelector('#div_reqDocType .selected-value');
+            
             const additionalTabs = document.getElementById('additionalDataTabs');
 
             // Resetear visibilidad condicional
@@ -1972,39 +2094,46 @@
             document.getElementById('reqOfficial').required = false;
 
             // 1. Lógica condicional según firma
-            if (signature === 'Electrónica o verificable en línea') {
+            if (signature.includes('Electrónica')) {
                 attachmentField.classList.remove('hidden');
                 document.getElementById('reqFile').required = true;
-            } else if (signature === 'Ológrafa (Manuscrita)') {
+            } else if (signature.includes('Ológrafa')) {
                 officialField.classList.remove('hidden');
                 document.getElementById('reqOfficial').required = true;
             }
-
-            // 2. Habilitar/Deshabilitar Tipo de Documento
-            if (signature && signature !== "") {
-                docTypeBtn.disabled = false;
-                if(docTypeDisplay.innerText.includes("Seleccione primero")) {
-                    docTypeDisplay.innerText = "Seleccione...";
-                }
-            } else {
-                docTypeBtn.disabled = true;
-                // Reset value handled by reset form mainly, but visual update needed if manual change
-                // (Simplified for this prototype flow)
-                docTypeDisplay.innerText = "Seleccione primero el tipo de firma...";
-                docTypeDisplay.classList.add('text-muted');
-                additionalTabs.classList.add('hidden'); 
-            }
+            
             lucide.createIcons(); 
         }
+
+        const docDescriptions = {
+            'Certificado de Nacimiento': 'Acredita el hecho vital del nacimiento. Requerido para gestiones de identidad, ciudadanía y escolaridad.',
+            'Certificado de Matrimonio': 'Acredita el vínculo conyugal entre dos personas. Requerido para gestiones de bienes mancomunados, ciudadanía y visados.',
+            'Certificado de Defunción': 'Acredita el fallecimiento de una persona. Requerido para sucesiones, seguros y pensiones.',
+            'Antecedentes Policiales': 'Certifica la existencia o inexistencia de antecedentes penales o policiales. Requerido para residencias y contratos laborales.',
+            'Certificado de Estudios': 'Detalla el historial académico y calificaciones. Requerido para continuidad de estudios en el extranjero.',
+            'Título Universitario': 'Diploma oficial de grado académico. Requerido para ejercicio profesional y postgrados.',
+            'Certificado de Nacimiento (Físico)': 'Documento original impreso expedido por el Registro Civil para legalización presencial.'
+        };
 
         function handleDocTypeChange() {
             const docType = document.getElementById('reqDocType').value;
             const additionalTabs = document.getElementById('additionalDataTabs');
+            const descContainer = document.getElementById('docTypeDescription');
+            const descText = document.getElementById('docTypeDescText');
+
             if(docType) {
                 additionalTabs.classList.remove('hidden');
+                
+                // Show description
+                if (descContainer && descText) {
+                    descText.innerText = docDescriptions[docType] || "Información sobre el documento seleccionado.";
+                    descContainer.classList.remove('hidden');
+                }
+                
                 lucide.createIcons();
             } else {
                 additionalTabs.classList.add('hidden');
+                if (descContainer) descContainer.classList.add('hidden');
             }
         }
 
