@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIA-PY | Módulo de Reportes y Tesorería</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <!-- Tom Select -->
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+
+    <style>
+        :root {
+            --mre-blue: #002855;
+            --mre-blue-light: #0038A8;
+            --mre-red: #D52B1E;
+            --mre-green: #10B981;
+            --mre-amber: #F59E0B;
+            --soft-bg: #f8fafc; 
+            --border-color: #E2E8F0;
+            --input-bg: #F8FAFC;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            --card-shadow: 0 10px 15px -3px rgba(0, 40, 85, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-scale: 1; 
+            --base-font-size: 16px;
+        }
+
+        html { font-size: calc(var(--base-font-size) * var(--font-scale)); }
+
+        /* --- TOOLTIP & ACCESIBILIDAD --- */
+        .tooltip { --bs-tooltip-bg: #ffffff; --bs-tooltip-color: #000000; --bs-tooltip-opacity: 1; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .tooltip-inner { border: 1px solid var(--border-color); font-weight: 600; text-align: center; }
+
+        body.high-contrast {
+            --mre-blue: #000000; --mre-blue-light: #000000; --mre-red: #D50000;
+            --soft-bg: #FFFFFF; --border-color: #000000; --input-bg: #FFFFFF;
+            --text-main: #000000; --text-muted: #000000; --card-shadow: none;
+        }
+        body.grayscale-mode { filter: grayscale(100%); }
+
+        body { 
+            font-family: 'Inter', sans-serif; margin: 0; background-color: var(--soft-bg); 
+            color: var(--text-main); overflow: hidden; display: flex; flex-direction: column; height: 100vh;
+        }
+
+        .elegant-background { 
+            position: fixed; inset: 0; z-index: -1; background-color: #f8fafc; 
+            background-image: radial-gradient(at 0% 0%, rgba(0, 56, 168, 0.08) 0px, transparent 50%), radial-gradient(at 100% 0%, rgba(213, 43, 30, 0.05) 0px, transparent 50%);
+        }
+
+        /* --- LAYOUT SHELL --- */
+        .portal-header { 
+            display: flex; justify-content: space-between; align-items: center; background: white; 
+            padding: 1.25rem 2.5rem; box-shadow: 0 4px 10px -1px rgba(0,0,0,0.05); 
+            border-bottom: 1px solid var(--border-color); position: relative; z-index: 2000;
+        }
+
+        .mobile-toggle-btn { background: transparent; border: none; color: var(--mre-blue); cursor: pointer; padding: 4px; display: none; border-radius: 8px; transition: var(--transition); }
+        
+        .a11y-container { position: relative; }
+        .btn-a11y-trigger { background: #F8FAFC; border: 1px solid var(--border-color); color: var(--mre-blue); border-radius: 12px; padding: 0.5rem 1rem; font-weight: 700; font-size: 0.8rem; display: flex; align-items: center; gap: 8px; transition: var(--transition); }
+        .a11y-dropdown-menu { position: absolute; top: calc(100% + 10px); right: 0; background: white; border-radius: 16px; width: 280px; box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.15); border: 1px solid var(--border-color); display: none; z-index: 3000; padding: 1rem; animation: fadeIn 0.2s ease-out; }
+        .a11y-dropdown-menu.show { display: block; }
+        .a11y-section-title { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem; }
+        .text-resize-controls { display: flex; align-items: center; justify-content: space-between; background: #F8FAFC; padding: 8px; border-radius: 12px; border: 1px solid var(--border-color); }
+        .btn-resize { background: white; border: 1px solid var(--border-color); border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .font-size-display { font-weight: 800; color: var(--mre-blue); font-size: 0.85rem; }
+        .switch-control { display: flex; align-items: center; justify-content: space-between; padding: 4px 0; }
+        .switch-label { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #CBD5E1; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--mre-blue-light); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        .dots-menu-trigger { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 12px; cursor: pointer; transition: var(--transition); color: var(--text-muted); background: #F8FAFC; border: 1px solid var(--border-color); }
+        .dropdown-menu-mre { position: absolute; top: calc(100% + 10px); right: 0; background: white; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); border: 1px solid var(--border-color); width: 180px; display: none; z-index: 3000; overflow: hidden; animation: fadeIn 0.2s ease-out; }
+        .dropdown-menu-mre.show { display: block; }
+        .dropdown-item-mre { padding: 12px 16px; border: none; background: none; width: 100%; text-align: left; font-size: 0.9rem; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 10px; }
+        .dropdown-item-mre:hover { background: #F8FAFC; color: var(--mre-red); }
+
+        .app-container { display: flex; flex: 1; overflow: hidden; position: relative; }
+        .main-sidebar { width: 280px; background: white; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; z-index: 1000; box-shadow: 4px 0 10px rgba(0,0,0,0.02); transition: var(--transition); overflow-x: hidden; }
+        .nav-menu { padding: 1.5rem 1rem; flex: 1; }
+        .nav-link-mre { display: flex; align-items: center; gap: 12px; padding: 0.85rem 1rem; color: var(--text-muted); text-decoration: none; border-radius: 12px; font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; transition: var(--transition); white-space: nowrap; }
+        .nav-link-mre:hover { background: #F1F5F9; color: var(--mre-blue); }
+        .nav-link-mre.active { background: #f0f7ff; color: var(--mre-blue-light); box-shadow: 0 4px 6px -1px rgba(0, 40, 85, 0.05); }
+
+        .content-area { flex: 1; padding: 2rem 3rem; overflow-y: auto; position: relative; }
+        .mre-footer { background: white; padding: 1rem 2.5rem; border-top: 1px solid var(--border-color); font-size: 0.75rem; color: #64748B; display: flex; justify-content: space-between; margin-top: auto; z-index: 1000;}
+
+        /* --- GRILLA & TABLA --- */
+        .grid-frame { background: white; border-radius: 20px; box-shadow: var(--card-shadow); border: 1px solid #E2E8F0; position: relative; overflow: hidden; display: flex; flex-direction: column; margin-bottom: 2rem; }
+        .grid-frame::before { 
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; 
+            background: linear-gradient(to right, var(--mre-red) 0%, var(--mre-red) 33.33%, #ffffff 33.33%, #ffffff 66.66%, var(--mre-blue) 66.66%, var(--mre-blue) 100%); 
+            z-index: 10; border-bottom: 1px solid var(--border-color); 
+        }
+        .grid-header-frame { background-color: #F1F5F9; padding: 1rem 1.5rem; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; }
+
+        .mre-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .mre-table th { font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; padding: 0.85rem 1.5rem; border-bottom: 2px solid #E2E8F0; vertical-align: middle; }
+        .mre-table td { padding: 0.85rem 1.5rem; font-size: 0.8rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
+        
+        .filter-row th { background-color: #F8FAFC; padding: 0.5rem 1.5rem; border-bottom: 1px solid #E2E8F0; }
+        .form-control-filter { font-size: 0.75rem; padding: 0.4rem 0.6rem; border-radius: 6px; border: 1px solid #CBD5E1; background-color: #fff; width: 100%; }
+        .form-control-filter:focus { outline: none; border-color: var(--mre-blue-light); box-shadow: 0 0 0 2px rgba(0, 56, 168, 0.05); }
+
+        /* --- BOTONES --- */
+        .btn-main { background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); color: #ffffff; border: none; border-radius: 12px; padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.85rem; transition: var(--transition); }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 40, 85, 0.2); color: white; }
+        
+        .btn-tool-generic { background: #FFFFFF; color: var(--mre-blue); border: 1px solid var(--border-color); padding: 0.5rem 1rem; border-radius: 10px; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; transition: var(--transition); cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+        .btn-tool-generic:hover { background: #F1F5F9; border-color: var(--mre-blue); transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+        .btn-action-icon { width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; border-radius: 10px; border: 1px solid var(--border-color); background: white; color: var(--text-muted); transition: var(--transition); cursor: pointer; }
+        .btn-action-icon:hover { background: #F1F5F9; color: var(--mre-blue); border-color: var(--mre-blue); }
+
+        /* --- FOOTER & PAGINADO --- */
+        .grid-footer { padding: 1.25rem 1.5rem; background-color: #F8FAFC; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .btn-pagination { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #E2E8F0; border-radius: 8px; color: #64748B; cursor: pointer; transition: var(--transition); }
+        .btn-pagination:hover:not(:disabled) { background: var(--mre-blue); color: white; border-color: var(--mre-blue); }
+        .btn-pagination:disabled { opacity: 0.5; cursor: not-allowed; background: #F1F5F9; }
+        .page-indicator { font-size: 0.85rem; font-weight: 700; color: var(--mre-blue); padding: 0 8px; }
+
+        /* --- MODALES --- */
+        .mre-modal-overlay { position: fixed; inset: 0; background: rgba(0, 40, 85, 0.4); backdrop-filter: blur(4px); z-index: 4000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .mre-modal { background: white; border-radius: 24px; max-width: 850px; width: 100%; padding: 2.5rem; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.2); max-height: 95vh; overflow-y: auto; }
+        .section-title { font-size: 0.9rem; font-weight: 900; color: var(--mre-blue); text-transform: uppercase; display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem; }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: #E2E8F0; }
+        .form-label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem; display: block; }
+        .form-control-mre { background-color: var(--input-bg); border: 1px solid #E2E8F0; border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.9rem; width: 100%; transition: var(--transition); }
+        .form-control-mre:focus { outline: none; border-color: var(--mre-blue-light); box-shadow: 0 0 0 3px rgba(0, 56, 168, 0.1); }
+        .form-control-mre:disabled { background-color: #EDF2F7; color: #64748B; }
+
+        .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- FORMULARIOS DE BÚSQUEDA --- */
+        .form-section { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+        .form-section-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 800; color: var(--mre-blue-light); margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem; }
+        
+        .loading-overlay { position: absolute; inset: 0; background: rgba(255, 255, 255, 0.95); display: none; justify-content: center; align-items: center; z-index: 100; flex-direction: column; }
+        .spinner { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top: 4px solid var(--mre-blue); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .form-control, .form-select { border-radius: 10px; border: 1px solid #cbd5e1; padding: 0.6rem 0.8rem; font-size: 0.85rem; }
+        .ts-control { border-radius: 10px; border: 1px solid #cbd5e1; font-size: 0.85rem; min-height: calc(1.5em + 1.2rem + 2px); padding: 0.6rem 0.8rem; }
+        .ts-dropdown { font-size: 0.85rem; border-radius: 10px; box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.15); border: 1px solid #cbd5e1; }
+        .ts-dropdown .dropdown-input { border-radius: 8px !important; }
+        .text-navy { color: var(--mre-blue) !important; }
+        .preview-table th { background-color: #f8f9fa; color: var(--mre-blue); font-weight: 700; text-transform: uppercase; font-size: 0.75rem; border-bottom: 2px solid #e2e8f0; padding: 0.75rem; }
+        .preview-table td { font-size: 0.85rem; vertical-align: middle; border-bottom: 1px solid #e2e8f0; padding: 0.75rem; }
+    </style>
+</head>
+<body>
+
+    <div class="elegant-background"></div>
+
+    <!-- CABECERA -->
+    <header class="portal-header animate-fade">
+        <div class="d-flex align-items-center gap-3">
+            <button class="mobile-toggle-btn" onclick="toggleSidebar()" aria-label="Abrir menú">
+                <i data-lucide="menu" style="width: 26px;"></i>
+            </button>
+            <div class="bg-white p-2 rounded-3 border d-none d-sm-block" style="box-shadow: 0 4px 8px rgba(0,0,0,0.08)">
+                <i data-lucide="globe" style="color: var(--mre-blue); width: 28px;"></i>
+            </div>
+            <div>
+                <h6 class="fw-black mb-0" style="color: var(--mre-blue); font-size: 1.4rem; letter-spacing: -0.5px;">SIA-PY</h6>
+                <p class="small mb-0 fw-bold uppercase" style="font-size: 0.75rem; letter-spacing: 1.5px; color: #000 !important;">SISTEMA INTEGRADO DE APOSTILLA ELECTRÓNICA</p>
+            </div>
+        </div>
+        
+        <div class="user-dropdown d-flex align-items-center gap-3">
+            <div class="a11y-container">
+                <button class="btn-a11y-trigger" id="a11yTrigger" onclick="toggleA11yMenu(event)" title="Accesibilidad">
+                    <i data-lucide="accessibility" style="width: 20px;"></i>
+                    <span>Accesibilidad</span>
+                    <i data-lucide="chevron-down" style="width: 14px; margin-left: 4px;"></i>
+                </button>
+                <div class="a11y-dropdown-menu" id="a11yMenu" onclick="event.stopPropagation()">
+                    <div class="a11y-section-title">Tamaño de Texto</div>
+                    <div class="text-resize-controls">
+                        <button class="btn-resize" onclick="changeFontSize(-0.1)"><i data-lucide="minus" style="width: 16px;"></i></button>
+                        <span class="font-size-display" id="fontSizeDisplay">100%</span>
+                        <button class="btn-resize" onclick="changeFontSize(0.1)"><i data-lucide="plus" style="width: 16px;"></i></button>
+                    </div>
+                    <div class="a11y-section-title mt-3">Visualización</div>
+                    <div class="switch-control">
+                        <div class="switch-label"><i data-lucide="eye-off" style="width: 16px;"></i> Escala de Grises</div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="switchGrayscale" onchange="toggleGrayscale()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="user-info-text d-none d-md-block text-end">
+                <div class="user-name fw-bold" style="font-size: 0.85rem;" id="headerUserName">Juan Román Pérez</div>
+                <div class="user-id text-muted" style="font-size: 0.7rem;" id="headerUserCI">CI: 1.234.567</div>
+            </div>
+            <div class="dots-menu-trigger" id="profileTrigger" onclick="toggleUserMenu(event)">
+                <i data-lucide="user" style="width: 24px;"></i>
+            </div>
+            <div class="dropdown-menu-mre" id="userMenu">
+                <button class="dropdown-item-mre text-danger" onclick="location.reload()">
+                    <i data-lucide="log-out" style="width: 14px;"></i> Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <!-- SIDEBAR -->
+        <aside class="main-sidebar animate-fade" id="mainSidebar">
+            <nav class="nav-menu p-3">
+                <p class="px-3 mb-2 text-muted fw-bold uppercase" style="font-size: 0.7rem; letter-spacing: 1.2px;">Reportes Operativos</p>
+                <a href="#" class="nav-link-mre active" onclick="switchView('rep_cajero_self', this)">
+                    <i data-lucide="user" style="width: 18px;"></i> <span>Mis Operaciones</span>
+                </a>
+                <a href="#" class="nav-link-mre" onclick="switchView('rep_admin_global', this)">
+                    <i data-lucide="users" style="width: 18px;"></i> <span>Operaciones (Admin)</span>
+                </a>
+                <a href="#" class="nav-link-mre" onclick="switchView('rep_validacion', this)">
+                    <i data-lucide="file-check" style="width: 18px;"></i> <span>Verificación Previa</span>
+                </a>
+                <a href="#" class="nav-link-mre" onclick="switchView('rep_totales', this)">
+                    <i data-lucide="pie-chart" style="width: 18px;"></i> <span>Operaciones por Medio Pago</span>
+                </a>
+
+                <p class="px-3 mt-4 mb-2 text-muted fw-bold uppercase" style="font-size: 0.7rem; letter-spacing: 1.2px;">Financiero</p>
+                <a href="#" class="nav-link-mre" onclick="switchView('screen_depositos', this)">
+                    <i data-lucide="banknote" style="width: 18px;"></i> <span>Rendición de Efectivo</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="content-area">
+            
+            <!-- 1. REPORTE OPERACIONES CAJERO (SELF) -->
+            <div id="rep_cajero_self" class="view-section active" style="display: block;">
+                <header class="d-flex justify-content-between align-items-end mb-4 animate-fade">
+                    <div>
+                        <h2 class="fw-black text-navy m-0">Reporte de Operaciones</h2>
+                        <p class="text-muted small mb-0">Detalle de movimientos y cobros realizados por su usuario.</p>
+                    </div>
+                    <div class="bg-white px-3 py-2 rounded-3 border shadow-sm">
+                        <small class="fw-bold text-muted text-uppercase" style="font-size: 0.65rem;">Perfil: Cajero | JUAN ROMÁN PÉREZ</small>
+                    </div>
+                </header>
+
+                <div class="grid-frame animate-fade">
+                    <div class="loading-overlay" id="loader_1">
+                        <div class="spinner mb-3"></div>
+                        <h6 class="fw-bold text-navy small text-uppercase">Procesando Datos...</h6>
+                    </div>
+                    <div class="p-4 pt-4">
+                        <form onsubmit="event.preventDefault(); previewReport('cajero_self');">
+                            <div class="form-section mb-0">
+                                <div class="form-section-title"><i data-lucide="search" style="width:14px"></i> Criterios de Búsqueda</div>
+                                <div class="row g-4">
+                                    <div class="col-12">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Fecha y Hora Inicio</label>
+                                                <input type="datetime-local" step="1" class="form-control" id="filter_date_start_1" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Fecha y Hora Fin</label>
+                                                <input type="datetime-local" step="1" class="form-control" id="filter_date_end_1" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Tipo de Trámite</label>
+                                        <select class="form-select" id="filter_procedure_1">
+                                            <option value="TODOS" selected>Todos</option>
+                                            <option value="APOSTILLA">Apostillas</option>
+                                            <option value="LEGALIZACION">Legalizaciones</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Forma de Pago</label>
+                                        <select class="form-select" id="filter_payment_1">
+                                            <option value="TODOS" selected>Todas las formas de pago</option>
+                                            <option value="EFECTIVO">Efectivo</option>
+                                            <option value="POS">POS</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Tipo de Documento</label>
+                                        <select class="form-select" id="filter_doc_type_1">
+                                            <option value="TODOS" selected>Todos los documentos</option>
+                                            <option value="1030">Certificado de Antecedentes E</option>
+                                            <option value="1031">Certificado de Nacimiento N</option>
+                                            <option value="1032">Certificado de Defunción N</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Estado Solicitud</label>
+                                        <select class="form-select" id="filter_status_1">
+                                            <option value="TODOS">Todas</option>
+                                            <option value="APOSTILLADAS">Apostilladas</option>
+                                            <option value="PAGADAS">Pagadas</option>
+                                            <option value="APROBADAS">Aprobadas</option>
+                                            <option value="DEVUELTAS">Devueltas</option>
+                                            <option value="RECHAZADAS">Rechazadas</option>
+                                            <option value="ASIGNADAS">Asignadas</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 mt-4 d-flex justify-content-end border-top pt-4">
+                                <button type="submit" class="btn-main">
+                                    <i data-lucide="bar-chart" style="width: 18px;"></i> Generar reporte
+                                </button>
+                            </div>
+                        </form>
+                        <div id="preview_cajero_self" class="mt-4 border-top pt-4" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. REPORTE OPERACIONES ADMINISTRADOR -->
+            <div id="rep_admin_global" class="view-section" style="display: none;">
+                <header class="d-flex justify-content-between align-items-end mb-4 animate-fade">
+                    <div>
+                        <h2 class="fw-black text-navy m-0">Operaciones Consolidadas</h2>
+                        <p class="text-muted small mb-0">Visión global de recaudación y operaciones por sucursal.</p>
+                    </div>
+                    <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill border border-danger fw-bold shadow-sm" style="font-size: 0.7rem;">ADMINISTRADOR</span>
+                </header>
+
+                <div class="grid-frame animate-fade">
+                    <div class="loading-overlay" id="loader_2">
+                        <div class="spinner mb-3"></div>
+                        <h6 class="fw-bold text-navy small text-uppercase">Procesando consulta global...</h6>
+                    </div>
+                    <div class="p-4 pt-4">
+                        <form onsubmit="event.preventDefault(); previewReport('admin_global');">
+                            <div class="form-section mb-0">
+                                <div class="form-section-title"><i data-lucide="search" style="width:14px"></i> Criterios de Búsqueda</div>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Fecha y Hora Inicio</label>
+                                        <input type="datetime-local" step="1" class="form-control" id="filter_date_start_2" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Fecha y Hora Fin</label>
+                                        <input type="datetime-local" step="1" class="form-control" id="filter_date_end_2" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Operador</label>
+                                        <select class="form-select" id="filter_cashier_2">
+                                            <option value="TODOS">Todos los Operadores</option>
+                                            <option value="U001">1234567 - Juan Román Pérez</option>
+                                            <option value="U002">4875421 - Cynthia Gonzalez</option>
+                                            <option value="U003">3254198 - Roberto Florentin</option>
+                                            <option value="U004">5012344 - Maria Lujan Duarte</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Perfil</label>
+                                        <select class="form-select" id="filter_profile_2">
+                                            <option value="TODOS">Todos</option>
+                                            <option value="OLOGRAFA">Ológrafa</option>
+                                            <option value="VERIFICACION_PREVIA">Verificación Previa</option>
+                                            <option value="ADMIN_LEGALIZACIONES">Administrador de Legalizaciones</option>
+                                            <option value="VERIFICACION_EXTERNA">Verificación Externa</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Sucursal / Sede</label>
+                                        <select class="form-select" id="filter_branch_2">
+                                            <option value="TODOS">Todas las Sucursales</option>
+                                            <option value="S01">Sede Central - Asunción</option>
+                                            <option value="S02">Oficina de Legalizaciones</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Tipo de Trámite</label>
+                                        <select class="form-select" id="filter_procedure_2">
+                                            <option value="TODOS">Todos</option>
+                                            <option value="APOSTILLA">Apostillas</option>
+                                            <option value="LEGALIZACION">Legalizaciones</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Medio de Pago</label>
+                                        <select class="form-select" id="filter_payment_2">
+                                            <option value="TODOS">Todos</option>
+                                            <option value="EFECTIVO">Efectivo</option>
+                                            <option value="POS">POS</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 mt-4 pt-3 border-top d-flex justify-content-end">
+                                <button type="submit" class="btn-main">
+                                    <i data-lucide="bar-chart" style="width: 18px;"></i> Generar reporte
+                                </button>
+                            </div>
+                        </form>
+                        <div id="preview_admin_global" class="mt-4 border-top pt-4" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. REPORTE VALIDACION PREVIA -->
+            <div id="rep_validacion" class="view-section" style="display: none;">
+                <header class="d-flex justify-content-between align-items-end mb-4 animate-fade">
+                    <div>
+                        <h2 class="fw-black text-navy m-0">Gestión de Verificación Previa</h2>
+                        <p class="text-muted small mb-0">Reporte de productividad y estado de solicitudes verificadas.</p>
+                    </div>
+                </header>
+
+                <div class="grid-frame animate-fade">
+                    <div class="loading-overlay" id="loader_3">
+                        <div class="spinner mb-3"></div>
+                        <h6 class="fw-bold text-navy small text-uppercase">Generando reporte...</h6>
+                    </div>
+                    <div class="p-4 pt-4">
+                        <form onsubmit="event.preventDefault(); previewReport('validacion');">
+                            <div class="form-section mb-0">
+                                <div class="form-section-title"><i data-lucide="search" style="width:14px"></i> Criterios de Búsqueda</div>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Fecha y Hora Inicio</label>
+                                        <input type="datetime-local" step="1" class="form-control" id="filter_date_start_3" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Fecha y Hora Fin</label>
+                                        <input type="datetime-local" step="1" class="form-control" id="filter_date_end_3" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Tipo de Trámite</label>
+                                        <select class="form-select" id="filter_procedure_3">
+                                            <option value="TODOS" selected>Todos</option>
+                                            <option value="APOSTILLA">Apostillas</option>
+                                            <option value="LEGALIZACION">Legalizaciones</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Forma de Pago</label>
+                                        <select class="form-select" id="filter_payment_3">
+                                            <option value="TODOS" selected>Todas las formas de pago</option>
+                                            <option value="EFECTIVO">Efectivo</option>
+                                            <option value="POS">POS</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Tipo de Documento</label>
+                                        <select class="form-select" id="filter_doc_type_3">
+                                            <option value="TODOS" selected>Todos los documentos</option>
+                                            <option value="1030">Certificado de Antecedentes E</option>
+                                            <option value="1031">Certificado de Nacimiento N</option>
+                                            <option value="1032">Certificado de Defunción N</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Estado Solicitud</label>
+                                        <select class="form-select" id="filter_status_3">
+                                            <option value="TODOS">Todas</option>
+                                            <option value="APOSTILLADAS">Apostilladas</option>
+                                            <option value="PAGADAS">Pagadas</option>
+                                            <option value="APROBADAS">Aprobadas</option>
+                                            <option value="DEVUELTAS">Devueltas</option>
+                                            <option value="RECHAZADAS">Rechazadas</option>
+                                            <option value="ASIGNADAS">Asignadas</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 mt-4 pt-3 border-top d-flex justify-content-end">
+                                <button type="submit" class="btn-main">
+                                    <i data-lucide="bar-chart" style="width: 18px;"></i> Generar reporte
+                                </button>
+                            </div>
+                        </form>
+                        <div id="preview_validacion" class="mt-4 border-top pt-4" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. REPORTE TOTALES POR MEDIO PAGO -->
+            <div id="rep_totales" class="view-section" style="display: none;">
+                <header class="d-flex justify-content-between align-items-end mb-4 animate-fade">
+                    <div>
+                        <h2 class="fw-black text-navy m-0">Operaciones por medio de pago</h2>
+                        <p class="text-muted small mb-0">Resumen financiero agrupado para arqueo de caja.</p>
+                    </div>
+                    <div class="bg-white p-2 rounded-3 border shadow-sm d-flex align-items-center justify-content-center">
+                        <i data-lucide="wallet" class="text-navy" style="width: 24px; height: 24px;"></i>
+                    </div>
+                </header>
+
+                <div class="grid-frame animate-fade">
+                    <div class="loading-overlay" id="loader_4">
+                        <div class="spinner mb-3"></div>
+                        <h6 class="fw-bold text-navy small text-uppercase">Calculando arqueo...</h6>
+                    </div>
+                    <div class="p-4 pt-4">
+                        <form onsubmit="event.preventDefault(); previewReport('totales');">
+                            <div class="form-section mb-0">
+                                <div class="form-section-title"><i data-lucide="search" style="width:14px"></i> Criterios de Búsqueda</div>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Fecha y Hora Inicio</label>
+                                        <input type="datetime-local" step="1" class="form-control" id="filter_date_start_4" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Fecha y Hora Fin</label>
+                                        <input type="datetime-local" step="1" class="form-control" id="filter_date_end_4" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Tipo de Trámite</label>
+                                        <select class="form-select" id="filter_procedure_4">
+                                            <option value="TODOS">Todos</option>
+                                            <option value="APOSTILLA">Apostillas</option>
+                                            <option value="LEGALIZACION">Legalizaciones</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Sucursal</label>
+                                        <select class="form-select" id="filter_branch_4">
+                                            <option value="TODOS">Todas las Sucursales</option>
+                                            <option value="S01">Sede Central - Asunción</option>
+                                            <option value="S02">Oficina de Legalizaciones</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 mt-4 pt-3 border-top d-flex justify-content-end">
+                                <button type="submit" class="btn-main">
+                                    <i data-lucide="bar-chart" style="width: 18px;"></i> Generar reporte
+                                </button>
+                            </div>
+                        </form>
+                        <div id="preview_totales" class="mt-4 border-top pt-4" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. PANTALLA RENDICIÓN DE EFECTIVO -->
+            <div id="screen_depositos" class="view-section" style="display: none;">
+                <header class="d-flex justify-content-between align-items-end mb-4 animate-fade">
+                    <div>
+                        <h2 class="fw-black text-navy m-0">Rendición de Efectivo</h2>
+                        <p class="text-muted small mb-0">Registro de boletas de depósito para cierre de lotes diarios.</p>
+                    </div>
+                    <button class="btn-tool-generic shadow-sm px-3" onclick="renderDepositsTable(); filterDeposits();">
+                        <i data-lucide="refresh-cw" style="width: 16px;"></i> Actualizar
+                    </button>
+                </header>
+
+                <div class="grid-frame animate-fade">
+                    <div class="grid-header-frame">
+                        <h4 class="fw-black text-uppercase m-0" style="color: var(--mre-blue); font-size: 0.8rem;">Lotes Pendientes de Rendición</h4>
+                        <div class="d-flex align-items-center gap-2">
+                            <button class="btn-tool-generic" title="Configurar Columnas"><i data-lucide="layout-columns" style="width: 16px;"></i></button>
+                            <button class="btn-tool-generic" title="Exportar a Excel"><i data-lucide="file-spreadsheet" style="width: 16px;"></i></button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="mre-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="header-title">Fecha Cierre</th>
+                                    <th class="header-title">Responsable (Cajero)</th>
+                                    <th class="text-end header-title">Monto Efectivo (Gs)</th>
+                                    <th class="text-center header-title">Estado</th>
+                                    <th width="140" class="text-center header-title">Acciones</th>
+                                </tr>
+                                <tr class="filter-row">
+                                    <th class="header-filter"><input type="text" class="form-control-filter" placeholder="Filtrar fecha..." data-col="0" onkeyup="filterDeposits()"></th>
+                                    <th class="header-filter"><input type="text" class="form-control-filter" placeholder="Filtrar responsable..." data-col="1" onkeyup="filterDeposits()"></th>
+                                    <th class="header-filter"><input type="text" class="form-control-filter text-end" placeholder="Filtrar monto..." data-col="2" onkeyup="filterDeposits()"></th>
+                                    <th class="header-filter"><input type="text" class="form-control-filter text-center" id="filter_status_deposit" placeholder="Filtrar estado..." data-col="3" onkeyup="filterDeposits()"></th>
+                                    <th class="header-filter"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="depositsTableBody">
+                                <!-- Inyectado via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="grid-footer">
+                        <div><span class="text-muted small fw-bold" id="depPaginationInfo">Mostrando 0 registros</span></div>
+                        <div class="d-flex align-items-center gap-1">
+                            <button class="btn-pagination" disabled><i data-lucide="chevron-left" style="width: 16px;"></i></button>
+                            <span class="page-indicator">Pág 1</span>
+                            <button class="btn-pagination" disabled><i data-lucide="chevron-right" style="width: 16px;"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <footer class="mre-footer">
+        <div>&copy; 2026 Ministerio de Relaciones Exteriores - Dirección de Informática</div>
+    </footer>
+
+    <!-- MODAL INGRESO DE DEPÓSITO -->
+    <div class="mre-modal-overlay" id="modalDeposit">
+        <div class="mre-modal animate-fade" style="max-width: 550px;">
+            <div class="section-title"><i data-lucide="file-check-2" style="width: 20px;"></i> Completar Rendición</div>
+            <form id="formDeposit" onsubmit="event.preventDefault(); saveDeposit();">
+                <div class="row g-3 mb-2">
+                    <div class="col-md-12">
+                        <div class="bg-light p-3 rounded-3 border border-primary border-opacity-25 mb-3 d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="d-block small text-muted fw-bold text-uppercase">Lote Seleccionado</span>
+                                <span class="fw-bold text-navy" id="modal_lot_info">-</span>
+                            </div>
+                            <div class="text-end">
+                                <span class="d-block small text-muted fw-bold text-uppercase">Monto a Rendir (Gs)</span>
+                                <span class="fw-black fs-5 text-success" id="modal_lot_amount">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Número de Boleta <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control-mre fw-bold" id="deposit_number" placeholder="Ej: 88440021" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Fecha de Depósito</label>
+                        <input type="date" class="form-control-mre" id="deposit_date">
+                    </div>
+                    <!-- CAMPO CUENTA DE DESTINO ELIMINADO SEGÚN REQUERIMIENTO -->
+                </div>
+                <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                    <button type="button" class="btn-tool-generic" style="background: #94A3B8; color: white; border: none; padding: 0.6rem 1.2rem; font-size: 0.85rem;" onclick="closeDepositModal()">Cancelar</button>
+                    <button type="submit" class="btn-main px-4 shadow-sm" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); border: none;">
+                        <i data-lucide="check-circle" style="width: 16px;"></i> Confirmar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- LOADER GLOBAL -->
+    <div class="mre-modal-overlay" id="globalLoader" style="z-index: 5000;">
+        <div class="d-flex flex-column align-items-center bg-white p-4 rounded-4 shadow-lg">
+            <div class="spinner mb-3"></div>
+            <h6 class="fw-bold text-navy small text-uppercase m-0" id="loaderMsg">Procesando...</h6>
+        </div>
+    </div>
+
+    <script>
+        // User context mockup
+        const loggedInUser = "1234567 - JUAN ROMÁN PÉREZ";
+        const loggedInUserBranch = "Sede Central - Asunción";
+
+        // Init Icons
+        lucide.createIcons();
+
+        // Utility: Format ISO string to DD/MM/YYYY HH:mm:ss
+        function formatDateTime(isoString) {
+            if(!isoString) return "N/A";
+            const date = new Date(isoString);
+            if(isNaN(date.getTime())) return isoString;
+            
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const seconds = String(date.getSeconds()).padStart(2, '0');
+            
+            return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+        }
+
+        // Utility to safely retrieve dropdown text
+        function safeGetText(elementId) {
+            const el = document.getElementById(elementId);
+            if (!el) return "N/A";
+            if (el.tomselect) {
+                const val = el.tomselect.getValue();
+                const opt = el.tomselect.options[val];
+                return opt ? opt.text : "N/A";
+            }
+            if (el.options && el.selectedIndex >= 0) return el.options[el.selectedIndex].text;
+            return "N/A";
+        }
+
+        // Header Triggers
+        function toggleSidebar() { document.getElementById('mainSidebar').classList.toggle('show'); }
+        function toggleA11yMenu(e) { e.stopPropagation(); document.getElementById('a11yMenu').classList.toggle('show'); document.getElementById('userMenu').classList.remove('show'); }
+        function toggleUserMenu(e) { e.stopPropagation(); document.getElementById('userMenu').classList.toggle('show'); document.getElementById('a11yMenu').classList.remove('show'); }
+        function changeFontSize(delta) {
+            let current = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--font-scale')) || 1;
+            let newScale = Math.min(Math.max(current + delta, 0.8), 1.5);
+            document.documentElement.style.setProperty('--font-scale', newScale);
+            document.getElementById('fontSizeDisplay').innerText = Math.round(newScale * 100) + '%';
+        }
+        function toggleGrayscale() { document.body.classList.toggle('grayscale-mode'); }
+        
+        document.addEventListener('click', () => {
+            document.getElementById('userMenu').classList.remove('show');
+            document.getElementById('a11yMenu').classList.remove('show');
+        });
+
+        // Navigation Logic
+        function switchView(viewId, element) {
+            document.querySelectorAll('.view-section').forEach(c => {
+                c.style.display = 'none';
+                c.classList.remove('active');
+            });
+            const targetElement = document.getElementById(viewId);
+            if (targetElement) {
+                targetElement.style.display = 'block';
+                targetElement.classList.add('active');
+            }
+            
+            document.querySelectorAll('.nav-link-mre').forEach(n => n.classList.remove('active'));
+            if (element && element.classList) {
+                element.classList.add('active');
+            }
+        }
+
+        function setToday(suffix, isDateTime = false) {
+            const now = new Date();
+            if (isDateTime) {
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                
+                const startOfDay = `${year}-${month}-${day}T00:00:00`;
+                const endOfDay = `${year}-${month}-${day}T23:59:59`;
+                
+                const startInput = document.getElementById(`filter_date_start_${suffix}`);
+                const endInput = document.getElementById(`filter_date_end_${suffix}`);
+                
+                if (startInput) startInput.value = startOfDay;
+                if (endInput) endInput.value = endOfDay;
+            } else {
+                const todayStr = now.toISOString().split('T')[0];
+                const startInput = document.getElementById(`filter_date_start_${suffix}`);
+                const endInput = document.getElementById(`filter_date_end_${suffix}`);
+
+                if(startInput) startInput.value = todayStr;
+                if(endInput) endInput.value = todayStr;
+            }
+        }
+
+        // 2. Deposit Screen Logic
+        let currentSelectedLotId = null;
+        let mockDeposits = [
+            { id: 1, date: '10/02/2026', responsible: '1234567 - Juan Román Pérez', amount: 1500000, status: 'PENDIENTE', ticketNumber: '', depositDate: '' },
+            { id: 2, date: '11/02/2026', responsible: '1234567 - Juan Román Pérez', amount: 2300000, status: 'PENDIENTE', ticketNumber: '', depositDate: '' },
+            { id: 3, date: '09/02/2026', responsible: '4875421 - Cynthia Gonzalez', amount: 850000, status: 'COMPLETADA', ticketNumber: '88440010', depositDate: '2026-02-10' },
+            { id: 4, date: '08/02/2026', responsible: '3254198 - Roberto Florentin', amount: 1200000, status: 'COMPLETADA', ticketNumber: '88440005', depositDate: '2026-02-09' }
+        ];
+
+        function renderDepositsTable() {
+            const tbody = document.getElementById('depositsTableBody');
+            tbody.innerHTML = mockDeposits.map(d => {
+                const isPending = d.status === 'PENDIENTE';
+                const badge = isPending 
+                    ? `<span class="badge bg-warning text-dark border border-warning-subtle py-1 px-2">Pendiente</span>`
+                    : `<span class="badge bg-success text-white border border-success-subtle py-1 px-2">Completada</span>`;
+                
+                const actionBtn = isPending
+                    ? `<button class="btn-tool-generic w-100 py-1" onclick="selectDepositBatch(${d.id})">
+                           <i data-lucide="check-circle" style="width: 14px;"></i> Completar
+                       </button>`
+                    : `<span class="text-muted small fw-bold text-uppercase" style="font-size:0.65rem;">Boleta: ${d.ticketNumber}</span>`;
+
+                return `
+                    <tr>
+                        <td class="fw-bold text-navy">${d.date}</td>
+                        <td>${d.responsible}</td>
+                        <td class="text-end fw-black text-dark">${d.amount.toLocaleString('es-PY')}</td>
+                        <td class="text-center">${badge}</td>
+                        <td class="text-center align-middle">${actionBtn}</td>
+                    </tr>
+                `;
+            }).join('');
+            if (window.lucide) lucide.createIcons();
+            
+            // Re-apply filter immediately after render to keep consistent state
+            filterDeposits(); 
+        }
+
+        function filterDeposits() {
+            const inputs = document.querySelectorAll('#screen_depositos .form-control-filter');
+            const rows = document.querySelectorAll('#depositsTableBody tr');
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                let isVisible = true;
+                inputs.forEach(input => {
+                    const colIdx = input.getAttribute('data-col');
+                    const filterVal = input.value.toLowerCase().trim();
+                    if (filterVal && colIdx !== null) {
+                        const cell = row.cells[colIdx];
+                        if (cell && !cell.textContent.toLowerCase().includes(filterVal)) {
+                            isVisible = false;
+                        }
+                    }
+                });
+                row.style.display = isVisible ? '' : 'none';
+                if(isVisible) visibleCount++;
+            });
+
+            const paginationInfo = document.getElementById('depPaginationInfo');
+            if (paginationInfo) paginationInfo.innerText = `Mostrando ${visibleCount} registros`;
+        }
+
+        function selectDepositBatch(id) {
+            currentSelectedLotId = id;
+            const lot = mockDeposits.find(d => d.id === id);
+            if(!lot) return;
+
+            document.getElementById('modalDeposit').style.display = 'flex';
+            document.getElementById('modal_lot_info').innerText = `Lote del ${lot.date}`;
+            document.getElementById('modal_lot_amount').innerText = lot.amount.toLocaleString('es-PY');
+            document.getElementById('deposit_number').value = '';
+            document.getElementById('deposit_date').value = '';
+            
+            if (window.lucide) lucide.createIcons();
+            setTimeout(() => document.getElementById('deposit_number').focus(), 100);
+        }
+
+        function closeDepositModal() {
+            currentSelectedLotId = null;
+            document.getElementById('modalDeposit').style.display = 'none';
+        }
+
+        function saveDeposit() {
+            const loader = document.getElementById('globalLoader');
+            document.getElementById('loaderMsg').innerText = "Registrando depósito...";
+            
+            closeDepositModal(); 
+            loader.style.display = 'flex';
+
+            setTimeout(() => {
+                loader.style.display = 'none';
+
+                if (currentSelectedLotId) {
+                    const lot = mockDeposits.find(d => d.id === currentSelectedLotId);
+                    if (lot) {
+                        const ticketVal = document.getElementById('deposit_number').value.trim();
+                        const dateVal = document.getElementById('deposit_date').value;
+                        
+                        if (ticketVal) {
+                            lot.status = 'COMPLETADA';
+                            lot.ticketNumber = ticketVal;
+                            lot.depositDate = dateVal;
+                        }
+                    }
+                }
+                renderDepositsTable();
+            }, 800);
+        }
+
+        // --- MOCKUP ENGINE: Filtrado Dinámico para Admin Global ---
+        function getFilteredAdminData() {
+            const branchFilter = safeGetText('filter_branch_2');
+            const cashierFilter = safeGetText('filter_cashier_2');
+            const paymentFilter = safeGetText('filter_payment_2');
+
+            let rawData = [
+                { date: "17/02/2026 08:30:15", comp: "EL-001-00234", doc: "Certificado de Antecedentes E", cashier: "1234567 - Juan Román Pérez", branch: "Sede Central - Asunción", pay: "Efectivo", amount: 80100, status: "Apostillada" },
+                { date: "17/02/2026 09:15:22", comp: "EL-001-00235", doc: "Certificado de Nacimiento N", cashier: "4875421 - Cynthia Gonzalez", branch: "Sede Central - Asunción", pay: "POS", amount: 0, status: "Aprobada" },
+                { date: "17/02/2026 10:05:40", comp: "EL-001-00236", doc: "Certificado de Antecedentes E", cashier: "3254198 - Roberto Florentin", branch: "Oficina de Legalizaciones", pay: "Efectivo", amount: 80100, status: "Pagada" },
+                { date: "17/02/2026 11:45:10", comp: "EL-001-00237", doc: "Certificado de Defunción N", cashier: "1234567 - Juan Román Pérez", branch: "Sede Central - Asunción", pay: "POS", amount: 80100, status: "Apostillada" },
+                { date: "17/02/2026 12:30:05", comp: "EL-001-00238", doc: "Certificado de Nacimiento N", cashier: "4875421 - Cynthia Gonzalez", branch: "Sede Central - Asunción", pay: "POS", amount: 80100, status: "Pagada" },
+                { date: "17/02/2026 13:10:00", comp: "EL-001-00239", doc: "Certificado de Antecedentes E", cashier: "5012344 - Maria Lujan Duarte", branch: "Oficina de Legalizaciones", pay: "Efectivo", amount: 80100, status: "Apostillada" }
+            ];
+
+            if (branchFilter !== "Todas las Sucursales" && branchFilter !== "N/A") rawData = rawData.filter(r => r.branch === branchFilter);
+            if (cashierFilter !== "Todos los Operadores" && cashierFilter !== "N/A") rawData = rawData.filter(r => r.cashier === cashierFilter);
+            if (paymentFilter !== "Todos" && paymentFilter !== "N/A") rawData = rawData.filter(r => r.pay === paymentFilter);
+
+            const matrixMap = {};
+            rawData.forEach(r => {
+                const key = r.cashier + "|" + r.branch;
+                if (!matrixMap[key]) matrixMap[key] = { cashier: r.cashier, branch: r.branch === "Sede Central - Asunción" ? "Sede Central" : r.branch, ops: 0, efec: 0, pos: 0, total: 0 };
+                matrixMap[key].ops++;
+                if (r.pay === 'Efectivo') matrixMap[key].efec += r.amount;
+                if (r.pay === 'POS') matrixMap[key].pos += r.amount;
+                matrixMap[key].total += r.amount;
+            });
+
+            const matrixData = Object.values(matrixMap).map(m => [
+                m.cashier, m.branch, m.ops.toString(), m.efec.toLocaleString('es-PY'), m.pos.toLocaleString('es-PY'), m.total.toLocaleString('es-PY')
+            ]);
+
+            let totOps = 0, totEfec = 0, totPos = 0, totGen = 0;
+            Object.values(matrixMap).forEach(m => { totOps += m.ops; totEfec += m.efec; totPos += m.pos; totGen += m.total; });
+
+            const detData = rawData.map(r => [
+                r.date.substring(0, 16), r.comp, r.doc.replace(' E', '').replace(' N', ''), r.cashier, r.pay, r.amount.toLocaleString('es-PY'), r.status
+            ]);
+
+            return { matrixData, detData, totOps, totEfec: totEfec.toLocaleString('es-PY'), totPos: totPos.toLocaleString('es-PY'), totGen: totGen.toLocaleString('es-PY') };
+        }
+
+        // --- MOCKUP ENGINE: Filtrado Dinámico para Verificación Previa ---
+        function getFilteredValidacionData() {
+            const summary = [
+                ["1234567 - Juan Román Pérez", "45", "40", "3", "2"],
+                ["4875421 - Cynthia Gonzalez", "38", "30", "5", "3"],
+                ["3254198 - Roberto Florentin", "20", "18", "2", "0"]
+            ];
+
+            const detData = [
+                ["SOL-100234", "EL-001-00234", "Cert. Antecedentes", "Efectivo", "80.100", "Apostillada", "16/02/2026 08:00", "16/02/2026 08:15", "1234567 - Juan R. P.", "16/02/2026 08:30", "1234567 - Juan R. P.", "-", "-", "-", "-", "16/02/2026 09:00"],
+                ["SOL-100235", "-", "Cert. Nacimiento", "POS", "0", "Aprobada", "16/02/2026 09:00", "16/02/2026 09:10", "4875421 - Cynthia G.", "-", "-", "16/02/2026 09:25", "4875421 - Cynthia G.", "-", "-", "-"],
+                ["SOL-100236", "EL-001-00236", "Cert. Antecedentes", "Efectivo", "80.100", "Pagada", "16/02/2026 10:15", "16/02/2026 10:20", "3254198 - Roberto F.", "16/02/2026 10:45", "3254198 - Roberto F.", "-", "-", "-", "-", "16/02/2026 11:30"],
+                ["SOL-100237", "-", "Cert. Defunción", "POS", "80.100", "Devuelta", "16/02/2026 11:00", "16/02/2026 11:05", "1234567 - Juan R. P.", "-", "-", "-", "-", "16/02/2026 11:15", "1234567 - Juan R. P.", "-"],
+                ["SOL-100238", "EL-001-00238", "Cert. Nacimiento", "POS", "80.100", "Apostillada", "16/02/2026 13:00", "16/02/2026 13:30", "4875421 - Cynthia G.", "16/02/2026 13:45", "4875421 - Cynthia G.", "-", "-", "-", "-", "16/02/2026 14:10"]
+            ];
+
+            let totTomadas = 0, totAprobadas = 0, totDevueltas = 0, totRechazadas = 0;
+            summary.forEach(r => { totTomadas += parseInt(r[1]); totAprobadas += parseInt(r[2]); totDevueltas += parseInt(r[3]); totRechazadas += parseInt(r[4]); });
+
+            return { summary, detData, totTomadas, totAprobadas, totDevueltas, totRechazadas };
+        }
+
+        // --- PREVIEW HTML RENDER LOGIC ---
+        function getHtmlFilterGrid(filters) {
+            let html = `<div class="parameters-band mb-3" style="background-color: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.25rem;"><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 0.75rem;">`;
+            filters.forEach(f => {
+                html += `<div style="display: flex; align-items: baseline; font-size: 0.85rem;"><span style="font-weight: 700; color: #002855; width: 210px; flex-shrink: 0;">${f.label}:</span> <span style="color: #475569; font-weight: 500;">${f.value}</span></div>`;
+            });
+            html += `</div></div>`;
+            return html;
+        }
+
+        function previewReport(reportType) {
+            const loaderMap = { 'cajero_self': 'loader_1', 'admin_global': 'loader_2', 'validacion': 'loader_3', 'totales': 'loader_4' };
+            const loaderId = loaderMap[reportType];
+            document.getElementById(loaderId).style.display = 'flex';
+
+            setTimeout(() => {
+                let columns = [];
+                let data = [];
+                let summaryHtml = '';
+                let titleStr = '';
+                let filtersHtml = '';
+
+                if (reportType === 'cajero_self') {
+                    titleStr = "REPORTE DE OPERACIONES";
+                    const searchFilters = [
+                        { label: "Fecha Inicio", value: formatDateTime(document.getElementById('filter_date_start_1').value) },
+                        { label: "Fecha Fin", value: formatDateTime(document.getElementById('filter_date_end_1').value) },
+                        { label: "Tipo Trámite", value: safeGetText('filter_procedure_1') },
+                        { label: "Forma de Pago", value: safeGetText('filter_payment_1') },
+                        { label: "Tipo Documento", value: safeGetText('filter_doc_type_1') },
+                        { label: "Estado", value: safeGetText('filter_status_1') }
+                    ];
+                    
+                    filtersHtml = `
+                        <h6 class="fw-bold text-navy mt-2 mb-2 border-bottom border-2 pb-2">Criterios de Búsqueda</h6>
+                        ${getHtmlFilterGrid(searchFilters)}
+                        
+                        <h6 class="fw-bold text-navy mt-3 mb-2 border-bottom border-2 pb-2">Datos del Cajero</h6>
+                        <div class="mb-4">
+                            <div class="mb-1"><span class="fw-bold text-navy" style="font-size: 0.85rem; display: inline-block; width: 130px;">Operador de Caja:</span> <span class="text-muted" style="font-size: 0.85rem;">${loggedInUser}</span></div>
+                            <div><span class="fw-bold text-navy" style="font-size: 0.85rem; display: inline-block; width: 130px;">Sucursal:</span> <span class="text-muted" style="font-size: 0.85rem;">${loggedInUserBranch}</span></div>
+                        </div>
+                    `;
+
+                    columns = ["Fecha y Hora", "Nro. Comprobante", "Tipo Documento", "Forma Pago", "Monto (Gs)", "Estado"];
+                    data = [
+                        ["17/02/2026 08:30:15", "EL-001-00234", "Certificado de Antecedentes E", "Efectivo", "80.100", "Apostillada"],
+                        ["17/02/2026 09:15:22", "EL-001-00235", "Certificado de Nacimiento N", "POS", "0", "Aprobada"],
+                        ["17/02/2026 10:05:40", "EL-001-00236", "Certificado de Antecedentes E", "Efectivo", "80.100", "Pagada"],
+                        ["17/02/2026 11:45:10", "EL-001-00237", "Certificado de Defunción N", "POS", "80.100", "Apostillada"],
+                        ["17/02/2026 12:30:05", "EL-001-00238", "Certificado de Nacimiento N", "POS", "80.100", "Pagada"]
+                    ];
+                    
+                    summaryHtml = `
+                        <h6 class="fw-bold text-navy mt-2 mb-3 border-bottom border-2 pb-2">Totales de resumen documental</h6>
+                        <div class="table-responsive border rounded-3 mb-4">
+                            <table class="table table-sm table-bordered mb-0 text-center">
+                                <thead style="background-color: #f8f9fa;"><tr><th class="text-navy py-1 align-middle" style="font-size:0.7rem;">Apostillas</th><th class="text-navy py-1 align-middle" style="font-size:0.7rem;">Legalizaciones</th><th class="text-navy py-1 align-middle" style="font-size:0.7rem;">Liquidaciones<br>Cobradas</th><th class="text-navy py-1 align-middle" style="font-size:0.7rem;">Liquidaciones<br>Pendientes</th><th class="text-navy fw-bold py-1 align-middle" style="font-size:0.7rem; background-color: #e2e8f0;">Recibos<br>Electrónicos</th></tr></thead>
+                                <tbody><tr><td class="fw-bold text-navy py-1" style="font-size:0.85rem;">45</td><td class="fw-bold text-navy py-1" style="font-size:0.85rem;">40</td><td class="fw-bold text-navy py-1" style="font-size:0.85rem;">10</td><td class="fw-bold text-navy py-1" style="font-size:0.85rem;">5</td><td class="fw-bold text-navy py-1" style="font-size:0.85rem; background-color: #f1f5f9;">85</td></tr></tbody>
+                            </table>
+                        </div>
+
+                        <h6 class="fw-bold text-navy mt-2 mb-3 border-bottom border-2 pb-2">Totales de Operaciones</h6>
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6"><table class="table table-sm border"><thead class="table-light"><tr><th colspan="2" class="text-navy text-center">EFECTIVO</th></tr></thead><tbody><tr><td class="text-muted">Monto Total (Gs):</td><td class="text-end fw-bold text-navy">160.200</td></tr></tbody></table></div>
+                            <div class="col-md-6"><table class="table table-sm border"><thead class="table-light"><tr><th colspan="2" class="text-navy text-center">POS</th></tr></thead><tbody><tr><td class="text-muted">Monto Total (Gs):</td><td class="text-end fw-bold text-navy">160.200</td></tr></tbody></table></div>
+                            <div class="col-md-6"><table class="table table-sm border"><thead class="table-light"><tr><th colspan="2" class="text-navy text-center">LIQUIDACIONES COBRADAS</th></tr></thead><tbody><tr><td class="text-muted">Monto Total (Gs):</td><td class="text-end fw-bold text-navy">320.400</td></tr></tbody></table></div>
+                            <div class="col-md-6"><table class="table table-sm border"><thead class="table-light"><tr><th colspan="2" class="text-navy text-center">LIQUIDACIONES PENDIENTES</th></tr></thead><tbody><tr><td class="text-muted">Monto Total (Gs):</td><td class="text-end fw-bold text-navy">10.000</td></tr></tbody></table></div>
+                        </div>
+
+                        <h6 class="fw-bold text-navy mt-4 mb-3 border-bottom border-2 pb-2">Detalle de Montos por Documento y Forma de Pago</h6>
+                        <div class="table-responsive border rounded-3 mb-4">
+                            <table class="table table-sm table-striped mb-0">
+                                <thead style="background-color: #f8f9fa;"><tr><th class="text-navy py-2">Tipo de Documento</th><th class="text-end text-navy py-2">Efectivo (Gs)</th><th class="text-end text-navy py-2">POS (Gs)</th><th class="text-end text-navy py-2">Total (Gs)</th></tr></thead>
+                                <tbody>
+                                    <tr><td>Certificado de Antecedentes E</td><td class="text-end">160.200</td><td class="text-end">0</td><td class="text-end fw-bold">160.200</td></tr>
+                                    <tr><td>Certificado de Nacimiento N</td><td class="text-end">0</td><td class="text-end">80.100</td><td class="text-end fw-bold">80.100</td></tr>
+                                    <tr><td>Certificado de Defunción N</td><td class="text-end">0</td><td class="text-end">80.100</td><td class="text-end fw-bold">80.100</td></tr>
+                                </tbody>
+                                <tfoot><tr style="background-color: #e2e8f0;"><th class="text-end text-navy fw-bold py-2">TOTAL GENERAL</th><th class="text-end text-navy fw-bold py-2">160.200</th><th class="text-end text-navy fw-bold py-2">160.200</th><th class="text-end text-navy fw-bold fs-6 py-2">320.400</th></tr></tfoot>
+                            </table>
+                        </div>
+                        <h6 class="fw-bold text-navy mb-3 border-bottom border-2 pb-2">Listado de Operaciones</h6>
+                    `;
+                } 
+                else if (reportType === 'admin_global') {
+                    titleStr = "OPERACIONES CONSOLIDADAS (ADMIN)";
+                    const filters = [
+                        { label: "Fecha Inicio", value: formatDateTime(document.getElementById('filter_date_start_2').value) },
+                        { label: "Fecha Fin", value: formatDateTime(document.getElementById('filter_date_end_2').value) },
+                        { label: "Operador", value: safeGetText('filter_cashier_2') },
+                        { label: "Perfil", value: safeGetText('filter_profile_2') },
+                        { label: "Sucursal", value: safeGetText('filter_branch_2') },
+                        { label: "Tipo Trámite", value: safeGetText('filter_procedure_2') },
+                        { label: "Medio Pago", value: safeGetText('filter_payment_2') }
+                    ];
+                    filtersHtml = getHtmlFilterGrid(filters);
+
+                    const filteredData = getFilteredAdminData();
+                    let matrixRowsHtml = '';
+                    if (filteredData.matrixData.length > 0) {
+                        filteredData.matrixData.forEach(r => { matrixRowsHtml += `<tr><td>${r[0]}</td><td>${r[1]}</td><td class="text-center">${r[2]}</td><td class="text-end">${r[3]}</td><td class="text-end">${r[4]}</td><td class="text-end fw-bold">${r[5]}</td></tr>`; });
+                    } else {
+                        matrixRowsHtml = `<tr><td colspan="6" class="text-center text-muted py-3">No hay datos que coincidan con los filtros aplicados.</td></tr>`;
+                    }
+
+                    summaryHtml = `
+                        <h6 class="fw-bold text-navy mt-4 mb-3 border-bottom border-2 pb-2">Totales Consolidados</h6>
+                        <div class="table-responsive border rounded-3 mb-4">
+                            <table class="table table-sm table-striped mb-0">
+                                <thead style="background-color: #f8f9fa;"><tr><th class="text-navy py-2">Cajero</th><th class="text-navy py-2">Sucursal</th><th class="text-center text-navy py-2">Total Ops.</th><th class="text-end text-navy py-2">Efectivo (Gs)</th><th class="text-end text-navy py-2">POS (Gs)</th><th class="text-end text-navy py-2">Total (Gs)</th></tr></thead>
+                                <tbody>${matrixRowsHtml}</tbody>
+                                <tfoot><tr style="background-color: #e2e8f0;"><th colspan="2" class="text-end text-navy fw-bold py-2">TOTALES CONSOLIDADOS</th><th class="text-center text-navy fw-bold py-2">${filteredData.totOps}</th><th class="text-end text-navy fw-bold py-2">${filteredData.totEfec}</th><th class="text-end text-navy fw-bold py-2">${filteredData.totPos}</th><th class="text-end text-navy fw-bold fs-6 py-2">${filteredData.totGen}</th></tr></tfoot>
+                            </table>
+                        </div>
+                        <h6 class="fw-bold text-navy mb-3 border-bottom border-2 pb-2">Listado de Operaciones</h6>
+                    `;
+                    columns = ["Fecha y Hora", "Nro. Comprobante", "Tipo Documento", "Cajero", "Forma Pago", "Monto (Gs)", "Estado"];
+                    data = filteredData.detData;
+                }
+                else if (reportType === 'validacion') {
+                    titleStr = "REPORTE DE VERIFICACIÓN PREVIA";
+                    const filters = [
+                        { label: "Fecha Inicio", value: formatDateTime(document.getElementById('filter_date_start_3').value) },
+                        { label: "Fecha Fin", value: formatDateTime(document.getElementById('filter_date_end_3').value) },
+                        { label: "Tipo Trámite", value: safeGetText('filter_procedure_3') },
+                        { label: "Forma de Pago", value: safeGetText('filter_payment_3') },
+                        { label: "Tipo Documento", value: safeGetText('filter_doc_type_3') },
+                        { label: "Estado", value: safeGetText('filter_status_3') }
+                    ];
+                    filtersHtml = getHtmlFilterGrid(filters);
+
+                    const filteredData = getFilteredValidacionData();
+                    let summaryRowsHtml = '';
+                    filteredData.summary.forEach(r => { summaryRowsHtml += `<tr><td>${r[0]}</td><td class="text-center">${r[1]}</td><td class="text-center text-success fw-bold">${r[2]}</td><td class="text-center text-warning fw-bold">${r[3]}</td><td class="text-center text-danger fw-bold">${r[4]}</td></tr>`; });
+
+                    summaryHtml = `
+                        <h6 class="fw-bold text-navy mt-4 mb-3 border-bottom border-2 pb-2">Totales por Usuario</h6>
+                        <div class="table-responsive border rounded-3 mb-4">
+                            <table class="table table-sm table-striped mb-0">
+                                <thead style="background-color: #f8f9fa;"><tr><th class="text-navy py-2">Usuario</th><th class="text-center text-navy py-2">Tomadas</th><th class="text-center text-navy py-2">Aprobadas</th><th class="text-center text-navy py-2">Devueltas</th><th class="text-center text-navy py-2">Rechazadas</th></tr></thead>
+                                <tbody>${summaryRowsHtml}</tbody>
+                                <tfoot><tr style="background-color: #e2e8f0;"><th class="text-end text-navy fw-bold py-2">TOTALES CONSOLIDADOS</th><th class="text-center text-navy fw-bold py-2">${filteredData.totTomadas}</th><th class="text-center text-navy fw-bold py-2">${filteredData.totAprobadas}</th><th class="text-center text-navy fw-bold py-2">${filteredData.totDevueltas}</th><th class="text-center text-navy fw-bold py-2">${filteredData.totRechazadas}</th></tr></tfoot>
+                            </table>
+                        </div>
+
+                        <h6 class="fw-bold text-navy mt-2 mb-3 border-bottom border-2 pb-2">Totales de resumen documental</h6>
+                        <div class="table-responsive border rounded-3 mb-4">
+                            <table class="table table-sm table-bordered mb-0 text-center"><thead style="background-color: #f8f9fa;"><tr><th class="text-navy py-1 align-middle" style="font-size:0.7rem;">Apostillas</th><th class="text-navy py-1 align-middle" style="font-size:0.7rem;">Legalizaciones</th><th class="text-navy py-1 align-middle" style="font-size:0.7rem;">Liquidaciones<br>Cobradas</th><th class="text-navy py-1 align-middle" style="font-size:0.7rem;">Liquidaciones<br>Pendientes</th><th class="text-navy fw-bold py-1 align-middle" style="font-size:0.7rem; background-color: #e2e8f0;">Recibos<br>Electrónicos</th></tr></thead><tbody><tr><td class="fw-bold text-navy py-1" style="font-size:0.85rem;">45</td><td class="fw-bold text-navy py-1" style="font-size:0.85rem;">40</td><td class="fw-bold text-navy py-1" style="font-size:0.85rem;">10</td><td class="fw-bold text-navy py-1" style="font-size:0.85rem;">5</td><td class="fw-bold text-navy py-1" style="font-size:0.85rem; background-color: #f1f5f9;">85</td></tr></tbody></table>
+                        </div>
+
+                        <h6 class="fw-bold text-navy mt-2 mb-3 border-bottom border-2 pb-2">Totales de Operaciones</h6>
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6"><table class="table table-sm border"><thead class="table-light"><tr><th colspan="2" class="text-navy text-center">EFECTIVO</th></tr></thead><tbody><tr><td class="text-muted">Monto Total (Gs):</td><td class="text-end fw-bold text-navy">160.200</td></tr></tbody></table></div>
+                            <div class="col-md-6"><table class="table table-sm border"><thead class="table-light"><tr><th colspan="2" class="text-navy text-center">POS</th></tr></thead><tbody><tr><td class="text-muted">Monto Total (Gs):</td><td class="text-end fw-bold text-navy">160.200</td></tr></tbody></table></div>
+                            <div class="col-md-6"><table class="table table-sm border"><thead class="table-light"><tr><th colspan="2" class="text-navy text-center">LIQUIDACIONES COBRADAS</th></tr></thead><tbody><tr><td class="text-muted">Monto Total (Gs):</td><td class="text-end fw-bold text-navy">320.400</td></tr></tbody></table></div>
+                            <div class="col-md-6"><table class="table table-sm border"><thead class="table-light"><tr><th colspan="2" class="text-navy text-center">LIQUIDACIONES PENDIENTES</th></tr></thead><tbody><tr><td class="text-muted">Monto Total (Gs):</td><td class="text-end fw-bold text-navy">10.000</td></tr></tbody></table></div>
+                        </div>
+
+                        <h6 class="fw-bold text-navy mt-4 mb-3 border-bottom border-2 pb-2">Detalle de Montos por Documento y Forma de Pago</h6>
+                        <div class="table-responsive border rounded-3 mb-4">
+                            <table class="table table-sm table-striped mb-0"><thead style="background-color: #f8f9fa;"><tr><th class="text-navy py-2">Tipo de Documento</th><th class="text-end text-navy py-2">Efectivo (Gs)</th><th class="text-end text-navy py-2">POS (Gs)</th><th class="text-end text-navy py-2">Total (Gs)</th></tr></thead><tbody><tr><td>Certificado de Antecedentes E</td><td class="text-end">160.200</td><td class="text-end">0</td><td class="text-end fw-bold">160.200</td></tr><tr><td>Certificado de Nacimiento N</td><td class="text-end">0</td><td class="text-end">80.100</td><td class="text-end fw-bold">80.100</td></tr><tr><td>Certificado de Defunción N</td><td class="text-end">0</td><td class="text-end">80.100</td><td class="text-end fw-bold">80.100</td></tr></tbody>
+                            <tfoot><tr style="background-color: #e2e8f0;"><th class="text-end text-navy fw-bold py-2">TOTAL GENERAL</th><th class="text-end text-navy fw-bold py-2">160.200</th><th class="text-end text-navy fw-bold py-2">160.200</th><th class="text-end text-navy fw-bold fs-6 py-2">320.400</th></tr></tfoot></table>
+                        </div>
+                        <h6 class="fw-bold text-navy mb-3 border-bottom border-2 pb-2">Listado de Operaciones</h6>
+                    `;
+
+                    columns = ["Nro. Sol.", "Comp.", "Tipo Doc.", "Pago", "Monto", "Estado", "F. Gen.", "F. Toma", "U. Toma", "F. Aprob.", "U. Aprob.", "F. Dev.", "U. Dev.", "F. Rech.", "U. Rech.", "F. Apos."];
+                    data = filteredData.detData;
+                }
+                else if (reportType === 'totales') {
+                    titleStr = "OPERACIONES POR MEDIO DE PAGO";
+                    const filters = [
+                        { label: "Fecha Inicio", value: formatDateTime(document.getElementById('filter_date_start_4').value) },
+                        { label: "Fecha Fin", value: formatDateTime(document.getElementById('filter_date_end_4').value) },
+                        { label: "Tipo Trámite", value: safeGetText('filter_procedure_4') },
+                        { label: "Sucursal", value: safeGetText('filter_branch_4') }
+                    ];
+                    filtersHtml = getHtmlFilterGrid(filters);
+
+                    const filteredData = getFilteredAdminData();
+                    summaryHtml = `
+                        <h6 class="fw-bold text-navy mt-4 mb-3 border-bottom border-2 pb-2">Resumen de Recaudación</h6>
+                        <div class="table-responsive border rounded-3 mb-4">
+                            <table class="table table-sm table-bordered mb-0 text-center"><thead style="background-color: #f8f9fa;"><tr><th class="text-navy py-2 align-middle">Total Transacciones (Cantidad)</th><th class="text-navy py-2 align-middle">Monto Total Recaudado (Importe)</th></tr></thead><tbody><tr><td class="fw-bold text-navy py-2 fs-5">80</td><td class="fw-bold text-navy py-2 fs-5">6.408.000 Gs.</td></tr></tbody></table>
+                        </div>
+
+                        <h6 class="fw-bold text-navy mt-4 mb-3 border-bottom border-2 pb-2">Detalle por Medio de Pago</h6>
+                        <div class="table-responsive border rounded-3 mb-4">
+                            <table class="table table-sm table-striped mb-0">
+                                <thead style="background-color: #f8f9fa;"><tr><th class="text-navy py-2">Medio de Pago</th><th class="text-center text-navy py-2">Cantidad Transacciones</th><th class="text-end text-navy py-2">Monto Total (Gs)</th></tr></thead>
+                                <tbody><tr><td>Efectivo</td><td class="text-center">45</td><td class="text-end fw-bold">3.604.500</td></tr><tr><td>POS</td><td class="text-center">30</td><td class="text-end fw-bold">2.403.000</td></tr><tr><td>En línea</td><td class="text-center">5</td><td class="text-end fw-bold">400.500</td></tr></tbody>
+                                <tfoot><tr style="background-color: #e2e8f0;"><th class="text-end text-navy fw-bold py-2">TOTAL RECAUDADO</th><th class="text-center text-navy fw-bold py-2">80</th><th class="text-end text-navy fw-bold fs-6 py-2">6.408.000</th></tr></tfoot>
+                            </table>
+                        </div>
+                        <h6 class="fw-bold text-navy mb-3 border-bottom border-2 pb-2">Listado de Operaciones</h6>
+                    `;
+
+                    columns = ["Fecha y Hora", "Nro. Comprobante", "Tipo Documento", "Cajero", "Forma Pago", "Monto (Gs)", "Estado"];
+                    data = filteredData.detData;
+                }
+
+                let tableHtml = `<div class="table-responsive border rounded-3"><table class="table table-striped table-hover preview-table mb-0"><thead style="background-color: #f8f9fa;"><tr>`;
+                columns.forEach(col => {
+                    const isRight = col.includes('Monto') || col.includes('(Gs)');
+                    const alignClass = isRight ? 'text-end' : '';
+                    tableHtml += `<th class="${alignClass} text-navy py-2">${col}</th>`;
+                });
+                tableHtml += `</tr></thead><tbody>`;
+                data.forEach(row => {
+                    tableHtml += `<tr>`;
+                    row.forEach((cell, idx) => {
+                        const isRight = columns[idx].includes('Monto') || columns[idx].includes('(Gs)');
+                        const alignClass = isRight ? 'text-end fw-bold' : '';
+                        tableHtml += `<td class="${alignClass}">${cell}</td>`;
+                    });
+                    tableHtml += `</tr>`;
+                });
+                tableHtml += `</tbody></table></div>`;
+
+                let signaturesHtml = '';
+                if (reportType === 'cajero_self' || reportType === 'validacion') {
+                    const firmaIzquierdaLabel = reportType === 'validacion' ? 'Firma del Operador' : 'Firma del Cajero';
+                    signaturesHtml = `
+                        <div class="row mt-5 pt-4">
+                            <div class="col-6 text-center">
+                                <div style="border-top: 1px solid #94a3b8; width: 70%; margin: 0 auto; padding-top: 8px;">
+                                    <p class="fw-bold text-navy mb-0" style="font-size: 0.85rem;">${firmaIzquierdaLabel}</p>
+                                    <p class="text-muted mb-0 mt-1" style="font-size: 0.75rem;">Fecha y hora de impresión: ${formatDateTime(new Date().toISOString())}</p>
+                                    <p class="text-muted" style="font-size: 0.75rem;">(Servidor SIA)</p>
+                                </div>
+                            </div>
+                            <div class="col-6 text-center">
+                                <div style="border-top: 1px solid #94a3b8; width: 70%; margin: 0 auto; padding-top: 8px;">
+                                    <p class="fw-bold text-navy mb-0" style="font-size: 0.85rem;">Firma Jefe/Responsable</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                const container = document.getElementById(`preview_${reportType}`);
+                container.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold text-navy m-0 d-flex align-items-center gap-2">
+                            <i data-lucide="eye" style="width:20px; color: var(--mre-blue)"></i> Vista Previa del Reporte
+                        </h5>
+                        <button class="btn btn-sm btn-outline-primary fw-bold px-3 d-flex align-items-center gap-2 shadow-sm" onclick="generatePDF('${reportType}')" style="border-width: 2px;">
+                            <i data-lucide="download" style="width:16px"></i> Descargar PDF Oficial
+                        </button>
+                    </div>
+                    <div class="p-4 bg-white shadow-sm" style="border: 2px solid #334155; border-radius: 8px; position: relative;">
+                        <div class="text-center mb-4">
+                            <h4 class="fw-bold text-navy m-0">${titleStr}</h4>
+                            <p class="text-muted small m-0 mt-1">Generado: ${formatDateTime(new Date().toISOString())}</p>
+                        </div>
+                        ${filtersHtml}
+                        ${summaryHtml}
+                        ${tableHtml}
+                        ${signaturesHtml}
+                    </div>
+                `;
+                
+                container.style.display = 'block';
+                document.getElementById(loaderId).style.display = 'none';
+                lucide.createIcons();
+                
+                container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            }, 800);
+        }
+
+        // --- PDF GENERATION (JasperReports Clean Style) ---
+        function generatePDF(reportType) {
+            const { jsPDF } = window.jspdf;
+            const isLandscape = reportType === 'cajero_self' || reportType === 'validacion';
+            const doc = new jsPDF({ orientation: isLandscape ? 'l' : 'p', unit: 'mm', format: 'a4' });
+            
+            const pageWidth = doc.internal.pageSize.width;
+            const pageHeight = doc.internal.pageSize.height;
+            let reportTitle = "";
+            
+            const checkPageBreak = (currentY, requiredSpace = 25) => {
+                if (currentY + requiredSpace > pageHeight - 25) { doc.addPage(); return 46; }
+                return currentY;
+            };
+
+            const drawSectionTitle = (title, y) => {
+                y = checkPageBreak(y, 15);
+                doc.setFontSize(9); doc.setFont('helvetica', 'bold'); doc.setTextColor(0, 40, 85); doc.text(title, 14, y);
+                doc.setDrawColor(226, 232, 240); doc.setLineWidth(0.1); doc.line(14, y + 2, pageWidth - 14, y + 2);
+                return y + 6;
+            };
+
+            const drawParameterBand = (filters, y) => {
+                const cols = isLandscape ? 3 : 2; 
+                const body = [];
+                let currentRow = [];
+                filters.forEach((f, i) => {
+                    currentRow.push({ content: `${f.label}:`, styles: { fontStyle: 'bold', textColor: [0, 40, 85] } });
+                    currentRow.push({ content: f.value, styles: { textColor: [50, 50, 50] } }); 
+                    if ((i + 1) % cols === 0 || i === filters.length - 1) {
+                        while (currentRow.length < cols * 2) { currentRow.push(''); currentRow.push(''); }
+                        body.push(currentRow); currentRow = [];
+                    }
+                });
+
+                let columnStyles = {};
+                for (let i = 0; i < cols; i++) { columnStyles[i * 2] = { cellWidth: 35 }; columnStyles[i * 2 + 1] = { cellWidth: 'auto' }; }
+
+                doc.autoTable({ startY: y, body: body, theme: 'plain', styles: { fontSize: 8, cellPadding: 2 }, columnStyles: columnStyles, margin: { left: 14, right: 14, top: 45, bottom: 25 }, tableLineColor: [226, 232, 240], tableLineWidth: 0.1 });
+                return doc.lastAutoTable.finalY + 6;
+            };
+
+            const baseTableOptions = {
+                theme: 'grid',
+                headStyles: { fillColor: [248, 249, 250], textColor: [0, 40, 85], fontStyle: 'bold', lineColor: [226, 232, 240], lineWidth: 0.1 },
+                styles: { fontSize: 7.5, cellPadding: 2, textColor: [30, 41, 59], lineColor: [226, 232, 240], lineWidth: 0.1, overflow: 'linebreak' },
+                alternateRowStyles: { fillColor: [251, 252, 253] },
+                margin: { left: 14, right: 14, top: 45, bottom: 25 }
+            };
+
+            if (reportType === 'cajero_self') {
+                reportTitle = "Reporte de Operaciones";
+                let currentY = 46;
+                currentY = drawSectionTitle("Criterios de Búsqueda", currentY);
+                const searchFilters = [
+                    { label: "Fecha Inicio", value: formatDateTime(document.getElementById('filter_date_start_1').value) },
+                    { label: "Fecha Fin", value: formatDateTime(document.getElementById('filter_date_end_1').value) },
+                    { label: "Tipo Trámite", value: safeGetText('filter_procedure_1') },
+                    { label: "Forma de Pago", value: safeGetText('filter_payment_1') },
+                    { label: "Tipo Documento", value: safeGetText('filter_doc_type_1') },
+                    { label: "Estado", value: safeGetText('filter_status_1') }
+                ];
+                currentY = drawParameterBand(searchFilters, currentY);
+
+                currentY = drawSectionTitle("Datos del Cajero", currentY);
+                const cashierFilters = [{ label: "Operador de Caja", value: loggedInUser }, { label: "Sucursal", value: loggedInUserBranch }];
+                currentY = drawParameterBand(cashierFilters, currentY);
+
+                currentY = drawSectionTitle("Totales de resumen documental", currentY);
+                doc.autoTable({ ...baseTableOptions, startY: currentY, head: [["Apostillas", "Legalizaciones", "Liquidaciones\nCobradas", "Liquidaciones\nPendientes", "Recibos\nElectrónicos"]], body: [["45", "40", "10", "5", "85"]], headStyles: { ...baseTableOptions.headStyles, halign: 'center', valign: 'middle', fontSize: 7, cellPadding: 1.5 }, styles: { ...baseTableOptions.styles, halign: 'center', valign: 'middle', cellPadding: 1.5 }, didParseCell: function(data) { if (data.section === 'head' && data.column.index === 4) { data.cell.styles.fillColor = [226, 232, 240]; data.cell.styles.textColor = [0, 40, 85]; } if (data.section === 'body') { data.cell.styles.fontStyle = 'bold'; data.cell.styles.fontSize = 8; if (data.column.index === 4) { data.cell.styles.fillColor = [241, 245, 249]; data.cell.styles.textColor = [0, 40, 85]; } } } });
+                
+                currentY = doc.lastAutoTable.finalY + 8;
+                currentY = drawSectionTitle("Totales de Operaciones", currentY);
+
+                const colW = (pageWidth - 28 - 6) / 2; 
+                const col1X = 14; const col2X = col1X + colW + 6;
+                const subTableOptions = { theme: 'grid', headStyles: { fillColor: [248, 249, 250], textColor: [0, 40, 85], fontStyle: 'bold', lineColor: [226, 232, 240], lineWidth: 0.1, halign: 'center' }, styles: { fontSize: 8, cellPadding: 2, lineColor: [226, 232, 240], lineWidth: 0.1 }, columnStyles: { 0: { textColor: [50, 50, 50] }, 1: { fontStyle: 'bold', textColor: [0, 40, 85], halign: 'right' } }, margin: { top: 45, bottom: 25 } };
+
+                doc.autoTable({ ...subTableOptions, startY: currentY, head: [[ {content: "EFECTIVO", colSpan: 2} ]], body: [ ["Monto Total (Gs):", "160.200"] ], margin: { left: col1X, right: pageWidth - (col1X + colW), top: 45, bottom: 25 } });
+                const yEfectivo = doc.lastAutoTable.finalY;
+                doc.autoTable({ ...subTableOptions, startY: currentY, head: [[ {content: "POS", colSpan: 2} ]], body: [ ["Monto Total (Gs):", "160.200"] ], margin: { left: col2X, right: 14, top: 45, bottom: 25 } });
+                const yPOS = doc.lastAutoTable.finalY;
+
+                currentY = Math.max(yEfectivo, yPOS) + 5;
+                currentY = checkPageBreak(currentY, 30);
+                
+                doc.autoTable({ ...subTableOptions, startY: currentY, head: [[ {content: "LIQUIDACIONES COBRADAS", colSpan: 2} ]], body: [ ["Monto Total (Gs):", "320.400"] ], margin: { left: col1X, right: pageWidth - (col1X + colW), top: 45, bottom: 25 } });
+                const yLiqCob = doc.lastAutoTable.finalY;
+                doc.autoTable({ ...subTableOptions, startY: currentY, head: [[ {content: "LIQUIDACIONES PENDIENTES", colSpan: 2} ]], body: [ ["Monto Total (Gs):", "10.000"] ], margin: { left: col2X, right: 14, top: 45, bottom: 25 } });
+                const yLiqPend = doc.lastAutoTable.finalY;
+
+                currentY = Math.max(yLiqCob, yLiqPend) + 8;
+                doc.addPage(); currentY = 46; 
+
+                currentY = drawSectionTitle("Detalle de Montos por Documento y Forma de Pago", currentY);
+                const matrixColumns = ["Tipo de Documento", "Efectivo (Gs)", "POS (Gs)", "Total (Gs)"];
+                const matrixData = [ ["Certificado de Antecedentes E", "160.200", "0", "160.200"], ["Certificado de Nacimiento N", "0", "80.100", "80.100"], ["Certificado de Defunción N", "0", "80.100", "80.100"] ];
+                doc.autoTable({ ...baseTableOptions, startY: currentY, head: [matrixColumns], body: matrixData, columnStyles: { 0: { cellWidth: 70 }, 1: { halign: 'right' }, 2: { halign: 'right' }, 3: { halign: 'right', fontStyle: 'bold' } }, foot: [["TOTAL GENERAL", "160.200", "160.200", "320.400"]], footStyles: { fillColor: [226, 232, 240], textColor: [0, 40, 85], fontStyle: 'bold' }, didParseCell: function(data) { if (data.section === 'foot') data.cell.styles.halign = 'right'; } });
+
+                currentY = doc.lastAutoTable.finalY + 8;
+                currentY = drawSectionTitle("Listado de Operaciones", currentY);
+
+                const detColumns = ["Fecha y Hora", "Nro. Comprobante", "Tipo Documento", "Forma Pago", "Monto (Gs)", "Estado"];
+                const detData = [ ["17/02/2026 08:30", "EL-001-00234", "Certificado de Antecedentes", "Efectivo", "80.100", "Apostillada"], ["17/02/2026 09:15", "EL-001-00235", "Certificado de Nacimiento", "POS", "0", "Aprobada"], ["17/02/2026 10:05", "EL-001-00236", "Certificado de Antecedentes", "Efectivo", "80.100", "Pagada"], ["17/02/2026 11:45", "EL-001-00237", "Certificado de Defunción", "POS", "80.100", "Apostillada"], ["17/02/2026 12:30", "EL-001-00238", "Certificado de Nacimiento", "POS", "80.100", "Pagada"] ];
+                doc.autoTable({ ...baseTableOptions, startY: currentY, head: [detColumns], body: detData, columnStyles: { 4: { halign: 'right', fontStyle: 'bold' }, 5: { halign: 'center' } } });
+
+                currentY = pageHeight - 45; 
+                if (doc.lastAutoTable.finalY > currentY - 20) doc.addPage();
+                doc.setDrawColor(148, 163, 184); doc.setLineWidth(0.3);
+
+                const cajeroLineX = 40; const cajeroLineW = 70;
+                doc.line(cajeroLineX, currentY, cajeroLineX + cajeroLineW, currentY);
+                doc.setFontSize(9); doc.setFont('helvetica', 'bold'); doc.setTextColor(0, 40, 85); doc.text("Firma del Cajero", cajeroLineX + (cajeroLineW / 2), currentY + 5, { align: 'center' });
+                doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(100, 100, 100); doc.text(`Fecha y hora de impresión: ${formatDateTime(new Date().toISOString())}`, cajeroLineX + (cajeroLineW / 2), currentY + 10, { align: 'center' }); doc.text("(Servidor SIA)", cajeroLineX + (cajeroLineW / 2), currentY + 14, { align: 'center' });
+
+                const jefeLineW = 70; const jefeLineX = pageWidth - 40 - jefeLineW;
+                doc.line(jefeLineX, currentY, jefeLineX + jefeLineW, currentY);
+                doc.setFontSize(9); doc.setFont('helvetica', 'bold'); doc.setTextColor(0, 40, 85); doc.text("Firma Jefe/Responsable", jefeLineX + (jefeLineW / 2), currentY + 5, { align: 'center' });
+            } 
+            else if (reportType === 'admin_global') {
+                reportTitle = "Operaciones Consolidadas";
+                let currentY = 46; currentY = drawSectionTitle("Criterios de Búsqueda", currentY);
+                const filtersBody = [ { label: "Fecha Inicio", value: formatDateTime(document.getElementById('filter_date_start_2').value) }, { label: "Fecha Fin", value: formatDateTime(document.getElementById('filter_date_end_2').value) }, { label: "Operador", value: safeGetText('filter_cashier_2') }, { label: "Perfil", value: safeGetText('filter_profile_2') }, { label: "Sucursal", value: safeGetText('filter_branch_2') }, { label: "Tipo Trámite", value: safeGetText('filter_procedure_2') }, { label: "Medio Pago", value: safeGetText('filter_payment_2') } ];
+                currentY = drawParameterBand(filtersBody, currentY);
+                const filteredData = getFilteredAdminData(); const matrixColumns = ["Cajero", "Sucursal", "Total Ops.", "Efectivo (Gs)", "POS (Gs)", "Total (Gs)"]; const matrixData = filteredData.matrixData;
+                currentY = drawSectionTitle("Totales Consolidados", currentY);
+                doc.autoTable({ ...baseTableOptions, startY: currentY, head: [matrixColumns], body: matrixData.length > 0 ? matrixData : [["-", "-", "-", "-", "-", "-"]], columnStyles: { 2: { halign: 'center' }, 3: { halign: 'right' }, 4: { halign: 'right' }, 5: { halign: 'right', fontStyle: 'bold' } }, foot: [["TOTALES CONSOLIDADOS", "", filteredData.totOps.toString(), filteredData.totEfec, filteredData.totPos, filteredData.totGen]], footStyles: { fillColor: [226, 232, 240], textColor: [0, 40, 85], fontStyle: 'bold' }, didParseCell: function(data) { if (data.section === 'foot') { if(data.column.index === 0) { data.cell.styles.halign = 'right'; data.cell.colSpan = 2; } if(data.column.index > 1) data.cell.styles.halign = data.column.index === 2 ? 'center' : 'right'; } } });
+                currentY = doc.lastAutoTable.finalY + 8; currentY = checkPageBreak(currentY, 30);
+                currentY = drawSectionTitle("Listado de Operaciones", currentY);
+                const detColumns = ["Fecha y Hora", "Nro. Comprobante", "Tipo Documento", "Cajero", "Forma Pago", "Monto (Gs)", "Estado"]; const detData = filteredData.detData;
+                doc.autoTable({ ...baseTableOptions, startY: currentY, head: [detColumns], body: detData.length > 0 ? detData : [["-", "-", "No hay registros aplicables", "-", "-", "-", "-"]], columnStyles: { 5: { halign: 'right', fontStyle: 'bold' }, 6: { halign: 'center' } } });
+            }
+            else if (reportType === 'validacion') {
+                reportTitle = "Reporte de Verificación Previa";
+                let currentY = 46; currentY = drawSectionTitle("Criterios de Búsqueda", currentY);
+                const filtersBody = [ { label: "Fecha Inicio", value: formatDateTime(document.getElementById('filter_date_start_3').value) }, { label: "Fecha Fin", value: formatDateTime(document.getElementById('filter_date_end_3').value) }, { label: "Tipo Trámite", value: safeGetText('filter_procedure_3') }, { label: "Forma de Pago", value: safeGetText('filter_payment_3') }, { label: "Tipo Documento", value: safeGetText('filter_doc_type_3') }, { label: "Estado", value: safeGetText('filter_status_3') } ];
+                currentY = drawParameterBand(filtersBody, currentY);
+                const filteredData = getFilteredValidacionData();
+                currentY = drawSectionTitle("Totales por Usuario", currentY);
+                const summaryCols = ["Usuario", "Tomadas", "Aprobadas", "Devueltas", "Rechazadas"];
+                doc.autoTable({ ...baseTableOptions, startY: currentY, head: [summaryCols], body: filteredData.summary, columnStyles: { 1: { halign: 'center' }, 2: { halign: 'center' }, 3: { halign: 'center' }, 4: { halign: 'center' } }, foot: [["TOTALES CONSOLIDADOS", filteredData.totTomadas.toString(), filteredData.totAprobadas.toString(), filteredData.totDevueltas.toString(), filteredData.totRechazadas.toString()]], footStyles: { fillColor: [226, 232, 240], textColor: [0, 40, 85], fontStyle: 'bold' }, didParseCell: function(data) { if (data.section === 'foot') { if(data.column.index === 0) data.cell.styles.halign = 'right'; else data.cell.styles.halign = 'center'; } } });
+                currentY = doc.lastAutoTable.finalY + 8; currentY = checkPageBreak(currentY, 30);
+                
+                // Block resúmenes 
+                currentY = drawSectionTitle("Totales de resumen documental", currentY);
+                doc.autoTable({ ...baseTableOptions, startY: currentY, head: [["Apostillas", "Legalizaciones", "Liquidaciones\nCobradas", "Liquidaciones\nPendientes", "Recibos\nElectrónicos"]], body: [ ["45", "40", "10", "5", "85"] ], headStyles: { ...baseTableOptions.headStyles, halign: 'center', valign: 'middle', fontSize: 7, cellPadding: 1.5 }, styles: { ...baseTableOptions.styles, halign: 'center', valign: 'middle', cellPadding: 1.5 }, didParseCell: function(data) { if (data.section === 'head' && data.column.index === 4) { data.cell.styles.fillColor = [226, 232, 240]; data.cell.styles.textColor = [0, 40, 85]; } if (data.section === 'body') { data.cell.styles.fontStyle = 'bold'; data.cell.styles.fontSize = 8; if (data.column.index === 4) { data.cell.styles.fillColor = [241, 245, 249]; data.cell.styles.textColor = [0, 40, 85]; } } } });
+                currentY = doc.lastAutoTable.finalY + 8; currentY = checkPageBreak(currentY, 30);
+                currentY = drawSectionTitle("Totales de Operaciones", currentY);
+                const colW = (pageWidth - 28 - 6) / 2; const col1X = 14; const col2X = col1X + colW + 6;
+                const subTableOptions = { theme: 'grid', headStyles: { fillColor: [248, 249, 250], textColor: [0, 40, 85], fontStyle: 'bold', lineColor: [226, 232, 240], lineWidth: 0.1, halign: 'center' }, styles: { fontSize: 8, cellPadding: 2, lineColor: [226, 232, 240], lineWidth: 0.1 }, columnStyles: { 0: { textColor: [50, 50, 50] }, 1: { fontStyle: 'bold', textColor: [0, 40, 85], halign: 'right' } }, margin: { top: 45, bottom: 25 } };
+                doc.autoTable({ ...subTableOptions, startY: currentY, head: [[ {content: "EFECTIVO", colSpan: 2} ]], body: [ ["Monto Total (Gs):", "160.200"] ], margin: { left: col1X, right: pageWidth - (col1X + colW), top: 45, bottom: 25 } });
+                const yEfectivo = doc.lastAutoTable.finalY;
+                doc.autoTable({ ...subTableOptions, startY: currentY, head: [[ {content: "POS", colSpan: 2} ]], body: [ ["Monto Total (Gs):", "160.200"] ], margin: { left: col2X, right: 14, top: 45, bottom: 25 } });
+                const yPOS = doc.lastAutoTable.finalY;
+                currentY = Math.max(yEfectivo, yPOS) + 5; currentY = checkPageBreak(currentY, 30);
+                doc.autoTable({ ...subTableOptions, startY: currentY, head: [[ {content: "LIQUIDACIONES COBRADAS", colSpan: 2} ]], body: [ ["Monto Total (Gs):", "320.400"] ], margin: { left: col1X, right: pageWidth - (col1X + colW), top: 45, bottom: 25 } });
+                const yLiqCob = doc.lastAutoTable.finalY;
+                doc.autoTable({ ...subTableOptions, startY: currentY, head: [[ {content: "LIQUIDACIONES PENDIENTES", colSpan: 2} ]], body: [ ["Monto Total (Gs):", "10.000"] ], margin: { left: col2X, right: 14, top: 45, bottom: 25 } });
+                const yLiqPend = doc.lastAutoTable.finalY;
+                currentY = Math.max(yLiqCob, yLiqPend) + 8; currentY = checkPageBreak(currentY, 40);
+                currentY = drawSectionTitle("Detalle de Montos por Documento y Forma de Pago", currentY);
+                const matrixColumns = ["Tipo de Documento", "Efectivo (Gs)", "POS (Gs)", "Total (Gs)"]; const matrixData = [ ["Certificado de Antecedentes E", "160.200", "0", "160.200"], ["Certificado de Nacimiento N", "0", "80.100", "80.100"], ["Certificado de Defunción N", "0", "80.100", "80.100"] ];
+                doc.autoTable({ ...baseTableOptions, startY: currentY, head: [matrixColumns], body: matrixData, columnStyles: { 0: { cellWidth: 70 }, 1: { halign: 'right' }, 2: { halign: 'right' }, 3: { halign: 'right', fontStyle: 'bold' } }, foot: [["TOTAL GENERAL", "160.200", "160.200", "320.400"]], footStyles: { fillColor: [226, 232, 240], textColor: [0, 40, 85], fontStyle: 'bold' }, didParseCell: function(data) { if (data.section === 'foot') { data.cell.styles.halign = 'right'; } } });
+                currentY = doc.lastAutoTable.finalY + 8; currentY = checkPageBreak(currentY, 40);
+                
+                doc.addPage(); currentY = 46;
+                currentY = drawSectionTitle("Listado de Operaciones", currentY);
+                const detCols = [ "Nro. Sol.", "Comp.", "Tipo Doc.", "Pago", "Monto", "Estado", "F. Gen.", "F. Toma", "U. Toma", "F. Aprob.", "U. Aprob.", "F. Dev.", "U. Dev.", "F. Rech.", "U. Rech.", "F. Apos." ];
+                doc.autoTable({ ...baseTableOptions, startY: currentY, head: [detCols], body: filteredData.detData, styles: { ...baseTableOptions.styles, fontSize: 6, cellPadding: 1.2, overflow: 'linebreak' }, headStyles: { ...baseTableOptions.headStyles, fontSize: 6, halign: 'center', valign: 'middle' }, columnStyles: { 4: { halign: 'right' }, 5: { halign: 'center' } } });
+                currentY = pageHeight - 45; 
+                if (doc.lastAutoTable.finalY > currentY - 20) { doc.addPage(); }
+                doc.setDrawColor(148, 163, 184); doc.setLineWidth(0.3);
+                const cajeroLineX = 40; const cajeroLineW = 70; doc.line(cajeroLineX, currentY, cajeroLineX + cajeroLineW, currentY); doc.setFontSize(9); doc.setFont('helvetica', 'bold'); doc.setTextColor(0, 40, 85); doc.text("Firma del Operador", cajeroLineX + (cajeroLineW / 2), currentY + 5, { align: 'center' }); doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(100, 100, 100); doc.text(`Fecha y hora de impresión: ${formatDateTime(new Date().toISOString())}`, cajeroLineX + (cajeroLineW / 2), currentY + 10, { align: 'center' }); doc.text("(Servidor SIA)", cajeroLineX + (cajeroLineW / 2), currentY + 14, { align: 'center' });
+                const jefeLineW = 70; const jefeLineX = pageWidth - 40 - jefeLineW; doc.line(jefeLineX, currentY, jefeLineX + jefeLineW, currentY); doc.setFontSize(9); doc.setFont('helvetica', 'bold'); doc.setTextColor(0, 40, 85); doc.text("Firma Jefe/Responsable", jefeLineX + (jefeLineW / 2), currentY + 5, { align: 'center' });
+            }
+            else if (reportType === 'totales') {
+                reportTitle = "Operaciones por Medio de Pago";
+                let currentY = 46; currentY = drawSectionTitle("Criterios de Búsqueda", currentY);
+                const filtersBody = [ { label: "Fecha Inicio", value: formatDateTime(document.getElementById('filter_date_start_4').value) }, { label: "Fecha Fin", value: formatDateTime(document.getElementById('filter_date_end_4').value) }, { label: "Tipo Trámite", value: safeGetText('filter_procedure_4') }, { label: "Sucursal", value: safeGetText('filter_branch_4') } ];
+                currentY = drawParameterBand(filtersBody, currentY);
+                currentY = drawSectionTitle("Resumen de Recaudación", currentY);
+                doc.autoTable({ ...baseTableOptions, startY: currentY, head: [["Total Transacciones (Cantidad)", "Monto Total Recaudado (Importe)"]], body: [["80", "6.408.000 Gs."]], headStyles: { ...baseTableOptions.headStyles, halign: 'center', fontSize: 9, fillColor: [226, 232, 240] }, styles: { ...baseTableOptions.styles, halign: 'center', fontSize: 11, fontStyle: 'bold', textColor: [0, 40, 85], cellPadding: 4 } });
+                currentY = doc.lastAutoTable.finalY + 8; currentY = checkPageBreak(currentY, 30);
+                currentY = drawSectionTitle("Detalle por Medio de Pago", currentY);
+                const columns = ["Medio de Pago", "Cantidad Transacciones", "Monto Total (Gs)"]; const data = [ ["Efectivo", "45", "3.604.500"], ["POS", "30", "2.403.000"], ["En línea", "5", "400.500"] ];
+                doc.autoTable({ ...baseTableOptions, startY: currentY, head: [columns], body: data, columnStyles: { 1: { halign: 'center' }, 2: { halign: 'right', fontStyle: 'bold' } }, foot: [["TOTAL RECAUDADO", "80", "6.408.000"]], footStyles: { fillColor: [226, 232, 240], textColor: [0, 40, 85], fontStyle: 'bold' }, didParseCell: function(data) { if (data.section === 'foot') { if(data.column.index === 0) data.cell.styles.halign = 'right'; if(data.column.index === 1) data.cell.styles.halign = 'center'; if(data.column.index === 2) data.cell.styles.halign = 'right'; } } });
+                currentY = doc.lastAutoTable.finalY + 8; currentY = checkPageBreak(currentY, 30);
+                currentY = drawSectionTitle("Listado de Operaciones", currentY);
+                const detColumns = ["Fecha y Hora", "Nro. Comprobante", "Tipo Documento", "Cajero", "Forma Pago", "Monto (Gs)", "Estado"]; const detData = getFilteredAdminData().detData;
+                doc.autoTable({ ...baseTableOptions, startY: currentY, head: [detColumns], body: detData.length > 0 ? detData : [["-", "-", "No hay registros aplicables", "-", "-", "-", "-"]], columnStyles: { 5: { halign: 'right', fontStyle: 'bold' }, 6: { halign: 'center' } } });
+            }
+
+            const totalPages = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= totalPages; i++) {
+                doc.setPage(i);
+                doc.setDrawColor(51, 65, 85); doc.setLineWidth(0.2); doc.rect(10, 40, pageWidth - 20, pageHeight - 60);
+                doc.setFontSize(12); doc.setFont('helvetica', 'bold'); doc.setTextColor(0, 0, 0); doc.text("SIA-PY", 14, 16);
+                doc.setFontSize(9); doc.setFont('helvetica', 'normal'); doc.setTextColor(50, 50, 50); doc.text("Sistema Integrado de Apostilla Electrónica", 14, 21);
+                doc.setFontSize(8); doc.text(`Generado: ${formatDateTime(new Date().toISOString())}`, pageWidth - 14, 16, { align: 'right' }); doc.text(`Impreso por: ${loggedInUser}`, pageWidth - 14, 21, { align: 'right' });
+                doc.setDrawColor(226, 232, 240); doc.setLineWidth(0.1); doc.line(14, 25, pageWidth - 14, 25);
+                doc.setFontSize(14); doc.setTextColor(0, 40, 85); doc.setFont('helvetica', 'bold'); doc.text(reportTitle.toUpperCase(), pageWidth / 2, 35, { align: 'center' });
+                doc.setFontSize(8); doc.setTextColor(100, 100, 100); doc.text(`Página ${i} de ${totalPages}`, pageWidth - 14, pageHeight - 10, { align: 'right' });
+            }
+
+            doc.save(`SIA_Reporte_${reportType}_${Date.now()}.pdf`);
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            setToday('1', true); setToday('2', true); setToday('3', true); setToday('4', true);
+
+            renderDepositsTable();
+            
+            const filterStatusDeposit = document.getElementById('filter_status_deposit');
+            if (filterStatusDeposit) filterStatusDeposit.value = 'pendiente';
+            filterDeposits();
+
+            document.querySelectorAll('.form-select').forEach((el) => {
+                new TomSelect(el, { plugins: ['dropdown_input'], create: false, sortField: null, maxOptions: null, searchField: ['text'], render: { no_results: function(data, escape) { return '<div class="no-results p-2 text-muted small">No se encontraron coincidencias</div>'; } } });
+            });
+
+            // Tooltips Init
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            tooltipTriggerList.map(function (tooltipTriggerEl) { return new bootstrap.Tooltip(tooltipTriggerEl) })
+        });
+    </script>
+</body>
+</html>
