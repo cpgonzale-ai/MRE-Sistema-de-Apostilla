@@ -121,6 +121,19 @@
         .btn-main { background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%); color: #ffffff; border: none; border-radius: 12px; padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.85rem; transition: var(--transition); }
         .btn-main:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 40, 85, 0.2); color: white; }
         
+        /* Botons d'exportació */
+        .btn-excel-export, .btn-pdf-export {
+            background: linear-gradient(135deg, var(--mre-blue) 0%, var(--mre-blue-light) 100%);
+            color: #ffffff; border: none;
+            padding: 0.6rem 1.2rem; border-radius: 12px; font-size: 0.85rem; font-weight: 700;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: var(--transition);
+        }
+        .btn-excel-export:hover, .btn-pdf-export:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 4px 10px rgba(0, 40, 85, 0.2); 
+            color: white; 
+        }
+
         .btn-tool-generic { background: #FFFFFF; color: var(--mre-blue); border: 1px solid var(--border-color); padding: 0.5rem 1rem; border-radius: 10px; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; transition: var(--transition); cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
         .btn-tool-generic:hover { background: #F1F5F9; border-color: var(--mre-blue); transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 
@@ -324,9 +337,15 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-12 mt-4 d-flex justify-content-end border-top pt-4">
-                                <button type="submit" class="btn-main">
+                            <div class="col-12 mt-4 d-flex justify-content-end gap-2 border-top pt-4">
+                                <button type="submit" class="btn-main d-none align-items-center gap-2">
                                     <i data-lucide="bar-chart" style="width: 18px;"></i> Generar reporte
+                                </button>
+                                <button type="button" class="btn-excel-export" onclick="exportToExcel('cajero_self')">
+                                    <i data-lucide="file-spreadsheet" style="width: 18px;"></i> Generar Excel
+                                </button>
+                                <button type="button" class="btn-pdf-export" onclick="previewReport('cajero_self')">
+                                    <i data-lucide="file-text" style="width: 18px;"></i> Generar PDF
                                 </button>
                             </div>
                         </form>
@@ -409,9 +428,15 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-12 mt-4 pt-3 border-top d-flex justify-content-end">
-                                <button type="submit" class="btn-main">
+                            <div class="col-12 mt-4 pt-3 border-top d-flex justify-content-end gap-2">
+                                <button type="submit" class="btn-main d-none align-items-center gap-2">
                                     <i data-lucide="bar-chart" style="width: 18px;"></i> Generar reporte
+                                </button>
+                                <button type="button" class="btn-excel-export" onclick="exportToExcel('admin_global')">
+                                    <i data-lucide="file-spreadsheet" style="width: 18px;"></i> Generar Excel
+                                </button>
+                                <button type="button" class="btn-pdf-export" onclick="previewReport('admin_global')">
+                                    <i data-lucide="file-text" style="width: 18px;"></i> Generar PDF
                                 </button>
                             </div>
                         </form>
@@ -486,9 +511,15 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-12 mt-4 pt-3 border-top d-flex justify-content-end">
-                                <button type="submit" class="btn-main">
+                            <div class="col-12 mt-4 pt-3 border-top d-flex justify-content-end gap-2">
+                                <button type="submit" class="btn-main d-none align-items-center gap-2">
                                     <i data-lucide="bar-chart" style="width: 18px;"></i> Generar reporte
+                                </button>
+                                <button type="button" class="btn-excel-export" onclick="exportToExcel('validacion')">
+                                    <i data-lucide="file-spreadsheet" style="width: 18px;"></i> Generar Excel
+                                </button>
+                                <button type="button" class="btn-pdf-export" onclick="previewReport('validacion')">
+                                    <i data-lucide="file-text" style="width: 18px;"></i> Generar PDF
                                 </button>
                             </div>
                         </form>
@@ -545,9 +576,15 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-12 mt-4 pt-3 border-top d-flex justify-content-end">
-                                <button type="submit" class="btn-main">
+                            <div class="col-12 mt-4 pt-3 border-top d-flex justify-content-end gap-2">
+                                <button type="submit" class="btn-main d-none align-items-center gap-2">
                                     <i data-lucide="bar-chart" style="width: 18px;"></i> Generar reporte
+                                </button>
+                                <button type="button" class="btn-excel-export" onclick="exportToExcel('totales')">
+                                    <i data-lucide="file-spreadsheet" style="width: 18px;"></i> Generar Excel
+                                </button>
+                                <button type="button" class="btn-pdf-export" onclick="previewReport('totales')">
+                                    <i data-lucide="file-text" style="width: 18px;"></i> Generar PDF
                                 </button>
                             </div>
                         </form>
@@ -646,7 +683,7 @@
                 </div>
                 <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
                     <button type="button" class="btn-tool-generic" style="background: #94A3B8; color: white; border: none; padding: 0.6rem 1.2rem; font-size: 0.85rem;" onclick="closeDepositModal()">Cancelar</button>
-                    <button type="submit" id="btnSubmitDeposit" class="btn-main px-4 shadow-sm" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); border: none;">
+                    <button type="submit" id="btnSubmitDeposit" class="btn-main px-4 shadow-sm">
                         <i data-lucide="check-circle" style="width: 16px;"></i> Confirmar
                     </button>
                 </div>
@@ -992,6 +1029,34 @@
                     if(loaderEl) loaderEl.style.display = 'none';
                 }
             }, 800);
+        }
+
+        function exportToExcel(reportType) {
+            const loaderMap = { 'cajero_self': 'loader_1', 'admin_global': 'loader_2', 'validacion': 'loader_3', 'totales': 'loader_4' };
+            const loaderId = loaderMap[reportType];
+            const loaderEl = document.getElementById(loaderId);
+            
+            if (loaderEl) {
+                const textEl = loaderEl.querySelector('h6');
+                const originalText = textEl.innerText;
+                
+                textEl.innerText = 'GENERANDO EXCEL...';
+                loaderEl.style.display = 'flex';
+                
+                setTimeout(() => {
+                    loaderEl.style.display = 'none';
+                    textEl.innerText = originalText;
+                    
+                    // Simulación de descarga de archivo
+                    const dummyLink = document.createElement('a');
+                    dummyLink.href = 'data:application/vnd.ms-excel;charset=utf-8,' + encodeURIComponent('Sep\tValor\nSimulación\tExitosa');
+                    dummyLink.download = `SIA_Reporte_${reportType}_${Date.now()}.xls`;
+                    document.body.appendChild(dummyLink);
+                    dummyLink.click();
+                    document.body.removeChild(dummyLink);
+                    
+                }, 800);
+            }
         }
 
         // --- PDF GENERATION (JasperReports Clean Style) ---
